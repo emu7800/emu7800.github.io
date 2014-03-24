@@ -1,0 +1,12 @@
+TODO
+- WP8: add halloween, texas chain saw massacre, mountain king
+
+
+release notes
+- windows 8.1: added daptor, daptor-ii and stelladaptor support
+- windows 8/8.1: relaxed a78 file recognition
+- windows 8/8.1: minor issue with xbox controller start button
+- windows 8/8.1: paddle button input swaps now working (didnt matter before, perhaps helps win32 version)
+- windows 8/8.1: fixed: wont go to sleep when playing games without keyboard input
+
+

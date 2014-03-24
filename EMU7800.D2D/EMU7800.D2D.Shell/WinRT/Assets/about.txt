@@ -1,0 +1,17 @@
+﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
+
+BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; use the search icon on the title screen to import them. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
+
+PERFORMANCE—EMU7800 will be able to run full speed on systems with the equivalent of a single 1.7 GHz CPU core. The frame rate will automatically adjust downward to maintain smoothness if necessary.
+
+GAME CONTROLLERS—Up to four (4) Xbox 360 controllers are supported and should generally work as expected. The keyboard and mouse are also usable for game control. Use keys F1-F4 to direct the input to the player number respectively. Some useful tips:
+
+- The right thumbstick on the first controller operates the Player Two joystick as there are a few single-player titles that leverage both joysticks together
+- The left and right triggers operate the Game Select and Game Reset console switches respectively (also mapped to the S and R keys)
+- Only mouse input is mapped to the Lightgun controller
+- Number pad keys are mapped to the Atari Keypad controller
+- The H key toggles the Heads Up Display (HUD) during gameplay
+
+USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor) are not supported in this version, but are supported in the Windows 8.1 version.
+
+HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title. Touch screen game controls can be activated here.

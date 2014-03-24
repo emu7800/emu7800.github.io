@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="56691MikeMurphy.EMU7800" Publisher="CN=978124C8-D68F-4C5D-9E10-955C3A49CB93" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>EMU7800</DisplayName>
+    <PublisherDisplayName>Mike Murphy</PublisherDisplayName>
+    <Logo>Assets\StoreLogo_50x50.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.0</OSMinVersion>
+    <OSMaxVersionTested>6.2.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="EMU7800.D2D.App">
+      <VisualElements DisplayName="EMU7800" Logo="Assets\Logo_150x150.png" SmallLogo="Assets\SmallLogo_30x30.png" Description="An Atari 2600/7800 .NET-based Emulator" ForegroundText="light" BackgroundColor="#000000" ToastCapable="false">
+        <DefaultTile WideLogo="Assets\WideLogo_310x150.png" ShowName="noLogos" />
+        <SplashScreen Image="Assets\SplashScreen_620x300.png" BackgroundColor="#000000" />
+        <InitialRotationPreference>
+          <Rotation Preference="portrait" />
+          <Rotation Preference="landscape" />
+          <Rotation Preference="portraitFlipped" />
+          <Rotation Preference="landscapeFlipped" />
+        </InitialRotationPreference>
+      </VisualElements>
+    </Application>
+  </Applications>
+</Package>

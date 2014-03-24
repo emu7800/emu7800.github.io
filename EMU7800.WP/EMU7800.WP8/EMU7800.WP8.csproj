@@ -1,0 +1,988 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">ARM</Platform>
+    <ProductVersion>10.0.20506</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6D880451-3E1D-4C3B-8365-DEB7A65F9BCD}</ProjectGuid>
+    <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EMU7800.WP</RootNamespace>
+    <AssemblyName>EMU7800.WP8</AssemblyName>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
+    <SilverlightApplication>true</SilverlightApplication>
+    <TargetFrameworkIdentifier>WindowsPhone</TargetFrameworkIdentifier>
+    <SupportedCultures>
+    </SupportedCultures>
+    <XapOutputs>true</XapOutputs>
+    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+    <XapFilename>EMU7800.WP8.xap</XapFilename>
+    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+    <SilverlightAppEntry>EMU7800.WP.App</SilverlightAppEntry>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>Bin\x86\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>Bin\x86\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|x86'">
+    <OutputPath>Bin\x86\Profile\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE;PROFILE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>Bin\ARM\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>Bin\ARM\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|ARM'">
+    <OutputPath>Bin\ARM\Profile\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE;PROFILE</DefineConstants>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\EMU7800.WP\Model\ControllerInfo.cs">
+      <Link>Model\ControllerInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\EMU7800.WP\ViewModel\GameProgramSelectViewModel.cs">
+      <Link>ViewModel\GameProgramSelectViewModel.cs</Link>
+    </Compile>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\EMU7800.WP\Model\GameProgramId.cs">
+      <Link>Model\GameProgramId.cs</Link>
+    </Compile>
+    <Compile Include="..\EMU7800.WP\Model\GameProgramInfo.cs">
+      <Link>Model\GameProgramInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\EMU7800.WP\Model\GameProgramInfoRepository.cs">
+      <Link>Model\GameProgramInfoRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\EMU7800.WP\StateUtils.cs" />
+    <Compile Include="..\EMU7800.WP\View\ProfilerTools.cs">
+      <Link>View\ProfilerTools.cs</Link>
+    </Compile>
+    <Compile Include="..\EMU7800.WP\AppServiceProvider.cs" />
+    <Compile Include="..\EMU7800.WP\ViewModel\GameProgramSelectItemViewModel.cs">
+      <Link>ViewModel\GameProgramSelectItemViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Resources\AppResources1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AppResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="View\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FrameRenderer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\FrameRenderer160.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\FrameRenderer160Blender.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\FrameRenderer320.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\GamePage.Worker.xaml.cs">
+      <DependentUpon>GamePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\GamePage.xaml.cs">
+      <DependentUpon>GamePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\GameProgramSelectPage.xaml.cs">
+      <DependentUpon>GameProgramSelectPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InputHandler.cs" />
+    <Compile Include="View\InputHandlerDefault.cs" />
+    <Compile Include="View\InputHandlerDPad.cs" />
+    <Compile Include="View\InputHandlerLightgun.cs" />
+    <Compile Include="View\InputHandlerPaddle.cs" />
+    <Compile Include="View\InputHandlerQbert.cs" />
+    <Compile Include="View\MogaController.cs" />
+    <Compile Include="View\TitlePage.xaml.cs">
+      <DependentUpon>TitlePage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\appbar.basecircle.rest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appbar.basecircle.rest_R.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appbar.basecircle.rest_S.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="marketplace_appicon_173x173.png" />
+    <Content Include="marketplace_appicon_62x62.png" />
+    <Content Include="Properties\AppManifest.xml" />
+    <Content Include="Properties\WMAppManifest.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="SplashScreenImage.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\appbar.transport.pause.rest.inverted.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appbar.transport.pause.rest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appbar.transport.play.rest.inverted.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appbar.transport.play.rest.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\appicon_128x128.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EMU7800.Core\EMU7800.Core.WP8.csproj">
+      <Project>{75BF18F3-B59B-41EE-9D25-3065918AEDF7}</Project>
+      <Name>EMU7800.Core.WP8</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EMU7800.WP8.Interop\EMU7800.WP8.Interop.vcxproj">
+      <Project>{64079D32-6E79-4219-BDBF-F13602923F21}</Project>
+      <Name>EMU7800.WP8.Interop</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Phone.Controls, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Moga.Windows.Phone, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>Dependencies\MOGA-v1.0\$(Platform)\Moga.Windows.Phone.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\AboutPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\GamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\GameProgramSelectPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\TitlePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\Model\RomResources\AppleSnaffle_23_07_10.1.30.a78">
+      <Link>Model\RomResources\AppleSnaffle_23_07_10.1.30.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MsPac320Pokey.a78">
+      <Link>Model\RomResources\MsPac320Pokey.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Pac320Pokey.a78">
+      <Link>Model\RomResources\Pac320Pokey.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SUPERPAC.a78">
+      <Link>Model\RomResources\SUPERPAC.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Aceofaces.bin">
+      <Link>Model\RomResources\Aceofaces.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ADVNTURE.BIN">
+      <Link>Model\RomResources\ADVNTURE.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Alienbrigade.bin">
+      <Link>Model\RomResources\Alienbrigade.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\arkanoid0911.bin">
+      <Link>Model\RomResources\arkanoid0911.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ASTDLX78.BIN">
+      <Link>Model\RomResources\ASTDLX78.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ASTEROID.BIN">
+      <Link>Model\RomResources\ASTEROID.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Asteroids.bin">
+      <Link>Model\RomResources\Asteroids.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ATLANTIS.BIN">
+      <Link>Model\RomResources\ATLANTIS.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Ballblazer.bin">
+      <Link>Model\RomResources\Ballblazer.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Barnstrm.bin">
+      <Link>Model\RomResources\Barnstrm.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Basketbrawl.bin">
+      <Link>Model\RomResources\Basketbrawl.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Beamride.bin">
+      <Link>Model\RomResources\Beamride.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\BeefDrop.bin">
+      <Link>Model\RomResources\BeefDrop.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Berzerk.bin">
+      <Link>Model\RomResources\Berzerk.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\bnQ.bin">
+      <Link>Model\RomResources\bnQ.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Bowling.bin">
+      <Link>Model\RomResources\Bowling.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Boxing.bin">
+      <Link>Model\RomResources\Boxing.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Breakout.bin">
+      <Link>Model\RomResources\Breakout.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Bridge.bin">
+      <Link>Model\RomResources\Bridge.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Centipede.bin">
+      <Link>Model\RomResources\Centipede.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Checkact.bin">
+      <Link>Model\RomResources\Checkact.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Choplifter.bin">
+      <Link>Model\RomResources\Choplifter.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Choprcmd.bin">
+      <Link>Model\RomResources\Choprcmd.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Circatri.bin">
+      <Link>Model\RomResources\Circatri.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ColorTest.bin">
+      <Link>Model\RomResources\ColorTest.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Combat.bin">
+      <Link>Model\RomResources\Combat.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Commando.bin">
+      <Link>Model\RomResources\Commando.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Cosmcark.bin">
+      <Link>Model\RomResources\Cosmcark.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Cracked.bin">
+      <Link>Model\RomResources\Cracked.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Crackpot.bin">
+      <Link>Model\RomResources\Crackpot.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Crossbow.bin">
+      <Link>Model\RomResources\Crossbow.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Csmcomtr.bin">
+      <Link>Model\RomResources\Csmcomtr.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Darkchambers.bin">
+      <Link>Model\RomResources\Darkchambers.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Dbldragn.bin">
+      <Link>Model\RomResources\Dbldragn.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Decathln.bin">
+      <Link>Model\RomResources\Decathln.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Demonatk.bin">
+      <Link>Model\RomResources\Demonatk.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Desertfalcon.bin">
+      <Link>Model\RomResources\Desertfalcon.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Digdug.bin">
+      <Link>Model\RomResources\Digdug.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Dk.bin">
+      <Link>Model\RomResources\Dk.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Dkjr.bin">
+      <Link>Model\RomResources\Dkjr.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Dolphin.bin">
+      <Link>Model\RomResources\Dolphin.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Donkeykong.bin">
+      <Link>Model\RomResources\Donkeykong.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Donkeykongjr.bin">
+      <Link>Model\RomResources\Donkeykongjr.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Doubledragon.bin">
+      <Link>Model\RomResources\Doubledragon.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Dragster.bin">
+      <Link>Model\RomResources\Dragster.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Drgnfire.bin">
+      <Link>Model\RomResources\Drgnfire.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Enduro_a.bin">
+      <Link>Model\RomResources\Enduro_a.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\E_t.bin">
+      <Link>Model\RomResources\E_t.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\F18Hornet.bin">
+      <Link>Model\RomResources\F18Hornet.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\FAILSAFE.BIN">
+      <Link>Model\RomResources\FAILSAFE.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Fathom.bin">
+      <Link>Model\RomResources\Fathom.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Fightnight.bin">
+      <Link>Model\RomResources\Fightnight.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Firefite.bin">
+      <Link>Model\RomResources\Firefite.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Fishdrby.bin">
+      <Link>Model\RomResources\Fishdrby.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Foodfight.bin">
+      <Link>Model\RomResources\Foodfight.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Freeway.bin">
+      <Link>Model\RomResources\Freeway.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Frogger.bin">
+      <Link>Model\RomResources\Frogger.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\FROGGER78.BIN">
+      <Link>Model\RomResources\FROGGER78.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Frostbit.bin">
+      <Link>Model\RomResources\Frostbit.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Galaga.bin">
+      <Link>Model\RomResources\Galaga.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Ghostbst.bin">
+      <Link>Model\RomResources\Ghostbst.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Grandprx.bin">
+      <Link>Model\RomResources\Grandprx.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Hattrick.bin">
+      <Link>Model\RomResources\Hattrick.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Haunthse.bin">
+      <Link>Model\RomResources\Haunthse.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Hero.bin">
+      <Link>Model\RomResources\Hero.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Icehocky.bin">
+      <Link>Model\RomResources\Icehocky.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Ikariwarriors.bin">
+      <Link>Model\RomResources\Ikariwarriors.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Impossiblemission.bin">
+      <Link>Model\RomResources\Impossiblemission.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Jinks.bin">
+      <Link>Model\RomResources\Jinks.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Joust.bin">
+      <Link>Model\RomResources\Joust.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\jrpac_78_tunnels.bin">
+      <Link>Model\RomResources\jrpac_78_tunnels.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\kabobber.bin">
+      <Link>Model\RomResources\kabobber.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Kaboom.bin">
+      <Link>Model\RomResources\Kaboom.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Karateka.bin">
+      <Link>Model\RomResources\Karateka.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Keystone.bin">
+      <Link>Model\RomResources\Keystone.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Klax.bin">
+      <Link>Model\RomResources\Klax.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Kungfumaster.bin">
+      <Link>Model\RomResources\Kungfumaster.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Kung_fu.bin">
+      <Link>Model\RomResources\Kung_fu.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\LASRBLST.BIN">
+      <Link>Model\RomResources\LASRBLST.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Mariobros.bin">
+      <Link>Model\RomResources\Mariobros.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Matmaniachallenge.bin">
+      <Link>Model\RomResources\Matmaniachallenge.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Mean18.bin">
+      <Link>Model\RomResources\Mean18.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MEGAMAN.BIN">
+      <Link>Model\RomResources\MEGAMAN.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MeteorSh.bin">
+      <Link>Model\RomResources\MeteorSh.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\mgd.bin">
+      <Link>Model\RomResources\mgd.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MIDNIGHT.BIN">
+      <Link>Model\RomResources\MIDNIGHT.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Midnightmutants.bin">
+      <Link>Model\RomResources\Midnightmutants.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MISSCOMM.BIN">
+      <Link>Model\RomResources\MISSCOMM.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\MoonCresta.bin">
+      <Link>Model\RomResources\MoonCresta.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\moonswep.bin">
+      <Link>Model\RomResources\moonswep.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Motorpsycho.bin">
+      <Link>Model\RomResources\Motorpsycho.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Mspacman.bin">
+      <Link>Model\RomResources\Mspacman.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\NIGHTDRV.BIN">
+      <Link>Model\RomResources\NIGHTDRV.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Ninjagolf.bin">
+      <Link>Model\RomResources\Ninjagolf.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\NOESCAPE.BIN">
+      <Link>Model\RomResources\NOESCAPE.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Oink.bin">
+      <Link>Model\RomResources\Oink.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Oneonone.bin">
+      <Link>Model\RomResources\Oneonone.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\OYSTR29.BIN">
+      <Link>Model\RomResources\OYSTR29.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\PACCOLL.BIN">
+      <Link>Model\RomResources\PACCOLL.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Pacman.bin">
+      <Link>Model\RomResources\Pacman.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Peterosebaseball.bin">
+      <Link>Model\RomResources\Peterosebaseball.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Phoenix.bin">
+      <Link>Model\RomResources\Phoenix.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Pitfall.bin">
+      <Link>Model\RomResources\Pitfall.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Pitfall2.bin">
+      <Link>Model\RomResources\Pitfall2.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Planetsmashers.bin">
+      <Link>Model\RomResources\Planetsmashers.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Plaqattk.bin">
+      <Link>Model\RomResources\Plaqattk.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\PLUTOS.BIN">
+      <Link>Model\RomResources\PLUTOS.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Poleposition2.bin">
+      <Link>Model\RomResources\Poleposition2.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Pressure.bin">
+      <Link>Model\RomResources\Pressure.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Priveye.bin">
+      <Link>Model\RomResources\Priveye.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Qbert.bin">
+      <Link>Model\RomResources\Qbert.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Quickstp.bin">
+      <Link>Model\RomResources\Quickstp.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Rampage.bin">
+      <Link>Model\RomResources\Rampage.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Riddle.bin">
+      <Link>Model\RomResources\Riddle.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\RipOff.bin">
+      <Link>Model\RomResources\RipOff.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Riveraid.bin">
+      <Link>Model\RomResources\Riveraid.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Robotank.bin">
+      <Link>Model\RomResources\Robotank.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\RobotFindsKitten78.bin">
+      <Link>Model\RomResources\RobotFindsKitten78.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Robotron2084.bin">
+      <Link>Model\RomResources\Robotron2084.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\RSbaseball.bin">
+      <Link>Model\RomResources\RSbaseball.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SantaSimon.bin">
+      <Link>Model\RomResources\SantaSimon.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Scrapyarddog.bin">
+      <Link>Model\RomResources\Scrapyarddog.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SEAQUEST.BIN">
+      <Link>Model\RomResources\SEAQUEST.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SHOOTIN.BIN">
+      <Link>Model\RomResources\SHOOTIN.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SI7800.BIN">
+      <Link>Model\RomResources\SI7800.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SKIING.BIN">
+      <Link>Model\RomResources\SKIING.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Skydiver.bin">
+      <Link>Model\RomResources\Skydiver.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SKYJINKS.BIN">
+      <Link>Model\RomResources\SKYJINKS.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SOLARIS.BIN">
+      <Link>Model\RomResources\SOLARIS.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SOLRSTRM.BIN">
+      <Link>Model\RomResources\SOLRSTRM.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SPACDUEL.BIN">
+      <Link>Model\RomResources\SPACDUEL.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SPCINVAD.BIN">
+      <Link>Model\RomResources\SPCINVAD.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SPCSHUTL.BIN">
+      <Link>Model\RomResources\SPCSHUTL.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\spiderfi.bin">
+      <Link>Model\RomResources\spiderfi.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\STAMPEDE.BIN">
+      <Link>Model\RomResources\STAMPEDE.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\STARMAST.BIN">
+      <Link>Model\RomResources\STARMAST.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\STARVYGR.BIN">
+      <Link>Model\RomResources\STARVYGR.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Subterranea.bin">
+      <Link>Model\RomResources\Subterranea.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Summergames.bin">
+      <Link>Model\RomResources\Summergames.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\superb.bin">
+      <Link>Model\RomResources\superb.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Superhuey.bin">
+      <Link>Model\RomResources\Superhuey.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Superskateboardin.bin">
+      <Link>Model\RomResources\Superskateboardin.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SUPRMAN1.BIN">
+      <Link>Model\RomResources\SUPRMAN1.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Tankcommand.bin">
+      <Link>Model\RomResources\Tankcommand.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Tennis.bin">
+      <Link>Model\RomResources\Tennis.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Thwocker.bin">
+      <Link>Model\RomResources\Thwocker.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Titlematch.bin">
+      <Link>Model\RomResources\Titlematch.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Tomcatf14.bin">
+      <Link>Model\RomResources\Tomcatf14.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Touchdownfootball.bin">
+      <Link>Model\RomResources\Touchdownfootball.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Vidcheck.bin">
+      <Link>Model\RomResources\Vidcheck.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Vidchess.bin">
+      <Link>Model\RomResources\Vidchess.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Vidpin.bin">
+      <Link>Model\RomResources\Vidpin.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Vid_olym.bin">
+      <Link>Model\RomResources\Vid_olym.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Warlords.bin">
+      <Link>Model\RomResources\Warlords.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\WaspSE.bin">
+      <Link>Model\RomResources\WaspSE.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Waterski.bin">
+      <Link>Model\RomResources\Waterski.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Wingwar.bin">
+      <Link>Model\RomResources\Wingwar.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Wintergames.bin">
+      <Link>Model\RomResources\Wintergames.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\worm0730.bin">
+      <Link>Model\RomResources\worm0730.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Xenophobe.bin">
+      <Link>Model\RomResources\Xenophobe.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Xevious.bin">
+      <Link>Model\RomResources\Xevious.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Yar_rev.bin">
+      <Link>Model\RomResources\Yar_rev.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AppResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AppResources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Barnyardblaster.bin">
+      <Link>Model\RomResources\Barnyardblaster.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Meltdown.bin">
+      <Link>Model\RomResources\Meltdown.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Sentinel.bin">
+      <Link>Model\RomResources\Sentinel.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Scramble.bin">
+      <Link>Model\RomResources\Scramble.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Tubes.a78">
+      <Link>Model\RomResources\Tubes.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\CrazyBricks.bin">
+      <Link>Model\RomResources\CrazyBricks.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\Model\RomResources\hhh_15_04_09.1.04.bin">
+      <Link>Model\RomResources\hhh_15_04_09.1.04.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SIRIUS.BIN">
+      <Link>Model\RomResources\SIRIUS.BIN</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\Model\RomResources\ARMORATK.bin">
+      <Link>Model\RomResources\ARMORATK.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\SUPERCIR.bin">
+      <Link>Model\RomResources\SUPERCIR.bin</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\EMU7800.WP\Model\RomResources\Bentley Bear - Crystal Quest %28SP%29.A78">
+      <Link>Model\RomResources\Bentley Bear - Crystal Quest %28SP%29.A78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\EMU7800.WP\Model\RomResources\dkxm_rc8_ntsc.a78">
+      <Link>Model\RomResources\dkxm_rc8_ntsc.a78</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions />
+  <PropertyGroup>
+  </PropertyGroup>
+</Project>

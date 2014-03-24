@@ -1,0 +1,9 @@
+﻿EMU7800 offers classic video game nostaliga on the go! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
+
+PERFORMANCE—EMU7800 is very CPU intensive. Early handsets do not have enough CPU capacity to run games full speed, though future generation hardware will close this gap. EMU7800 will always be responsive to user input and will automatically adjust when necessary. The BogoMIPS rating on the title screen delivers a rough measure of the CPU capacity available on your handset.
+
+BASIC OPERATION—After selecting a game from the Select Game Program screen, pressing the Back button will bring up the Heads Up Display (HUD). Pressing the Back button again will return to the selection screen. Game states and settings are always preserved by default, so interruptions will pose no inconvenience. The selection screen will display a Paused icon when there is pre-existing game state for a particular title.
+
+HUD—The top row of buttons emulate the hardware switches of the Atari console. Cycling the Power button will clear any prior game state and settings. Sound is inoperable at an FPS setting less than 16. The Player button assigns the current controller to the opposite player. Most buttons will automatically unpause the game.
+
+GAME CONTROLLERS—A directional pad style controller is superimposed on the screen surface. Directional control is also mapped to the cursor keys on the hardware keyboard, fire buttons to the X and Z keys. For titles that use the paddle controller, swiping horizontally across the bottom of the screen rotates the paddle dial.

@@ -1,0 +1,400 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="All"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project=".\MSBuildExtensionPack\MSBuild.ExtensionPack.tasks"/>
+    <PropertyGroup>
+        <MajorVersion>1</MajorVersion>
+        <MinorVersion>6</MinorVersion>
+        <BuildVersion>0</BuildVersion>
+        <RevisionVersion>1</RevisionVersion>
+        <ClickOnceRevision>0</ClickOnceRevision>
+        <SourceCodeArchiveFilename>EMU7800-v$(MajorVersion).$(MinorVersion).Source</SourceCodeArchiveFilename>
+        <BinArchiveFilename>EMU7800-v$(MajorVersion).$(MinorVersion)</BinArchiveFilename>
+        <EMU7800Root>..</EMU7800Root>
+        <EMU7800CoreRoot>$(EMU7800Root)\EMU7800.Core</EMU7800CoreRoot>
+        <EMU7800WinRoot>$(EMU7800Root)\EMU7800.Win</EMU7800WinRoot>
+        <EMU7800SLRoot>$(EMU7800Root)\EMU7800.SL</EMU7800SLRoot>
+        <EMU7800WPRoot>$(EMU7800Root)\EMU7800.WP</EMU7800WPRoot>
+        <EMU7800D2DRoot>$(EMU7800Root)\EMU7800.D2D</EMU7800D2DRoot>
+        <EMU7800ContentRoot>$(EMU7800Root)\EMU7800.Content</EMU7800ContentRoot>
+        <EMU7800DropRoot>$(EMU7800Root)\DROP</EMU7800DropRoot>
+        <EMU7800WebInstallerRoot>$(EMU7800Root)\EMU7800.WebInstaller</EMU7800WebInstallerRoot>
+        <EMU7800DumpBinRoot>$(EMU7800Root)\EMU7800.D2D\EMU7800.DumpBin</EMU7800DumpBinRoot>
+        <EMU7800LauncherBinRoot>$(EMU7800Root)\EMU7800.D2D\EMU7800.Launcher</EMU7800LauncherBinRoot>
+        <EMU7800SoundEmulatorRoot>$(EMU7800Root)\EMU7800.SoundEmulator</EMU7800SoundEmulatorRoot>
+        <EMU7800WinSln>$(EMU7800WinRoot)\EMU7800.Win.sln</EMU7800WinSln>
+        <EMU7800SLSln>$(EMU7800SLRoot)\EMU7800.SL.sln</EMU7800SLSln>
+        <EMU7800D2DWinSln>$(EMU7800D2DRoot)\EMU7800.D2D.Win32.sln</EMU7800D2DWinSln>
+        <EMU7800WebInstallerSln>$(EMU7800WebInstallerRoot)\EMU7800.WebInstaller.sln</EMU7800WebInstallerSln>
+        <EMU7800DumpBinSln>$(EMU7800DumpBinRoot)\EMU7800.DumpBin.sln</EMU7800DumpBinSln>
+        <PublishThumbprint>c7 c9 b5 3b d3 ca 84 c4 6e 62 9f c0 76 f6 1f 27 b0 d0 39 b6</PublishThumbprint>
+        <DeploymentFullVersion>EMU7800.Win_$(MajorVersion).$(MinorVersion).$(BuildVersion).$(RevisionVersion)_$(ClickOnceRevision)</DeploymentFullVersion>
+        <JonesMurphyDeploymentUrl>http://jones-murphy.org:8888/EMU7800/EMU7800.Win.application</JonesMurphyDeploymentUrl>
+        <JonesMurphyDeploymentTargetBase>$(EMU7800DropRoot)\ClickOnce\jones-murphy.org</JonesMurphyDeploymentTargetBase>
+    </PropertyGroup>
+    <Target Name="All" DependsOnTargets="SourceArchive;DistArchive;Publish;"/>
+    <Target Name="DropDebugWin" DependsOnTargets="BuildDebugWinx86;BuildDebugWinx64"/>
+    <Target Name="DropAll" DependsOnTargets="DropDebugWin;DropReleaseWin;DropDebugSL;DropReleaseSL;DropDebugD2DWin86;DropReleaseD2DWin86">
+      <PropertyGroup>
+        <DropDebugPath>$(EMU7800DropRoot)\Win\Debug</DropDebugPath>
+      </PropertyGroup>
+      <RemoveDir Directories="$(DropDebugPath)" />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800ContentRoot)"
+                                                 Destination="$(DropDebugPath)"
+                                                 Files="*"
+                                                 Options="/S /XD Docs"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\bin\Debug"
+                                                 Destination="$(DropDebugPath)"
+                                                 Files="*"
+                                                 Options="/S"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\DirectX\Unmanaged\bin\Debug\x86"
+                                                 Destination="$(DropDebugPath)\x86"
+                                                 Files="*"
+                                                 Options="/S"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\DirectX\Unmanaged\bin\Debug\x64"
+                                                 Destination="$(DropDebugPath)\x64"
+                                                 Files="*"
+                                                 Options="/S"/>
+    </Target>
+    <Target Name="DropDebugSL" DependsOnTargets="BuildDebugSL">
+        <PropertyGroup>
+            <DropSLDebugPath>$(EMU7800DropRoot)\SL\Debug</DropSLDebugPath>
+        </PropertyGroup>
+        <RemoveDir Directories="$(DropSLDebugPath)" />
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800SLRoot)\bin\Debug"
+                                                   Destination="$(DropSLDebugPath)"
+                                                   Files="*.xap"
+                                                   />
+    </Target>
+    <Target Name="DropDebugD2DWin86" DependsOnTargets="BuildDebugD2DWin86;BuildDebugDumpBin">
+      <PropertyGroup>
+        <DropD2DWin86DebugPath>$(EMU7800DropRoot)\D2D\Win86\Debug</DropD2DWin86DebugPath>
+      </PropertyGroup>
+      <RemoveDir Directories="$(DropD2DWin86DebugPath)"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\bin\x86\Debug"
+                                                 Destination="$(DropD2DWin86DebugPath)"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800DumpBinRoot)\bin\Debug"
+                                                 Destination="$(DropD2DWin86DebugPath)"
+                                                 Files="EMU7800.DumpBin.exe"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800LauncherBinRoot)\bin\x86\Debug"
+                                                 Destination="$(DropD2DWin86DebugPath)"
+                                                 Files="EMU7800.Launcher.exe;EMU7800.Launcher.exe.config"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Assets"
+                                                 Destination="$(DropD2DWin86DebugPath)\Assets"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\Assets"
+                                                 Destination="$(DropD2DWin86DebugPath)\Assets"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.Robocopy Source="$(EMU7800ContentRoot)"
+                                                 Destination="$(DropD2DWin86DebugPath)"
+                                                 Files="LICENSE.TXT"
+                                                 />
+    </Target>
+    <Target Name="DropReleaseWin" DependsOnTargets="BuildReleaseWinx86;BuildReleaseWinx64;">
+      <PropertyGroup>
+        <DropReleasePath>$(EMU7800DropRoot)\Win\Release</DropReleasePath>
+      </PropertyGroup>
+      <RemoveDir Directories="$(DropReleasePath)" />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800ContentRoot)"
+                                                 Destination="$(DropReleasePath)"
+                                                 Files="*"
+                                                 Options="/S /XD Docs"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\bin\Release"
+                                                 Destination="$(DropReleasePath)"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\DirectX\Unmanaged\bin\Release\x86"
+                                                 Destination="$(DropReleasePath)\x86"
+                                                 Files="EMU7800.DirectX.dll;EMU7800.DirectX.pdb"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800WinRoot)\DirectX\Unmanaged\bin\Release\x64"
+                                                 Destination="$(DropReleasePath)\x64"
+                                                 Files="EMU7800.DirectX.dll;EMU7800.DirectX.pdb"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800DropRoot)"
+                                                 Destination="$(DropReleasePath)"
+                                                 Files="$(SourceCodeArchiveFilename)"
+                                                 />
+    </Target>
+    <Target Name="DropReleaseSL" DependsOnTargets="BuildReleaseSL">
+      <PropertyGroup>
+        <DropSLReleasePath>$(EMU7800DropRoot)\SL\Release</DropSLReleasePath>
+      </PropertyGroup>
+      <RemoveDir Directories="$(DropSLReleasePath)" />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800SLRoot)\bin\Release"
+                                                 Destination="$(DropSLReleasePath)"
+                                                 Files="*.xap"
+                                                 />
+    </Target>
+    <Target Name="DropReleaseD2DWin86" DependsOnTargets="BuildReleaseD2DWin86;BuildReleaseDumpBin">
+      <PropertyGroup>
+        <DropD2DWin86ReleasePath>$(EMU7800DropRoot)\D2D\Win86\Release</DropD2DWin86ReleasePath>
+      </PropertyGroup>
+      <RemoveDir Directories="$(DropD2DWin86ReleasePath)"/>
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\bin\x86\Release"
+                                                 Destination="$(DropD2DWin86ReleasePath)"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800DumpBinRoot)\bin\Release"
+                                                 Destination="$(DropD2DWin86ReleasePath)"
+                                                 Files="EMU7800.DumpBin.exe"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800LauncherBinRoot)\bin\x86\Release"
+                                                 Destination="$(DropD2DWin86ReleasePath)"
+                                                 Files="EMU7800.Launcher.exe;EMU7800.Launcher.exe.config"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Assets"
+                                                 Destination="$(DropD2DWin86ReleasePath)\Assets"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\Assets"
+                                                 Destination="$(DropD2DWin86ReleasePath)\Assets"
+                                                 Files="*"
+                                                 />
+      <MSBuild.ExtensionPack.FileSystem.Robocopy Source="$(EMU7800ContentRoot)"
+                                                 Destination="$(DropD2DWin86ReleasePath)"
+                                                 Files="LICENSE.TXT"
+                                                 />
+    </Target>
+    <Target Name="DropProfileD2DWin86" DependsOnTargets="BuildProfileD2DWin86">
+        <PropertyGroup>
+            <DropD2DWin86ProfilePath>$(EMU7800DropRoot)\D2D\Win86\Profile</DropD2DWin86ProfilePath>
+        </PropertyGroup>
+        <RemoveDir Directories="$(DropD2DWin86ProfilePath)"/>
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\bin\x86\Profile"
+                                                   Destination="$(DropD2DWin86ProfilePath)"
+                                                   Files="*"
+                                                   />
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800DumpBinRoot)\bin\Release"
+                                                   Destination="$(DropD2DWin86ProfilePath)"
+                                                   Files="EMU7800.DumpBin.exe"
+                                                   />
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800LauncherBinRoot)\bin\x86\Release"
+                                                   Destination="$(DropD2DWin86ProfilePath)"
+                                                   Files="EMU7800.Launcher.exe;EMU7800.Launcher.exe.config"
+                                                   />
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Assets"
+                                                   Destination="$(DropD2DWin86ProfilePath)\Assets"
+                                                   Files="*"
+                                                   />
+        <MSBuild.ExtensionPack.FileSystem.RoboCopy Source="$(EMU7800D2DRoot)\EMU7800.D2D.Shell\Win32\Assets"
+                                                   Destination="$(DropD2DWin86ProfilePath)\Assets"
+                                                   Files="*"
+                                                   />
+        <MSBuild.ExtensionPack.FileSystem.Robocopy Source="$(EMU7800ContentRoot)"
+                                                   Destination="$(DropD2DWin86ProfilePath)"
+                                                   Files="LICENSE.TXT"
+                                                   />
+    </Target>
+    <Target Name="DropReleaseWebInstaller" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800WebInstallerSln)" Properties="Configuration=Release;Platform=x86" Targets="Build" />
+    </Target>
+    <Target Name="BuildAll" DependsOnTargets="BuildDebug;BuildRelease"/>
+    <Target Name="BuildDebug" DependsOnTargets="BuildDebugWinx86;BuildDebugWinx64;BuildDebugSL;BuildDebugWP;BuildDebugD2DWin86;BuildDebugDumpBin"/>
+    <Target Name="BuildRelease" DependsOnTargets="BuildReleaseWinx86;BuildReleaseWinx64;BuildReleaseSL;BuildReleaseWP;BuildReleaseD2DWin86;BuildProfileD2DWin86;BuildReleaseDumpBin"/>
+    <Target Name="BuildDebugWinx86" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800WinSln)" Properties="Configuration=Debug;Platform=x86" Targets="Build" />
+    </Target>
+    <Target Name="BuildDebugWinx64" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800WinSln)" Properties="Configuration=Debug;Platform=x64" Targets="Build" />
+    </Target>
+    <Target Name="BuildDebugSL" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800SLSln)" Properties="Configuration=Debug;Platform=Any CPU" Targets="Build" />
+    </Target>
+    <Target Name="BuildDebugD2DWin86" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800D2DWinSln)" Properties="Configuration=Debug;Platform=Win32" Targets="Build" />
+    </Target>
+    <Target Name="BuildDebugDumpBin" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800DumpBinSln)" Properties="Configuration=Debug" Targets="Build"/>
+    </Target>
+    <Target Name="BuildReleaseWinx86" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800WinSln)" Properties="Configuration=Release;Platform=x86" Targets="Build" />
+    </Target>
+    <Target Name="BuildReleaseWinx64" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800WinSln)" Properties="Configuration=Release;Platform=x64" Targets="Build" />
+    </Target>
+    <Target Name="BuildReleaseSL" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800SLSln)" Properties="Configuration=Release;Platform=Any CPU" Targets="Build" />
+    </Target>
+    <Target Name="BuildReleaseD2DWin86" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800D2DWinSln)" Properties="Configuration=Release;Platform=Win32" Targets="Build" />
+    </Target>
+    <Target Name="BuildProfileD2DWin86" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800D2DWinSln)" Properties="Configuration=Profile;Platform=Win32" Targets="Build" />
+    </Target>
+    <Target Name="BuildReleaseDumpBin" DependsOnTargets="">
+        <MSBuild Projects="$(EMU7800DumpBinSln)" Properties="Configuration=Release" Targets="Build"/>
+    </Target>
+    <Target Name="SourceArchive" DependsOnTargets="Clean">
+        <ItemGroup>
+            <SourceArchiveFiles
+                Include="
+$(EMU7800CoreRoot)\**\*.cs;
+$(EMU7800CoreRoot)\**\*.csproj;
+$(EMU7800CoreRoot)\**\*.cmd;
+$(EMU7800CoreRoot)\**\*.sln;"
+                Exclude="
+$(EMU7800CoreRoot)\**\bin\**;
+$(EMU7800CoreRoot)\**\obj\**;
+$(EMU7800CoreRoot)\**\_ReSharper.*\**;
+$(EMU7800CoreRoot)\**\*.WinRT.csproj;
+$(EMU7800CoreRoot)\**\*.WinRT_8.1.csproj;
+$(EMU7800CoreRoot)\**\*.WP.csproj;
+$(EMU7800CoreRoot)\**\*.WP8.csproj;
+$(EMU7800CoreRoot)\**\*.CodeAnalysisLog.xml;"
+                />
+            <SourceArchiveFiles
+                Include="
+$(EMU7800WinRoot)\**\*.cs;
+$(EMU7800WinRoot)\**\*.csproj;
+$(EMU7800WinRoot)\**\*.ico;
+$(EMU7800WinRoot)\**\*.config;
+$(EMU7800WinRoot)\**\*.cpp;
+$(EMU7800WinRoot)\**\*.h;
+$(EMU7800WinRoot)\**\*.lib;
+$(EMU7800WinRoot)\**\*.rc;
+$(EMU7800WinRoot)\**\*.csv;
+$(EMU7800WinRoot)\**\*.cmd;
+$(EMU7800WinRoot)\**\*.sln;
+$(EMU7800WinRoot)\**\*.vcxproj;
+$(EMU7800WinRoot)\**\*.xml;
+$(EMU7800WinRoot)\**\*.resx;
+$(EMU7800WinRoot)\**\*.bin;"
+                Exclude="
+$(EMU7800WinRoot)\**\bin\**;
+$(EMU7800WinRoot)\**\obj\**;
+$(EMU7800WinRoot)\**\_ReSharper.*\**;
+$(EMU7800WinRoot)\**\*.CodeAnalysisLog.xml;"
+                />
+            <SourceArchiveFiles
+                Include="
+$(EMU7800SLRoot)\**\*.cs;
+$(EMU7800SLRoot)\**\*.csproj;
+$(EMU7800SLRoot)\**\*.png;
+$(EMU7800SLRoot)\**\*.sln;
+$(EMU7800SLRoot)\**\*.xml;
+$(EMU7800SLRoot)\**\*.xaml;
+$(EMU7800SLRoot)\**\*.resx;
+$(EMU7800SLRoot)\**\*.bin;"
+                Exclude="
+$(EMU7800SLRoot)\**\bin\**;
+$(EMU7800SLRoot)\**\obj\**;
+$(EMU7800SLRoot)\**\_ReSharper.*\**;
+$(EMU7800SLRoot)\**\*.CodeAnalysisLog.xml;"
+            />
+            <SourceArchiveFiles
+                Include="
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.cs;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.csproj;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.png;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.ico;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.zip;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.csv;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.txt;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.config;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.manifest;
+$(EMU7800D2DRoot)\EMU7800.D2D.Win32.sln;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.cpp;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.h;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.rc;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.manifest;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.vcxproj;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.png;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.ico;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.zip;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.csv;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.txt;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.cmd;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.dll;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.lib;
+$(EMU7800D2DRoot)\EMU7800.DumpBin\**\*.cs;
+$(EMU7800D2DRoot)\EMU7800.DumpBin\**\*.csproj;
+$(EMU7800D2DRoot)\EMU7800.DumpBin\**\*.sln;
+$(EMU7800D2DRoot)\EMU7800.DumpBin\**\*.ico;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.cs;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.csproj;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.sln;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.ico;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.resx;
+$(EMU7800D2DRoot)\EMU7800.Launcher\**\*.config;
+$(EMU7800SoundEmulatorRoot)\**\*.cs;
+$(EMU7800SoundEmulatorRoot)\**\*.csproj;
+$(EMU7800SoundEmulatorRoot)\**\*.config;
+$(EMU7800SoundEmulatorRoot)\**\*.sln;
+$(EMU7800SoundEmulatorRoot)\**\*.txt;
+$(EMU7800SoundEmulatorRoot)\**\*.ico;"
+                Exclude="
+$(EMU7800D2DRoot)\**\bin\**;
+$(EMU7800D2DRoot)\**\obj\**;
+$(EMU7800D2DRoot)\**\_ReSharper.*\**;
+$(EMU7800D2DRoot)\**\*.CodeAnalysisLog.xml;
+$(EMU7800SoundEmulatorRoot)\**\bin\**;
+$(EMU7800SoundEmulatorRoot)\**\obj\**;
+$(EMU7800SoundEmulatorRoot)\**\_ReSharper.*\**;
+$(EMU7800SoundEmulatorRoot)\**\*.CodeAnalysisLog.xml;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\WinRT\**;
+$(EMU7800D2DRoot)\EMU7800.D2D.Shell\WinRT_8.1\**;"
+                />
+            <SourceArchiveFiles
+                Include="
+$(EMU7800ContentRoot)\**\*;"
+                Exclude="
+$(EMU7800ContentRoot)\**\bin\**;
+$(EMU7800ContentRoot)\**\obj\**;
+$(EMU7800ContentRoot)\**\*.svn\**;"
+                />
+        </ItemGroup>
+        <MakeDir Directories="$(EMU7800DropRoot)"/>
+        <MSBuild.ExtensionPack.Compression.DNZip CompressionLevel="BestCompression"
+                                                 TaskAction="Create"
+                                                 CompressFiles="@(SourceArchiveFiles)"
+                                                 ZipFileName="$(EMU7800DropRoot)\$(SourceCodeArchiveFilename).zip"
+                                                 RemoveRoot="$(EMU7800Root)"/>
+    </Target>
+    <Target Name="DistArchive" DependsOnTargets="DropAll">
+        <ItemGroup>
+            <BinArchiveFiles  Include="$(EMU7800DropRoot)\Win\Release\**\*.*"       Exclude="$(EMU7800ContentRoot)\**\*.svn\**"/>
+            <BinArchiveFiles2 Include="$(EMU7800DropRoot)\D2D\Win86\Release\**\*.*" Exclude="$(EMU7800ContentRoot)\**\*.svn\**"/>
+        </ItemGroup>
+        <MSBuild.ExtensionPack.Compression.DNZip CompressionLevel="BestCompression"
+                                                 TaskAction="Create"
+                                                 CompressFiles="@(BinArchiveFiles)"
+                                                 ZipFileName="$(EMU7800DropRoot)\$(BinArchiveFilename).zip"
+                                                 RemoveRoot="$(EMU7800DropRoot)\Win\Release"/>
+        <MSBuild.ExtensionPack.Compression.DNZip CompressionLevel="BestCompression"
+                                                 TaskAction="Create"
+                                                 CompressFiles="@(BinArchiveFiles2)"
+                                                 ZipFileName="$(EMU7800DropRoot)\$(BinArchiveFilename)-D2D.zip"
+                                                 RemoveRoot="$(EMU7800DropRoot)\D2D\Win86\Release"/>
+    </Target>
+    <Target Name="Clean">
+        <RemoveDir Directories="$(EMU7800DropRoot)" />
+        <MSBuild Projects="$(EMU7800WinSln);$(EMU7800SLSln);$(EMU7800WPSln);$(EMU7800WP8Sln);$(EMU7800D2DWinSln);$(EMU7800DumpBinSln);" Properties="Configuration=Debug" Targets="Clean" />
+        <MSBuild Projects="$(EMU7800WPSln);$(EMU7800WP8Sln)" Properties="Configuration=Profile" Targets="Clean" />
+        <MSBuild Projects="$(EMU7800WinSln);$(EMU7800SLSln);$(EMU7800WPSln);$(EMU7800WP8Sln);$(EMU7800D2DWinSln);$(EMU7800DumpBinSln);" Properties="Configuration=Release" Targets="Clean" />
+        <RemoveDir Directories="
+$(EMU7800CoreRoot)\bin;
+$(EMU7800CoreRoot)\bin.SL;
+$(EMU7800CoreRoot)\bin.WinRT;
+$(EMU7800CoreRoot)\bin.WP;
+$(EMU7800CoreRoot)\obj;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\bin;
+$(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\obj;
+$(EMU7800SLRoot)\bin;
+$(EMU7800SLRoot)\obj;
+$(EMU7800WinRoot)\bin;
+$(EMU7800WinRoot)\obj;
+"/>
+    </Target>
+    <Target Name="Publish">
+      <MSBuild Projects="Publish.targets" Properties="DeploymentUrl=$(JonesMurphyDeploymentUrl);DeploymentTargetName=jones-murphy.org;
+MajorVersion=$(MajorVersion);MinorVersion=$(MinorVersion);BuildVersion=$(BuildVersion);RevisionVersion=$(RevisionVersion);ClickOnceRevision=$(ClickOnceRevision)" />
+    </Target>
+</Project>

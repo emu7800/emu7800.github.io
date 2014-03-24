@@ -1,0 +1,44 @@
+ATARI 7800 DOCUMENTATION CORRECTIONS
+
+
+ATARI 7800 Game Standards Manual
+
+Last line of page 6 should be:
+$BF to CTRL:  to turn DMA off. Some equivalent may be
+used, but DO NOT store anything with the $40 bit on!
+
+
+
+
+
+ATARI 7800 Software Guide
+
+Third to last line of page 1, first word should be:
+6532
+
+
+Middle of last paragraph on page 5, should be:
+its top line of data is located at x'CF04' and x'CF05'
+
+
+Near the bottom of the table on page 12:
+CW   -  Character Width
+        1=> Two (2) byte characters.
+        0=> Single byte characters.
+
+BC   -  Border Control
+        1=> Background color border
+        0=> Black border.
+
+
+Starting on line 8 throght line 13, it should be:
+INPT0   EQU X '08' PADDLE CONTROL INPUT 0        RO
+INPT1   EQU X '09' PADDLE CONTROL INPUT 1        RO
+INPT2   EQU X '0A' PADDLE CONTROL INPUT 2        RO
+INPT3   EQU X '0B' PADDLE CONTROL INPUT 3        RO
+INPT4   EQU X '0C' PLAYER 0 FIRE BUTTON INPUT    RO
+INPT5   EQU X '0D' PLAYER 1 FIRE BUTTON INPUT    RO
+
+
+
+Thanks to Harry Dodgson and Bruce Tomlin for help with these corrections.

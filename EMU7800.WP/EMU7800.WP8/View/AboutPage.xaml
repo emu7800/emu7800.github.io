@@ -1,0 +1,92 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="EMU7800.WP.View.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d" d:DesignHeight="800" d:DesignWidth="480"
+    shell:SystemTray.IsVisible="false">
+
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="0,0,0,0">
+            <TextBlock x:Name="ApplicationTitle" Text="About EMU7800" Style="{StaticResource PhoneTextLargeStyle}"/>
+        </StackPanel>
+
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
+<TextBlock TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}">
+<Run>EMU7800 offers classic video game nostalgia on the go!
+It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>WHATS NEW&#8212;This is the Windows Phone 8 optimized edition of EMU7800, featuring built-in support for MOGA Mobile Game Controllers!
+Make sure your controller is turned on and paired with your phone prior to launching.
+(Look for BD&amp;A on the Bluetooth Settings page.)
+Other features include more games and a revision of touch control.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>PERFORMANCE&#8212;EMU7800 is CPU intensive. Early handsets did not have enough CPU capacity to run games full speed, though newer generation hardware is closing this gap.
+For example, recent testing on an HTC Windows Phone 8X had no problems running at full speed.
+EMU7800 will automatically calibrate-down to accommodate resource-constrained scenarios.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>BASIC OPERATION&#8212;After selecting a game from the Select Game Program screen, pressing the Back button will bring up the Heads Up Display (HUD).
+Pressing the Back button again will return to the selection screen.
+Game states and settings are preserved, so interruptions will not lose game progress.
+The selection screen will display a Paused icon when there is pre-existing game state for a particular title.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>HUD&#8212;The top row of buttons emulate the hardware switches of the Atari console.
+Cycling the Power button will clear any prior game state and settings.
+The Player button assigns the current controller to the opposite player.
+Most buttons will automatically unpause the game.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>GAME CONTROLLERS&#8212;MOGA mobile gaming controllers offer the best gameplay experience.
+If you are serious about your gaming nostalgia, consider obtaining one of these devices.
+Lightgun and Paddle games do not use the MOGA controller, however.
+When there is no controller paired, the touchscreen accepts input.
+</Run>
+<LineBreak/>
+<LineBreak/>
+<Run>
+HUD will report the type of Atari controller the current game program uses.
+For joystick titles, the left side of the screen accepts &quot;swipe and release&quot; style input for the D-Pad; the right side for the fire buttons.
+Look for the indicators at the top of the screen for visual feedback.
+For paddle titles, swiping horizontally across the bottom of the screen rotates the paddle dial.
+For lightgun titles, just touch the screen to shoot.
+</Run>
+</TextBlock>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+
+    <!--Sample code showing usage of ApplicationBar-->
+    <!--<phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button1.png" Text="Button 1"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar_button2.png" Text="Button 2"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="MenuItem 1"/>
+                <shell:ApplicationBarMenuItem Text="MenuItem 2"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>-->
+
+</phone:PhoneApplicationPage>

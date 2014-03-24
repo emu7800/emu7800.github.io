@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         DefaultTargets="Publish"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DeploymentUrl>http://tempuri.org/EMU7800.Win.application</DeploymentUrl>
+    <DeploymentTargetName>tempuri.org</DeploymentTargetName>
+    <MajorVersion>0</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <BuildVersion>0</BuildVersion>
+    <RevisionVersion>0</RevisionVersion>
+    <ClickOnceRevision>0</ClickOnceRevision>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EMU7800Root>..</EMU7800Root>
+    <EMU7800DropRoot>$(EMU7800Root)\DROP\Win</EMU7800DropRoot>
+    <DeploymentFullVersion>EMU7800.Win_$(MajorVersion).$(MinorVersion).$(BuildVersion).$(RevisionVersion)_$(ClickOnceRevision)</DeploymentFullVersion>
+    <DeploymentTargetRoot>$(EMU7800DropRoot)\ClickOnce\$(DeploymentTargetName)</DeploymentTargetRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <PublishFileConfig Include="$(EMU7800DropRoot)\Release\EMU7800.Win.exe.config">
+      <TargetPath>EMU7800.Win.exe.config</TargetPath>
+    </PublishFileConfig>
+    <PublishFileEntryPoint Include="$(EMU7800DropRoot)\Release\EMU7800.Win.exe">
+      <TargetPath>EMU7800.Win.exe</TargetPath>
+      <AssemblyType>Managed</AssemblyType>
+    </PublishFileEntryPoint>
+    <PublishFileIcon Include="$(EMU7800Root)\EMU7800.Win\EMUIcon.ico">
+      <TargetPath>EMUIcon.ico</TargetPath>
+    </PublishFileIcon>
+    <PublishFileDependency Include="$(EMU7800DropRoot)\Release\EMU7800.Core.dll">
+      <TargetPath>EMU7800.Core.dll</TargetPath>
+      <AssemblyType>Managed</AssemblyType>
+    </PublishFileDependency>
+    <PublishFileROM Include="$(EMU7800DropRoot)\Release\roms\*.bin"/>
+    <PublishFileROM Include="$(EMU7800DropRoot)\Release\roms\*.zip"/>
+    <PublishFile Include="@(PublishFileROM)">
+      <TargetPath>roms\%(Filename)%(Extension)</TargetPath>
+    </PublishFile>
+    <PublishFilex86 Include="$(EMU7800DropRoot)\Release\x86\EMU7800.DirectX.dll"/>
+    <PublishFile Include="@(PublishFilex86)">
+      <TargetPath>x86\%(Filename)%(Extension)</TargetPath>
+    </PublishFile>
+    <PublishFilex64 Include="$(EMU7800DropRoot)\Release\x64\EMU7800.DirectX.dll"/>
+    <PublishFile Include="@(PublishFilex64)">
+      <TargetPath>x64\%(Filename)%(Extension)</TargetPath>
+    </PublishFile>
+    <PublishFile Include="$(EMU7800DropRoot)\Release\ROMProperties.csv">
+      <TargetPath>ROMProperties.csv</TargetPath>
+    </PublishFile>
+    <PublishFileREADME Include="$(EMU7800DropRoot)\Release\README\**\*.html;$(EMU7800DropRoot)\Release\README\**\*.jpg"/>
+    <PublishFile Include="@(PublishFileREADME)">
+      <TargetPath>README\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </PublishFile>
+    <DeployFiles Include="
+$(EMU7800DropRoot)\Release\**\*.exe;
+$(EMU7800DropRoot)\Release\**\*.exe.config;
+$(EMU7800DropRoot)\Release\**\*.dll;
+$(EMU7800DropRoot)\Release\**\*.bin;
+$(EMU7800DropRoot)\Release\**\*.zip;
+$(EMU7800DropRoot)\Release\**\*.csv;
+$(EMU7800DropRoot)\Release\**\*.ico;
+$(EMU7800DropRoot)\Release\**\*.html;
+$(EMU7800DropRoot)\Release\**\*.jpg;
+"/>
+  </ItemGroup>
+  <Target Name="Publish">
+    <RemoveDir Directories="$(DeploymentTargetRoot)/$(DeploymentFullVersion)"/>
+    <MakeDir Directories="$(DeploymentTargetRoot)/$(DeploymentFullVersion)"/>
+    <GenerateApplicationManifest
+        AssemblyName="EMU7800.Win"
+        AssemblyVersion="$(MajorVersion).$(MinorVersion).$(BuildVersion).$(RevisionVersion)"
+        EntryPoint="@(PublishFileEntryPoint)"
+        IconFile="@(PublishFileIcon)"
+        ConfigFile="@(PublishFileConfig)"
+        Dependencies="@(PublishFileDependency)"
+        Files="@(PublishFile)"
+        Product="EMU7800"
+        Description="EMU7800"
+        Publisher="EMU7800"
+        OutputManifest="$(DeploymentTargetRoot)\$(DeploymentFullVersion)\EMU7800.Win.exe.manifest">
+      <Output ItemName="ApplicationManifest" TaskParameter="OutputManifest"/>
+    </GenerateApplicationManifest>
+    <!--<SignFile CertificateThumbprint="$(PublishThumbprint)‎" SigningTarget="@(ApplicationManifest)" />-->
+    <CreateItem Include="@(ApplicationManifest)" AdditionalMetadata="TargetPath=$(DeploymentFullVersion)\EMU7800.Win.exe.manifest">
+      <Output TaskParameter="Include" ItemName="ApplicationManifest2"/>
+    </CreateItem>
+    <GenerateDeploymentManifest
+        AssemblyName="EMU7800.Win"
+        AssemblyVersion="$(MajorVersion).$(MinorVersion).$(BuildVersion).$(RevisionVersion)"
+        EntryPoint="@(ApplicationManifest2)"
+        Install="true"
+        UpdateEnabled="true"
+        UpdateMode="Background"
+        UpdateInterval="7"
+        UpdateUnit="Days"
+        MinimumRequiredVersion="$(MajorVersion).$(MinorVersion).$(BuildVersion).$(RevisionVersion)"
+        MapFileExtensions="true"
+        CreateDesktopShortcut="true"
+        TargetFrameworkVersion="4.0"
+        Publisher="EMU7800"
+        DeploymentUrl="$(DeploymentUrl)"
+        SupportUrl="http://emu7800.sourceforge.net/"
+        OutputManifest="$(DeploymentTargetRoot)\$(DeploymentFullVersion).application">
+    </GenerateDeploymentManifest>
+    <!--<SignFile CertificateThumbprint="$(PublishThumbprint)‎" SigningTarget="@(DeployManifest)" />-->
+    <Copy SourceFiles="@(DeployFiles)" DestinationFiles="@(DeployFiles->'$(DeploymentTargetRoot)\$(DeploymentFullVersion)\%(RecursiveDir)%(Filename)%(Extension).deploy')"/>
+    <Copy SourceFiles="@(PublishFileIcon)" DestinationFiles="@(PublishFileIcon->'$(DeploymentTargetRoot)\$(DeploymentFullVersion)\%(Filename)%(Extension).deploy')" />
+  </Target>
+</Project>

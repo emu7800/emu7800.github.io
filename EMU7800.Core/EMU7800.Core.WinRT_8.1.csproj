@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EMU7800.Core</RootNamespace>
+    <AssemblyName>EMU7800.Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <TargetFrameworkVersion />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin.WinRT_8.1\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin.WinRT_8.1\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddressSpace.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Bios7800.cs" />
+    <Compile Include="BufferElement.cs" />
+    <Compile Include="Cart.cs" />
+    <Compile Include="Cart7808.cs" />
+    <Compile Include="Cart7816.cs" />
+    <Compile Include="Cart7832.cs" />
+    <Compile Include="Cart7832P.cs" />
+    <Compile Include="Cart7848.cs" />
+    <Compile Include="Cart78AB.cs" />
+    <Compile Include="Cart78AC.cs" />
+    <Compile Include="Cart78S4.cs" />
+    <Compile Include="Cart78S9.cs" />
+    <Compile Include="Cart78SG.cs" />
+    <Compile Include="Cart78SGP.cs" />
+    <Compile Include="CartA16K.cs" />
+    <Compile Include="CartA16KR.cs" />
+    <Compile Include="CartA2K.cs" />
+    <Compile Include="CartA32K.cs" />
+    <Compile Include="CartA32KR.cs" />
+    <Compile Include="CartA4K.cs" />
+    <Compile Include="CartA8K.cs" />
+    <Compile Include="CartA8KR.cs" />
+    <Compile Include="CartCBS12K.cs" />
+    <Compile Include="CartDC8K.cs" />
+    <Compile Include="CartDPC.cs" />
+    <Compile Include="CartMN16K.cs" />
+    <Compile Include="CartPB8K.cs" />
+    <Compile Include="CartTV8K.cs" />
+    <Compile Include="CartType.cs" />
+    <Compile Include="ConsoleSwitch.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="ControllerAction.cs" />
+    <Compile Include="DeserializationContext.cs" />
+    <Compile Include="Emu7800Exception.cs" />
+    <Compile Include="Emu7800SerializationException.cs" />
+    <Compile Include="FontRenderer.cs" />
+    <Compile Include="FrameBuffer.cs" />
+    <Compile Include="HSC7800.cs" />
+    <Compile Include="IDevice.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="InputState.cs" />
+    <Compile Include="M6502.cs" />
+    <Compile Include="M6502DASM.cs" />
+    <Compile Include="Machine2600.cs" />
+    <Compile Include="Machine2600NTSC.cs" />
+    <Compile Include="Machine2600PAL.cs" />
+    <Compile Include="Machine7800.cs" />
+    <Compile Include="Machine7800NTSC.cs" />
+    <Compile Include="Machine7800PAL.cs" />
+    <Compile Include="MachineBase.cs" />
+    <Compile Include="MachineInput.cs" />
+    <Compile Include="MachineType.cs" />
+    <Compile Include="Maria.cs" />
+    <Compile Include="MariaTables.cs" />
+    <Compile Include="NullDevice.cs" />
+    <Compile Include="NullLogger.cs" />
+    <Compile Include="PIA.cs" />
+    <Compile Include="PokeySound.cs" />
+    <Compile Include="RAM6116.cs" />
+    <Compile Include="SerializationContext.cs" />
+    <Compile Include="TIA.cs" />
+    <Compile Include="TIASound.cs" />
+    <Compile Include="TIATables.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Key.snk" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Profile|AnyCPU'">
+    <OutputPath>bin\Profile\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

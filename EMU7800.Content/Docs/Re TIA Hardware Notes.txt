@@ -1,0 +1,24 @@
+From: Andrew Towers [mariofrog@bigpond.com]
+Sent: Wednesday, November 12, 2003 8:16 PM
+To: Mike Murphy
+Subject: Re: TIA Hardware Notes
+
+
+>For what it's worth, I've had success with an emulator I've been 
+>working on with emulating HMOVEs per your TIA Hardware Notes document.
+
+Mike,
+
+Nope I've had no real confirmation, beyond that my thory seemed to include the behaviour of Cosmic Ark and similar, so it's great to know the theory also works in practice ;)
+
+Thanks for letting me know :)
+
+Regards,
+Andrew.
+
+
+---
+Incoming mail is certified Virus Free.
+Checked by AVG anti-virus system (http://www.grisoft.com).
+Version: 6.0.516 / Virus Database: 313 - Release Date: 9/1/2003
+ 
