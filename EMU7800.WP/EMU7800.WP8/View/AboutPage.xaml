@@ -31,13 +31,6 @@ It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also 
 </Run>
 <LineBreak/>
 <LineBreak/>
-<Run>WHATS NEW&#8212;This is the Windows Phone 8 optimized edition of EMU7800, featuring built-in support for MOGA Mobile Game Controllers!
-Make sure your controller is turned on and paired with your phone prior to launching.
-(Look for BD&amp;A on the Bluetooth Settings page.)
-Other features include more games and a revision of touch control.
-</Run>
-<LineBreak/>
-<LineBreak/>
 <Run>PERFORMANCE&#8212;EMU7800 is CPU intensive. Early handsets did not have enough CPU capacity to run games full speed, though newer generation hardware is closing this gap.
 For example, recent testing on an HTC Windows Phone 8X had no problems running at full speed.
 EMU7800 will automatically calibrate-down to accommodate resource-constrained scenarios.
@@ -60,6 +53,8 @@ Most buttons will automatically unpause the game.
 <LineBreak/>
 <Run>GAME CONTROLLERS&#8212;MOGA mobile gaming controllers offer the best gameplay experience.
 If you are serious about your gaming nostalgia, consider obtaining one of these devices.
+Make sure your controller is turned on and paired with your phone prior to launching.
+(Look for BD&amp;A on the Bluetooth Settings page.)
 Lightgun and Paddle games do not use the MOGA controller, however.
 When there is no controller paired, the touchscreen accepts input.
 </Run>

@@ -57,6 +57,7 @@ namespace EMU7800.WP.Model
         Dragster,
         Enduro,
         ET,
+        ETFixed,
         F18Hornet,
         FailSafe,
         Fathom,

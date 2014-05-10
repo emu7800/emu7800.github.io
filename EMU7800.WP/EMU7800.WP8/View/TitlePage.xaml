@@ -146,7 +146,7 @@
 
         <StackPanel Grid.Row="2" Height="295">
             <TextBlock Style="{StaticResource PhoneTextNormalStyle}">
-                <Run x:Name="CopyrightTextRun">© 2013 Mike Murphy (mike@jones-murphy.org)</Run>
+                <Run x:Name="CopyrightTextRun">© 2014 Mike Murphy (mike@jones-murphy.org)</Run>
                 <LineBreak/>
                 <LineBreak/>
                 <Run>Visit these great websites:</Run>

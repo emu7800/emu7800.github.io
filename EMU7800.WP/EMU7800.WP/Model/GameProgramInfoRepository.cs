@@ -77,6 +77,7 @@ namespace EMU7800.WP.Model
             new GameProgramInfo(GameProgramId.Dragster, CartType.A2K, () => GetRomData("Dragster"), Controller.Joystick, "Dragster", ManufacturerActivision),
             new GameProgramInfo(GameProgramId.Enduro, CartType.A4K, () => GetRomData("Enduro_a"), Controller.Joystick, "Enduro", ManufacturerActivision),
             new GameProgramInfo(GameProgramId.ET, CartType.A8K, () => GetRomData("E_t"), Controller.Joystick, "ET", ManufacturerAtari),
+            new GameProgramInfo(GameProgramId.ETFixed, CartType.A8K, () => GetRomData("ET_Fixed_Final"), Controller.Joystick, "ET Fixed", ManufacturerHomebrew),
             new GameProgramInfo(GameProgramId.F18Hornet, CartType.A78AB, () => GetRomData("F18Hornet"), Controller.ProLineJoystick, "F18 Hornet", ManufacturerAbsolute),
             new GameProgramInfo(GameProgramId.FailSafe, CartType.A7848, () => GetRomData("FAILSAFE"), Controller.Joystick, "FailSafe", ManufacturerHomebrew),
             new GameProgramInfo(GameProgramId.Fathom, CartType.A8K, () => GetRomData("Fathom"), Controller.Joystick, "Fathom", ManufacturerImagic),

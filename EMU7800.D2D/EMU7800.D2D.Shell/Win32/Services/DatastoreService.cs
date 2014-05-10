@@ -388,7 +388,7 @@ namespace EMU7800.Services
             return path;
         }
 
-        string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
+        static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
             var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.emustate",
@@ -397,7 +397,7 @@ namespace EMU7800.Services
             return name;
         }
 
-        string ToScreenshotStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
+        static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
             var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.png",
@@ -509,7 +509,7 @@ namespace EMU7800.Services
             return selectedDirectoryPath;
         }
 
-        string EscapeFileNameChars(string fileName)
+        static string EscapeFileNameChars(string fileName)
         {
             var needEscaping = false;
             for (var i = 0; i < fileName.Length; i++)

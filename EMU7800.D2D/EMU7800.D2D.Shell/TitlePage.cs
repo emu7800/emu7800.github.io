@@ -39,7 +39,7 @@ namespace EMU7800.D2D.Shell
             _buttonFindRoms = new SearchButton();
             _labelCopyr = new LabelControl
             {
-                Text = "© 2012-2013 Mike Murphy (mike@jones-murphy.org)",
+                Text = "© 2012-2014 Mike Murphy (mike@jones-murphy.org)",
                 TextFontFamilyName = Styles.SmallFontFamily,
                 TextFontSize = Styles.SmallFontSize,
                 TextAlignment = DWriteTextAlignment.Center,

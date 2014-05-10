@@ -375,7 +375,7 @@ namespace EMU7800.Services
             return true;
         }
 
-        bool ToMD5(string token, ref string result)
+        static bool ToMD5(string token, ref string result)
         {
             if (!string.IsNullOrWhiteSpace(token) && _regexMd5KeyType.IsMatch(token))
             {
@@ -385,7 +385,7 @@ namespace EMU7800.Services
             return false;
         }
 
-        bool ToSpecialBinaryType(string token, ref SpecialBinaryType result)
+        static bool ToSpecialBinaryType(string token, ref SpecialBinaryType result)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return false;
