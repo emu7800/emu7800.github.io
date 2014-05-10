@@ -308,7 +308,7 @@
         public CartDPC(DeserializationContext input, MachineBase m) : base(input)
         {
             input.CheckVersion(1);
-            LoadRom(input.ReadExpectedBytes(0x2800), 0x2800);
+            LoadRom(input.ReadExpectedBytes(0x28FF), 0x2800);
             BankBaseAddr = input.ReadUInt16();
             Tops = input.ReadExpectedBytes(8);
             Bots = input.ReadExpectedBytes(8);
