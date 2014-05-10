@@ -137,11 +137,15 @@ namespace EMU7800.Core
             if (string.IsNullOrWhiteSpace(typeName))
                 throw new Emu7800SerializationException("Invalid type name.");
 
-            var type = Type.GetType(typeName);
-            if (type == null)
-                throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
-
-            return (MachineBase)Activator.CreateInstance(type, new object[] { this });
+            switch (typeName)
+            {
+                case "EMU7800.Core.Machine2600NTSC": return new Machine2600NTSC(this);
+                case "EMU7800.Core.Machine2600PAL":  return new Machine2600PAL(this);
+                case "EMU7800.Core.Machine7800NTSC": return new Machine7800NTSC(this);
+                case "EMU7800.Core.Machine7800PAL":  return new Machine7800PAL(this);
+                default:
+                    throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
+            }
         }
 
         public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
@@ -216,11 +220,36 @@ namespace EMU7800.Core
             if (string.IsNullOrWhiteSpace(typeName))
                 throw new Emu7800SerializationException("Invalid type name.");
 
-            var type = Type.GetType(typeName);
-            if (type == null)
-                throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
-
-            return (Cart)Activator.CreateInstance(type, new object[] { this, m });
+            switch (typeName)
+            {
+                case "EMU7800.Core.CartA2K":     return new CartA2K(this, m);
+                case "EMU7800.Core.CartA4K":     return new CartA4K(this, m);
+                case "EMU7800.Core.CartA8K":     return new CartA8K(this, m);
+                case "EMU7800.Core.CartA8KR":    return new CartA8KR(this, m);
+                case "EMU7800.Core.CartA16K":    return new CartA16K(this, m);
+                case "EMU7800.Core.CartA16KR":   return new CartA16KR(this, m);
+                case "EMU7800.Core.CartDC8K":    return new CartDC8K(this, m);
+                case "EMU7800.Core.CartPB8K":    return new CartPB8K(this, m);
+                case "EMU7800.Core.CartTV8K":    return new CartTV8K(this, m);
+                case "EMU7800.Core.CartCBS12K":  return new CartCBS12K(this, m);
+                case "EMU7800.Core.CartA32K":    return new CartA32K(this, m);
+                case "EMU7800.Core.CartA32KR":   return new CartA32KR(this, m);
+                case "EMU7800.Core.CartMN16K":   return new CartMN16K(this, m);
+                case "EMU7800.Core.CartDPC":     return new CartDPC(this, m);
+                case "EMU7800.Core.Cart7808":    return new Cart7808(this, m);
+                case "EMU7800.Core.Cart7816":    return new Cart7816(this, m);
+                case "EMU7800.Core.Cart7832P":   return new Cart7832P(this, m);
+                case "EMU7800.Core.Cart7832":    return new Cart7832(this, m);
+                case "EMU7800.Core.Cart7848":    return new Cart7848(this, m);
+                case "EMU7800.Core.Cart78SGP":   return new Cart78SGP(this, m);
+                case "EMU7800.Core.Cart78SG":    return new Cart78SG(this, m);
+                case "EMU7800.Core.Cart78S9":    return new Cart78S9(this, m);
+                case "EMU7800.Core.Cart78S4":    return new Cart78S4(this, m);
+                case "EMU7800.Core.Cart78AB":    return new Cart78AB(this, m);
+                case "EMU7800.Core.Cart78AC":    return new Cart78AC(this, m);
+                default:
+                    throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
+            }
         }
 
         #region Constructors
