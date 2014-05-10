@@ -59,6 +59,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.Cart78SGP";
+        }
+
         public override void Attach(MachineBase m)
         {
             base.Attach(m);

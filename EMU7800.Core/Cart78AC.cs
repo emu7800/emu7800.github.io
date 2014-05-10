@@ -48,6 +48,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.Cart78AC";
+        }
+
         public Cart78AC(byte[] romBytes)
         {
             Bank[2] = 13;

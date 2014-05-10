@@ -55,6 +55,11 @@
                 _pokeySound.EndFrame();
         }
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.Cart7832P";
+        }
+
         public Cart7832P(byte[] romBytes)
         {
             LoadRom(romBytes, 0x8000);

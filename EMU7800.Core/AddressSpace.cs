@@ -28,7 +28,7 @@ namespace EMU7800.Core
 
         public override string ToString()
         {
-            return "AddressSpace";
+            return "EMU7800.Core.AddressSpace";
         }
 
         public byte this[ushort addr]

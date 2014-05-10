@@ -106,6 +106,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.CartDPC";
+        }
+
         public CartDPC(byte[] romBytes)
         {
             LoadRom(romBytes, 0x2800);

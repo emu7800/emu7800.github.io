@@ -116,7 +116,7 @@ namespace EMU7800.D2D.Shell
 
         public override string ToString()
         {
-            return String.Format("{0}: ID={1} Type={1}", GetType().FullName, _id);
+            return string.Format("EMU7800.D2D.Shell.ControlBase: ID={0}", _id);
         }
 
         #endregion

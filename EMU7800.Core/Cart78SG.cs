@@ -48,6 +48,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.Cart78SG";
+        }
+
         public Cart78SG(byte[] romBytes, bool needRAM)
         {
             if (needRAM)

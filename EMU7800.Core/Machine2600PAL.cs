@@ -4,7 +4,7 @@
     {
         public override string ToString()
         {
-            return GetType().Name;
+            return "EMU7800.Core.Machine2600PAL";
         }
 
         public Machine2600PAL(Cart cart, ILogger logger)

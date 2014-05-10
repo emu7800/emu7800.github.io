@@ -4,7 +4,7 @@
     {
         public override string ToString()
         {
-            return GetType().Name;
+            return "EMU7800.Core.Machine2600NTSC";
         }
 
         public Machine2600NTSC(Cart cart, ILogger logger)

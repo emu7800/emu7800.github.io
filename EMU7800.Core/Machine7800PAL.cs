@@ -4,7 +4,7 @@
     {
         public override string ToString()
         {
-            return GetType().Name;
+            return "EMU7800.Core.Machine7800PAL";
         }
 
         public Machine7800PAL(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger)

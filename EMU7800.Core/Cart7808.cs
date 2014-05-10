@@ -20,6 +20,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.Cart7808";
+        }
+
         public Cart7808(byte[] romBytes)
         {
             LoadRom(romBytes, 0x2000);

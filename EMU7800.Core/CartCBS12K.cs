@@ -55,6 +55,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.CartCBS12K";
+        }
+
         public CartCBS12K(byte[] romBytes)
         {
             LoadRom(romBytes, 0x3000);

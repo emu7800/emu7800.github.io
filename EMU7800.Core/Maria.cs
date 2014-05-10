@@ -142,7 +142,7 @@ namespace EMU7800.Core
 
         public override string ToString()
         {
-            return GetType().Name;
+            return "EMU7800.Core.Maria";
         }
 
         public void StartFrame()

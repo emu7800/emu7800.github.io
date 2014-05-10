@@ -100,7 +100,7 @@ namespace EMU7800.Core
 
         public void Write(MachineBase m)
         {
-            WriteTypeName(m);
+            _binaryWriter.Write(m.ToString());
             m.GetObjectData(this);
         }
 
@@ -136,7 +136,7 @@ namespace EMU7800.Core
 
         public void Write(Cart cart)
         {
-            WriteTypeName(cart);
+            _binaryWriter.Write(cart.ToString());
             cart.GetObjectData(this);
         }
 
@@ -205,20 +205,6 @@ namespace EMU7800.Core
             if (binaryWriter == null)
                 throw new ArgumentNullException("binaryWriter");
             _binaryWriter = binaryWriter;
-        }
-
-        #endregion
-
-        #region Helpers
-
-        void WriteTypeName(object o)
-        {
-            if (o == null)
-                throw new Emu7800SerializationException("Type unexpectedly null.");
-            var typeName = o.GetType().FullName;
-            if (string.IsNullOrWhiteSpace(typeName))
-                throw new Emu7800SerializationException("Unable to discover type name.");
-            _binaryWriter.Write(typeName);
         }
 
         #endregion

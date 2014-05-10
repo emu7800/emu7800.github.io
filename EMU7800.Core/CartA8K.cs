@@ -41,6 +41,11 @@
 
         #endregion
 
+        public override string ToString()
+        {
+            return "EMU7800.Core.CartA8K";
+        }
+
         public CartA8K(byte[] romBytes)
         {
             LoadRom(romBytes, 0x2000);
