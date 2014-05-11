@@ -11,6 +11,6 @@ using System.Resources;
 
 [assembly: AssemblyProduct("EMU7800")]
 [assembly: AssemblyCompany("Mike Murphy")]
-[assembly: AssemblyCopyright("Copyright © 2003-2013 Mike Murphy")]
+[assembly: AssemblyCopyright("Copyright © 2003-2014 Mike Murphy")]
 [assembly: AssemblyVersion("1.8.0.0")]
 [assembly: AssemblyFileVersion("1.8.0.0")]
