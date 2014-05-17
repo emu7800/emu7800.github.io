@@ -9,7 +9,6 @@ using System.Text;
 using Windows.ApplicationModel;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
@@ -526,14 +525,20 @@ namespace EMU7800.Services
 
         static IEnumerable<string> QueryForRomCandidates(StorageFolder folder)
         {
-            // TODO: this seems to not be available on WP
-            var qo = new QueryOptions(CommonFileQuery.OrderByName, new[] { ".bin", ".a26", ".a78", ".zip" });
-            var qr = folder.CreateFileQueryWithOptions(qo);
-            var files = qr.GetFiles();
+            var files = folder.GetFilesAsync()
+                .AsTask()
+                    .ConfigureAwait(false)
+                        .GetAwaiter()
+                            .GetResult();
+
+            var filterExtList = new[] {".bin", ".a26", ".a78", ".zip"};
+
             var list = files
                 .Where(IsPathPresent)
-                    .Where(file => !file.Name.StartsWith("_"))
-                        .SelectMany(ToPaths);
+                .Where(file => !file.Name.StartsWith("_"))
+                .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .SelectMany(ToPaths);
+
             return list;
         }
 

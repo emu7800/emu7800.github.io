@@ -34,7 +34,7 @@ private:
 
     ComPtr<ID3D11Device1>           m_d3dDevice;
     ComPtr<ID3D11DeviceContext1>    m_d3dContext;
-    ComPtr<IDXGIDevice2>            m_dxgiDevice;
+    ComPtr<IDXGIDevice3>            m_dxgiDevice;
     ComPtr<IDXGISwapChain1>         m_swapChain;
     ComPtr<ID3D11RenderTargetView>  m_d3dRenderTargetView;
 
@@ -45,11 +45,15 @@ private:
 
     D3D_FEATURE_LEVEL               m_featureLevel;
     Windows::Foundation::Size       m_renderTargetSize;
+    Windows::Foundation::Size       m_outputSize;
     Windows::Foundation::Rect       m_windowBounds;
     float                           m_dpi;
     bool                            m_windowSizeChangeInProgress;
 
     ComPtr<ID2D1SolidColorBrush>    m_solidColorBrushes[8];
+
+    DXGI_MODE_ROTATION              m_rotation;
+    D2D1::Matrix3x2F                m_orientationTransform2D;
 
     HRESULT CreateSolidColorBrush(D2DSolidColorBrush brush, D2D1::ColorF color);
 
@@ -77,7 +81,7 @@ public:
     void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode);
     void PopAxisAlignedClip();
 
-    void Initialize(CoreWindow^ window, float dpi);
+    void Initialize(CoreWindow^ window, float dpi, int rotation);
     void HandleDeviceLost();
     void CreateDeviceIndependentResources();
     void CreateDeviceResources();

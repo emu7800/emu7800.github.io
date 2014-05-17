@@ -1,15 +1,17 @@
 ﻿#pragma once
 
-#include <agile.h>
-#include <wchar.h>
 #include <wrl.h>
-#include <d3d11_1.h>
-#include <d2d1_1.h>
+#include <wrl/client.h>
+#include <d3d11_2.h>
+#include <d2d1_2.h>
 #include <d2d1effects.h>
-#include <dwrite_1.h>
+#include <dwrite_2.h>
 #include <wincodec.h>
+#include <DirectXMath.h>
 #include <XAudio2.h>
 #include <shcore.h>
+#include <agile.h>
+#include <wchar.h>
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "d3d11.lib")

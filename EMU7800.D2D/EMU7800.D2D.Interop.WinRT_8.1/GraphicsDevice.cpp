@@ -469,7 +469,7 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     {
         // Resize pre-existing swap chain.
         HRESULT hr = m_swapChain->ResizeBuffers(2, 0, 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-        if (hr == DXGI_ERROR_DEVICE_REMOVED)
+        if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
         {
             HandleDeviceLost();
             return;

@@ -11,13 +11,14 @@ using namespace Windows::Foundation;
 using namespace Microsoft::WRL;
 using namespace Windows::Graphics::Display;
 using namespace D2D1;
+using namespace DirectX;
 
 using namespace EMU7800::D2D::Interop;
 
 void GraphicsDevice::BeginDraw()
 {
     m_d2dContext->BeginDraw();
-    m_d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
+    m_d2dContext->SetTransform(m_orientationTransform2D);
     m_d2dContext->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 }
 
@@ -295,9 +296,10 @@ void GraphicsDevice::PopAxisAlignedClip()
     m_d2dContext->PopAxisAlignedClip();
 }
 
-void GraphicsDevice::Initialize(CoreWindow^ window, float dpi)
+void GraphicsDevice::Initialize(CoreWindow^ window, float dpi, int rotation)
 {
     m_window = window;
+    m_rotation = (DXGI_MODE_ROTATION)rotation;
     CreateDeviceIndependentResources();
     CreateDeviceResources();
     SetDpi(dpi);
@@ -465,18 +467,38 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
 {
     m_windowBounds = m_window->Bounds;
 
+    // Calculate the necessary render target size in pixels.
+    m_outputSize.Width  = floorf(m_windowBounds.Width  * m_dpi / 96.0f + 0.5f);
+    m_outputSize.Height = floorf(m_windowBounds.Height * m_dpi / 96.0f + 0.5f);
+
+    // Prevent zero size DirectX content from being created.
+    m_outputSize.Width  = max(m_outputSize.Width, 1);
+    m_outputSize.Height = max(m_outputSize.Height, 1);
+
+    bool swapDimensions = m_rotation == DXGI_MODE_ROTATION_ROTATE90 || m_rotation == DXGI_MODE_ROTATION_ROTATE270;
+    m_renderTargetSize.Width  = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
+    m_renderTargetSize.Height = swapDimensions ? m_outputSize.Width  : m_outputSize.Height;
+
+    // Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
+    m_swapChain = nullptr;
+
     if (m_swapChain != nullptr)
     {
         // Resize pre-existing swap chain.
-        // not available on WP 8.1--need an alternative
-        // HRESULT hr = m_swapChain->ResizeBuffers(2, 0, 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+        HRESULT hr = m_swapChain->ResizeBuffers(2, 0, 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
+        if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
+        {
+            HandleDeviceLost();
+            return;
+        }
+        DX::ThrowIfFailed(hr);
     }
     else
     {
         // Otherwise, create a new one using the same adapter as the existing Direct3D device.
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
-        swapChainDesc.Width              = 0;                                // Use automatic sizing.
-        swapChainDesc.Height             = 0;
+        swapChainDesc.Width              = lround(m_renderTargetSize.Width); // Match the size of the window.
+        swapChainDesc.Height             = lround(m_renderTargetSize.Height);
         swapChainDesc.Format             = DXGI_FORMAT_B8G8R8A8_UNORM;       // This is the most common swap chain format.
         swapChainDesc.Stereo             = false;
         swapChainDesc.SampleDesc.Count   = 1;                                // Don't use multi-sampling.
@@ -519,6 +541,24 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
         DX::ThrowIfFailed(
             dxgiDevice->SetMaximumFrameLatency(1)
             );
+    }
+
+    // Set the proper orientation for the swap chain, and generate 2D matrix transformations for rendering to the swap chain.
+    switch (m_rotation)
+    {
+        case DXGI_MODE_ROTATION_ROTATE90:
+            m_orientationTransform2D = Matrix3x2F::Rotation(90.0f) * Matrix3x2F::Translation(m_windowBounds.Height, 0.0f);
+            break;
+        case DXGI_MODE_ROTATION_ROTATE180:
+            m_orientationTransform2D = Matrix3x2F::Rotation(180.0f) * Matrix3x2F::Translation(m_windowBounds.Width, m_windowBounds.Height);
+            break;
+        case DXGI_MODE_ROTATION_ROTATE270:
+            m_orientationTransform2D = Matrix3x2F::Rotation(270.0f) * Matrix3x2F::Translation(0.0f, m_windowBounds.Width);
+            break;
+        case DXGI_MODE_ROTATION_UNSPECIFIED:
+        case DXGI_MODE_ROTATION_IDENTITY:
+        default:
+            m_orientationTransform2D = Matrix3x2F::Identity();
     }
 
     // Create a Direct3D render target view of the swap chain back buffer.
@@ -646,6 +686,7 @@ void GraphicsDevice::ValidateDevice()
 
 void GraphicsDevice::Trim()
 {
+    m_dxgiDevice->Trim();
 }
 
 GraphicsDevice::GraphicsDevice()

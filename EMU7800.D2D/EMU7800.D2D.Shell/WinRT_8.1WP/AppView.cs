@@ -23,6 +23,13 @@ namespace EMU7800.D2D.Shell.WinRT
         int _lastMouseX, _lastMouseY;
         uint _lastMousePointerId;
 
+        const int
+            DXGI_MODE_ROTATION_UNSPECIFIED = 0,
+            DXGI_MODE_ROTATION_IDENTITY    = 1,
+            DXGI_MODE_ROTATION_ROTATE90    = 2,
+            DXGI_MODE_ROTATION_ROTATE180   = 3,
+            DXGI_MODE_ROTATION_ROTATE270   = 4;
+
         #endregion
 
         public AppView()
@@ -46,13 +53,11 @@ namespace EMU7800.D2D.Shell.WinRT
             window.PointerPressed += (sender, args) => WindowOnPointerChanged(args, true);
             window.PointerReleased += (sender, args) => WindowOnPointerChanged(args, false);
             window.PointerWheelChanged += WindowOnPointerWheelChanged;
-            window.SizeChanged += WindowOnSizeChanged;
 
             window.Closed += WindowOnClosed;
             window.VisibilityChanged += WindowOnVisibilityChanged;
 
             var displayInformation = DisplayInformation.GetForCurrentView();
-            displayInformation.DpiChanged += DisplayInformationOnDpiChanged;
 
             DisplayInformation.DisplayContentsInvalidated += DisplayInformationOnDisplayContentsInvalidated;
 
@@ -60,7 +65,8 @@ namespace EMU7800.D2D.Shell.WinRT
             _pageBackStack.Resized(size);
 
             var logicalDpi = displayInformation.LogicalDpi;
-            _graphicsDevice.Initialize(window, logicalDpi);
+            var dxgiModeRotation = ComputeDxgiModeRotation(displayInformation);
+            _graphicsDevice.Initialize(window, logicalDpi, dxgiModeRotation);
         }
 
         public void Load(string entryPoint)
@@ -154,24 +160,6 @@ namespace EMU7800.D2D.Shell.WinRT
             _pageBackStack.MouseWheelChanged(pointerId, x, y, delta);
         }
 
-        void WindowOnSizeChanged(CoreWindow sender, WindowSizeChangedEventArgs args)
-        {
-            var size = Struct.ToSizeF((float)args.Size.Width, (float)args.Size.Height);
-            _pageBackStack.Resized(size);
-
-            // TODO: there is an unsupported operation down here
-            _graphicsDevice.UpdateForWindowSizeChange();
-
-            var resizeManager = CoreWindowResizeManager.GetForCurrentView();
-            resizeManager.NotifyLayoutCompleted();
-        }
-
-        void DisplayInformationOnDpiChanged(DisplayInformation displayInformation, object args)
-        {
-            var logicalDpi = displayInformation.LogicalDpi;
-            _graphicsDevice.SetDpi(logicalDpi);
-        }
-
         void DisplayInformationOnDisplayContentsInvalidated(DisplayInformation displayInformation, object args)
         {
             _graphicsDevice.ValidateDevice();
@@ -249,6 +237,40 @@ namespace EMU7800.D2D.Shell.WinRT
             _graphicsDevice.BeginDraw();
             _pageBackStack.Render(_graphicsDevice);
             _graphicsDevice.EndDraw();
+        }
+
+        static int ComputeDxgiModeRotation(DisplayInformation displayInformation)
+        {
+            switch (displayInformation.NativeOrientation)
+            {
+                case DisplayOrientations.Landscape:
+                    switch (displayInformation.CurrentOrientation)
+                    {
+                        case DisplayOrientations.Landscape:
+                            return DXGI_MODE_ROTATION_IDENTITY;
+                        case DisplayOrientations.Portrait:
+                            return DXGI_MODE_ROTATION_ROTATE270;
+                        case DisplayOrientations.LandscapeFlipped:
+                            return DXGI_MODE_ROTATION_ROTATE180;
+                        case DisplayOrientations.PortraitFlipped:
+                            return DXGI_MODE_ROTATION_ROTATE90;
+                    }
+                    break;
+                case DisplayOrientations.Portrait:
+                    switch (displayInformation.CurrentOrientation)
+                    {
+                        case DisplayOrientations.Landscape:
+                            return DXGI_MODE_ROTATION_ROTATE90;
+                        case DisplayOrientations.Portrait:
+                            return DXGI_MODE_ROTATION_IDENTITY;
+                        case DisplayOrientations.LandscapeFlipped:
+                            return DXGI_MODE_ROTATION_ROTATE270;
+                        case DisplayOrientations.PortraitFlipped:
+                            return DXGI_MODE_ROTATION_ROTATE180;
+                    }
+                    break;
+            }
+            return DXGI_MODE_ROTATION_UNSPECIFIED;
         }
 
         #endregion
