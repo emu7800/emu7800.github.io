@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.Shell\Win32\EMU7800.D2D.csproj", "{F3C71F2A-1386-472F-AD5D-18C026FAF0D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Core", "..\EMU7800.Core\EMU7800.Core.csproj", "{75E76CE4-80D3-4CEE-836D-CB5120DA1806}"

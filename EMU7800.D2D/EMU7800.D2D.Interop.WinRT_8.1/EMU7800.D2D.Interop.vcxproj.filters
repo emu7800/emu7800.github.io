@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resources">
-      <UniqueIdentifier>8b940c1b-9d5f-4484-9b5d-6abaa7c1b22d</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
     <ClCompile Include="AudioDevice.cpp" />
@@ -24,15 +18,9 @@
     <ClInclude Include="D2DStructs.h" />
     <ClInclude Include="DynamicBitmap.h" />
     <ClInclude Include="GraphicsDevice.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="TextLayout.h" />
     <ClInclude Include="XInputDevice.h" />
     <ClInclude Include="StaticBitmap.h" />
     <ClInclude Include="TextFormat.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resources.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

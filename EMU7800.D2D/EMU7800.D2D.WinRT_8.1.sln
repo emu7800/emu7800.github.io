@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30324.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.Shell\WinRT_8.1\EMU7800.D2D.csproj", "{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}"
 EndProject
@@ -55,12 +55,9 @@ Global
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x64.Build.0 = Debug|Any CPU
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x86.Build.0 = Debug|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|ARM.ActiveCfg = Profile|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|ARM.Build.0 = Profile|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x64.ActiveCfg = Profile|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x64.Build.0 = Profile|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x86.ActiveCfg = Profile|Any CPU
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x86.Build.0 = Profile|Any CPU
+		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|ARM.ActiveCfg = Release|Any CPU
+		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x64.ActiveCfg = Release|Any CPU
+		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x86.ActiveCfg = Release|Any CPU
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|ARM.ActiveCfg = Release|Any CPU
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|ARM.Build.0 = Release|Any CPU
 		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|x64.ActiveCfg = Release|Any CPU

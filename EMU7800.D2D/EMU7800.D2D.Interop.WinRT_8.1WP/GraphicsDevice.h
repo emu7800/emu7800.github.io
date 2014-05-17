@@ -34,6 +34,7 @@ private:
 
     ComPtr<ID3D11Device1>           m_d3dDevice;
     ComPtr<ID3D11DeviceContext1>    m_d3dContext;
+    ComPtr<IDXGIDevice2>            m_dxgiDevice;
     ComPtr<IDXGISwapChain1>         m_swapChain;
     ComPtr<ID3D11RenderTargetView>  m_d3dRenderTargetView;
 
@@ -85,6 +86,7 @@ public:
     void CreateWindowSizeDependentResources();
     void Present();
     void ValidateDevice();
+    void Trim();  // Windows App Certification Kit 3.1 requirement
 
     GraphicsDevice();
     virtual ~GraphicsDevice();

@@ -1,0 +1,11 @@
+EMU7800 offers classic video game nostalgia on the go! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
+
+PERFORMANCE&#8212;EMU7800 is CPU intensive. Early handsets did not have enough CPU capacity to run games full speed, though newer generation hardware is closing this gap. For example, recent testing on an HTC Windows Phone 8X had no problems running at full speed. EMU7800 will automatically calibrate-down to accommodate resource-constrained scenarios.
+
+BASIC OPERATION&#8212;After selecting a game from the Select Game Program screen, pressing the Back button will bring up the Heads Up Display (HUD). Pressing the Back button again will return to the selection screen. Game states and settings are preserved, so interruptions will not lose game progress. The selection screen will display a Paused icon when there is pre-existing game state for a particular title.
+
+HUD&#8212;The top row of buttons emulate the hardware switches of the Atari console. Cycling the Power button will clear any prior game state and settings. The Player button assigns the current controller to the opposite player. Most buttons will automatically unpause the game.
+
+GAME CONTROLLERS&#8212;MOGA mobile gaming controllers offer the best gameplay experience. If you are serious about your gaming nostalgia, consider obtaining one of these devices. Make sure your controller is turned on and paired with your phone prior to launching. (Look for BD&amp;A on the Bluetooth Settings page.) Lightgun and Paddle games do not use the MOGA controller, however. When there is no controller paired, the touchscreen accepts input.
+
+HUD will report the type of Atari controller the current game program uses. For joystick titles, the left side of the screen accepts &quot;swipe and release&quot; style input for the D-Pad; the right side for the fire buttons. Look for the indicators at the top of the screen for visual feedback. For paddle titles, swiping horizontally across the bottom of the screen rotates the paddle dial. For lightgun titles, just touch the screen to shoot.

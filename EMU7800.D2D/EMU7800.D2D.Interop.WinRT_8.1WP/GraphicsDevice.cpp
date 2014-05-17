@@ -400,15 +400,12 @@ void GraphicsDevice::CreateDeviceResources()
         context.As(&m_d3dContext)
         );
 
-    ComPtr<IDXGIDevice> dxgiDevice;
     DX::ThrowIfFailed(
-        m_d3dDevice.As(&dxgiDevice)
+        m_d3dDevice.As(&m_dxgiDevice)
         );
-
     DX::ThrowIfFailed(
-        m_d2dFactory->CreateDevice(dxgiDevice.Get(), &m_d2dDevice)
+        m_d2dFactory->CreateDevice(m_dxgiDevice.Get(), &m_d2dDevice)
         );
-
     DX::ThrowIfFailed(
         m_d2dDevice->CreateDeviceContext(
             D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
@@ -452,8 +449,6 @@ void GraphicsDevice::SetDpi(float dpi)
 void GraphicsDevice::UpdateForWindowSizeChange()
 {
     // Only handle window size changed if there is no pending DPI change.
-    if (m_dpi != DisplayProperties::LogicalDpi)
-        return;
 
     if (m_window->Bounds.Width  != m_windowBounds.Width
     ||  m_window->Bounds.Height != m_windowBounds.Height)
@@ -473,13 +468,8 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     if (m_swapChain != nullptr)
     {
         // Resize pre-existing swap chain.
-        HRESULT hr = m_swapChain->ResizeBuffers(2, 0, 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
-        if (hr == DXGI_ERROR_DEVICE_REMOVED)
-        {
-            HandleDeviceLost();
-            return;
-        }
-        DX::ThrowIfFailed(hr);
+        // not available on WP 8.1--need an alternative
+        // HRESULT hr = m_swapChain->ResizeBuffers(2, 0, 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0);
     }
     else
     {
@@ -652,6 +642,10 @@ void GraphicsDevice::ValidateDevice()
         deviceAdapter = nullptr;
         HandleDeviceLost();
     }
+}
+
+void GraphicsDevice::Trim()
+{
 }
 
 GraphicsDevice::GraphicsDevice()
