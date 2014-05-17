@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
-    <ClCompile Include="DirectXBase.cpp" />
     <ClCompile Include="DynamicBitmap.cpp" />
     <ClCompile Include="StaticBitmap.cpp" />
     <ClCompile Include="TextFormat.cpp" />
@@ -15,7 +14,6 @@
     <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="D2DError.h" />
     <ClInclude Include="D2DStructs.h" />
-    <ClInclude Include="DirectXBase.h" />
     <ClInclude Include="DXUtils.h" />
     <ClInclude Include="DynamicBitmap.h" />
     <ClInclude Include="StaticBitmap.h" />
