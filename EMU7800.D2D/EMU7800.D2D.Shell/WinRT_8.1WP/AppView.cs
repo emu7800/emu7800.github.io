@@ -30,6 +30,8 @@ namespace EMU7800.D2D.Shell.WinRT
             DXGI_MODE_ROTATION_ROTATE180   = 3,
             DXGI_MODE_ROTATION_ROTATE270   = 4;
 
+        readonly MogaController _mogaController = new MogaController();
+
         #endregion
 
         public AppView()
@@ -43,6 +45,7 @@ namespace EMU7800.D2D.Shell.WinRT
             applicationView.Activated += ApplicationViewOnActivated;
             CoreApplication.Resuming += CoreApplicationOnResuming;
             CoreApplication.Suspending += CoreApplicationOnSuspending;
+            _mogaController.Launching();
         }
 
         public void SetWindow(CoreWindow window)
@@ -96,6 +99,7 @@ namespace EMU7800.D2D.Shell.WinRT
 
         public void Uninitialize()
         {
+            _mogaController.Closing();
         }
 
         #region CoreAppWin Event Handlers
@@ -171,12 +175,12 @@ namespace EMU7800.D2D.Shell.WinRT
             {
                 case CoreWindowActivationState.Deactivated:
                     _pageBackStack.OnNavigatingAway();
-                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreWindowOnActivated: Deactivated: PageBackStack.OnNavigatingAway()");
+                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreWindowOnActivated: Deactivated: PageBackStack.OnNavigatingAway(): WindowActivationState={0}", args.WindowActivationState);
                     break;
                 case CoreWindowActivationState.CodeActivated:
                 case CoreWindowActivationState.PointerActivated:
                     _pageBackStack.OnNavigatingHere();
-                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreWindowOnActivated: CodeActivated/PointerActivated: PageBackStack.OnNavigatingHere()");
+                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreWindowOnActivated: CodeActivated/PointerActivated: PageBackStack.OnNavigatingHere(): WindowActivationState={0}", args.WindowActivationState);
                     break;
             }
             args.Handled = true;
@@ -189,11 +193,11 @@ namespace EMU7800.D2D.Shell.WinRT
             {
                 case true:
                     _pageBackStack.OnNavigatingHere();
-                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.WindowOnVisibilityChanged: IsVisible=true: PageBackStack.OnNavigatingHere()");
+                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.WindowOnVisibilityChanged: IsVisible=true: PageBackStack.OnNavigatingHere(): Visible={0}", args.Visible);
                     break;
                 case false:
                     _pageBackStack.OnNavigatingAway();
-                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.WindowOnVisibilityChanged: IsVisible=false: PageBackStack.OnNavigatingAway()");
+                    System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.WindowOnVisibilityChanged: IsVisible=false: PageBackStack.OnNavigatingAway(): Visible={0}", args.Visible);
                     break;
             }
         }
@@ -201,12 +205,14 @@ namespace EMU7800.D2D.Shell.WinRT
         void CoreApplicationOnResuming(object sender, object o)
         {
             _pageBackStack.OnNavigatingHere();
+            _mogaController.Activated();
             System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreApplicationOnResuming: PageBackStack.OnNavigatingHere()");
         }
 
         void CoreApplicationOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
         {
             _pageBackStack.OnNavigatingAway();
+            _mogaController.Deactivated();
             System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreApplicationOnSuspending: PageBackStack.OnNavigatingAway()");
 
             // Windows App Certification Kit 3.1 requirement

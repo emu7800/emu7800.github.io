@@ -125,15 +125,17 @@ namespace EMU7800.D2D.Shell
             return true;
         }
 
-        static async Task<IEnumerable<string>> QueryForRomCandidatesAsync(IStorageFolderQueryOperations folder)
+        static async Task<IEnumerable<string>> QueryForRomCandidatesAsync(IStorageFolder folder)
         {
-            var qo = new QueryOptions(CommonFileQuery.OrderByName, new[] { ".bin", ".a26", ".a78" });
-            var qr = folder.CreateFileQueryWithOptions(qo);
-            var files = await qr.GetFilesAsync();
+            var files = await folder.GetFilesAsync();
+            var filterExtList = new[] { ".bin", ".a26", ".a78", ".zip" };
             var list = files
                 .Where(IsPathPresent)
-                    .Select(file => file.Path)
-                        .ToArray();
+                .Where(file => !file.Name.StartsWith("_"))
+                .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .Select(file => file.Path)
+                .ToArray();
+
             return list;
         }
 

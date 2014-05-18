@@ -28,10 +28,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClientServer" />
-    <m2:DeviceCapability Name="humaninterfacedevice">
-      <m2:Device Id="any">
-        <m2:Function Type="usage:0001 0004" />
-      </m2:Device>
-    </m2:DeviceCapability>
+    <DeviceCapability Name="proximity" />
   </Capabilities>
 </Package>

@@ -245,17 +245,20 @@
     <Compile Include="..\TitlePage.cs">
       <Link>TitlePage.cs</Link>
     </Compile>
+    <Compile Include="..\WinRT_8.1\TitlePage.WinRT.cs">
+      <Link>TitlePage.WinRT.cs</Link>
+    </Compile>
     <Compile Include="AppView.cs" />
     <Compile Include="AppViewSource.cs" />
     <Compile Include="FindRomsPage2.WinRT.cs" />
     <Compile Include="GameControllersWrapper.cs" />
+    <Compile Include="MogaController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AssetService.cs" />
     <Compile Include="Services\DatastoreService.cs" />
     <Compile Include="Services\DatastoreServiceExtensions.cs" />
     <Compile Include="Services\Md5HashService.cs" />
     <Compile Include="StelladaptorHost.cs" />
-    <Compile Include="TitlePage.WinRT.cs" />
     <Compile Include="WinRTEntryPoint.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -433,6 +436,11 @@
       <Project>{64079d32-6e79-4219-bdbf-f13602923f21}</Project>
       <Name>EMU7800.D2D.Interop</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Moga.Windows.Phone">
+      <HintPath>Dependencies\MOGA-v1.0\$(Platform)\Moga.Windows.Phone.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

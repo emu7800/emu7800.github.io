@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Search;
 using EMU7800.Services;
 using EMU7800.Services.Extensions;
 
@@ -18,31 +16,60 @@ namespace EMU7800.D2D.Shell
     {
         const string ImportedRomsDirName = "ImportedRoms";
 
-        async void StartImport()
+        FileOpenPicker _fp;
+
+        enum ImportStates { NotStarted, Started, Resumable, Resumed }
+        ImportStates _importState = ImportStates.NotStarted;
+
+        public override void OnNavigatingHere()
         {
-            var fp = new FileOpenPicker {SuggestedStartLocation = PickerLocationId.DocumentsLibrary};
-            fp.FileTypeFilter.Add(".bin");
-            fp.FileTypeFilter.Add(".a26");
-            fp.FileTypeFilter.Add(".a78");
-            fp.ViewMode = PickerViewMode.List;
-            fp.CommitButtonText = "Import";
-            fp.PickMultipleFilesAndContinue();
-
-            //IReadOnlyList<IStorageFile> files;
-            IEnumerable<IStorageFile> files;
-            try
+            switch (_importState)
             {
-                files = fp.ContinuationData.Values.Cast<IStorageFile>();
+                case ImportStates.NotStarted:
+                    _importState = ImportStates.Started;
+                    StartImport2();
+                    break;
+                case ImportStates.Resumable:
+                    _importState = ImportStates.Resumed;
+                    ResumeImport();
+                    break;
             }
-            catch (COMException)
-            {
-                _labelStep.Text = "Canceled. Unable to launch picker in snapped view.";
-                _buttonOk.IsVisible = true;
-                _buttonCancel.IsVisible = false;
-                return;
-            }
+        }
 
-            if (files.Count() == 0)
+        public override void OnNavigatingAway()
+        {
+            switch (_importState)
+            {
+                case ImportStates.Started:
+                    _importState = ImportStates.Resumable;
+                    break;
+            }
+        }
+
+        void StartImport()
+        {
+            _importState = ImportStates.NotStarted;
+        }
+
+        void StartImport2()
+        {
+            _fp = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+            _fp.FileTypeFilter.Add(".bin");
+            _fp.FileTypeFilter.Add(".a26");
+            _fp.FileTypeFilter.Add(".a78");
+            _fp.ViewMode = PickerViewMode.List;
+            _fp.CommitButtonText = "Import";
+            _fp.PickMultipleFilesAndContinue();
+        }
+
+        async void ResumeImport()
+        {
+            var files = (_fp == null ? Enumerable.Empty<IStorageFile>() : _fp.ContinuationData.Values.Cast<IStorageFile>())
+                .ToArray();
+
+            _fp = null;
+
+            if (!files.Any())
             {
                 _labelStep.Text = "Canceled.";
                 _buttonOk.IsVisible = true;
@@ -127,15 +154,19 @@ namespace EMU7800.D2D.Shell
             return true;
         }
 
-        static async Task<IEnumerable<string>> QueryForRomCandidatesAsync(IStorageFolderQueryOperations folder)
+        static async Task<IEnumerable<string>> QueryForRomCandidatesAsync(IStorageFolder folder)
         {
-            var qo = new QueryOptions(CommonFileQuery.OrderByName, new[] { ".bin", ".a26", ".a78" });
-            var qr = folder.CreateFileQueryWithOptions(qo);
-            var files = await qr.GetFilesAsync();
+            var files = await folder.GetFilesAsync();
+
+            var filterExtList = new[] { ".bin", ".a26", ".a78", ".zip" };
+
             var list = files
                 .Where(IsPathPresent)
-                    .Select(file => file.Path)
-                        .ToArray();
+                .Where(file => !file.Name.StartsWith("_"))
+                .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                .Select(file => file.Path)
+                .ToArray();
+
             return list;
         }
 
