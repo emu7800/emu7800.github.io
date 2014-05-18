@@ -52,7 +52,7 @@ private:
 
     ComPtr<ID2D1SolidColorBrush>    m_solidColorBrushes[8];
 
-    DXGI_MODE_ROTATION              m_rotation;
+    DXGI_MODE_ROTATION              m_dxgiModeRotation;
     D2D1::Matrix3x2F                m_orientationTransform2D;
 
     HRESULT CreateSolidColorBrush(D2DSolidColorBrush brush, D2D1::ColorF color);
@@ -81,7 +81,7 @@ public:
     void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode);
     void PopAxisAlignedClip();
 
-    void Initialize(CoreWindow^ window, float dpi, int rotation);
+    void Initialize(CoreWindow^ window, float dpi, int dxgiModeRotation);
     void HandleDeviceLost();
     void CreateDeviceIndependentResources();
     void CreateDeviceResources();

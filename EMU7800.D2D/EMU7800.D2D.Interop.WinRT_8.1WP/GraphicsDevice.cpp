@@ -296,10 +296,10 @@ void GraphicsDevice::PopAxisAlignedClip()
     m_d2dContext->PopAxisAlignedClip();
 }
 
-void GraphicsDevice::Initialize(CoreWindow^ window, float dpi, int rotation)
+void GraphicsDevice::Initialize(CoreWindow^ window, float dpi, int dxgiModeRotation)
 {
     m_window = window;
-    m_rotation = (DXGI_MODE_ROTATION)rotation;
+    m_dxgiModeRotation = (DXGI_MODE_ROTATION)dxgiModeRotation;
     CreateDeviceIndependentResources();
     CreateDeviceResources();
     SetDpi(dpi);
@@ -475,7 +475,7 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     m_outputSize.Width  = max(m_outputSize.Width, 1);
     m_outputSize.Height = max(m_outputSize.Height, 1);
 
-    bool swapDimensions = m_rotation == DXGI_MODE_ROTATION_ROTATE90 || m_rotation == DXGI_MODE_ROTATION_ROTATE270;
+    bool swapDimensions = m_dxgiModeRotation == DXGI_MODE_ROTATION_ROTATE90 || m_dxgiModeRotation == DXGI_MODE_ROTATION_ROTATE270;
     m_renderTargetSize.Width  = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
     m_renderTargetSize.Height = swapDimensions ? m_outputSize.Width  : m_outputSize.Height;
 
@@ -543,8 +543,8 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
             );
     }
 
-    // Set the proper orientation for the swap chain, and generate 2D matrix transformations for rendering to the swap chain.
-    switch (m_rotation)
+    // For proper screen orientation, generate 2D matrix transformations for rendering.
+    switch (m_dxgiModeRotation)
     {
         case DXGI_MODE_ROTATION_ROTATE90:
             m_orientationTransform2D = Matrix3x2F::Rotation(90.0f) * Matrix3x2F::Translation(m_windowBounds.Height, 0.0f);
@@ -694,6 +694,7 @@ GraphicsDevice::GraphicsDevice()
     m_windowSizeChangeInProgress = false;
     m_dpi = -1.0f;
     IsDeviceResourcesRefreshed = false;
+    m_dxgiModeRotation = DXGI_MODE_ROTATION_UNSPECIFIED;
 }
 
 GraphicsDevice::~GraphicsDevice()
