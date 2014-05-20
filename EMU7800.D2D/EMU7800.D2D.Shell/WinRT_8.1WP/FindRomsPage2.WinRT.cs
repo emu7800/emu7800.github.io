@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using EMU7800.Services;
@@ -17,38 +18,28 @@ namespace EMU7800.D2D.Shell
         const string ImportedRomsDirName = "ImportedRoms";
 
         FileOpenPicker _fp;
+        FileOpenPickerContinuationEventArgs _fpContinuationArgs;
 
-        enum ImportStates { NotStarted, Started, Resumable, Resumed }
-        ImportStates _importState = ImportStates.NotStarted;
+        bool _importStarted;
 
         public override void OnNavigatingHere()
         {
-            switch (_importState)
+            if (!_importStarted)
             {
-                case ImportStates.NotStarted:
-                    _importState = ImportStates.Started;
-                    StartImport2();
-                    break;
-                case ImportStates.Resumable:
-                    _importState = ImportStates.Resumed;
-                    ResumeImport();
-                    break;
+                _importStarted = true;
+                StartImport2();
             }
-        }
-
-        public override void OnNavigatingAway()
-        {
-            switch (_importState)
+            else if (WinRT.AppView.CapturedFileOpenPickerContinuationEventArgs != null)
             {
-                case ImportStates.Started:
-                    _importState = ImportStates.Resumable;
-                    break;
+                _fpContinuationArgs = WinRT.AppView.CapturedFileOpenPickerContinuationEventArgs;
+                WinRT.AppView.CapturedFileOpenPickerContinuationEventArgs = null;
+                ResumeImport();
             }
         }
 
         void StartImport()
         {
-            _importState = ImportStates.NotStarted;
+            _importStarted = false;
         }
 
         void StartImport2()
@@ -64,19 +55,6 @@ namespace EMU7800.D2D.Shell
 
         async void ResumeImport()
         {
-            var files = (_fp == null ? Enumerable.Empty<IStorageFile>() : _fp.ContinuationData.Values.Cast<IStorageFile>())
-                .ToArray();
-
-            _fp = null;
-
-            if (!files.Any())
-            {
-                _labelStep.Text = "Canceled.";
-                _buttonOk.IsVisible = true;
-                _buttonCancel.IsVisible = false;
-                return;
-            }
-
             var csvFileContent = await Task.Run(() => new DatastoreService().GetGameProgramInfoFromReferenceRepository());
             var romBytesService = new RomBytesService();
             var romPropertiesService = new RomPropertiesService();
@@ -85,7 +63,8 @@ namespace EMU7800.D2D.Shell
 
             var targetFolder = await GetOrCreateImportedRomLocalFolderAsync();
 
-            foreach (var file in files)
+            var anyFiles = false;
+            foreach (var file in _fpContinuationArgs != null ? _fpContinuationArgs.Files : Enumerable.Empty<IStorageFile>())
             {
                 var bytes = await file.GetBytesAsync();
                 if (bytes == null)
@@ -97,10 +76,15 @@ namespace EMU7800.D2D.Shell
 
                 var desiredNewName = md5Key + "_" + file.Name;
                 await ImportFileAsync(targetFolder, file, desiredNewName);
+
+                anyFiles = true;
             }
 
-            var pathSet = await QueryForRomCandidatesAsync(targetFolder);
-            _romImportService.ImportWithDefaults(pathSet);
+            if (anyFiles)
+            {
+                var pathSet = await QueryForRomCandidatesAsync(targetFolder);
+                _romImportService.ImportWithDefaults(pathSet);
+            }
 
             if (_romImportService.CancelRequested)
             {
@@ -108,7 +92,7 @@ namespace EMU7800.D2D.Shell
             }
             else
             {
-                _labelStep.Text = "Completed.";
+                _labelStep.Text = anyFiles ? "Completed." : "Canceled.";
             }
 
             _buttonOk.IsVisible = true;

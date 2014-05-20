@@ -34,6 +34,8 @@ namespace EMU7800.D2D.Shell.WinRT
 
         #endregion
 
+        public static FileOpenPickerContinuationEventArgs CapturedFileOpenPickerContinuationEventArgs { get; set; }
+
         public AppView()
         {
             _pageBackStack = new PageBackStackHost(new TitlePage());
@@ -106,6 +108,12 @@ namespace EMU7800.D2D.Shell.WinRT
 
         void ApplicationViewOnActivated(CoreApplicationView sender, IActivatedEventArgs args)
         {
+            var continuationEventArgs = args as FileOpenPickerContinuationEventArgs;
+            if (CapturedFileOpenPickerContinuationEventArgs == null && continuationEventArgs != null)
+            {
+                CapturedFileOpenPickerContinuationEventArgs = continuationEventArgs;
+            }
+
             var coreWindow = CoreWindow.GetForCurrentThread();
             coreWindow.Activated += CoreWindowOnActivated;
             coreWindow.Activate();
