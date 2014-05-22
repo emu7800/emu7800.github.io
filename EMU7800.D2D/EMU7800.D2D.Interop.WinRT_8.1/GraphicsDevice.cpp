@@ -11,13 +11,14 @@ using namespace Windows::Foundation;
 using namespace Microsoft::WRL;
 using namespace Windows::Graphics::Display;
 using namespace D2D1;
+using namespace DirectX;
 
 using namespace EMU7800::D2D::Interop;
 
 void GraphicsDevice::BeginDraw()
 {
     m_d2dContext->BeginDraw();
-    m_d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
+    m_d2dContext->SetTransform(m_orientationTransform2D);
     m_d2dContext->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 }
 
@@ -295,9 +296,10 @@ void GraphicsDevice::PopAxisAlignedClip()
     m_d2dContext->PopAxisAlignedClip();
 }
 
-void GraphicsDevice::Initialize(CoreWindow^ window, float dpi)
+void GraphicsDevice::Initialize(CoreWindow^ window, float dpi, int dxgiModeRotation)
 {
     m_window = window;
+    m_dxgiModeRotation = (DXGI_MODE_ROTATION)dxgiModeRotation;
     CreateDeviceIndependentResources();
     CreateDeviceResources();
     SetDpi(dpi);
@@ -464,6 +466,23 @@ void GraphicsDevice::UpdateForWindowSizeChange()
 void GraphicsDevice::CreateWindowSizeDependentResources()
 {
     m_windowBounds = m_window->Bounds;
+ 
+    // Calculate the necessary render target size in pixels.
+    m_outputSize.Width  = floorf(m_windowBounds.Width  * m_dpi / 96.0f + 0.5f);
+    m_outputSize.Height = floorf(m_windowBounds.Height * m_dpi / 96.0f + 0.5f);
+
+    // Prevent zero size DirectX content from being created.
+    m_outputSize.Width  = max(m_outputSize.Width, 1);
+    m_outputSize.Height = max(m_outputSize.Height, 1);
+
+    bool swapDimensions = m_dxgiModeRotation == DXGI_MODE_ROTATION_ROTATE90 || m_dxgiModeRotation == DXGI_MODE_ROTATION_ROTATE270;
+    m_renderTargetSize.Width  = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
+    m_renderTargetSize.Height = swapDimensions ? m_outputSize.Width  : m_outputSize.Height;
+
+#if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+    // Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
+    m_swapChain = nullptr;
+#endif
 
     if (m_swapChain != nullptr)
     {
@@ -480,8 +499,13 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     {
         // Otherwise, create a new one using the same adapter as the existing Direct3D device.
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+#if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+        swapChainDesc.Width              = lround(m_renderTargetSize.Width); // Match the size of the window.
+        swapChainDesc.Height             = lround(m_renderTargetSize.Height);
+#else
         swapChainDesc.Width              = 0;                                // Use automatic sizing.
         swapChainDesc.Height             = 0;
+#endif
         swapChainDesc.Format             = DXGI_FORMAT_B8G8R8A8_UNORM;       // This is the most common swap chain format.
         swapChainDesc.Stereo             = false;
         swapChainDesc.SampleDesc.Count   = 1;                                // Don't use multi-sampling.
@@ -524,6 +548,24 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
         DX::ThrowIfFailed(
             dxgiDevice->SetMaximumFrameLatency(1)
             );
+    }
+
+    // For proper screen orientation, generate 2D matrix transformations for rendering.
+    switch (m_dxgiModeRotation)
+    {
+        case DXGI_MODE_ROTATION_ROTATE90:
+            m_orientationTransform2D = Matrix3x2F::Rotation(90.0f) * Matrix3x2F::Translation(m_windowBounds.Height, 0.0f);
+            break;
+        case DXGI_MODE_ROTATION_ROTATE180:
+            m_orientationTransform2D = Matrix3x2F::Rotation(180.0f) * Matrix3x2F::Translation(m_windowBounds.Width, m_windowBounds.Height);
+            break;
+        case DXGI_MODE_ROTATION_ROTATE270:
+            m_orientationTransform2D = Matrix3x2F::Rotation(270.0f) * Matrix3x2F::Translation(0.0f, m_windowBounds.Width);
+            break;
+        case DXGI_MODE_ROTATION_UNSPECIFIED:
+        case DXGI_MODE_ROTATION_IDENTITY:
+        default:
+            m_orientationTransform2D = Matrix3x2F::Identity();
     }
 
     // Create a Direct3D render target view of the swap chain back buffer.

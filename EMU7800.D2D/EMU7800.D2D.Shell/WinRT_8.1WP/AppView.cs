@@ -17,8 +17,6 @@ namespace EMU7800.D2D.Shell.WinRT
         readonly PageBackStackHost _pageBackStack;
         readonly GraphicsDevice _graphicsDevice;
 
-        readonly bool[] _lastKeyInput = new bool[0x100];
-
         bool _windowClosed, _windowVisible;
         int _lastMouseX, _lastMouseY;
         uint _lastMousePointerId;
@@ -30,9 +28,11 @@ namespace EMU7800.D2D.Shell.WinRT
             DXGI_MODE_ROTATION_ROTATE180   = 3,
             DXGI_MODE_ROTATION_ROTATE270   = 4;
 
-        readonly MogaController _mogaController = new MogaController();
+        static readonly MogaController _mogaController = new MogaController();
 
         #endregion
+
+        public static MogaController MogaController { get { return _mogaController; } }
 
         public static FileOpenPickerContinuationEventArgs CapturedFileOpenPickerContinuationEventArgs { get; set; }
 
@@ -47,17 +47,13 @@ namespace EMU7800.D2D.Shell.WinRT
             applicationView.Activated += ApplicationViewOnActivated;
             CoreApplication.Resuming += CoreApplicationOnResuming;
             CoreApplication.Suspending += CoreApplicationOnSuspending;
-            _mogaController.Launching();
         }
 
         public void SetWindow(CoreWindow window)
         {
-            window.KeyDown += (sender, args) => WindowOnKeyChanged(args, true);
-            window.KeyUp += (sender, args) => WindowOnKeyChanged(args, false);
             window.PointerMoved += (sender, args) => WindowOnPointerMoved(args);
             window.PointerPressed += (sender, args) => WindowOnPointerChanged(args, true);
             window.PointerReleased += (sender, args) => WindowOnPointerChanged(args, false);
-            window.PointerWheelChanged += WindowOnPointerWheelChanged;
 
             window.Closed += WindowOnClosed;
             window.VisibilityChanged += WindowOnVisibilityChanged;
@@ -117,6 +113,8 @@ namespace EMU7800.D2D.Shell.WinRT
             var coreWindow = CoreWindow.GetForCurrentThread();
             coreWindow.Activated += CoreWindowOnActivated;
             coreWindow.Activate();
+
+            _mogaController.Launching();
         }
 
         void WindowOnPointerMoved(PointerEventArgs args)
@@ -150,26 +148,6 @@ namespace EMU7800.D2D.Shell.WinRT
             var x = (int)pos.X;
             var y = (int)pos.Y;
             _pageBackStack.MouseButtonChanged(pointerId, x, y, down);
-        }
-
-        void WindowOnKeyChanged(KeyEventArgs args, bool down)
-        {
-            var lastDown = _lastKeyInput[(int)args.VirtualKey & 0xff];
-            if (down == lastDown)
-                return;
-            _lastKeyInput[(int)args.VirtualKey & 0xff] = down;
-            _pageBackStack.KeyboardKeyPressed((KeyboardKey)args.VirtualKey, down);
-        }
-
-        void WindowOnPointerWheelChanged(CoreWindow sender, PointerEventArgs args)
-        {
-            var current = args.CurrentPoint;
-            var pointerId = current.PointerId;
-            var pos = current.Position;
-            var x = (int)pos.X;
-            var y = (int)pos.Y;
-            var delta = current.Properties.MouseWheelDelta;
-            _pageBackStack.MouseWheelChanged(pointerId, x, y, delta);
         }
 
         void DisplayInformationOnDisplayContentsInvalidated(DisplayInformation displayInformation, object args)
@@ -212,24 +190,23 @@ namespace EMU7800.D2D.Shell.WinRT
 
         void CoreApplicationOnResuming(object sender, object o)
         {
-            _pageBackStack.OnNavigatingHere();
             _mogaController.Activated();
+            _pageBackStack.OnNavigatingHere();
             System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreApplicationOnResuming: PageBackStack.OnNavigatingHere()");
         }
 
         void CoreApplicationOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
         {
-            _pageBackStack.OnNavigatingAway();
             _mogaController.Deactivated();
+            _pageBackStack.OnNavigatingAway();
+            _graphicsDevice.Trim(); // Windows App Certification Kit 3.1 requirement
             System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.WinRT.AppView.CoreApplicationOnSuspending: PageBackStack.OnNavigatingAway()");
-
-            // Windows App Certification Kit 3.1 requirement
-            _graphicsDevice.Trim();
         }
 
         void WindowOnClosed(CoreWindow sender, CoreWindowEventArgs args)
         {
             _windowClosed = true;
+            _mogaController.Closing();
         }
 
         #endregion

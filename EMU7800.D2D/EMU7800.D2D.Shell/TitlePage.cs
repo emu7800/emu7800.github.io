@@ -138,12 +138,16 @@ namespace EMU7800.D2D.Shell
         async void ImportCheckAsync()
         {
             _buttonPlayAtariToday.IsVisible = false;
+            _buttonAbout.IsVisible = false;
+            _buttonFindRoms.IsVisible = false;
             _labelBusyInit.IsVisible = true;
 
             await Task.Run(() => ImportCheck());
             await Task.Run(() => SettingsCheck());
 
             _buttonPlayAtariToday.IsVisible = true;
+            _buttonAbout.IsVisible = true;
+            _buttonFindRoms.IsVisible = true;
             _labelBusyInit.IsVisible = false;
         }
 

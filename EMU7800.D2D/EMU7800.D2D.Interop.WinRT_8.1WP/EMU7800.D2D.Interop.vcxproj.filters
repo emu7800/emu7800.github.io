@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="GraphicsDevice.cpp" />
+    <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="DynamicBitmap.cpp" />
+    <ClCompile Include="GraphicsDevice.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="StaticBitmap.cpp" />
     <ClCompile Include="TextFormat.cpp" />
     <ClCompile Include="TextLayout.cpp" />
-    <ClCompile Include="AudioDevice.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="D2DError.h" />
     <ClInclude Include="D2DStructs.h" />
     <ClInclude Include="DXUtils.h" />
     <ClInclude Include="DynamicBitmap.h" />
+    <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="StaticBitmap.h" />
     <ClInclude Include="TextFormat.h" />
     <ClInclude Include="TextLayout.h" />
-    <ClInclude Include="AudioDevice.h" />
   </ItemGroup>
 </Project>

@@ -440,7 +440,6 @@
     <None Include="Package.StoreAssociation.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="EMU7800.D2D_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo_150x150.png">

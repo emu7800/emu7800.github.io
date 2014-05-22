@@ -45,11 +45,14 @@ private:
 
     D3D_FEATURE_LEVEL               m_featureLevel;
     Windows::Foundation::Size       m_renderTargetSize;
+    Windows::Foundation::Size       m_outputSize;
     Windows::Foundation::Rect       m_windowBounds;
     float                           m_dpi;
     bool                            m_windowSizeChangeInProgress;
 
     ComPtr<ID2D1SolidColorBrush>    m_solidColorBrushes[8];
+    DXGI_MODE_ROTATION              m_dxgiModeRotation;
+    D2D1::Matrix3x2F                m_orientationTransform2D;
 
     HRESULT CreateSolidColorBrush(D2DSolidColorBrush brush, D2D1::ColorF color);
 
@@ -77,7 +80,7 @@ public:
     void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode);
     void PopAxisAlignedClip();
 
-    void Initialize(CoreWindow^ window, float dpi);
+    void Initialize(CoreWindow^ window, float dpi, int dxgiModeRotation);
     void HandleDeviceLost();
     void CreateDeviceIndependentResources();
     void CreateDeviceResources();

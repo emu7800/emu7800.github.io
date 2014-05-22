@@ -1,17 +1,20 @@
 ﻿#pragma once
 
+#include <agile.h>
+#include <wchar.h>
 #include <wrl.h>
 #include <wrl/client.h>
 #include <d3d11_2.h>
 #include <d2d1_2.h>
-#include <d2d1effects.h>
+#include <d2d1effects_1.h>
 #include <dwrite_2.h>
 #include <wincodec.h>
 #include <DirectXMath.h>
 #include <XAudio2.h>
 #include <shcore.h>
-#include <agile.h>
-#include <wchar.h>
+#if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+    #include <Xinput.h>
+#endif
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "d3d11.lib")
@@ -23,3 +26,6 @@
 #pragma comment(lib, "shcore.lib")
 #pragma comment(lib, "windowscodecs.lib")
 #pragma comment(lib, "xaudio2.lib")
+#if !(WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+    #pragma comment(lib, "xinput.lib")
+#endif

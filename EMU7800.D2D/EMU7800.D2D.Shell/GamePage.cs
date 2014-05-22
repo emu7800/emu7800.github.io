@@ -44,6 +44,8 @@ namespace EMU7800.D2D.Shell
 
         int _backAndSettingsButtonVisibilityCounter;
 
+        SizeF _lastResize;
+
         #endregion
 
         public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, bool startFresh = false)
@@ -192,8 +194,8 @@ namespace EMU7800.D2D.Shell
             _hud_buttonPaused.Unchecked += (s, e) => _gameControl.IsPaused = false;
             _hud_buttonAntiAliasMode.Checked += (s, e) => _gameControl.IsAntiAliasOn = true;
             _hud_buttonAntiAliasMode.Unchecked += (s, e) => _gameControl.IsAntiAliasOn = false;
-            _hud_buttonShowTouchControls.Checked += (s, e) => _settings.ShowTouchControls = _touchbuttonCollection.IsVisible = _gameControl.IsInTouchMode = true;
-            _hud_buttonShowTouchControls.Unchecked += (s, e) => _settings.ShowTouchControls = _touchbuttonCollection.IsVisible = _gameControl.IsInTouchMode = false;
+            _hud_buttonShowTouchControls.Checked += (s, e) => HandleShowTouchControlsCheckedChanged(true);
+            _hud_buttonShowTouchControls.Unchecked += (s, e) => HandleShowTouchControlsCheckedChanged(false);
             _hud_buttonInput.Clicked += _hud_buttonInput_Clicked;
 
             _hud_buttonPower.Checked += _hud_buttonPower_Checked;
@@ -275,11 +277,21 @@ namespace EMU7800.D2D.Shell
         {
             base.Resized(size);
 
+            _lastResize = size;
+
             var mult = Math.Min(size.Width / 4, size.Height / 3);
             var screenWidth  = 4 * mult - 5;
             var screenHeight = 3 * mult - 5;
+
             var x = size.Width / 2 - screenWidth / 2;
             var y = size.Height / 2 - screenHeight / 2;
+#if WINDOWS_PHONE_APP
+            // WP8.1 introduced a notification window activated by swiping from the edge.
+            // The on-screen directional controls needed to be moved to the right and out of the way a bit.
+            // To limit the amount the on-screen controls overlap the playfield, this moves the playfield to the right too.
+            if (_gameControl.IsInTouchMode)
+                x = size.Width - screenWidth - 35;
+#endif
             _gameControl.Location = Struct.ToPointF(x, y);
             _gameControl.Size = Struct.ToSizeF(screenWidth, screenHeight);
 
@@ -318,11 +330,18 @@ namespace EMU7800.D2D.Shell
 
             var touchWidth = (int)_touchbuttonLeft.Size.Width;
             var touchY = (int)size.Height / 2 - 3 * touchWidth / 2;
-            _touchbuttonUp.Location = Struct.ToPointF(touchWidth, touchY);
-            _touchbuttonLeft.Location = Struct.ToPointF(0, touchY + touchWidth);
-            _touchbuttonRight.Location = Struct.ToRightOf(_touchbuttonLeft, touchWidth, 0);
-            _touchbuttonDown.Location = Struct.ToPointF(touchWidth, touchY + 2 * touchWidth);
-            _touchbuttonFire.Location = Struct.ToPointF(size.Width - 2 * touchWidth, touchY + touchWidth);
+#if WINDOWS_PHONE_APP
+            // WP8.1 introduced a notification window activated by swiping from the edge.
+            // The on-screen directional controls needed to be moved to the right and out of the way a bit.
+            const int LEFTG = 25;
+#else
+            const int LEFTG = 0;
+#endif
+            _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth, touchY);
+            _touchbuttonLeft.Location  = Struct.ToPointF(LEFTG + 0, touchY + touchWidth);
+            _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth, touchY + touchWidth);
+            _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth, touchY + 2 * touchWidth);
+            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth, touchY + touchWidth);
             _touchbuttonFire2.Location = Struct.ToPointF(size.Width - touchWidth, touchY);
 
             _isTooNarrowForHud = size.Width < 330f;
@@ -344,7 +363,9 @@ namespace EMU7800.D2D.Shell
 
         public override void KeyboardKeyPressed(KeyboardKey key, bool down)
         {
+            ResetBackAndSettingsButtonVisibilityCounter();
             base.KeyboardKeyPressed(key, down);
+
             switch (key)
             {
                 case KeyboardKey.Escape:
@@ -401,10 +422,13 @@ namespace EMU7800.D2D.Shell
                     PostInfoText("P3/P4 paddles swapped");
                     _gameControl.SwapRightControllerPaddles();
                     break;
-                default:
-                    ResetBackAndSettingsButtonVisibilityCounter();
-                    break;
             }
+        }
+
+        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        {
+            ResetBackAndSettingsButtonVisibilityCounter();
+            base.MouseButtonChanged(pointerId, x, y, down);
         }
 
         public override void Update(TimerDevice td)
@@ -573,6 +597,12 @@ namespace EMU7800.D2D.Shell
         void RaiseKeyboardKeyPressed(KeyboardKey key, bool down)
         {
             _gameControl.KeyboardKeyPressed(key, down);
+        }
+
+        void HandleShowTouchControlsCheckedChanged(bool isChecked)
+        {
+            _settings.ShowTouchControls = _touchbuttonCollection.IsVisible = _gameControl.IsInTouchMode = isChecked;
+            Resized(_lastResize);
         }
 
         void ChangeCurrentKeyboardPlayerNo(int newPlayerNo)

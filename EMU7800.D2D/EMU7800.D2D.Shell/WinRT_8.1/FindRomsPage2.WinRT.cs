@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Search;
 using EMU7800.Services;
 using EMU7800.Services.Extensions;
 
@@ -34,18 +33,7 @@ namespace EMU7800.D2D.Shell
             }
             catch (COMException)
             {
-                _labelStep.Text = "Canceled. Unable to launch picker in snapped view.";
-                _buttonOk.IsVisible = true;
-                _buttonCancel.IsVisible = false;
-                return;
-            }
-
-            if (files.Count == 0)
-            {
-                _labelStep.Text = "Canceled.";
-                _buttonOk.IsVisible = true;
-                _buttonCancel.IsVisible = false;
-                return;
+                files = null;
             }
 
             var csvFileContent = await Task.Run(() => new DatastoreService().GetGameProgramInfoFromReferenceRepository());
@@ -56,7 +44,8 @@ namespace EMU7800.D2D.Shell
 
             var targetFolder = await GetOrCreateImportedRomLocalFolderAsync();
 
-            foreach (var file in files)
+            var anyFiles = false;
+            foreach (var file in files ?? Enumerable.Empty<IStorageFile>())
             {
                 var bytes = await file.GetBytesAsync();
                 if (bytes == null)
@@ -68,10 +57,15 @@ namespace EMU7800.D2D.Shell
 
                 var desiredNewName = md5Key + "_" + file.Name;
                 await ImportFileAsync(targetFolder, file, desiredNewName);
+
+                anyFiles = true;
             }
 
-            var pathSet = await QueryForRomCandidatesAsync(targetFolder);
-            _romImportService.ImportWithDefaults(pathSet);
+            if (anyFiles)
+            {
+                var pathSet = await QueryForRomCandidatesAsync(targetFolder);
+                await Task.Run(() => _romImportService.ImportWithDefaults(pathSet));
+            }
 
             if (_romImportService.CancelRequested)
             {
@@ -79,7 +73,7 @@ namespace EMU7800.D2D.Shell
             }
             else
             {
-                _labelStep.Text = "Completed.";
+                _labelStep.Text = anyFiles ? "Completed." : "Canceled.";
             }
 
             _buttonOk.IsVisible = true;

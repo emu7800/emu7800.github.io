@@ -298,6 +298,7 @@ namespace EMU7800.Services
         {
             if (csvFileContent == null)
                 throw new ArgumentNullException("csvFileContent");
+
             ClearLastErrorInfo();
 
             try
@@ -315,6 +316,7 @@ namespace EMU7800.Services
         {
             if (csvFileContent == null)
                 throw new ArgumentNullException("csvFileContent");
+
             ClearLastErrorInfo();
 
             try
@@ -528,12 +530,15 @@ namespace EMU7800.Services
                     .ConfigureAwait(false)
                         .GetAwaiter()
                             .GetResult();
+
             var filterExtList = new[] {".bin", ".a26", ".a78", ".zip"};
+
             var list = files
                 .Where(IsPathPresent)
-                    .Where(file => !file.Name.StartsWith("_"))
+                .Where(file => !file.Name.StartsWith("_"))
                 .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
-                        .SelectMany(ToPaths);
+                .SelectMany(ToPaths);
+
             return list;
         }
 

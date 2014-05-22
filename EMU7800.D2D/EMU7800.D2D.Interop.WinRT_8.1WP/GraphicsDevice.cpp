@@ -479,8 +479,10 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     m_renderTargetSize.Width  = swapDimensions ? m_outputSize.Height : m_outputSize.Width;
     m_renderTargetSize.Height = swapDimensions ? m_outputSize.Width  : m_outputSize.Height;
 
+#if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
     // Windows Phone does not support resizing the swap chain, so clear it instead of resizing.
     m_swapChain = nullptr;
+#endif
 
     if (m_swapChain != nullptr)
     {
@@ -497,8 +499,13 @@ void GraphicsDevice::CreateWindowSizeDependentResources()
     {
         // Otherwise, create a new one using the same adapter as the existing Direct3D device.
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+#if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
         swapChainDesc.Width              = lround(m_renderTargetSize.Width); // Match the size of the window.
         swapChainDesc.Height             = lround(m_renderTargetSize.Height);
+#else
+        swapChainDesc.Width              = 0;                                // Use automatic sizing.
+        swapChainDesc.Height             = 0;
+#endif
         swapChainDesc.Format             = DXGI_FORMAT_B8G8R8A8_UNORM;       // This is the most common swap chain format.
         swapChainDesc.Stereo             = false;
         swapChainDesc.SampleDesc.Count   = 1;                                // Don't use multi-sampling.

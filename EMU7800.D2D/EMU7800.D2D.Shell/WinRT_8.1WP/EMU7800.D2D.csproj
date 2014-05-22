@@ -245,6 +245,18 @@
     <Compile Include="..\TitlePage.cs">
       <Link>TitlePage.cs</Link>
     </Compile>
+    <Compile Include="..\WinRT_8.1\Services\AssetService.cs">
+      <Link>Services\AssetService.cs</Link>
+    </Compile>
+    <Compile Include="..\WinRT_8.1\Services\DatastoreService.cs">
+      <Link>Services\DatastoreService.cs</Link>
+    </Compile>
+    <Compile Include="..\WinRT_8.1\Services\DatastoreServiceExtensions.cs">
+      <Link>Services\DatastoreServiceExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\WinRT_8.1\Services\Md5HashService.cs">
+      <Link>Services\Md5HashService.cs</Link>
+    </Compile>
     <Compile Include="..\WinRT_8.1\TitlePage.WinRT.cs">
       <Link>TitlePage.WinRT.cs</Link>
     </Compile>
@@ -254,11 +266,6 @@
     <Compile Include="GameControllersWrapper.cs" />
     <Compile Include="MogaController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AssetService.cs" />
-    <Compile Include="Services\DatastoreService.cs" />
-    <Compile Include="Services\DatastoreServiceExtensions.cs" />
-    <Compile Include="Services\Md5HashService.cs" />
-    <Compile Include="StelladaptorHost.cs" />
     <Compile Include="WinRTEntryPoint.cs" />
   </ItemGroup>
   <ItemGroup>

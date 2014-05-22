@@ -1,5 +1,6 @@
 ﻿using Moga.Windows.Phone;
 using System;
+using Windows.System.Display;
 
 namespace EMU7800.D2D.Shell
 {
@@ -7,7 +8,10 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
+        readonly DisplayRequest _displayRequest = new DisplayRequest();
         readonly ControllerManager _manager;
+
+        bool _displayRequestActive;
 
         #endregion
 
@@ -16,7 +20,24 @@ namespace EMU7800.D2D.Shell
             get
             {
                 var mogaState = GetMogaState();
-                return mogaState == ControllerResult.Connected;
+                var connected =  mogaState == ControllerResult.Connected;
+                if (connected)
+                {
+                    if (!_displayRequestActive)
+                    {
+                        _displayRequest.RequestActive();
+                        _displayRequestActive = true;
+                    }
+                }
+                else
+                {
+                    if (_displayRequestActive)
+                    {
+                        _displayRequest.RequestRelease();
+                        _displayRequestActive = false;
+                    }
+                }
+                return connected;
             }
         }
 
@@ -27,8 +48,12 @@ namespace EMU7800.D2D.Shell
 
         public ControllerAction KeyCodeA { get; private set; }
         public ControllerAction KeyCodeB { get; private set; }
+        public ControllerAction KeyCodeX { get; private set; }
+        public ControllerAction KeyCodeY { get; private set; }
         public ControllerAction KeyCodeSelect { get; private set; }
         public ControllerAction KeyCodeReset { get; private set; }
+        public ControllerAction KeyCodeL1 { get; private set; }
+        public ControllerAction KeyCodeR1 { get; private set; }
 
         public void Poll()
         {
@@ -36,22 +61,32 @@ namespace EMU7800.D2D.Shell
             {
                 XAxisValue    = 0.0f;
                 YAxisValue    = 0.0f;
+                ZAxisValue    = 0.0f;
+                RZAxisValue   = 0.0f;
                 KeyCodeA      = ControllerAction.Unpressed;
                 KeyCodeB      = ControllerAction.Unpressed;
+                KeyCodeX      = ControllerAction.Unpressed;
+                KeyCodeY      = ControllerAction.Unpressed;
                 KeyCodeSelect = ControllerAction.Unpressed;
                 KeyCodeReset  = ControllerAction.Unpressed;
+                KeyCodeL1     = ControllerAction.Unpressed;
+                KeyCodeR1     = ControllerAction.Unpressed;
                 return;
             }
 
-            XAxisValue    = _manager.GetAxisValue(Axis.X);
-            YAxisValue    = _manager.GetAxisValue(Axis.Y);
-            ZAxisValue    = _manager.GetAxisValue(Axis.Z);
-            RZAxisValue   = _manager.GetAxisValue(Axis.RZ);
-
-            KeyCodeA      = _manager.GetKeyCode(KeyCode.A);
-            KeyCodeB      = _manager.GetKeyCode(KeyCode.B);
-            KeyCodeSelect = _manager.GetKeyCode(KeyCode.Select);
-            KeyCodeReset  = _manager.GetKeyCode(KeyCode.Start);
+            XAxisValue        = _manager.GetAxisValue(Axis.X);
+            YAxisValue        = _manager.GetAxisValue(Axis.Y);
+            ZAxisValue        = _manager.GetAxisValue(Axis.Z);
+            RZAxisValue       = _manager.GetAxisValue(Axis.RZ);
+                              
+            KeyCodeA          = _manager.GetKeyCode(KeyCode.A);
+            KeyCodeB          = _manager.GetKeyCode(KeyCode.B);
+            KeyCodeX          = _manager.GetKeyCode(KeyCode.X);
+            KeyCodeY          = _manager.GetKeyCode(KeyCode.Y);
+            KeyCodeSelect     = _manager.GetKeyCode(KeyCode.Select);
+            KeyCodeReset      = _manager.GetKeyCode(KeyCode.Start);
+            KeyCodeL1         = _manager.GetKeyCode(KeyCode.L1);
+            KeyCodeR1         = _manager.GetKeyCode(KeyCode.R1);
         }
 
         public void Launching()
@@ -61,7 +96,6 @@ namespace EMU7800.D2D.Shell
             {
                 _manager.Connect();
             }
-
             catch (Exception)
             {
                 // SDK samples did this, so just in case...
@@ -85,6 +119,9 @@ namespace EMU7800.D2D.Shell
 
         public void Deactivated()
         {
+            _displayRequest.RequestRelease();
+            _displayRequestActive = false;
+
             // ReSharper disable EmptyGeneralCatchClause
             try
             {
@@ -99,6 +136,9 @@ namespace EMU7800.D2D.Shell
 
         public void Closing()
         {
+            _displayRequest.RequestRelease();
+            _displayRequestActive = false;
+
             // ReSharper disable EmptyGeneralCatchClause
             try
             {

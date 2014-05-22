@@ -26,6 +26,29 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AudioDevice.cpp" />
+    <ClCompile Include="DynamicBitmap.cpp" />
+    <ClCompile Include="GraphicsDevice.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="StaticBitmap.cpp" />
+    <ClCompile Include="TextFormat.cpp" />
+    <ClCompile Include="TextLayout.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioDevice.h" />
+    <ClInclude Include="D2DError.h" />
+    <ClInclude Include="D2DStructs.h" />
+    <ClInclude Include="DXUtils.h" />
+    <ClInclude Include="DynamicBitmap.h" />
+    <ClInclude Include="GraphicsDevice.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="StaticBitmap.h" />
+    <ClInclude Include="TextFormat.h" />
+    <ClInclude Include="TextLayout.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{64079d32-6e79-4219-bdbf-f13602923f21}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -83,6 +106,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,29 +115,6 @@
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="AudioDevice.h" />
-    <ClInclude Include="D2DError.h" />
-    <ClInclude Include="D2DStructs.h" />
-    <ClInclude Include="DXUtils.h" />
-    <ClInclude Include="DynamicBitmap.h" />
-    <ClInclude Include="GraphicsDevice.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="StaticBitmap.h" />
-    <ClInclude Include="TextFormat.h" />
-    <ClInclude Include="TextLayout.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="AudioDevice.cpp" />
-    <ClCompile Include="DynamicBitmap.cpp" />
-    <ClCompile Include="GraphicsDevice.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="StaticBitmap.cpp" />
-    <ClCompile Include="TextFormat.cpp" />
-    <ClCompile Include="TextLayout.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

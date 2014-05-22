@@ -83,7 +83,7 @@ namespace EMU7800.D2D.Shell
             if (anyFiles)
             {
                 var pathSet = await QueryForRomCandidatesAsync(targetFolder);
-                _romImportService.ImportWithDefaults(pathSet);
+                await Task.Run(() => _romImportService.ImportWithDefaults(pathSet));
             }
 
             if (_romImportService.CancelRequested)
