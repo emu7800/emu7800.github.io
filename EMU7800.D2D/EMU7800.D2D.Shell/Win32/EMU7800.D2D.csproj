@@ -571,7 +571,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="EMU7800.D2D_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
