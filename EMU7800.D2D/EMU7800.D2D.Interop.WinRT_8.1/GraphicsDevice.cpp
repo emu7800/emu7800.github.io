@@ -693,7 +693,9 @@ void GraphicsDevice::ValidateDevice()
 
 void GraphicsDevice::Trim()
 {
+#if (NTDDI_VERSION > NTDDI_WIN8)
     m_dxgiDevice->Trim();
+#endif
 }
 
 GraphicsDevice::GraphicsDevice()
@@ -701,6 +703,7 @@ GraphicsDevice::GraphicsDevice()
     m_windowSizeChangeInProgress = false;
     m_dpi = -1.0f;
     IsDeviceResourcesRefreshed = false;
+    m_dxgiModeRotation = DXGI_MODE_ROTATION_UNSPECIFIED;
 }
 
 GraphicsDevice::~GraphicsDevice()

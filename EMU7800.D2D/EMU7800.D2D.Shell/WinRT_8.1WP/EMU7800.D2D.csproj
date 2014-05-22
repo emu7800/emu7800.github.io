@@ -439,8 +439,8 @@
       <Project>{6a44b022-9951-4bd6-84c8-ba76688aa435}</Project>
       <Name>EMU7800.Core.WinRT_8.1WP</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT_8.1WP\EMU7800.D2D.Interop.vcxproj">
-      <Project>{64079d32-6e79-4219-bdbf-f13602923f21}</Project>
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinRT_8.1WP.vcxproj">
+      <Project>{a71a2048-53be-459e-9549-3713de4c6f6e}</Project>
       <Name>EMU7800.D2D.Interop</Name>
     </ProjectReference>
   </ItemGroup>

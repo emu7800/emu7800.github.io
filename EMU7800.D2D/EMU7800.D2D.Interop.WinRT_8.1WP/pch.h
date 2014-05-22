@@ -4,10 +4,17 @@
 #include <wchar.h>
 #include <wrl.h>
 #include <wrl/client.h>
+#if (NTDDI_VERSION == NTDDI_WIN8)
+#include <d3d11_1.h>
+#include <d2d1_1.h>
+#include <dwrite_1.h>
+#include <d2d1effects.h>
+#else
 #include <d3d11_2.h>
 #include <d2d1_2.h>
 #include <d2d1effects_1.h>
 #include <dwrite_2.h>
+#endif
 #include <wincodec.h>
 #include <DirectXMath.h>
 #include <XAudio2.h>

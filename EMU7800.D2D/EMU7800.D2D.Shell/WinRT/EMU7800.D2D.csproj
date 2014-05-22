@@ -426,9 +426,7 @@
     <Content Include="Assets\WideLogo_310x150.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="EMU7800.D2D_StoreKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
-    <None Include="EMU7800.D2D_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo_150x150.png">
@@ -446,7 +444,7 @@
       <Project>{4d70aea7-7a93-445a-a1d8-6c30d9dd906d}</Project>
       <Name>EMU7800.Core.WinRT</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.vcxproj">
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinRT.vcxproj">
       <Project>{d7a976a8-0d54-410e-8123-2ef21f5fc032}</Project>
       <Name>EMU7800.D2D.Interop</Name>
     </ProjectReference>

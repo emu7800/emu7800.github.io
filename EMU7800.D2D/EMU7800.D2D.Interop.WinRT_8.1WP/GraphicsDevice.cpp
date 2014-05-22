@@ -405,9 +405,11 @@ void GraphicsDevice::CreateDeviceResources()
     DX::ThrowIfFailed(
         m_d3dDevice.As(&m_dxgiDevice)
         );
+
     DX::ThrowIfFailed(
         m_d2dFactory->CreateDevice(m_dxgiDevice.Get(), &m_d2dDevice)
         );
+
     DX::ThrowIfFailed(
         m_d2dDevice->CreateDeviceContext(
             D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
@@ -451,7 +453,6 @@ void GraphicsDevice::SetDpi(float dpi)
 void GraphicsDevice::UpdateForWindowSizeChange()
 {
     // Only handle window size changed if there is no pending DPI change.
-
     if (m_window->Bounds.Width  != m_windowBounds.Width
     ||  m_window->Bounds.Height != m_windowBounds.Height)
     {
@@ -693,7 +694,9 @@ void GraphicsDevice::ValidateDevice()
 
 void GraphicsDevice::Trim()
 {
+#if (NTDDI_VERSION > NTDDI_WIN8)
     m_dxgiDevice->Trim();
+#endif
 }
 
 GraphicsDevice::GraphicsDevice()

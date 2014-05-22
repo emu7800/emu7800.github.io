@@ -26,29 +26,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="AudioDevice.cpp" />
-    <ClCompile Include="DynamicBitmap.cpp" />
-    <ClCompile Include="GraphicsDevice.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="StaticBitmap.cpp" />
-    <ClCompile Include="TextFormat.cpp" />
-    <ClCompile Include="TextLayout.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AudioDevice.h" />
-    <ClInclude Include="D2DError.h" />
-    <ClInclude Include="D2DStructs.h" />
-    <ClInclude Include="DXUtils.h" />
-    <ClInclude Include="DynamicBitmap.h" />
-    <ClInclude Include="GraphicsDevice.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="StaticBitmap.h" />
-    <ClInclude Include="TextFormat.h" />
-    <ClInclude Include="TextLayout.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{64079d32-6e79-4219-bdbf-f13602923f21}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -78,8 +55,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>bin\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>obj\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>bin.WinRT_8.1WP\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>obj.WinRT_8.1WP\$(PlatformShortName)\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsPhoneSDK_IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -115,6 +92,29 @@
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+      <ClInclude Include="AudioDevice.h" />
+      <ClInclude Include="D2DError.h" />
+      <ClInclude Include="D2DStructs.h" />
+      <ClInclude Include="DXUtils.h" />
+      <ClInclude Include="DynamicBitmap.h" />
+      <ClInclude Include="GraphicsDevice.h" />
+      <ClInclude Include="pch.h" />
+      <ClInclude Include="StaticBitmap.h" />
+      <ClInclude Include="TextFormat.h" />
+      <ClInclude Include="TextLayout.h" />
+  </ItemGroup>
+  <ItemGroup>
+      <ClCompile Include="AudioDevice.cpp" />
+      <ClCompile Include="DynamicBitmap.cpp" />
+      <ClCompile Include="GraphicsDevice.cpp" />
+      <ClCompile Include="pch.cpp">
+          <PrecompiledHeader>Create</PrecompiledHeader>
+      </ClCompile>
+      <ClCompile Include="StaticBitmap.cpp" />
+      <ClCompile Include="TextFormat.cpp" />
+      <ClCompile Include="TextLayout.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

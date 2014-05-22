@@ -34,7 +34,11 @@ private:
 
     ComPtr<ID3D11Device1>           m_d3dDevice;
     ComPtr<ID3D11DeviceContext1>    m_d3dContext;
+#if (NTDDI_VERSION == NTDDI_WIN8)
+    ComPtr<IDXGIDevice>             m_dxgiDevice;
+#else
     ComPtr<IDXGIDevice3>            m_dxgiDevice;
+#endif
     ComPtr<IDXGISwapChain1>         m_swapChain;
     ComPtr<ID3D11RenderTargetView>  m_d3dRenderTargetView;
 
@@ -51,6 +55,7 @@ private:
     bool                            m_windowSizeChangeInProgress;
 
     ComPtr<ID2D1SolidColorBrush>    m_solidColorBrushes[8];
+
     DXGI_MODE_ROTATION              m_dxgiModeRotation;
     D2D1::Matrix3x2F                m_orientationTransform2D;
 

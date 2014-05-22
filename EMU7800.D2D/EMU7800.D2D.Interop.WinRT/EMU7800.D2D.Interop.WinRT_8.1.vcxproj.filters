@@ -2,25 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="DXUtils.h" />
     <ClCompile Include="GraphicsDevice.cpp" />
+    <ClCompile Include="AudioDevice.cpp" />
+    <ClCompile Include="DXUtils.h" />
     <ClCompile Include="DynamicBitmap.cpp" />
+    <ClCompile Include="TextLayout.cpp" />
+    <ClCompile Include="XInputDevice.cpp" />
     <ClCompile Include="StaticBitmap.cpp" />
     <ClCompile Include="TextFormat.cpp" />
-    <ClCompile Include="AudioDevice.cpp" />
-    <ClCompile Include="XInputDevice.cpp" />
-    <ClCompile Include="TextLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="GraphicsDevice.h" />
-    <ClInclude Include="D2DError.h" />
-    <ClInclude Include="DynamicBitmap.h" />
-    <ClInclude Include="StaticBitmap.h" />
-    <ClInclude Include="D2DStructs.h" />
-    <ClInclude Include="TextFormat.h" />
     <ClInclude Include="AudioDevice.h" />
-    <ClInclude Include="XInputDevice.h" />
+    <ClInclude Include="D2DError.h" />
+    <ClInclude Include="D2DStructs.h" />
+    <ClInclude Include="DynamicBitmap.h" />
+    <ClInclude Include="GraphicsDevice.h" />
     <ClInclude Include="TextLayout.h" />
+    <ClInclude Include="XInputDevice.h" />
+    <ClInclude Include="StaticBitmap.h" />
+    <ClInclude Include="TextFormat.h" />
   </ItemGroup>
 </Project>

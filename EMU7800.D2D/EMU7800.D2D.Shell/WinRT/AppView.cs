@@ -60,7 +60,7 @@ namespace EMU7800.D2D.Shell.WinRT
             _pageBackStack.Resized(size);
 
             var logicalDpi = DisplayProperties.LogicalDpi;
-            _graphicsDevice.Initialize(window, logicalDpi);
+            _graphicsDevice.Initialize(window, logicalDpi, 0);
         }
 
         public void Load(string entryPoint)
