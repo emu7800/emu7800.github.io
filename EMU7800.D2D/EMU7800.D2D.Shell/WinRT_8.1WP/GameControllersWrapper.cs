@@ -86,8 +86,8 @@ namespace EMU7800.D2D.Shell
             var right = _mogaController.XAxisValue > JoystickThreshold;
             var up    = _mogaController.YAxisValue > JoystickThreshold;
             var down  = _mogaController.YAxisValue < -JoystickThreshold;
-            var fire1 = _mogaController.KeyCodeB == Moga.Windows.Phone.ControllerAction.Pressed;
-            var fire2 = _mogaController.KeyCodeA == Moga.Windows.Phone.ControllerAction.Pressed;
+            var fire1 = _mogaController.KeyCodeA == Moga.Windows.Phone.ControllerAction.Pressed;
+            var fire2 = _mogaController.KeyCodeB == Moga.Windows.Phone.ControllerAction.Pressed;
 
             var left2  = _mogaController.ZAxisValue  < -JoystickThreshold;
             var right2 = _mogaController.ZAxisValue  > JoystickThreshold;
@@ -127,17 +127,15 @@ namespace EMU7800.D2D.Shell
                     _gameControl.ProLineJoystickChanged(0, MachineInput.Down, down);
                 }
 
-                if (fire1 != _lastFire1 || fire2 != _lastFire2)
-                {
-                    _gameControl.JoystickChanged(0, MachineInput.Fire, fire1 || fire2);
-                }
                 if (fire1 != _lastFire1)
                 {
-                    _gameControl.ProLineJoystickChanged(0, MachineInput.Fire, fire1);
+                    _gameControl.JoystickChanged(0, MachineInput.Fire, fire1);
+                    _gameControl.ProLineJoystickChanged(0, MachineInput.Fire2, fire1);
                 }
                 if (fire2 != _lastFire2)
                 {
-                    _gameControl.ProLineJoystickChanged(0, MachineInput.Fire2, fire2);
+                    _gameControl.JoystickChanged(0, MachineInput.Fire2, fire2);
+                    _gameControl.ProLineJoystickChanged(0, MachineInput.Fire, fire2);
                 }
 
                 if (left2 != _lastLeft2)
@@ -164,17 +162,15 @@ namespace EMU7800.D2D.Shell
                     _gameControl.ProLineJoystickChanged(1, MachineInput.Down, down2);
                 }
 
-                if (fire21 != _lastFire21 || fire22 != _lastFire22)
-                {
-                    _gameControl.JoystickChanged(1, MachineInput.Fire, fire21 || fire22);
-                }
                 if (fire21 != _lastFire21)
                 {
-                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire, fire21);
+                    _gameControl.JoystickChanged(1, MachineInput.Fire, fire21);
+                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire2, fire21);
                 }
                 if (fire22 != _lastFire22)
                 {
-                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire2, fire22);
+                    _gameControl.JoystickChanged(1, MachineInput.Fire2, fire22);
+                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire, fire22);
                 }
 
                 if (back != _lastBack)
