@@ -1,12 +1,30 @@
-TODO
-- WP8: add halloween, texas chain saw massacre, mountain king
+- (!) double-back launches previous game for some reason--troubleshoot!
+- see if can be submitted to the xbox games area
+
+- write release notes and about text
 
 
-release notes
-- windows 8.1: added daptor, daptor-ii and stelladaptor support
-- windows 8/8.1: relaxed a78 file recognition
-- windows 8/8.1: minor issue with xbox controller start button
-- windows 8/8.1: paddle button input swaps now working (didnt matter before, perhaps helps win32 version)
-- windows 8/8.1: fixed: wont go to sleep when playing games without keyboard input
+Preparational release for EMU7800 version 2.
+Windows Store code base ported to Windows Phone 8.1 for one experience across different platforms: Win32, Windows Store 8-8.1, and Phone 8.1.
+Minor fixes to homogenize across supported platforms and to prepare for .NET Native availability
 
 
+
+Windows Store code base now ported to Windows Phone, runs on three platforms: Win32, Windows Store, and Windows Phone (XBox when available
+- now supports ROM importing
+- still supports Moga mobile bluetooth controllers
+Next release will be .NET Native builds when those submissions are accepted which will improve performance
+ by tighting jitter and improve framerates on lower-end hardware.
+
+
+About
+The same EMU7800 code base is available across three platforms: Win32, Windows Store 8-8.1, and Windows Phone 8.1.
+The core emulation library is written in C# and has not been updated now for several years.
+The identical emulation library is present on all EMU7800 platforms.
+EMU7800 is a pure DirectX application.
+Also, much of the UI code is shared across all platforms diverging only when necessary to accomodate each platforms specific nuances.
+EMU7800 for Windows Phone 7.x is no longer supported.
+
+
+Statistics:
+winrt_8.1 native: <15% <22MB
