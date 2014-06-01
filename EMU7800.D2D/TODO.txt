@@ -1,30 +1,14 @@
-- (!) double-back launches previous game for some reason--troubleshoot!
-- see if can be submitted to the xbox games area
+(!) double-back launches previous game sometimes--try to figure this out
 
-- write release notes and about text
+File Moga.Windows.Phone.dll has failed the AppContainerCheck check.
+Apply the required linker options - SAFESEH, DYNAMICBASE, NXCOMPAT, and APPCONTAINER - when you link the app. See links below for more information:
+http://go.microsoft.com/fwlink/?LinkID=324325
 
+Released Versions
+=================
+Win32:       v1.7
+WP7/8:       v1.5 (no longer maintained)
+WinRT_8:     v1.1 (probably last one)
+WinRT_8.1:   v1.3
+WinRT_8.1WP: v1.9
 
-Preparational release for EMU7800 version 2.
-Windows Store code base ported to Windows Phone 8.1 for one experience across different platforms: Win32, Windows Store 8-8.1, and Phone 8.1.
-Minor fixes to homogenize across supported platforms and to prepare for .NET Native availability
-
-
-
-Windows Store code base now ported to Windows Phone, runs on three platforms: Win32, Windows Store, and Windows Phone (XBox when available
-- now supports ROM importing
-- still supports Moga mobile bluetooth controllers
-Next release will be .NET Native builds when those submissions are accepted which will improve performance
- by tighting jitter and improve framerates on lower-end hardware.
-
-
-About
-The same EMU7800 code base is available across three platforms: Win32, Windows Store 8-8.1, and Windows Phone 8.1.
-The core emulation library is written in C# and has not been updated now for several years.
-The identical emulation library is present on all EMU7800 platforms.
-EMU7800 is a pure DirectX application.
-Also, much of the UI code is shared across all platforms diverging only when necessary to accomodate each platforms specific nuances.
-EMU7800 for Windows Phone 7.x is no longer supported.
-
-
-Statistics:
-winrt_8.1 native: <15% <22MB

@@ -265,12 +265,14 @@ namespace EMU7800.D2D.Shell
             switch (xinput)
             {
                 case XInputButton.A:
-                case XInputButton.X:
                     _gameControl.JoystickChanged(playerNo, MachineInput.Fire2, down);
                     break;
                 case XInputButton.B:
-                case XInputButton.Y:
                     _gameControl.JoystickChanged(playerNo, MachineInput.Fire, down);
+                    break;
+                case XInputButton.X:
+                case XInputButton.Y:
+                    _gamePage.KeyboardKeyPressed(KeyboardKey.W, down);
                     break;
                 case XInputButton.DLeft:
                     _gameControl.JoystickChanged(playerNo, MachineInput.Left, down);

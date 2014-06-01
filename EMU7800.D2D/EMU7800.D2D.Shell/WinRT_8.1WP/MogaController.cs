@@ -23,19 +23,11 @@ namespace EMU7800.D2D.Shell
                 var connected =  mogaState == ControllerResult.Connected;
                 if (connected)
                 {
-                    if (!_displayRequestActive)
-                    {
-                        _displayRequest.RequestActive();
-                        _displayRequestActive = true;
-                    }
+                    DisplayRequestRequestActiveIfNecessary();
                 }
                 else
                 {
-                    if (_displayRequestActive)
-                    {
-                        _displayRequest.RequestRelease();
-                        _displayRequestActive = false;
-                    }
+                    DisplayRequestRequestReleaseIfNecessary();
                 }
                 return connected;
             }
@@ -119,8 +111,7 @@ namespace EMU7800.D2D.Shell
 
         public void Deactivated()
         {
-            _displayRequest.RequestRelease();
-            _displayRequestActive = false;
+            DisplayRequestRequestReleaseIfNecessary();
 
             // ReSharper disable EmptyGeneralCatchClause
             try
@@ -136,8 +127,7 @@ namespace EMU7800.D2D.Shell
 
         public void Closing()
         {
-            _displayRequest.RequestRelease();
-            _displayRequestActive = false;
+            DisplayRequestRequestReleaseIfNecessary();
 
             // ReSharper disable EmptyGeneralCatchClause
             try
@@ -188,6 +178,44 @@ namespace EMU7800.D2D.Shell
             // ReSharper restore EmptyGeneralCatchClause
 
             return result;
+        }
+
+        void DisplayRequestRequestActiveIfNecessary()
+        {
+            if (_displayRequestActive)
+                return;
+
+            _displayRequestActive = true;
+
+            // ReSharper disable EmptyGeneralCatchClause
+            try
+            {
+                _displayRequest.RequestActive();
+            }
+            catch (Exception)
+            {
+                // paranoia: RequestRelease() threw an ArithmeticException when suspending for a file picker for WinRT_81.WP
+            }
+            // ReSharper restore EmptyGeneralCatchClause
+        }
+
+        void DisplayRequestRequestReleaseIfNecessary()
+        {
+            if (!_displayRequestActive)
+                return;
+
+            _displayRequestActive = false;
+
+            // ReSharper disable EmptyGeneralCatchClause
+            try
+            {
+                _displayRequest.RequestRelease();
+            }
+            catch (Exception)
+            {
+                // This threw an ArithmeticException when suspending for a file picker for WinRT_81.WP
+            }
+            // ReSharper restore EmptyGeneralCatchClause
         }
 
         #endregion

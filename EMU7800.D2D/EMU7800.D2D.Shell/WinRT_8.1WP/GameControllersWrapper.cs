@@ -37,7 +37,7 @@ namespace EMU7800.D2D.Shell
 
         public string GetControllerInfo(int controllerNo)
         {
-            if (controllerNo < 0 || controllerNo > 1 || _disposed || !_mogaController.IsConnected)
+            if (controllerNo < 0 || controllerNo > 0 || _disposed || !_mogaController.IsConnected)
                 return null;
             return "MOGA";
         }
@@ -164,13 +164,11 @@ namespace EMU7800.D2D.Shell
 
                 if (fire21 != _lastFire21)
                 {
-                    _gameControl.JoystickChanged(1, MachineInput.Fire, fire21);
-                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire2, fire21);
+                    _gamePage.KeyboardKeyPressed(KeyboardKey.W, fire21);
                 }
                 if (fire22 != _lastFire22)
                 {
-                    _gameControl.JoystickChanged(1, MachineInput.Fire2, fire22);
-                    _gameControl.ProLineJoystickChanged(1, MachineInput.Fire, fire22);
+                    _gamePage.KeyboardKeyPressed(KeyboardKey.W, fire22);
                 }
 
                 if (back != _lastBack)

@@ -71,7 +71,7 @@ internal:
 public:
     literal int
         AXISRANGE = 1000,
-        DEADZONE  = 100;
+        DEADZONE  = 500;
 
     property String^ ProductName { String^ get() { return m_ProductName; } };
     property JoystickTypeEnum JoystickType { JoystickTypeEnum get() { return m_JoystickType; } };

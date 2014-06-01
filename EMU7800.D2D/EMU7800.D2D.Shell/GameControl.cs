@@ -188,6 +188,14 @@ namespace EMU7800.D2D.Shell
             _currentKeyboardPlayerNo = newPlayerNo;
         }
 
+        public void SwapJacks()
+        {
+            for (var pi = 0; pi < 4; pi++)
+            {
+                _playerJackMapping[pi] ^= 1;
+            }
+        }
+
         public void SwapLeftControllerPaddles()
         {
             var tmp0 = _paddleSwaps[0];

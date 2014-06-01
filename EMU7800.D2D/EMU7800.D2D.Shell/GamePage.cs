@@ -416,6 +416,12 @@ namespace EMU7800.D2D.Shell
                     PostInfoText("P1/P2 paddles swapped");
                     _gameControl.SwapLeftControllerPaddles();
                     break;
+                case KeyboardKey.W:
+                    if (down || _gameControllers == null)
+                        return;
+                    PostInfoText("Input jacks swapped");
+                    _gameControl.SwapJacks();
+                    break;
                 case KeyboardKey.E:
                     if (down || _gameControllers == null || !_gameControllers.RightJackHasAtariAdaptor)
                         return;

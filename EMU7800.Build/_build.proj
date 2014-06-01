@@ -5,9 +5,9 @@
     <Import Project=".\MSBuildExtensionPack\MSBuild.ExtensionPack.tasks"/>
     <PropertyGroup>
         <MajorVersion>1</MajorVersion>
-        <MinorVersion>6</MinorVersion>
+        <MinorVersion>7</MinorVersion>
         <BuildVersion>0</BuildVersion>
-        <RevisionVersion>1</RevisionVersion>
+        <RevisionVersion>0</RevisionVersion>
         <ClickOnceRevision>0</ClickOnceRevision>
         <SourceCodeArchiveFilename>EMU7800-v$(MajorVersion).$(MinorVersion).Source</SourceCodeArchiveFilename>
         <BinArchiveFilename>EMU7800-v$(MajorVersion).$(MinorVersion)</BinArchiveFilename>
