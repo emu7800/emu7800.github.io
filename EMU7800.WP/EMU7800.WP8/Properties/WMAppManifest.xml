@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{0319b494-7e29-4d0f-8618-4b160b04289c}" Title="EMU7800" RuntimeType="Silverlight" Version="1.8.0.0" Genre="Apps.Games" Author="Mike Murphy" Description="Atari 7800 emulator for Windows Phone" Publisher="Mike Murphy" PublisherID="{6f66bb08-9b9e-422c-90f6-d8617cfa22dd}">
-    <IconPath IsRelative="true" IsResource="false">marketplace_appicon_62x62.png</IconPath>
+  <App xmlns="" ProductID="{0319b494-7e29-4d0f-8618-4b160b04289c}" Title="EMU7800" RuntimeType="Silverlight" Version="1.9.0.0" Genre="Apps.Games" Author="Mike Murphy" Description="Atari 7800 emulator for Windows Phone" Publisher="Mike Murphy" PublisherID="{6f66bb08-9b9e-422c-90f6-d8617cfa22dd}">
+    <IconPath IsRelative="true" IsResource="false">marketplace_appicon_300x300.png</IconPath>
     <Capabilities>
       <!-- don't need any of these capabilities
       <Capability Name="ID_CAP_GAMERSERVICES" />
@@ -32,7 +32,8 @@
           <SmallImageURI IsResource="false" IsRelative="true">marketplace_appicon_173x173.png</SmallImageURI>
           <Count>0</Count>
           <BackgroundImageURI IsResource="false" IsRelative="true">marketplace_appicon_173x173.png</BackgroundImageURI>
-          <Title>  </Title>
+          <Title>
+          </Title>
           <BackContent>
           </BackContent>
           <BackBackgroundImageURI>

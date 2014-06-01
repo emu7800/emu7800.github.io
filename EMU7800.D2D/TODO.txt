@@ -6,9 +6,10 @@ http://go.microsoft.com/fwlink/?LinkID=324325
 
 Released Versions
 =================
-Win32:       v1.7
-WP7/8:       v1.5 (no longer maintained)
-WinRT_8:     v1.1 (probably last one)
-WinRT_8.1:   v1.3
-WinRT_8.1WP: v1.9
+Win32:       v1.7 (built using VS2013.2)
+WP7:         v1.5 (no longer serviced)
+WP8:         v1.9 (probably the last version of silverlight codebase, built using VS2013.2)
+WinRT_8:     v1.1 (no longer serviced)
+WinRT_8.1:   v1.3 (built using VS2013.2)
+WinRT_8.1WP: v1.9 (did not release, failed certification, need moga library update, will wait for .net native)
 

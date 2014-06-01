@@ -179,6 +179,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="marketplace_appicon_173x173.png" />
+    <Content Include="marketplace_appicon_300x300.png" />
     <Content Include="marketplace_appicon_62x62.png" />
     <Content Include="Properties\AppManifest.xml" />
     <Content Include="Properties\WMAppManifest.xml">
