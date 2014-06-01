@@ -434,7 +434,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Moga.Windows.Phone">
+    <Reference Include="Moga.Windows.Phone, Version=255.255.255.255, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>Dependencies\MOGA-v1.0\$(Platform)\Moga.Windows.Phone.winmd</HintPath>
     </Reference>
   </ItemGroup>
