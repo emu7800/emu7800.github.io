@@ -89,6 +89,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <UseProjectNToolchain>false</UseProjectNToolchain>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\AboutPage.cs">
