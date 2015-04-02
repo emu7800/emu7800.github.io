@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.22609.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.WP8.Interop", "EMU7800.WP8.Interop.vcxproj", "{64079D32-6E79-4219-BDBF-F13602923F21}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.WP81.Interop", "EMU7800.WP81.Interop.vcxproj", "{64079D32-6E79-4219-BDBF-F13602923F21}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK_WindowsPhone8", "DirectXTK\DirectXTK_WindowsPhone8.vcxproj", "{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK_WindowsPhone81", "DirectXTK\DirectXTK_WindowsPhone81.vcxproj", "{E0B52AE7-E160-4D32-BF3F-910B785E5A8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

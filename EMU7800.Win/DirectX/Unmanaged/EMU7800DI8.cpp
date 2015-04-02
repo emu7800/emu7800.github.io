@@ -119,7 +119,7 @@ int enumJoystickNo;
 
 BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
-    if (enumJoystickNo >= 2 || (int)pContext != 1)
+    if (enumJoystickNo >= 2 || (INT_PTR)pContext != 1)
         return DIENUM_STOP;
 
     int deviceno = enumJoystickNo++;
@@ -142,7 +142,7 @@ BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *
 
 BOOL CALLBACK EnumAxesCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext)
 {
-    int deviceno = (int)pContext;
+    INT_PTR deviceno = (INT_PTR)pContext;
 
     if (pdidoi->dwType & DIDFT_AXIS)
     {
@@ -166,7 +166,7 @@ HRESULT CreateJoystick(int deviceno, HWND hWnd)
 
     pJoystick[deviceno]->SetDataFormat(&c_dfDIJoystick2);
     pJoystick[deviceno]->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
-    pJoystick[deviceno]->EnumObjects(EnumAxesCallback, (LPVOID)deviceno, DIDFT_AXIS);
+    pJoystick[deviceno]->EnumObjects(EnumAxesCallback, (LPVOID)(INT_PTR)deviceno, DIDFT_AXIS);
 
     return S_OK;
 }

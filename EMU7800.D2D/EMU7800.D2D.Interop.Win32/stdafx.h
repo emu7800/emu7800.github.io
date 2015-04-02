@@ -30,7 +30,10 @@
 #include <wchar.h>
 #include <math.h>
 
+#pragma warning(push)
+#pragma warning(disable:4458) // Visual C++ 2015 CTP issued this warning on this existing DX SDK header
 #include <d2d1.h>
+#pragma warning(pop)
 #include <d2derr.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
