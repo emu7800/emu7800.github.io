@@ -1,12 +1,12 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+Microsoft Visual Studio Solution File, Format Version 14.00
+# Visual Studio 2015
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Win", "EMU7800.Win.csproj", "{74747A70-9E2D-4BC1-9587-00A3DFA15995}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B49DD445-4031-47E6-89C1-CABD18C717C5} = {B49DD445-4031-47E6-89C1-CABD18C717C5}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.DirectX", "DirectX\Unmanaged\EMU7800.DirectX.vcxproj", "{B49DD445-4031-47E6-89C1-CABD18C717C5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.DirectX", "DirectX\Unmanaged\EMU7800.DirectX.v140.vcxproj", "{B49DD445-4031-47E6-89C1-CABD18C717C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Core", "..\EMU7800.Core\EMU7800.Core.csproj", "{75E76CE4-80D3-4CEE-836D-CB5120DA1806}"
 EndProject
