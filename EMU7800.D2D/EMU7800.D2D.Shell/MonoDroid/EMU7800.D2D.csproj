@@ -1,0 +1,317 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ECDBBDAF-AC3F-4DF0-92FB-23CB614BA4FF}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EMU7800.D2D</RootNamespace>
+    <AssemblyName>EMU7800.D2D</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkSkip />
+    <AndroidLinkMode>Full</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <BundleAssemblies>True</BundleAssemblies>
+    <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
+    <MonoDroidExtraArgs />
+    <Debugger>Mono</Debugger>
+    <AotAssemblies>True</AotAssemblies>
+    <EnableLLVM>True</EnableLLVM>
+    <EnableFullAOT>False</EnableFullAOT>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="OpenTK" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\AboutPage.cs">
+      <Link>AboutPage.cs</Link>
+    </Compile>
+    <Compile Include="..\Button.cs">
+      <Link>Button.cs</Link>
+    </Compile>
+    <Compile Include="..\ButtonBase.cs">
+      <Link>ButtonBase.cs</Link>
+    </Compile>
+    <Compile Include="..\ButtonCircleImage.cs">
+      <Link>ButtonCircleImage.cs</Link>
+    </Compile>
+    <Compile Include="..\ButtonToggle.cs">
+      <Link>ButtonToggle.cs</Link>
+    </Compile>
+    <Compile Include="..\ButtonTouchControl.cs">
+      <Link>ButtonTouchControl.cs</Link>
+    </Compile>
+    <Compile Include="..\ControlBase.cs">
+      <Link>ControlBase.cs</Link>
+    </Compile>
+    <Compile Include="..\ControlCollection.cs">
+      <Link>ControlCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\FindRomsPage.cs">
+      <Link>FindRomsPage.cs</Link>
+    </Compile>
+    <Compile Include="..\FindRomsPage2.cs">
+      <Link>FindRomsPage2.cs</Link>
+    </Compile>
+    <Compile Include="..\FrameRenderer160.cs">
+      <Link>FrameRenderer160.cs</Link>
+    </Compile>
+    <Compile Include="..\FrameRenderer160Blender.cs">
+      <Link>FrameRenderer160Blender.cs</Link>
+    </Compile>
+    <Compile Include="..\FrameRenderer320.cs">
+      <Link>FrameRenderer320.cs</Link>
+    </Compile>
+    <Compile Include="..\FrameRendererDefault.cs">
+      <Link>FrameRendererDefault.cs</Link>
+    </Compile>
+    <Compile Include="..\GameControl.cs">
+      <Link>GameControl.cs</Link>
+    </Compile>
+    <Compile Include="..\GamePage.cs">
+      <Link>GamePage.cs</Link>
+    </Compile>
+    <Compile Include="..\GameProgramInfoViewItemCollectionEx.cs">
+      <Link>GameProgramInfoViewItemCollectionEx.cs</Link>
+    </Compile>
+    <Compile Include="..\GameProgramInfoViewItemEx.cs">
+      <Link>GameProgramInfoViewItemEx.cs</Link>
+    </Compile>
+    <Compile Include="..\GameProgramSelectedEventArgs.cs">
+      <Link>GameProgramSelectedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\GameProgramSelectionControl.cs">
+      <Link>GameProgramSelectionControl.cs</Link>
+    </Compile>
+    <Compile Include="..\GameProgramSelectionPage.cs">
+      <Link>GameProgramSelectionPage.cs</Link>
+    </Compile>
+    <Compile Include="..\IFrameRenderer.cs">
+      <Link>IFrameRenderer.cs</Link>
+    </Compile>
+    <Compile Include="..\IInputAdapter.cs">
+      <Link>IInputAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterDrivingPaddle.cs">
+      <Link>InputAdapterDrivingPaddle.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterJoystick.cs">
+      <Link>InputAdapterJoystick.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterKeypad.cs">
+      <Link>InputAdapterKeypad.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterLightgun.cs">
+      <Link>InputAdapterLightgun.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterNull.cs">
+      <Link>InputAdapterNull.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterPaddle.cs">
+      <Link>InputAdapterPaddle.cs</Link>
+    </Compile>
+    <Compile Include="..\InputAdapterProlineJoystick.cs">
+      <Link>InputAdapterProlineJoystick.cs</Link>
+    </Compile>
+    <Compile Include="..\KeyboardKey.cs">
+      <Link>KeyboardKey.cs</Link>
+    </Compile>
+    <Compile Include="..\LabelControl.cs">
+      <Link>LabelControl.cs</Link>
+    </Compile>
+    <Compile Include="..\NullPage.cs">
+      <Link>NullPage.cs</Link>
+    </Compile>
+    <Compile Include="..\NumberControl.cs">
+      <Link>NumberControl.cs</Link>
+    </Compile>
+    <Compile Include="..\PageBackStackHost.cs">
+      <Link>PageBackStackHost.cs</Link>
+    </Compile>
+    <Compile Include="..\PageBackStackStateService.cs">
+      <Link>PageBackStackStateService.cs</Link>
+    </Compile>
+    <Compile Include="..\PageBase.cs">
+      <Link>PageBase.cs</Link>
+    </Compile>
+    <Compile Include="..\ProfilerTools.cs">
+      <Link>ProfilerTools.cs</Link>
+    </Compile>
+    <Compile Include="..\ScrollColumnInfo.cs">
+      <Link>ScrollColumnInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\AssetService.Shared.cs">
+      <Link>Services\AssetService.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\ApplicationSettings.cs">
+      <Link>Services\Dto\ApplicationSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\Asset.cs">
+      <Link>Services\Dto\Asset.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\ErrorInfo.cs">
+      <Link>Services\Dto\ErrorInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\GameProgramInfo.cs">
+      <Link>Services\Dto\GameProgramInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\GameProgramInfoViewItem.cs">
+      <Link>Services\Dto\GameProgramInfoViewItem.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\GameProgramInfoViewItemCollection.cs">
+      <Link>Services\Dto\GameProgramInfoViewItemCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\ImportedGameProgramInfo.cs">
+      <Link>Services\Dto\ImportedGameProgramInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\ImportedSpecialBinaryInfo.cs">
+      <Link>Services\Dto\ImportedSpecialBinaryInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\Dto\MachineStateInfo.cs">
+      <Link>Services\Dto\MachineStateInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\GameProgramLibraryService.cs">
+      <Link>Services\GameProgramLibraryService.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\MachineFactory.cs">
+      <Link>Services\MachineFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\RomBytesService.cs">
+      <Link>Services\RomBytesService.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\RomImportService.cs">
+      <Link>Services\RomImportService.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\RomPropertiesService.cs">
+      <Link>Services\RomPropertiesService.cs</Link>
+    </Compile>
+    <Compile Include="..\Services\SettingsService.cs">
+      <Link>Services\SettingsService.cs</Link>
+    </Compile>
+    <Compile Include="..\Struct.cs">
+      <Link>Struct.cs</Link>
+    </Compile>
+    <Compile Include="..\Styles.cs">
+      <Link>Styles.cs</Link>
+    </Compile>
+    <Compile Include="..\TextControl.cs">
+      <Link>TextControl.cs</Link>
+    </Compile>
+    <Compile Include="..\TimerDevice.cs">
+      <Link>TimerDevice.cs</Link>
+    </Compile>
+    <Compile Include="..\TitleControl.cs">
+      <Link>TitleControl.cs</Link>
+    </Compile>
+    <Compile Include="..\TitlePage.cs">
+      <Link>TitlePage.cs</Link>
+    </Compile>
+    <Compile Include="FindRomsPage2.MonoDroid.cs" />
+    <Compile Include="GameControllersWrapper.cs" />
+    <Compile Include="Interop\AudioDevice.cs" />
+    <Compile Include="Interop\D2DStructs.cs" />
+    <Compile Include="Interop\DynamicBitmap.cs" />
+    <Compile Include="Interop\GraphicsDevice.cs" />
+    <Compile Include="Interop\StaticBitmap.cs" />
+    <Compile Include="Interop\TextFormat.cs" />
+    <Compile Include="Interop\TextLayout.cs" />
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="GLView1.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AssetService.cs" />
+    <Compile Include="Services\DatastoreService.cs" />
+    <Compile Include="Services\Md5HashService..cs" />
+    <Compile Include="TitlePage.MonoDroid.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Main.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <Import Project="..\..\..\EMU7800.Core\EMU7800.Core.Shared.projitems" Label="Shared" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

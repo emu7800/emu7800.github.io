@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9304275b-bf2e-47f6-b223-140b4b7aa32b</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>EMU7800.Core.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AddressSpace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bios7800.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BufferElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart7808.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart7816.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart7832.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart7832P.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart7848.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78AB.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78AC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78S4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78S9.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78SG.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cart78SGP.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA16K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA16KR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA2K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA32K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA32KR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA4K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA8K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartA8KR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartCBS12K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartDC8K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartDPC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartDPC2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartMN16K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartPB8K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartTV8K.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CartType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConsoleSwitch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControllerAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeserializationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Emu7800Exception.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Emu7800SerializationException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FontRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HSC7800.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)M6502.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)M6502DASM.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine2600.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine2600NTSC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine2600PAL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine7800.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine7800NTSC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Machine7800PAL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MachineBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MachineInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MachineType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Maria.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MariaTables.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PIA.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PokeySound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RAM6116.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SerializationContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TIA.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TIASound.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TIATables.cs" />
+  </ItemGroup>
+</Project>
