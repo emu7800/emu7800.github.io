@@ -1,15 +1,11 @@
 ﻿// © Mike Murphy
 
-// TODO: port to android/xamarian
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-//using System.Windows.Media;
-//using System.Windows.Media.Imaging;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
 
@@ -60,14 +56,14 @@ namespace EMU7800.Services
 
                 try
                 {
-                    //using (var za = new ZipArchive(new FileStream(splitPath[0], FileMode.Open)))
-                    //{
-                    //    var entry = za.GetEntry(splitPath[1]);
-                    //    using (var br = new BinaryReader(entry.Open()))
-                    //    {
-                    //        bytes = br.ReadBytes((int)entry.Length);
-                    //    }
-                    //}
+                    using (var za = new ZipArchive(new FileStream(splitPath[0], FileMode.Open)))
+                    {
+                        var entry = za.GetEntry(splitPath[1]);
+                        using (var br = new BinaryReader(entry.Open()))
+                        {
+                            bytes = br.ReadBytes((int)entry.Length);
+                        }
+                    }
                     bytes = new byte[0];
                 }
                 catch (Exception ex)
@@ -174,14 +170,19 @@ namespace EMU7800.Services
             const int width = 320, height = 230;
             try
             {
-                //using (var fs = new FileStream(path, FileMode.OpenOrCreate))
-                //{
-                //    var image = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, BitmapPalettes.Halftone256, data, width*4);
-                //    var encoder = new PngBitmapEncoder {Interlace = PngInterlaceOption.Off};
-                //    encoder.Frames.Add(BitmapFrame.Create(image));
-                //    encoder.Save(fs);
-                //    fs.Flush(true);
-                //}
+                using (var fs = new FileStream(path, FileMode.OpenOrCreate))
+                {
+                    var intData = new int[data.Length / 3];
+                    for (var i = 0; i < intData.Length; i++)
+                    {
+                        intData[i] = Android.Graphics.Color.Rgb(data[3*i], data[3*i + 1], data[3*i + 2]);
+                    }
+                    using (var image = Android.Graphics.Bitmap.CreateBitmap(intData, width, height, Android.Graphics.Bitmap.Config.Argb8888))
+                    {
+                        image.Compress(Android.Graphics.Bitmap.CompressFormat.Png, 100, fs);
+                    }
+                    fs.Flush(true);
+                }
             }
             catch (Exception ex)
             {
@@ -630,14 +631,13 @@ namespace EMU7800.Services
 
         static string[] GetZipPaths(string filepath)
         {
-            //using (var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read))
-            //{
-            //    var zipPathList = za.Entries
-            //        .Select(entry => string.Format("{0}|{1}", filepath, entry.FullName))
-            //            .ToArray();
-            //    return zipPathList;
-            //}
-            return new string[0];
+            using (var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read))
+            {
+                var zipPathList = za.Entries
+                    .Select(entry => string.Format("{0}|{1}", filepath, entry.FullName))
+                        .ToArray();
+                return zipPathList;
+            }
         }
 
         static IEnumerable<string> EnumerateDirectories(string path)
