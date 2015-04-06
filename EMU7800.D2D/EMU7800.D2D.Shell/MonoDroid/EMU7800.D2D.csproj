@@ -272,6 +272,7 @@
     <Compile Include="..\TitlePage.cs">
       <Link>TitlePage.cs</Link>
     </Compile>
+    <Compile Include="AppView.cs" />
     <Compile Include="FindRomsPage2.MonoDroid.cs" />
     <Compile Include="GameControllersWrapper.cs" />
     <Compile Include="Interop\AudioDevice.cs" />

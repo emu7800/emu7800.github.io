@@ -8,7 +8,7 @@ namespace EMU7800.D2D.Interop
 
     public class GraphicsDevice : IDisposable
     {
-        public bool IsDeviceResourcesRefreshed { get; private set; }
+        public bool IsDeviceResourcesRefreshed { get; set; }
 
         public void BeginDraw()
         {
