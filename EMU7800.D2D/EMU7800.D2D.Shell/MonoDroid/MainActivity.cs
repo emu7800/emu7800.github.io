@@ -14,7 +14,7 @@ namespace EMU7800.MonoDroid
         Icon = "@drawable/icon",
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden
 #if __ANDROID_11__
-		,HardwareAccelerated=false
+        ,HardwareAccelerated=false
 #endif
         )]
     public class MainActivity : Activity
@@ -25,9 +25,18 @@ namespace EMU7800.MonoDroid
         {
             base.OnCreate(bundle);
 
+            RequestWindowFeature(WindowFeatures.NoTitle);
+            Window.SetFlags(WindowManagerFlags.Fullscreen, WindowManagerFlags.Fullscreen);
+
+
             // Create our OpenGL view, and display it
             view = new GLView1(this);
             SetContentView(view);
+        }
+
+        public override bool OnKeyDown([GeneratedEnum]Keycode keyCode, KeyEvent e)
+        {
+            return view.OnKeyDown(keyCode, e);
         }
 
         protected override void OnPause()
