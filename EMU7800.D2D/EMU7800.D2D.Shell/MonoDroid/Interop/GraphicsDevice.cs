@@ -30,47 +30,33 @@ namespace EMU7800.D2D.Interop
 
         public int EndDraw()
         {
-            _view.SwapBuffers();
             return 0;
         }
 
         public DynamicBitmap CreateDynamicBitmap(SizeU size)
         {
-            return new DynamicBitmap(size, this);
+            return new DynamicBitmap(this, size);
         }
 
         public StaticBitmap CreateStaticBitmap(byte[] data)
         {
-            return new StaticBitmap(data, this);
-        }
-
-        public TextFormat CreateTextFormat(string fontFamilyName, float fontSize)
-        {
-            return null;
-        }
-
-        public TextFormat CreateTextFormat(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize)
-        {
-            return null;
+            return new StaticBitmap(this, data);
         }
 
         public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height)
         {
-            return null;
-        }
-
-        public TextLayout CreateTextLayout(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize, string text, float width, float height)
-        {
-            return null;
+            return new TextLayout(this, fontFamilyName, fontSize, text, width, height);
         }
 
         public void DrawLine(PointF p0, PointF p1, float strokeWidth, D2DSolidColorBrush brush) { }
         public void DrawRectangle(RectF rect, float strokeWidth, D2DSolidColorBrush brush) { }
         public void FillRectangle(RectF rect, D2DSolidColorBrush brush) { }
-        public void DrawEllipse(RectF rect, float strokeWidth, D2DSolidColorBrush brush) { }
         public void FillEllipse(RectF rect, D2DSolidColorBrush brush) { }
-        public void DrawText(TextFormat textFormat, string text, RectF rect, D2DSolidColorBrush brush) { }
-        public void DrawText(TextLayout textLayout, PointF location, D2DSolidColorBrush brush) { }
+
+        public void DrawText(TextLayout textLayout, PointF location, D2DSolidColorBrush brush)
+        {
+            textLayout.Draw(location, brush);
+        }
 
         public void DrawBitmap(DynamicBitmap bitmap, RectF rect, D2DBitmapInterpolationMode interpolationMode)
         {
@@ -85,10 +71,6 @@ namespace EMU7800.D2D.Interop
         public void SetAntiAliasMode(D2DAntiAliasMode antiAliasMode) { }
         public void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode) { }
         public void PopAxisAlignedClip() { }
-        public void HandleDeviceLost() { }
-        public void CreateDeviceIndependentResources() { }
-        public void CreateDeviceResources() { }
-        public void SetDpi(float dpi) { }
 
         public void UpdateForWindowSizeChange()
         {
@@ -100,10 +82,10 @@ namespace EMU7800.D2D.Interop
             GL.ClearColor(0, 0, 0, 0xff);
         }
 
-        public void CreateWindowSizeDependentResources() { }
-        public void Present() { }
-        public void ValidateDevice() { }
-        public void Trim() { }
+        public void Present()
+        {
+            _view.SwapBuffers();
+        }
 
         public void Initialize(AndroidGameView view)
         {

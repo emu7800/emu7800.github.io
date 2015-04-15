@@ -38,6 +38,8 @@ namespace EMU7800.D2D.Interop
                 i += 3;
             }
             _bitmap.SetPixels(_copybuf, 0, _bitmap.Width, 0, 0, _bitmap.Width, _bitmap.Height);
+
+            GL.BindTexture(All.Texture2D, _textureId[0]);
             Android.Opengl.GLUtils.TexSubImage2D(Android.Opengl.GLES10.GlTexture2d, 0, 0, 0, _bitmap);
             return 0;
         }
@@ -106,22 +108,18 @@ namespace EMU7800.D2D.Interop
             GL.DrawArrays(All.TriangleStrip, 0, 4);
         }
 
-        internal DynamicBitmap(SizeU size, GraphicsDevice gd)
+        internal DynamicBitmap(GraphicsDevice gd, SizeU size)
         {
             _gd = gd;
-
-            GL.GenTextures(1, _textureId);
-            GL.BindTexture(All.Texture2D, _textureId[0]);
 
             var w = (int)size.Width;
             var h = (int)size.Height;
             _copybuf = new int[w * h];
             _bitmap = Bitmap.CreateBitmap(w, h, Bitmap.Config.Argb8888);
 
-            Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, Android.Opengl.GLES10.GlRgba, _bitmap, 0);
-
-            GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Nearest);
-            GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Nearest);
+            GL.GenTextures(1, _textureId);
+            GL.BindTexture(All.Texture2D, _textureId[0]);
+            Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, _bitmap, 0);
         }
     };
 }

@@ -73,20 +73,21 @@ namespace EMU7800.D2D.Interop
             GL.DrawArrays(All.TriangleStrip, 0, 4);
         }
 
-        internal StaticBitmap(byte[] data, GraphicsDevice gd)
+        internal StaticBitmap(GraphicsDevice gd, byte[] data)
         {
             _gd = gd;
 
             GL.GenTextures(1, _textureId);
             GL.BindTexture(All.Texture2D, _textureId[0]);
 
-            using (var bitmap = BitmapFactory.DecodeByteArray(data, 0, data.Length))
-            {
-                Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, Android.Opengl.GLES10.GlRgba, bitmap, 0);
-            }
-
             GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Nearest);
             GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Nearest);
+
+            var options = new BitmapFactory.Options { InScaled = false };
+            using (var bitmap = BitmapFactory.DecodeByteArray(data, 0, data.Length, options))
+            {
+                Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, bitmap, 0);
+            }
         }
     }
 }

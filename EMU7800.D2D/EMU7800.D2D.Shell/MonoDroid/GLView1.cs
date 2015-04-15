@@ -92,6 +92,7 @@ namespace EMU7800.MonoDroid
 
         StaticBitmap _androidLogo;
         DynamicBitmap _snow;
+        TextLayout _text;
         float _x, _y, _w, _h;
 
 
@@ -107,6 +108,8 @@ namespace EMU7800.MonoDroid
                 }
                 _snow = _graphicsDevice.CreateDynamicBitmap(EMU7800.D2D.Shell.Struct.ToSizeU(320, 240));
                 _pixels2 = new byte[320 * 240 * 3];
+
+                _text = _graphicsDevice.CreateTextLayout("Arial", 75, "Hello World!", 600, 200);
             }
 
             for (var i = 0; i < _pixels2.Length; i += 3)
@@ -120,24 +123,20 @@ namespace EMU7800.MonoDroid
 
             _graphicsDevice.BeginDraw();
 
-            var rect = EMU7800.D2D.Shell.Struct.ToRectF(D2D.Shell.Struct.ToPointF(_x, _y), D2D.Shell.Struct.ToSizeF(272 + _w, 272 + _h));
+            var rect = EMU7800.D2D.Shell.Struct.ToRectF(D2D.Shell.Struct.ToPointF(0, 0), D2D.Shell.Struct.ToSizeF(272 + _w, 272 + _h));
             _graphicsDevice.DrawBitmap(_androidLogo, rect);
 
             var rect2 = EMU7800.D2D.Shell.Struct.ToRectF(
                 D2D.Shell.Struct.ToPointF(100, 300),
                 D2D.Shell.Struct.ToSizeF(320 * 2, 240 * 2));
-
             _graphicsDevice.DrawBitmap(_snow, rect2, D2DBitmapInterpolationMode.Linear);
+
+            var loc = EMU7800.D2D.Shell.Struct.ToPointF(_x, _y);
+            _graphicsDevice.DrawText(_text, loc, D2DSolidColorBrush.White);
 
             _graphicsDevice.EndDraw();
 
-
-            //var canvas = new Canvas(_bitmap);
-            //Paint textPaint = new Paint();
-            //textPaint.TextSize = 18;
-            ////textPaint.AntiAlias = true;
-            //textPaint.SetARGB(0xff, 0xff, 0xff, 0xff);
-            //canvas.DrawText("Hello!", 50, 50, textPaint);
+            _graphicsDevice.Present();
         }
 
         void OnRenderExp1(FrameEventArgs e)
