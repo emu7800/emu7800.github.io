@@ -67,6 +67,15 @@ namespace EMU7800.MonoDroid
                     _w -= 2;
                     _h -= 2;
                     break;
+                case Android.Views.Keycode.V:
+                    if (_audioDevice != null)
+                        _audioDevice.Dispose();
+                    break;
+                case Android.Views.Keycode.B:
+                    if (_audioDevice != null)
+                        _audioDevice.Dispose();
+                    _audioDevice = new AudioDevice(31400, _audioBuf.Length, 8);
+                    break;
             }
             return true;
         }
@@ -93,6 +102,8 @@ namespace EMU7800.MonoDroid
         StaticBitmap _androidLogo;
         DynamicBitmap _snow;
         TextLayout _text;
+        AudioDevice _audioDevice;
+        byte[] _audioBuf = new byte[512];
         float _x, _y, _w, _h;
 
 
@@ -109,7 +120,7 @@ namespace EMU7800.MonoDroid
                 _snow = _graphicsDevice.CreateDynamicBitmap(EMU7800.D2D.Shell.Struct.ToSizeU(320, 240));
                 _pixels2 = new byte[320 * 240 * 3];
 
-                _text = _graphicsDevice.CreateTextLayout("Arial", 75, "Hello World!", 600, 200);
+                _text = _graphicsDevice.CreateTextLayout("Consolas", 75, "Hello World!", 600, 200);
             }
 
             for (var i = 0; i < _pixels2.Length; i += 3)
@@ -120,6 +131,16 @@ namespace EMU7800.MonoDroid
                 _pixels2[i + 2] = b;
             }
             _snow.CopyFromMemory(_pixels2);
+
+            while (_audioDevice != null && _audioDevice.BuffersQueued >= 0 && _audioDevice.BuffersQueued < 3)
+            {
+                for (var i = 0; i < _audioBuf.Length; i++)
+                {
+                    var b = (byte)_random.Next(0, 0xff);
+                    _audioBuf[i] = b;
+                }
+                _audioDevice.SubmitBuffer(_audioBuf);
+            }
 
             _graphicsDevice.BeginDraw();
 

@@ -1,3 +1,5 @@
+using Android.App;
+using Android.Content;
 using Android.Graphics;
 using OpenTK.Graphics.ES11;
 using System;
@@ -134,7 +136,8 @@ namespace EMU7800.D2D.Interop
             using (var textPaint = new Paint())
             {
                 bitmap.EraseColor(0);
-                textPaint.SetTypeface(Typeface.Create(_fontFamilyName, TypefaceStyle.Normal));
+                Typeface tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/androidnation.ttf");
+                textPaint.SetTypeface(tf);
                 textPaint.TextSize = _fontSize;
                 textPaint.AntiAlias = true;
                 textPaint.TextAlign = _textAlignment;

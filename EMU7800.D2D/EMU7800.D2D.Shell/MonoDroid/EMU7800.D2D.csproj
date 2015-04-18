@@ -292,6 +292,9 @@
     <Compile Include="TitlePage.MonoDroid.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\fonts\androidnation_b.ttf" />
+    <AndroidAsset Include="Assets\fonts\androidnation.ttf" />
+    <AndroidAsset Include="Assets\fonts\androidnation_i.ttf" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
