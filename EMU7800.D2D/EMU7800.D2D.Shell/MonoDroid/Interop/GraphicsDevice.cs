@@ -78,7 +78,7 @@ namespace EMU7800.D2D.Interop
             Height = _view.Height;
 
             GL.Enable(All.Texture2D);
-            //GL.ShadeModel(All.Smooth);
+            // TODO: figure out what this does: GL.ShadeModel(All.Smooth);
             GL.ClearColor(0, 0, 0, 0xff);
         }
 
@@ -103,6 +103,8 @@ namespace EMU7800.D2D.Interop
                  2 /* buffers */,
                  false
                  );
+
+            IsDeviceResourcesRefreshed = true;
         }
 
         #region IDisposable Members

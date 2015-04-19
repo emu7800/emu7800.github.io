@@ -1,13 +1,9 @@
 ﻿// © Mike Murphy
 
-// TODO: port to android
-
-using System;
-using System.Threading.Tasks;
-//using Windows.ApplicationModel;
-//using Windows.Storage;
-//using Windows.Storage.Streams;
 using EMU7800.Services.Dto;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace EMU7800.Services
 {
@@ -26,16 +22,15 @@ namespace EMU7800.Services
             var assetFilename = _assetToFilenameMapping[asset];
 
             byte[] bytes = null;
-            //try
-            //{
-            //    var file = await Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + assetFilename);
-            //    bytes = await GetBytesAsync(file);
-            //}
-            //catch (AggregateException ex)
-            //{
-            //    LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: {0}", assetFilename);
-            //}
-            bytes = new byte[0];
+
+            try
+            {
+                bytes = await GetBytesAsync(assetFilename);
+            }
+            catch (Exception ex)
+            {
+                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: {0}", assetFilename);
+            }
 
             lock (_locker)
             {
@@ -48,24 +43,15 @@ namespace EMU7800.Services
 
         #region Helpers
 
-        //async Task<byte[]> GetBytesAsync(IStorageFile file)
-        //{
-        //    var buffer = await FileIO.ReadBufferAsync(file);
-
-        //    const int limit = 1 << 22;
-        //    if (buffer.Length > limit)
-        //    {
-        //        LastErrorInfo = new ErrorInfo(LastErrorInfo, "GetBytesAsync: File exceeded {0} size limit.", limit);
-        //        return null;
-        //    }
-
-        //    using (var dr = DataReader.FromBuffer(buffer))
-        //    {
-        //        var bytes = new byte[buffer.Length];
-        //        dr.ReadBytes(bytes);
-        //        return bytes;
-        //    }
-        //}
+        async Task<byte[]> GetBytesAsync(string assetFileName)
+        {
+            using (var s = MonoDroid.MainActivity.App.Assets.Open(assetFileName, Android.Content.Res.Access.Streaming))
+            using (var ms = new MemoryStream())
+            {
+                await s.CopyToAsync(ms);
+                return ms.ToArray();
+            }
+        }
 
         #endregion
     }
