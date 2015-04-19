@@ -125,6 +125,8 @@ namespace EMU7800.D2D.Interop
 
         void GenerateTexture()
         {
+            GL.DeleteTextures(1, _textureId);
+
             GL.GenTextures(1, _textureId);
             GL.BindTexture(All.Texture2D, _textureId[0]);
 
@@ -136,7 +138,7 @@ namespace EMU7800.D2D.Interop
             using (var textPaint = new Paint())
             {
                 bitmap.EraseColor(0);
-                Typeface tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/androidnation.ttf");
+                Typeface tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/segoeui.ttf");
                 textPaint.SetTypeface(tf);
                 textPaint.TextSize = _fontSize;
                 textPaint.AntiAlias = true;

@@ -291,9 +291,6 @@
     <Compile Include="TitlePage.MonoDroid.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\fonts\androidnation_b.ttf" />
-    <AndroidAsset Include="Assets\fonts\androidnation.ttf" />
-    <AndroidAsset Include="Assets\fonts\androidnation_i.ttf" />
     <AndroidAsset Include="..\Assets\ROMProperties.csv">
       <Link>Assets\ROMProperties.csv</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -302,6 +299,7 @@
       <Link>Assets\roms.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Assets\fonts\segoeui.ttf" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>

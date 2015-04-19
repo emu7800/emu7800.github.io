@@ -43,7 +43,7 @@ namespace EMU7800.D2D.Shell
             gd.DrawText(_subTitleTextLayout, _subTitleTextLocation, D2DSolidColorBrush.White);
         }
 
-        protected async override void CreateResources(GraphicsDevice gd)
+        protected override void CreateResources(GraphicsDevice gd)
         {
             base.CreateResources(gd);
             _titleTextLayout = gd.CreateTextLayout(
@@ -58,7 +58,10 @@ namespace EMU7800.D2D.Shell
                 "Classic Atari 2600 and 7800 games",
                 300, 64
                 );
-            _appicon = await CreateStaticBitmapAsync(gd, Asset.appicon_128x128);
+
+            var task = Task.Run(() => CreateStaticBitmapAsync(gd, Asset.appicon_128x128));
+            task.Wait();
+            _appicon = task.Result;
         }
 
         protected override void DisposeResources()

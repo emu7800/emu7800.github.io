@@ -44,6 +44,9 @@ namespace EMU7800.D2D
 
         protected override void OnResize(EventArgs e)
         {
+            var size = Struct.ToSizeF(Width, Height);
+            _pageBackStack.Resized(size);
+
             _graphicsDevice.UpdateForWindowSizeChange();
         }
 
@@ -55,6 +58,7 @@ namespace EMU7800.D2D
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);
+
             if (Visible)
             {
                 RunOneLURCycle();

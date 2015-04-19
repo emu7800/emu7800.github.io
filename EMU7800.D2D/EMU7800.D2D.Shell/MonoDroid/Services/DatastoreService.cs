@@ -15,7 +15,6 @@ namespace EMU7800.Services
     {
         #region Fields
 
-        readonly static string _currentWorkingDir = AppDomain.CurrentDomain.BaseDirectory;
         static string _userAppDataStoreRoot;
 
         #endregion
@@ -36,7 +35,8 @@ namespace EMU7800.Services
         {
             ClearLastErrorInfo();
 
-            return QueryForRomCandidates(Path.Combine(_currentWorkingDir, "Assets"));
+            var dir = EnvironmentGetFolderPath(Environment.SpecialFolder.Personal);
+            return QueryForRomCandidates(Path.Combine(dir, "Assets"));
         }
 
         public byte[] GetRomBytes(string path)
@@ -379,9 +379,10 @@ namespace EMU7800.Services
             PersistedGameProgramsName      = "PersistedGamePrograms",
             ApplicationSettingsName        = "Settings.emusettings";
 
-        static string ToLocalAssetsPath(string fileName)
+        string ToLocalAssetsPath(string fileName)
         {
-            var root = Path.Combine(_currentWorkingDir, "Assets");
+            var dir = EnvironmentGetFolderPath(Environment.SpecialFolder.Personal);
+            var root = Path.Combine(dir, "Assets");
             var path = Path.Combine(root, fileName);
             return path;
         }
@@ -452,7 +453,7 @@ namespace EMU7800.Services
             return set;
         }
 
-        static string ToGameProgramInfoReferenceRepositoryPath()
+        string ToGameProgramInfoReferenceRepositoryPath()
         {
             return ToLocalAssetsPath(RomPropertiesName);
         }
