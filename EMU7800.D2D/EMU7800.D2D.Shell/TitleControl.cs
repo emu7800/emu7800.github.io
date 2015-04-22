@@ -43,8 +43,11 @@ namespace EMU7800.D2D.Shell
             gd.DrawText(_subTitleTextLayout, _subTitleTextLocation, D2DSolidColorBrush.White);
         }
 
-        protected override void CreateResources(GraphicsDevice gd)
+        protected async override void CreateResources(GraphicsDevice gd)
         {
+            // As a convention, GraphicsDevice draw operations accept null objects without throwing to accommodate
+            // late arriving artifacts that can occur with async methods such as this.
+            // It turns out this is the most holistically-elegant means to accommodate async operations.
             base.CreateResources(gd);
             _titleTextLayout = gd.CreateTextLayout(
                 Styles.TitleFontFamily,
@@ -58,10 +61,7 @@ namespace EMU7800.D2D.Shell
                 "Classic Atari 2600 and 7800 games",
                 300, 64
                 );
-
-            var task = Task.Run(() => CreateStaticBitmapAsync(gd, Asset.appicon_128x128));
-            task.Wait();
-            _appicon = task.Result;
+            _appicon = await CreateStaticBitmapAsync(gd, Asset.appicon_128x128);
         }
 
         protected override void DisposeResources()

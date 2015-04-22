@@ -1,5 +1,4 @@
 using Android.App;
-using Android.Content;
 using Android.Graphics;
 using OpenTK.Graphics.ES11;
 using System;
@@ -9,6 +8,8 @@ namespace EMU7800.D2D.Interop
     public class TextLayout : IDisposable
     {
         #region Fields
+
+        static Typeface _tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/segoeui.ttf");
 
         readonly GraphicsDevice _gd;
 
@@ -24,11 +25,18 @@ namespace EMU7800.D2D.Interop
 
         readonly float[] _vertices = new float[4 * 2];
 
-        string _fontFamilyName;
+        readonly string _fontFamilyName;
         readonly float _fontSize;
         readonly string _text;
 
-        Paint.Align _textAlignment;
+        readonly Bitmap _bitmap;
+        readonly Canvas _canvas;
+        readonly Paint _textPaint;
+
+        DWriteTextAlignment _textAlignment;
+        DWriteParaAlignment _paragraphAlignment;
+        D2DSolidColorBrush _brush;
+        bool _refreshBitmap;
 
         #endregion
 
@@ -39,26 +47,21 @@ namespace EMU7800.D2D.Interop
 
         public int SetTextAlignment(DWriteTextAlignment textAlignment)
         {
-            switch (textAlignment)
+            if (textAlignment != _textAlignment)
             {
-                case DWriteTextAlignment.Leading:
-                    _textAlignment = Paint.Align.Left;
-                    GenerateTexture();
-                    break;
-                case DWriteTextAlignment.Center:
-                    _textAlignment = Paint.Align.Center;
-                    GenerateTexture();
-                    break;
-                case DWriteTextAlignment.Trailing:
-                    _textAlignment = Paint.Align.Right;
-                    GenerateTexture();
-                    break;
+                _textAlignment = textAlignment;
+                _refreshBitmap = true;
             }
             return 0;
         }
 
         public int SetParagraphAlignment(DWriteParaAlignment paragraphAlignment)
         {
+            if (paragraphAlignment != _paragraphAlignment)
+            {
+                _paragraphAlignment = paragraphAlignment;
+                _refreshBitmap = true;
+            }
             return 0;
         }
 
@@ -73,6 +76,11 @@ namespace EMU7800.D2D.Interop
         {
             if (disposing)
             {
+                using (_textPaint)
+                using (_canvas)
+                using (_bitmap)
+                {
+                }
                 GL.DeleteTextures(1, _textureId);
             }
         }
@@ -86,6 +94,12 @@ namespace EMU7800.D2D.Interop
 
         internal void Draw(PointF location, D2DSolidColorBrush brush)
         {
+            if (brush != _brush)
+            {
+                _brush = brush;
+                _refreshBitmap = true;
+            }
+
             var sw =  2.0f / _gd.Width;
             var sh = -2.0f / _gd.Height;
 
@@ -102,6 +116,14 @@ namespace EMU7800.D2D.Interop
             _vertices[7] = _vertices[5];
 
             GL.BindTexture(All.Texture2D, _textureId[0]);
+
+            if (_refreshBitmap)
+            {
+                RefreshBitmap();
+                Android.Opengl.GLUtils.TexSubImage2D(Android.Opengl.GLES10.GlTexture2d, 0, 0, 0, _bitmap);
+                _refreshBitmap = false;
+            }
+
             GL.EnableClientState(All.VertexArray);
             GL.EnableClientState(All.TextureCoordArray);
             GL.VertexPointer(2, All.Float, 0, _vertices);
@@ -113,42 +135,108 @@ namespace EMU7800.D2D.Interop
         {
             _gd = gd;
 
-            _fontFamilyName = fontFamilyName;
-            _fontSize = fontSize;
-            _text = text;
-            _textAlignment = Paint.Align.Left;
             Width = width;
             Height = height;
 
-            GenerateTexture();
-        }
+            _fontFamilyName = fontFamilyName;
+            _fontSize = fontSize;
+            _text = text;
+            _textAlignment = DWriteTextAlignment.Leading;
+            _paragraphAlignment = fontSize > 40 ? DWriteParaAlignment.Center : DWriteParaAlignment.Near;
+            _brush = D2DSolidColorBrush.White;
 
-        void GenerateTexture()
-        {
-            GL.DeleteTextures(1, _textureId);
+            _bitmap = Bitmap.CreateBitmap((int)Width, (int)Height, Bitmap.Config.Argb8888);
+            _bitmap.EraseColor(0);
 
             GL.GenTextures(1, _textureId);
             GL.BindTexture(All.Texture2D, _textureId[0]);
-
             GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Nearest);
             GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Nearest);
+            Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, _bitmap, 0);
 
-            using (var bitmap = Bitmap.CreateBitmap((int)Width, (int)Height, Bitmap.Config.Argb8888))
-            using (var canvas = new Canvas(bitmap))
-            using (var textPaint = new Paint())
+            _canvas = new Canvas(_bitmap);
+            _textPaint = new Paint();
+            _textPaint.SetTypeface(_tf);
+            _textPaint.TextSize = _fontSize;
+            _textPaint.AntiAlias = true;
+
+            _refreshBitmap = true;
+        }
+
+        #region Helpers
+
+        void RefreshBitmap()
+        {
+            switch (_brush)
             {
-                bitmap.EraseColor(0);
-                Typeface tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/segoeui.ttf");
-                textPaint.SetTypeface(tf);
-                textPaint.TextSize = _fontSize;
-                textPaint.AntiAlias = true;
-                textPaint.TextAlign = _textAlignment;
-                textPaint.SetARGB(0xff, 0xff, 0xff, 0xff);
-                var bounds = new Rect();
-                textPaint.GetTextBounds(_text, 0, _text.Length, bounds);
-                canvas.DrawText(_text, bounds.Left, Math.Abs(bounds.Bottom - bounds.Top), textPaint);
-                Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, bitmap, 0);
+                case D2DSolidColorBrush.White:
+                    _textPaint.Color = Color.White;
+                    break;
+                case D2DSolidColorBrush.Black:
+                    _textPaint.Color = Color.Black;
+                    break;
+                case D2DSolidColorBrush.Red:
+                    _textPaint.Color = Color.Red;
+                    break;
+                case D2DSolidColorBrush.Orange:
+                    _textPaint.Color = Color.Orange;
+                    break;
+                case D2DSolidColorBrush.Yellow:
+                    _textPaint.Color = Color.Yellow;
+                    break;
+                case D2DSolidColorBrush.Green:
+                    _textPaint.Color = Color.Green;
+                    break;
+                case D2DSolidColorBrush.Blue:
+                    _textPaint.Color = Color.Blue;
+                    break;
+                case D2DSolidColorBrush.Gray:
+                    _textPaint.Color = Color.Gray;
+                    break;
+            }
+
+            _textPaint.TextAlign = ToPaintAlign(_textAlignment);
+
+            float tx = 0f, ty = 0f;
+
+            if (_textPaint.TextAlign == Paint.Align.Right)
+                tx = (float)Width;
+            else if (_textPaint.TextAlign == Paint.Align.Center)
+                tx = (float)Width / 2.0f;
+
+            var bounds = new Rect();
+            _textPaint.GetTextBounds(_text, 0, _text.Length, bounds);
+
+            switch (_paragraphAlignment)
+            {
+                case DWriteParaAlignment.Near:      // top of the text flow is aligned to the top edge of the layout box
+                    ty = Math.Abs(bounds.Top - bounds.Bottom);
+                    break;
+                case DWriteParaAlignment.Center:    // center of the flow is aligned to the center of the layout box
+                    ty = (float)(Height / 2.0f + Math.Abs(bounds.Top - bounds.Bottom) / 2.0f);
+                    break;
+                case DWriteParaAlignment.Far:       // bottom of the flow is aligned to the bottom edge of the layout box
+                    ty = (float)Height;
+                    break;
+            }
+
+            _canvas.DrawText(_text, tx, ty, _textPaint);
+        }
+
+        static Paint.Align ToPaintAlign(DWriteTextAlignment textAlignment)
+        {
+            switch (textAlignment)
+            {
+                case DWriteTextAlignment.Center:
+                    return Paint.Align.Center;
+                case DWriteTextAlignment.Trailing:
+                    return Paint.Align.Right;
+                default:
+                case DWriteTextAlignment.Leading:
+                    return Paint.Align.Left;
             }
         }
+
+        #endregion
     }
 }

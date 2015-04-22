@@ -55,16 +55,22 @@ namespace EMU7800.D2D.Interop
 
         public void DrawText(TextLayout textLayout, PointF location, D2DSolidColorBrush brush)
         {
+            if (textLayout == null)
+                return;
             textLayout.Draw(location, brush);
         }
 
         public void DrawBitmap(DynamicBitmap bitmap, RectF rect, D2DBitmapInterpolationMode interpolationMode)
         {
+            if (bitmap == null)
+                return;
             bitmap.Draw(rect, interpolationMode);
         }
 
         public void DrawBitmap(StaticBitmap bitmap, RectF rect)
         {
+            if (bitmap == null)
+                return;
             bitmap.Draw(rect);
         }
 
@@ -78,7 +84,7 @@ namespace EMU7800.D2D.Interop
             Height = _view.Height;
 
             GL.Enable(All.Texture2D);
-            // TODO: figure out what this does: GL.ShadeModel(All.Smooth);
+            GL.ShadeModel(All.Smooth);
             GL.ClearColor(0, 0, 0, 0xff);
         }
 
