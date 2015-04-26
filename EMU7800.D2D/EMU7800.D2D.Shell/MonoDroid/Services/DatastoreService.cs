@@ -15,6 +15,7 @@ namespace EMU7800.Services
     {
         #region Fields
 
+        static bool _assetsCopied;
         static string _userAppDataStoreRoot;
 
         #endregion
@@ -35,8 +36,7 @@ namespace EMU7800.Services
         {
             ClearLastErrorInfo();
 
-            var dir = EnvironmentGetFolderPath(Environment.SpecialFolder.Personal);
-            return QueryForRomCandidates(Path.Combine(dir, "Assets"));
+            return QueryForRomCandidates(Path.Combine(_userAppDataStoreRoot, "Assets"));
         }
 
         public byte[] GetRomBytes(string path)
@@ -64,7 +64,6 @@ namespace EMU7800.Services
                             bytes = br.ReadBytes((int)entry.Length);
                         }
                     }
-                    bytes = new byte[0];
                 }
                 catch (Exception ex)
                 {
@@ -379,11 +378,11 @@ namespace EMU7800.Services
             PersistedGameProgramsName      = "PersistedGamePrograms",
             ApplicationSettingsName        = "Settings.emusettings";
 
-        string ToLocalAssetsPath(string fileName)
+        static string ToLocalAssetsPath(string fileName)
         {
-            var dir = EnvironmentGetFolderPath(Environment.SpecialFolder.Personal);
+            var dir = _userAppDataStoreRoot;
             var root = Path.Combine(dir, "Assets");
-            var path = Path.Combine(root, fileName);
+            var path = fileName != null ? Path.Combine(root, fileName) : root;
             return path;
         }
 
@@ -471,7 +470,15 @@ namespace EMU7800.Services
         void EnsureUserAppDataStoreRoot()
         {
             if (_userAppDataStoreRoot == null)
+            {
                 _userAppDataStoreRoot = DiscoverOrCreateUserAppDataStoreRoot();
+            }
+            if (_userAppDataStoreRoot != null && !_assetsCopied)
+            {
+                CopyAssetFile(RomPropertiesName);
+                CopyAssetFile("roms.zip");
+                _assetsCopied = true;
+            }
         }
 
         string DiscoverOrCreateUserAppDataStoreRoot()
@@ -512,6 +519,18 @@ namespace EMU7800.Services
             }
 
             return selectedDirectoryPath;
+        }
+
+        void CopyAssetFile(string fileName)
+        {
+            DirectoryCreateDirectory(ToLocalAssetsPath(null));
+            using (var s = MonoDroid.MainActivity.App.Assets.Open(fileName, Android.Content.Res.Access.Streaming))
+            using (var fs = new FileStream(ToLocalAssetsPath(fileName), FileMode.Create, FileAccess.Write, FileShare.Write))
+            {
+                s.CopyTo(fs);
+                fs.Flush(true);
+                fs.Close();
+            }
         }
 
         static string EscapeFileNameChars(string fileName)
