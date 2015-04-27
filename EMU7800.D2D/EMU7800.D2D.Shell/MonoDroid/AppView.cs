@@ -66,29 +66,43 @@ namespace EMU7800.D2D
 
         public override bool OnGenericMotionEvent(MotionEvent e)
         {
-            return true;
+            return false;
         }
 
         public override bool OnTouchEvent(MotionEvent e)
         {
+            var pointerId = (uint)e.DeviceId;
+            var x = (int)e.RawX;
+            var y = (int)e.RawY;
+
             switch (e.Action)
             {
                 case MotionEventActions.Down:
                 case MotionEventActions.Up:
-                    _pageBackStack.MouseButtonChanged((uint)e.DeviceId, (int)e.RawX, (int)e.RawY, e.Action == MotionEventActions.Down);
-                    break;
+                    _lastMousePointerId = uint.MaxValue;
+                    _pageBackStack.MouseButtonChanged(pointerId, x, y, e.Action == MotionEventActions.Down);
+                    return true;
                 case MotionEventActions.Move:
-                    _pageBackStack.MouseMoved((uint)e.DeviceId, (int)e.RawX, (int)e.RawY, 1, 1);
-                    break;
+                    if (_lastMousePointerId != pointerId)
+                    {
+                        _lastMouseX = x;
+                        _lastMouseY = y;
+                        _lastMousePointerId = pointerId;
+                    }
+                    var dx = x - _lastMouseX;
+                    var dy = y - _lastMouseY;
+                    _lastMouseX = x;
+                    _lastMouseY = y;
+                    _pageBackStack.MouseMoved(pointerId, x, y, dx, dy);
+                    return true;
                 default:
                     System.Diagnostics.Debug.WriteLine("Action:{0} DeviceId:{1} XY:{2} {3}",
                         e.Action,
                         e.DeviceId,
                         e.RawX,
                         e.RawY);
-                    break;
+                    return false;
             }
-            return true;
         }
 
         public void KeyboardKeyPressed(KeyboardKey key, bool down)

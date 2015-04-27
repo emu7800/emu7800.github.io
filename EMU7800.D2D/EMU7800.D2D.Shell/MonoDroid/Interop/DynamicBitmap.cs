@@ -35,7 +35,7 @@ namespace EMU7800.D2D.Interop
             for (int i = 0, j = 0; i < data.Length && j < _copybuf.Length; j++)
             {
                 _copybuf[j] = (0xff << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i];
-                i += 3;
+                i += 4;
             }
             _bitmap.SetPixels(_copybuf, 0, _bitmap.Width, 0, 0, _bitmap.Width, _bitmap.Height);
 

@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Content.PM;
 using EMU7800.D2D;
 using EMU7800.D2D.Shell;
+using Android.Runtime;
 
 namespace EMU7800.MonoDroid
 {
@@ -40,12 +41,27 @@ namespace EMU7800.MonoDroid
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
-            return OnKeyChanged(keyCode, e, true);
+            return OnKeyChanged(keyCode, e, true) ? true : base.OnKeyDown(keyCode, e);
         }
 
         public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
         {
-            return OnKeyChanged(keyCode, e, false);
+            return OnKeyChanged(keyCode, e, false) ? true : base.OnKeyUp(keyCode, e);
+        }
+
+        public override bool OnKeyLongPress([GeneratedEnum]Keycode keyCode, KeyEvent e)
+        {
+            return base.OnKeyLongPress(keyCode, e);
+        }
+
+        public override bool OnKeyMultiple([GeneratedEnum]Keycode keyCode, int repeatCount, KeyEvent e)
+        {
+            return base.OnKeyMultiple(keyCode, repeatCount, e);
+        }
+
+        public override bool OnKeyShortcut([GeneratedEnum]Keycode keyCode, KeyEvent e)
+        {
+            return base.OnKeyShortcut(keyCode, e);
         }
 
         protected override void OnPause()
@@ -63,8 +79,8 @@ namespace EMU7800.MonoDroid
         bool OnKeyChanged(Keycode keyCode, KeyEvent e, bool down)
         {
             var key = ToKeyboardKey(keyCode);
-            _appView.KeyboardKeyPressed(key, false);
-            return true;
+            _appView.KeyboardKeyPressed(key, down);
+            return key != KeyboardKey.None;
         }
 
         static KeyboardKey ToKeyboardKey(Keycode keyCode)
@@ -105,6 +121,8 @@ namespace EMU7800.MonoDroid
                 case Keycode.E:                 return KeyboardKey.E;
                 case Keycode.H:                 return KeyboardKey.H;
                 case Keycode.P:                 return KeyboardKey.P;
+                case Keycode.R:                 return KeyboardKey.R;
+                case Keycode.S:                 return KeyboardKey.S;
                 case Keycode.F1:                return KeyboardKey.F1;
                 case Keycode.F2:                return KeyboardKey.F2;
                 case Keycode.F3:                return KeyboardKey.F3;
