@@ -32,6 +32,7 @@ namespace EMU7800.D2D.Interop
         readonly Bitmap _bitmap;
         readonly Canvas _canvas;
         readonly Paint _textPaint;
+        readonly float _bitmapWidth, _bitmapHeight;
 
         DWriteTextAlignment _textAlignment;
         DWriteParaAlignment _paragraphAlignment;
@@ -104,9 +105,9 @@ namespace EMU7800.D2D.Interop
             var sh = -2.0f / _gd.Height;
 
             _vertices[0] = location.X                   * sw - 1.0f;
-            _vertices[1] = (location.Y + (float)Height) * sh + 1.0f;
+            _vertices[1] = (location.Y + _bitmapHeight) * sh + 1.0f;
 
-            _vertices[2] = (location.X + (float)Width)  * sw - 1.0f;
+            _vertices[2] = (location.X + _bitmapWidth)  * sw - 1.0f;
             _vertices[3] = _vertices[1];
 
             _vertices[4] = _vertices[0];
@@ -135,17 +136,17 @@ namespace EMU7800.D2D.Interop
         {
             _gd = gd;
 
-            Width = width;
-            Height = height;
-
             _fontFamilyName = fontFamilyName;
             _fontSize = fontSize;
             _text = text;
             _textAlignment = DWriteTextAlignment.Leading;
-            _paragraphAlignment = fontSize > 40 ? DWriteParaAlignment.Center : DWriteParaAlignment.Near;
+            _paragraphAlignment = fontSize >= 50 ? DWriteParaAlignment.Center : DWriteParaAlignment.Near;
             _brush = D2DSolidColorBrush.White;
 
-            _bitmap = Bitmap.CreateBitmap((int)Width, (int)Height, Bitmap.Config.Argb8888);
+            _bitmapWidth = width;
+            _bitmapHeight = height;
+
+            _bitmap = Bitmap.CreateBitmap((int)_bitmapWidth, (int)_bitmapHeight, Bitmap.Config.Argb8888);
             _bitmap.EraseColor(0);
 
             GL.GenTextures(1, _textureId);
@@ -200,23 +201,26 @@ namespace EMU7800.D2D.Interop
             float tx = 0f, ty = 0f;
 
             if (_textPaint.TextAlign == Paint.Align.Right)
-                tx = (float)Width;
+                tx = _bitmapWidth;
             else if (_textPaint.TextAlign == Paint.Align.Center)
-                tx = (float)Width / 2.0f;
+                tx = _bitmapWidth / 2.0f;
 
             var bounds = new Rect();
             _textPaint.GetTextBounds(_text, 0, _text.Length, bounds);
 
+            Width  = Math.Abs(bounds.Left - bounds.Right);
+            Height = Math.Abs(bounds.Top - bounds.Bottom) + 2.0f;
+
             switch (_paragraphAlignment)
             {
                 case DWriteParaAlignment.Near:      // top of the text flow is aligned to the top edge of the layout box
-                    ty = Math.Abs(bounds.Top - bounds.Bottom);
+                    ty = (float)Height;
                     break;
                 case DWriteParaAlignment.Center:    // center of the flow is aligned to the center of the layout box
-                    ty = (float)(Height / 2.0f + Math.Abs(bounds.Top - bounds.Bottom) / 2.0f);
+                    ty = _bitmapHeight / 2.0f + (float)Height / 2.0f;
                     break;
                 case DWriteParaAlignment.Far:       // bottom of the flow is aligned to the bottom edge of the layout box
-                    ty = (float)Height;
+                    ty = _bitmapHeight;
                     break;
             }
 

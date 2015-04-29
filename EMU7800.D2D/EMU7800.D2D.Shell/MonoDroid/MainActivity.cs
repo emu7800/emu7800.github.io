@@ -41,12 +41,12 @@ namespace EMU7800.MonoDroid
 
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
-            return OnKeyChanged(keyCode, e, true) ? true : base.OnKeyDown(keyCode, e);
+            return OnKeyChanged(keyCode, e, true) || base.OnKeyDown(keyCode, e);
         }
 
         public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
         {
-            return OnKeyChanged(keyCode, e, false) ? true : base.OnKeyUp(keyCode, e);
+            return OnKeyChanged(keyCode, e, false) || base.OnKeyUp(keyCode, e);
         }
 
         public override bool OnKeyLongPress([GeneratedEnum]Keycode keyCode, KeyEvent e)
