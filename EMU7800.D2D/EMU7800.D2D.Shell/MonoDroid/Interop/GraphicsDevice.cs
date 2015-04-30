@@ -75,8 +75,21 @@ namespace EMU7800.D2D.Interop
         }
 
         public void SetAntiAliasMode(D2DAntiAliasMode antiAliasMode) { }
-        public void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode) { }
-        public void PopAxisAlignedClip() { }
+
+        public void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode)
+        {
+            GL.Enable(All.ScissorTest);
+            var x = (int)rect.Left;
+            var y = (int)(Height - rect.Bottom);
+            var w = (int)(rect.Right - rect.Left);
+            var h = (int)(rect.Bottom - rect.Top);
+            GL.Scissor(x, y, w, h);
+        }
+
+        public void PopAxisAlignedClip()
+        {
+            GL.Disable(All.ScissorTest);
+        }
 
         public void UpdateForWindowSizeChange()
         {
@@ -102,12 +115,12 @@ namespace EMU7800.D2D.Interop
 
             _view.GLContextVersion = GLContextVersion.Gles1_1;
             _view.GraphicsMode      = new AndroidGraphicsMode(
-                16 /* bpp color */,
-                16 /* depth */,
-                 0,
-                 0,
-                 2 /* buffers */,
-                 false
+                16     /* bpp color */,
+                16     /* depth */,
+                 0     /* stencil */,
+                 0     /* samples */,
+                 2     /* buffers */,
+                 false /* stereo */
                  );
 
             IsDeviceResourcesRefreshed = true;
