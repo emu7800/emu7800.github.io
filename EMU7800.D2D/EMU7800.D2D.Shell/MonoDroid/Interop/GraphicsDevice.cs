@@ -24,8 +24,11 @@ namespace EMU7800.D2D.Interop
 
         public void BeginDraw()
         {
+            GL.Enable(All.Texture2D);
+            GL.Enable(All.Blend);
+            GL.ShadeModel(All.Smooth);
+            GL.BlendFunc(All.SrcAlpha, All.OneMinusSrcAlpha);
             GL.Clear((uint)All.ColorBufferBit);
-            GL.Viewport(0, 0, Width, Height);
         }
 
         public int EndDraw()
@@ -95,10 +98,7 @@ namespace EMU7800.D2D.Interop
         {
             Width = _view.Width;
             Height = _view.Height;
-
-            GL.Enable(All.Texture2D);
-            GL.ShadeModel(All.Smooth);
-            GL.ClearColor(0, 0, 0, 0xff);
+            GL.Viewport(0, 0, Width, Height);
         }
 
         public void Present()
