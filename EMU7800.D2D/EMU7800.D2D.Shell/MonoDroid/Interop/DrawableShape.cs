@@ -7,9 +7,8 @@ namespace EMU7800.D2D.Interop
     {
         #region Fields
 
-        readonly Paint _paint;
-        readonly Paint.Style _style;
-        D2DSolidColorBrush _brush;
+        readonly Paint _paint = new Paint();
+        D2DSolidColorBrush _brush = D2DSolidColorBrush.White;
         float _strokeWidth;
 
         #endregion
@@ -34,16 +33,12 @@ namespace EMU7800.D2D.Interop
             Draw(location);
         }
 
-        protected override void RefreshBitmap(Canvas canvas)
-        {
-            RefreshBitmap(canvas, _paint);
-        }
+        protected Paint Paint { get { return _paint; } }
 
-        protected virtual void RefreshBitmap(Canvas canvas, Paint paint)
+        protected override void RefreshBitmap()
         {
-            paint.StrokeWidth = _strokeWidth;
-            paint.Color = ToColor(_brush);
-            paint.SetStyle(_style);
+            Paint.StrokeWidth = _strokeWidth;
+            Paint.Color = ToColor(_brush);
         }
 
         #region IDisposable Members
@@ -61,15 +56,14 @@ namespace EMU7800.D2D.Interop
 
         #region Constructors
 
-        public DrawableShape(GraphicsDevice gd, float width, float height) : base(gd, width, height, 0)
+        protected DrawableShape(GraphicsDevice gd, float width, float height) : base(gd, width, height, 0)
         {
-            _paint = new Paint();
+            Paint.SetStyle(Paint.Style.Fill);
         }
 
-        public DrawableShape(GraphicsDevice gd, RectF rect, Paint.Style style) : base(gd, ToWidth(rect), ToHeight(rect), 4)
+        protected DrawableShape(GraphicsDevice gd, RectF rect, Paint.Style style) : base(gd, ToWidth(rect), ToHeight(rect), 4)
         {
-            _paint = new Paint();
-            _style = style;
+            Paint.SetStyle(style);
         }
 
         #endregion

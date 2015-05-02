@@ -4,11 +4,11 @@ namespace EMU7800.D2D.Interop
 {
     public class Ellipse : DrawableShape
     {
-        protected override void RefreshBitmap(Canvas canvas, Paint paint)
+        protected override void RefreshBitmap()
         {
-            base.RefreshBitmap(canvas, paint);
+            base.RefreshBitmap();
             var rect = new Android.Graphics.RectF(BitmapMargin, BitmapMargin, DrawableWidth, DrawableHeight);
-            canvas.DrawOval(rect, paint);
+            Canvas.DrawOval(rect, Paint);
         }
         public Ellipse(GraphicsDevice gd, RectF rect, Paint.Style style) : base(gd, rect, style)
         {

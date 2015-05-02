@@ -41,6 +41,8 @@ namespace EMU7800.D2D.Interop
             return (uint)(Math.Abs(width) * Math.Abs(height) + 0.5f);
         }
 
+        protected Canvas Canvas { get { return _canvas; } }
+
         protected void Draw(PointF location)
         {
             location.X -= BitmapMargin;
@@ -66,7 +68,7 @@ namespace EMU7800.D2D.Interop
             if (RequestBitmapRefresh)
             {
                 _bitmap.EraseColor(0);
-                RefreshBitmap(_canvas);
+                RefreshBitmap();
                 Android.Opengl.GLUtils.TexSubImage2D(Android.Opengl.GLES10.GlTexture2d, 0, 0, 0, _bitmap);
                 RequestBitmapRefresh = false;
             }
@@ -78,7 +80,7 @@ namespace EMU7800.D2D.Interop
             GL.DrawArrays(All.TriangleStrip, 0, 4);
         }
 
-        protected virtual void RefreshBitmap(Canvas canvas)
+        protected virtual void RefreshBitmap()
         {
         }
 
@@ -159,6 +161,8 @@ namespace EMU7800.D2D.Interop
             GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Nearest);
             GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Nearest);
             Android.Opengl.GLUtils.TexImage2D(Android.Opengl.GLES10.GlTexture2d, 0, _bitmap, 0);
+
+            RequestBitmapRefresh = true;
         }
 
         #endregion

@@ -16,8 +16,6 @@ namespace EMU7800.D2D.Interop
 
         DWriteTextAlignment _textAlignment;
         DWriteParaAlignment _paragraphAlignment;
-        D2DSolidColorBrush _brush;
-        bool _isPaintInitialized;
 
         #endregion
 
@@ -45,41 +43,18 @@ namespace EMU7800.D2D.Interop
             return 0;
         }
 
-        public void Draw(PointF location, D2DSolidColorBrush brush)
+        protected override void RefreshBitmap()
         {
-            if (brush != _brush)
-            {
-                _brush = brush;
-                RequestBitmapRefresh = true;
-            }
-            Draw(location);
-        }
+            base.RefreshBitmap();
 
-        protected override void RefreshBitmap(Canvas canvas, Paint paint)
-        {
-            if (!_isPaintInitialized)
-            {
-                paint.SetTypeface(_tf);
-                paint.TextSize = _fontSize;
-                paint.AntiAlias = true;
-                _isPaintInitialized = true;
-            }
-
-            paint.Color = ToColor(_brush);
-            paint.TextAlign = ToPaintAlign(_textAlignment);
+           Paint.TextAlign = ToPaintAlign(_textAlignment);
 
             float tx = 0f, ty = 0f;
 
-            if (paint.TextAlign == Paint.Align.Right)
+            if (Paint.TextAlign == Paint.Align.Right)
                 tx = BitmapWidth + BitmapMargin;
-            else if (paint.TextAlign == Paint.Align.Center)
+            else if (Paint.TextAlign == Paint.Align.Center)
                 tx = (BitmapWidth + BitmapMargin) / 2.0f;
-
-            var bounds = new Rect();
-            paint.GetTextBounds(_text, 0, _text.Length, bounds);
-
-            Width  = Math.Abs(bounds.Left - bounds.Right);
-            Height = Math.Abs(bounds.Top - bounds.Bottom) + 2.0f;
 
             switch (_paragraphAlignment)
             {
@@ -94,7 +69,7 @@ namespace EMU7800.D2D.Interop
                     break;
             }
 
-            canvas.DrawText(_text, tx, ty, paint);
+            Canvas.DrawText(_text, tx, ty, Paint);
         }
 
         #region Constructors
@@ -106,9 +81,16 @@ namespace EMU7800.D2D.Interop
             _text = text;
             _textAlignment = DWriteTextAlignment.Leading;
             _paragraphAlignment = fontSize >= 50 ? DWriteParaAlignment.Center : DWriteParaAlignment.Near;
-            _brush = D2DSolidColorBrush.White;
 
-            RequestBitmapRefresh = true;
+            Paint.AntiAlias = true;
+            Paint.SetTypeface(_tf);
+            Paint.TextSize = _fontSize;
+
+            var bounds = new Rect();
+            Paint.GetTextBounds(_text, 0, _text.Length, bounds);
+
+            Width  = Math.Abs(bounds.Left - bounds.Right);
+            Height = Math.Abs(bounds.Top - bounds.Bottom) + 2.0f;
         }
 
         #endregion
