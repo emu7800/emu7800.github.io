@@ -1,3 +1,4 @@
+using Android.Graphics;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES11;
 using OpenTK.Platform.Android;
@@ -14,6 +15,10 @@ namespace EMU7800.D2D.Interop
         #region Fields
 
         AndroidGameView _view;
+        DrawableCache<Rectangle> _rectangleCache = new DrawableCache<Rectangle>(5);
+        DrawableCache<Rectangle> _filledRectangleCache = new DrawableCache<Rectangle>(5);
+        DrawableCache<Ellipse> _filledEllipseCache = new DrawableCache<Ellipse>(5);
+        DrawableCache<Line> _lineCache = new DrawableCache<Line>(5);
 
         #endregion
 
@@ -51,10 +56,62 @@ namespace EMU7800.D2D.Interop
             return new TextLayout(this, fontFamilyName, fontSize, text, width, height);
         }
 
-        public void DrawLine(PointF p0, PointF p1, float strokeWidth, D2DSolidColorBrush brush) { }
-        public void DrawRectangle(RectF rect, float strokeWidth, D2DSolidColorBrush brush) { }
-        public void FillRectangle(RectF rect, D2DSolidColorBrush brush) { }
-        public void FillEllipse(RectF rect, D2DSolidColorBrush brush) { }
+        public void DrawLine(PointF p0, PointF p1, float strokeWidth, D2DSolidColorBrush brush)
+        {
+            RectF rect;
+            rect.Left   = p0.X;
+            rect.Top    = p0.Y;
+            rect.Right  = p1.X;
+            rect.Bottom = p1.Y;
+            var line = _lineCache.Get(rect);
+
+            if (line == null)
+            {
+                line = new Line(this, rect, Paint.Style.Stroke);
+                _lineCache.Put(line);
+            }
+
+            line.Draw(Shell.Struct.ToLocation(rect), strokeWidth, brush);
+        }
+
+        public void DrawRectangle(RectF rect, float strokeWidth, D2DSolidColorBrush brush)
+        {
+            var rectangle = _rectangleCache.Get(rect);
+
+            if (rectangle == null)
+            {
+                rectangle = new Rectangle(this, rect, Paint.Style.Stroke);
+                _rectangleCache.Put(rectangle);
+            }
+
+            rectangle.Draw(Shell.Struct.ToLocation(rect), strokeWidth, brush);
+        }
+
+        public void FillRectangle(RectF rect, D2DSolidColorBrush brush)
+        {
+            var rectangle = _filledRectangleCache.Get(rect);
+
+            if (rectangle == null)
+            {
+                rectangle = new Rectangle(this, rect, Paint.Style.Fill);
+                _filledRectangleCache.Put(rectangle);
+            }
+
+            rectangle.Draw(Shell.Struct.ToLocation(rect), brush);
+        }
+
+        public void FillEllipse(RectF rect, D2DSolidColorBrush brush)
+        {
+            var ellipse = _filledEllipseCache.Get(rect);
+
+            if (ellipse == null)
+            {
+                ellipse = new Ellipse(this, rect, Paint.Style.Fill);
+                _filledEllipseCache.Put(ellipse);
+            }
+
+            ellipse.Draw(Shell.Struct.ToLocation(rect), brush);
+        }
 
         public void DrawText(TextLayout textLayout, PointF location, D2DSolidColorBrush brush)
         {
@@ -137,12 +194,18 @@ namespace EMU7800.D2D.Interop
         {
             if (disposing)
             {
+                using (_rectangleCache)
+                using (_filledRectangleCache)
+                using (_filledEllipseCache)
+                using (_lineCache)
+                { }
             }
         }
 
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

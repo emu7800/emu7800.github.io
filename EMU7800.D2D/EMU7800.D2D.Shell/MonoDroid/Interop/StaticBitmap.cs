@@ -44,6 +44,7 @@ namespace EMU7800.D2D.Interop
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

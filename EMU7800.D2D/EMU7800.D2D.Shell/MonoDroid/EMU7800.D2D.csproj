@@ -281,8 +281,14 @@
     <Compile Include="GameControllersWrapper.cs" />
     <Compile Include="Interop\AudioDevice.cs" />
     <Compile Include="Interop\D2DStructs.cs" />
+    <Compile Include="Interop\Drawable.cs" />
+    <Compile Include="Interop\DrawableCache`1.cs" />
+    <Compile Include="Interop\DrawableShape.cs" />
     <Compile Include="Interop\DynamicBitmap.cs" />
+    <Compile Include="Interop\Ellipse.cs" />
     <Compile Include="Interop\GraphicsDevice.cs" />
+    <Compile Include="Interop\Line.cs" />
+    <Compile Include="Interop\Rectangle.cs" />
     <Compile Include="Interop\StaticBitmap.cs" />
     <Compile Include="Interop\TextFormat.cs" />
     <Compile Include="Interop\TextLayout.cs" />

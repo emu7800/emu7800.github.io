@@ -62,9 +62,12 @@ namespace EMU7800.D2D.Interop
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
+
+        #region Constructors
 
         public AudioDevice(int frequency, int bufferSizeInBytes, int queueLength)
         {
@@ -95,6 +98,10 @@ namespace EMU7800.D2D.Interop
             _playbackThread = new Thread(DoPlayback);
             _playbackThread.Start();
         }
+
+        #endregion
+
+        #region Helpers
 
         void DoPlayback(object state)
         {
@@ -137,5 +144,7 @@ namespace EMU7800.D2D.Interop
                 audioTrack.Write(buf, 0, buf.Length);
             }
         }
+
+        #endregion
     }
 }

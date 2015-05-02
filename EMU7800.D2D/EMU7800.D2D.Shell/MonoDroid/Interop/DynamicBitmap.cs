@@ -55,16 +55,15 @@ namespace EMU7800.D2D.Interop
         {
             if (disposing)
             {
+                using (_bitmap) { }
                 GL.DeleteTextures(1, _textureId);
-                using (_bitmap)
-                {
-                }
             }
         }
 
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
