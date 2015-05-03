@@ -143,6 +143,11 @@ namespace EMU7800.D2D.Interop
         {
             _gd = gd;
 
+            if (width > _gd.Width)
+                width = _gd.Width;
+            if (height > _gd.Height)
+                height = _gd.Height;
+
             DrawableWidth = width;
             DrawableHeight = height;
 

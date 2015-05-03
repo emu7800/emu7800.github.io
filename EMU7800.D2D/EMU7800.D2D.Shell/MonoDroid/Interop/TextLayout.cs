@@ -47,14 +47,7 @@ namespace EMU7800.D2D.Interop
         {
             base.RefreshBitmap();
 
-           Paint.TextAlign = ToPaintAlign(_textAlignment);
-
-            float tx = 0f, ty = 0f;
-
-            if (Paint.TextAlign == Paint.Align.Right)
-                tx = BitmapWidth + BitmapMargin;
-            else if (Paint.TextAlign == Paint.Align.Center)
-                tx = (BitmapWidth + BitmapMargin) / 2.0f;
+            float ty = 0f;
 
             switch (_paragraphAlignment)
             {
@@ -69,7 +62,47 @@ namespace EMU7800.D2D.Interop
                     break;
             }
 
-            Canvas.DrawText(_text, tx, ty, Paint);
+            using (var textPaint = new Android.Text.TextPaint())
+            {
+                textPaint.AntiAlias = true;
+                textPaint.SetTypeface(_tf);
+                textPaint.TextSize = _fontSize;
+                textPaint.Color = ToColor(Brush);
+                Android.Text.Layout.Alignment alignment;
+                switch (_textAlignment)
+                {
+                    case DWriteTextAlignment.Center:
+                        alignment = Android.Text.Layout.Alignment.AlignCenter;
+                        break;
+                    case DWriteTextAlignment.Trailing:
+                        alignment = Android.Text.Layout.Alignment.AlignOpposite;
+                        break;
+                    default:
+                    case DWriteTextAlignment.Leading:
+                        alignment = Android.Text.Layout.Alignment.AlignNormal;
+                        break;
+                }
+                switch (_paragraphAlignment)
+                {
+                    default:
+                    case DWriteParaAlignment.Near:
+                        ty = 0f;
+                        break;
+                    case DWriteParaAlignment.Center:
+                        ty = (BitmapHeight + BitmapMargin) / 2.0f - (float)Height / 2.0f;
+                        break;
+                    case DWriteParaAlignment.Far:
+                        ty = (BitmapHeight + BitmapMargin) - (float)Height;
+                        break;
+                }
+                using (var sl = new Android.Text.StaticLayout(_text, textPaint, (int)DrawableWidth, alignment, 1, 1, false))
+                {
+                    Canvas.Save();
+                    Canvas.Translate(0f, ty);
+                    sl.Draw(Canvas);
+                    Canvas.Restore();
+                }
+            }
         }
 
         #region Constructors
@@ -80,35 +113,19 @@ namespace EMU7800.D2D.Interop
             _fontSize = fontSize;
             _text = text;
             _textAlignment = DWriteTextAlignment.Leading;
-            _paragraphAlignment = fontSize >= 50 ? DWriteParaAlignment.Center : DWriteParaAlignment.Near;
-
-            Paint.AntiAlias = true;
-            Paint.SetTypeface(_tf);
-            Paint.TextSize = _fontSize;
+            _paragraphAlignment = DWriteParaAlignment.Near;
 
             var bounds = new Rect();
-            Paint.GetTextBounds(_text, 0, _text.Length, bounds);
+            using (var paint = new Android.Text.TextPaint())
+            {
+                paint.AntiAlias = true;
+                paint.SetTypeface(_tf);
+                paint.TextSize = _fontSize;
+                paint.GetTextBounds(_text, 0, _text.Length, bounds);
+            }
 
             Width  = Math.Abs(bounds.Left - bounds.Right);
             Height = Math.Abs(bounds.Top - bounds.Bottom) + 2.0f;
-        }
-
-        #endregion
-
-        #region Helpers
-
-        static Paint.Align ToPaintAlign(DWriteTextAlignment textAlignment)
-        {
-            switch (textAlignment)
-            {
-                case DWriteTextAlignment.Center:
-                    return Paint.Align.Center;
-                case DWriteTextAlignment.Trailing:
-                    return Paint.Align.Right;
-                default:
-                case DWriteTextAlignment.Leading:
-                    return Paint.Align.Left;
-            }
         }
 
         #endregion

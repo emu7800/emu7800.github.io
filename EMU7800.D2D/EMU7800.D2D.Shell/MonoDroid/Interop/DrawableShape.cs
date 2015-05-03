@@ -5,65 +5,42 @@ namespace EMU7800.D2D.Interop
 {
     public abstract class DrawableShape : Drawable
     {
-        #region Fields
-
-        readonly Paint _paint = new Paint();
-        D2DSolidColorBrush _brush = D2DSolidColorBrush.White;
-        float _strokeWidth;
-
-        #endregion
-
         public void Draw(PointF location, float strokeWidth, D2DSolidColorBrush brush)
         {
-            if (Math.Abs(strokeWidth - _strokeWidth) > 1e-6)
+            if (Math.Abs(strokeWidth - StrokeWidth) > 1e-6)
             {
                 RequestBitmapRefresh = true;
-                _strokeWidth = strokeWidth;
+                StrokeWidth = strokeWidth;
             }
             Draw(location, brush);
         }
 
         public void Draw(PointF location, D2DSolidColorBrush brush)
         {
-            if (brush != _brush)
+            if (brush != Brush)
             {
                 RequestBitmapRefresh = true;
-                _brush = brush;
+                Brush = brush;
             }
             Draw(location);
         }
 
-        protected Paint Paint { get { return _paint; } }
-
-        protected override void RefreshBitmap()
-        {
-            Paint.StrokeWidth = _strokeWidth;
-            Paint.Color = ToColor(_brush);
-        }
-
-        #region IDisposable Members
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                using (_paint) { }
-            }
-            base.Dispose(disposing);
-        }
-
-        #endregion
+        protected D2DSolidColorBrush Brush { get; private set; }
+        protected float StrokeWidth { get; private set; }
+        protected Paint.Style Style { get; private set; }
 
         #region Constructors
 
         protected DrawableShape(GraphicsDevice gd, float width, float height) : base(gd, width, height, 0)
         {
-            Paint.SetStyle(Paint.Style.Fill);
+            Style = Paint.Style.Fill;
+            Brush = D2DSolidColorBrush.White;
         }
 
         protected DrawableShape(GraphicsDevice gd, RectF rect, Paint.Style style) : base(gd, ToWidth(rect), ToHeight(rect), 4)
         {
-            Paint.SetStyle(style);
+            Style = style;
+            Brush = D2DSolidColorBrush.White;
         }
 
         #endregion

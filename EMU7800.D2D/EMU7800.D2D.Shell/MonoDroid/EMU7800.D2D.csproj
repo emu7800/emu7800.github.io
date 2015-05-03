@@ -311,7 +311,6 @@
     </AndroidAsset>
     <AndroidAsset Include="Assets\fonts\segoeui.ttf" />
     <None Include="Resources\AboutResources.txt" />
-    <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml">
@@ -449,6 +448,8 @@
       <Link>Assets\appicon_128x128.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
+    <AndroidAsset Include="Assets\romimport.txt" />
+    <AndroidAsset Include="Assets\about.txt" />
     <Content Include="Properties\AndroidManifest.xml" />
     <AndroidResource Include="Resources\drawable\appicon_128x128.png" />
   </ItemGroup>
