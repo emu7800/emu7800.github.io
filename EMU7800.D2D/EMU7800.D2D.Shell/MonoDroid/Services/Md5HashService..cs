@@ -1,4 +1,6 @@
-﻿using System.Security.Cryptography;
+﻿// © Mike Murphy
+
+using System.Security.Cryptography;
 using System.Text;
 
 namespace EMU7800.Services

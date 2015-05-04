@@ -1,3 +1,5 @@
+// © Mike Murphy
+
 using Android.Graphics;
 
 namespace EMU7800.D2D.Interop

@@ -1,4 +1,6 @@
-﻿using Android.App;
+﻿// © Mike Murphy
+
+using Android.App;
 using Android.Views;
 using Android.OS;
 using Android.Content.PM;

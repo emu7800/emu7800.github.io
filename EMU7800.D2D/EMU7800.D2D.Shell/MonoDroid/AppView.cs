@@ -1,3 +1,5 @@
+// � Mike Murphy
+
 using Android.Content;
 using Android.Views;
 using EMU7800.D2D.Interop;
@@ -16,7 +18,6 @@ namespace EMU7800.D2D
         readonly PageBackStackHost _pageBackStack;
         readonly GraphicsDevice _graphicsDevice;
 
-        bool _windowClosed;
         int _lastMouseX, _lastMouseY;
         uint _lastMousePointerId;
 
@@ -37,6 +38,7 @@ namespace EMU7800.D2D
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            GraphicsContext.VSync = true;
             Run();
         }
 
@@ -56,12 +58,22 @@ namespace EMU7800.D2D
         {
             base.OnRenderFrame(e);
 
-            if (Visible)
+            _pageBackStack.StartOfCycle();
+
+            if (_graphicsDevice.IsDeviceResourcesRefreshed)
             {
-                RunOneLURCycle();
-                _graphicsDevice.Present();
-                _timerDevice.Update();
+                _graphicsDevice.IsDeviceResourcesRefreshed = false;
+                _pageBackStack.LoadResources(_graphicsDevice);
             }
+
+            _pageBackStack.Update(_timerDevice);
+
+            _graphicsDevice.BeginDraw();
+            _pageBackStack.Render(_graphicsDevice);
+            _graphicsDevice.EndDraw();
+
+            _graphicsDevice.Present();
+            _timerDevice.Update();
         }
 
         public override bool OnGenericMotionEvent(MotionEvent e)
@@ -109,26 +121,5 @@ namespace EMU7800.D2D
         {
             _pageBackStack.KeyboardKeyPressed(key, down);
         }
-
-        #region Helpers
-
-        void RunOneLURCycle()
-        {
-            _pageBackStack.StartOfCycle();
-
-            if (_graphicsDevice.IsDeviceResourcesRefreshed)
-            {
-                _graphicsDevice.IsDeviceResourcesRefreshed = false;
-                _pageBackStack.LoadResources(_graphicsDevice);
-            }
-
-            _pageBackStack.Update(_timerDevice);
-
-            _graphicsDevice.BeginDraw();
-            _pageBackStack.Render(_graphicsDevice);
-            _graphicsDevice.EndDraw();
-        }
-
-        #endregion
     }
 }

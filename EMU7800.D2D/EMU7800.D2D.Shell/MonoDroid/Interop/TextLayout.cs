@@ -1,3 +1,5 @@
+// © Mike Murphy
+
 using Android.App;
 using Android.Graphics;
 using System;

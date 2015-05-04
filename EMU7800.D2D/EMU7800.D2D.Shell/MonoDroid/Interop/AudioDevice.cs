@@ -1,3 +1,5 @@
+// © Mike Murphy
+
 using Android.Media;
 using System;
 using System.Collections.Generic;

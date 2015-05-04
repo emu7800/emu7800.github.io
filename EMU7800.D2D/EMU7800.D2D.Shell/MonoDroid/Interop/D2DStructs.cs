@@ -1,3 +1,5 @@
+// © Mike Murphy
+
 using System;
 
 namespace EMU7800.D2D.Interop
