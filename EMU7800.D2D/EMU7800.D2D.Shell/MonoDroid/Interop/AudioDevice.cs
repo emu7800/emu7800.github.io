@@ -57,7 +57,11 @@ namespace EMU7800.D2D.Interop
             if (disposing)
             {
                 _disposed = true;
-                try { _playbackThread.Join(2000); } catch {}
+                lock (_locker)
+                {
+                    Monitor.Pulse(_locker);
+                }
+                _playbackThread.Join(2000);
             }
         }
 
@@ -132,7 +136,11 @@ namespace EMU7800.D2D.Interop
                     }
 
                     while (_queue.Count == 0)
+                    {
                         Monitor.Wait(_locker);
+                        if (_disposed)
+                            return;
+                    }
 
                     buf = _queue.Dequeue();
                     BuffersQueued = _queue.Count;
