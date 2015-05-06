@@ -3,4 +3,5 @@
 	<uses-sdk android:targetSdkVersion="19" android:minSdkVersion="19" />
 	<application android:label="EMU7800.MonoDroid" android:icon="@drawable/appicon_128x128"></application>
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

@@ -28,8 +28,8 @@ namespace EMU7800.Services
         {
             ClearLastErrorInfo();
 
-            var localMyDocumentsPath = EnvironmentGetFolderPath(Environment.SpecialFolder.MyDocuments);
-            return QueryForRomCandidates(localMyDocumentsPath);
+            var path = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+            return QueryForRomCandidates(path);
         }
 
         public IEnumerable<string> QueryProgramFolderForRomCandidates()
