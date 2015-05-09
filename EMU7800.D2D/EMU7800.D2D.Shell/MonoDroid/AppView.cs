@@ -38,7 +38,8 @@ namespace EMU7800.D2D
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            GraphicsContext.VSync = true;
+            if (GraphicsContext != null)
+                GraphicsContext.VSync = true;
             Run();
         }
 

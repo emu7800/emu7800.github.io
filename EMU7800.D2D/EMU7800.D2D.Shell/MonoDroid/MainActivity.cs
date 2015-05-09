@@ -1,17 +1,16 @@
 ﻿// © Mike Murphy
 
 using Android.App;
-using Android.Views;
-using Android.OS;
 using Android.Content.PM;
+using Android.OS;
+using Android.Views;
 using EMU7800.D2D;
 using EMU7800.D2D.Shell;
-using Android.Runtime;
 
 namespace EMU7800.MonoDroid
 {
     [Activity(
-        Label                = "EMU7800.MonoDroid",
+        Label                = "EMU7800",
         MainLauncher         = true,
         Icon                 = "@drawable/appicon_128x128",
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize
@@ -38,6 +37,7 @@ namespace EMU7800.MonoDroid
             App = this;
 
             _appView = new AppView(App);
+
             SetContentView(_appView);
         }
 
@@ -49,21 +49,6 @@ namespace EMU7800.MonoDroid
         public override bool OnKeyUp(Keycode keyCode, KeyEvent e)
         {
             return OnKeyChanged(keyCode, e, false) || base.OnKeyUp(keyCode, e);
-        }
-
-        public override bool OnKeyLongPress([GeneratedEnum]Keycode keyCode, KeyEvent e)
-        {
-            return base.OnKeyLongPress(keyCode, e);
-        }
-
-        public override bool OnKeyMultiple([GeneratedEnum]Keycode keyCode, int repeatCount, KeyEvent e)
-        {
-            return base.OnKeyMultiple(keyCode, repeatCount, e);
-        }
-
-        public override bool OnKeyShortcut([GeneratedEnum]Keycode keyCode, KeyEvent e)
-        {
-            return base.OnKeyShortcut(keyCode, e);
         }
 
         protected override void OnPause()
