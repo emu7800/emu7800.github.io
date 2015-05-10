@@ -157,14 +157,6 @@ namespace EMU7800.D2D.Shell
             bitmap = null;
         }
 
-        protected void SafeDispose(ref TextFormat textFormat)
-        {
-            if (textFormat == null)
-                return;
-            textFormat.Dispose();
-            textFormat = null;
-        }
-
         protected void SafeDispose(ref TextLayout textLayout)
         {
             if (textLayout == null)
