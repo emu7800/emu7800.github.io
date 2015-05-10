@@ -51,19 +51,6 @@ namespace EMU7800.D2D.Interop
 
             float ty = 0f;
 
-            switch (_paragraphAlignment)
-            {
-                case DWriteParaAlignment.Near:      // top of the text flow is aligned to the top edge of the layout box
-                    ty = (float)Height;
-                    break;
-                case DWriteParaAlignment.Center:    // center of the flow is aligned to the center of the layout box
-                    ty = (BitmapHeight + BitmapMargin) / 2.0f + (float)Height / 2.0f;
-                    break;
-                case DWriteParaAlignment.Far:       // bottom of the flow is aligned to the bottom edge of the layout box
-                    ty = BitmapHeight + BitmapMargin;
-                    break;
-            }
-
             using (var textPaint = new Android.Text.TextPaint())
             {
                 textPaint.AntiAlias = true;
@@ -91,10 +78,10 @@ namespace EMU7800.D2D.Interop
                         ty = 0f;
                         break;
                     case DWriteParaAlignment.Center:
-                        ty = (BitmapHeight + BitmapMargin) / 2.0f - (float)Height / 2.0f;
+                        ty = (BitmapHeight + 2 * BitmapMargin) / 2.0f - (float)Height / 2.0f;
                         break;
                     case DWriteParaAlignment.Far:
-                        ty = (BitmapHeight + BitmapMargin) - (float)Height;
+                        ty = (BitmapHeight + 2 * BitmapMargin) - (float)Height;
                         break;
                 }
                 using (var sl = new Android.Text.StaticLayout(_text, textPaint, (int)DrawableWidth, alignment, 1, 1, false))
@@ -123,11 +110,21 @@ namespace EMU7800.D2D.Interop
                 paint.AntiAlias = true;
                 paint.SetTypeface(_tf);
                 paint.TextSize = _fontSize;
+
                 paint.GetTextBounds(_text, 0, _text.Length, bounds);
+                Width = Math.Abs(bounds.Left - bounds.Right);
+                Height = Math.Abs(bounds.Top - bounds.Bottom);
             }
 
-            Width  = Math.Abs(bounds.Left - bounds.Right);
-            Height = Math.Abs(bounds.Top - bounds.Bottom) + 2.0f;
+            // HACK: measured text height seems shorter than it should be in some cases
+            if (fontFamilyName == "Microsoft YaHei")
+            {
+                var ifz = (int)fontSize;
+                if (ifz == 18)        // normal fontsize
+                    Height = 26.0;
+                else if (ifz == 30)   // extra large fontsize
+                    Height = 36.0;
+            }
         }
 
         #endregion
