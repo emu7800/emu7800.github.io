@@ -10,9 +10,8 @@ namespace EMU7800.D2D.Interop
     {
         #region Fields
 
-        static Typeface _tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/segoeui.ttf");
+        static readonly Typeface Tf = Typeface.CreateFromAsset(Application.Context.Assets, "fonts/segoeui.ttf");
 
-        readonly string _fontFamilyName;
         readonly float _fontSize;
         readonly string _text;
 
@@ -21,7 +20,6 @@ namespace EMU7800.D2D.Interop
 
         #endregion
 
-        public int HR { get; private set; }
         public double Width { get; private set; }
         public double Height { get; private set; }
 
@@ -49,12 +47,10 @@ namespace EMU7800.D2D.Interop
         {
             base.RefreshBitmap();
 
-            float ty = 0f;
-
             using (var textPaint = new Android.Text.TextPaint())
             {
                 textPaint.AntiAlias = true;
-                textPaint.SetTypeface(_tf);
+                textPaint.SetTypeface(Tf);
                 textPaint.TextSize = _fontSize;
                 textPaint.Color = ToColor(Brush);
                 Android.Text.Layout.Alignment alignment;
@@ -67,14 +63,16 @@ namespace EMU7800.D2D.Interop
                         alignment = Android.Text.Layout.Alignment.AlignOpposite;
                         break;
                     default:
-                    case DWriteTextAlignment.Leading:
+                  //case DWriteTextAlignment.Leading:
                         alignment = Android.Text.Layout.Alignment.AlignNormal;
                         break;
                 }
+
+                float ty;
                 switch (_paragraphAlignment)
                 {
                     default:
-                    case DWriteParaAlignment.Near:
+                  //case DWriteParaAlignment.Near:
                         ty = 0f;
                         break;
                     case DWriteParaAlignment.Center:
@@ -98,7 +96,6 @@ namespace EMU7800.D2D.Interop
 
         public TextLayout(GraphicsDevice gd, string fontFamilyName, float fontSize, string text, float width, float height) : base(gd, width, height)
         {
-            _fontFamilyName = fontFamilyName;
             _fontSize = fontSize;
             _text = text;
             _textAlignment = DWriteTextAlignment.Leading;
@@ -108,7 +105,7 @@ namespace EMU7800.D2D.Interop
             using (var paint = new Android.Text.TextPaint())
             {
                 paint.AntiAlias = true;
-                paint.SetTypeface(_tf);
+                paint.SetTypeface(Tf);
                 paint.TextSize = _fontSize;
                 paint.GetTextBounds(_text, 0, _text.Length, bounds);
             }

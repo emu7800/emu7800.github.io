@@ -50,11 +50,6 @@ namespace EMU7800.D2D
             _graphicsDevice.UpdateForWindowSizeChange();
         }
 
-        protected override void OnUpdateFrame(FrameEventArgs e)
-        {
-            base.OnUpdateFrame(e);
-        }
-
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnRenderFrame(e);

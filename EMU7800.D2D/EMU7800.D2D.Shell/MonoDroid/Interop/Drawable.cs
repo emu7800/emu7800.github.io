@@ -11,9 +11,7 @@ namespace EMU7800.D2D.Interop
         #region Fields
 
         readonly GraphicsDevice _gd;
-
         readonly int[] _textureId = new int[1];
-
         readonly float[] _uv =
         {
             0.0f, 1.0f,  // bottom-left
@@ -21,11 +19,9 @@ namespace EMU7800.D2D.Interop
             0.0f, 0.0f,  // top-left
             1.0f, 0.0f,  // top-right
         };
-
         readonly float[] _vertices = new float[4 * 2];
-
-        Bitmap _bitmap;
-        Canvas _canvas;
+        readonly Bitmap _bitmap;
+        readonly Canvas _canvas;
 
         #endregion
 

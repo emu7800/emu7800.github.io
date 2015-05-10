@@ -11,16 +11,19 @@ namespace EMU7800.D2D.Interop
     public enum D2DSolidColorBrush { Black, Red, Orange, Yellow, Green, Blue, Gray, White };
     public enum D2DAntiAliasMode { PerPrimitive, Aliased };
     public enum D2DBitmapInterpolationMode { NearestNeighbor, Linear };
+    public enum DWriteTextAlignment { Leading, Trailing, Center };
+    public enum DWriteParaAlignment { Near, Far, Center };
 
     public class GraphicsDevice : IDisposable
     {
         #region Fields
 
+        readonly DrawableCache<Rectangle> _rectangleCache = new DrawableCache<Rectangle>(5);
+        readonly DrawableCache<Rectangle> _filledRectangleCache = new DrawableCache<Rectangle>(5);
+        readonly DrawableCache<Ellipse> _filledEllipseCache = new DrawableCache<Ellipse>(5);
+        readonly DrawableCache<Line> _lineCache = new DrawableCache<Line>(5);
+
         AndroidGameView _view;
-        DrawableCache<Rectangle> _rectangleCache = new DrawableCache<Rectangle>(5);
-        DrawableCache<Rectangle> _filledRectangleCache = new DrawableCache<Rectangle>(5);
-        DrawableCache<Ellipse> _filledEllipseCache = new DrawableCache<Ellipse>(5);
-        DrawableCache<Line> _lineCache = new DrawableCache<Line>(5);
 
         #endregion
 

@@ -132,7 +132,6 @@ namespace EMU7800.D2D.Interop
                     if (buf != null)
                     {
                         _freeQueue.Enqueue(buf);
-                        buf = null;
                     }
 
                     while (_queue.Count == 0)

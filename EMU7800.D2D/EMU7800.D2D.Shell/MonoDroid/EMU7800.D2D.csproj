@@ -275,7 +275,6 @@
     <Compile Include="Interop\Line.cs" />
     <Compile Include="Interop\Rectangle.cs" />
     <Compile Include="Interop\StaticBitmap.cs" />
-    <Compile Include="Interop\TextFormat.cs" />
     <Compile Include="Interop\TextLayout.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
