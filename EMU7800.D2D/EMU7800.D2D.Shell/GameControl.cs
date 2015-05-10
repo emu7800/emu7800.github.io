@@ -514,7 +514,7 @@ namespace EMU7800.D2D.Shell
                 var startTick = stopwatch.ElapsedTicks;
                 var endTick = startTick + ticksPerFrame;
 
-                var buffersQueued = (audioDevice != null) ? audioDevice.BuffersQueued : -1;
+                var buffersQueued = (!_soundOff && audioDevice != null) ? audioDevice.BuffersQueued : -1;
                 long adjustment = 0;
                 if (buffersQueued < 0)
                     adjustment = 0;
@@ -524,7 +524,7 @@ namespace EMU7800.D2D.Shell
                     adjustment = ticksPerFrame >> 1;
                 endTick += adjustment;
 
-                if (audioDevice != null)
+                if (!_soundOff && audioDevice != null)
                 {
                     for (var i = 0; i < audioBytes.Length; i++)
                         audioBytes[i] = (byte) (random.Next(2) | 0x80);
