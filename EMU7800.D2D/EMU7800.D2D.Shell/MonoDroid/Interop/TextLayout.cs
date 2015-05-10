@@ -110,11 +110,11 @@ namespace EMU7800.D2D.Interop
                 paint.AntiAlias = true;
                 paint.SetTypeface(_tf);
                 paint.TextSize = _fontSize;
-
                 paint.GetTextBounds(_text, 0, _text.Length, bounds);
-                Width = Math.Abs(bounds.Left - bounds.Right);
-                Height = Math.Abs(bounds.Top - bounds.Bottom);
             }
+
+            Width = Math.Abs(bounds.Left - bounds.Right);
+            Height = Math.Abs(bounds.Top - bounds.Bottom);
 
             // HACK: measured text height seems shorter than it should be in some cases
             if (fontFamilyName == "Microsoft YaHei")
