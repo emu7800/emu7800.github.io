@@ -539,9 +539,9 @@
       <Project>{75e76ce4-80d3-4cee-836d-cb5120da1806}</Project>
       <Name>EMU7800.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v140.vcxproj">
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v120.vcxproj">
       <Project>{6199f126-6489-4778-a320-4712be423520}</Project>
-      <Name>EMU7800.D2D.Interop.v140</Name>
+      <Name>EMU7800.D2D.Interop.v120</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
