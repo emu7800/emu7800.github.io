@@ -452,7 +452,7 @@ namespace EMU7800.Services
             return set;
         }
 
-        string ToGameProgramInfoReferenceRepositoryPath()
+        static string ToGameProgramInfoReferenceRepositoryPath()
         {
             return ToLocalAssetsPath(RomPropertiesName);
         }
@@ -588,7 +588,7 @@ namespace EMU7800.Services
             }
         }
 
-        IEnumerable<string> EnumerateFiles(string path)
+        static IEnumerable<string> EnumerateFiles(string path)
         {
             IEnumerator<string> enumerator;
             try
