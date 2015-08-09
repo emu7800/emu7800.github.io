@@ -1,16 +1,18 @@
 ﻿// © Mike Murphy
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
-using Windows.Storage.Search;
-using Windows.Storage.Streams;
+#if WINDOWS_UWP || WINDOWS_APP || WINDOWS_PHONE_APP
 
 namespace EMU7800.Services.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Threading.Tasks;
+    using Windows.Graphics.Imaging;
+    using Windows.Storage;
+    using Windows.Storage.Search;
+    using Windows.Storage.Streams;
+
     public static class DatastoreServiceExtensions
     {
         public static StorageFolder GetFolder(this IStorageFolder folder, string name)
@@ -165,3 +167,5 @@ namespace EMU7800.Services.Extensions
         }
     }
 }
+
+#endif

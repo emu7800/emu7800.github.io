@@ -100,10 +100,6 @@
     <Compile Include="FindRomsPage2.WinRT.cs" />
     <Compile Include="GameControllersWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AssetService.cs" />
-    <Compile Include="Services\DatastoreService.cs" />
-    <Compile Include="Services\DatastoreServiceExtensions.cs" />
-    <Compile Include="Services\Md5HashService.cs" />
     <Compile Include="StelladaptorHost.cs" />
     <Compile Include="TitlePage.WinRT.cs" />
     <Compile Include="WinRTEntryPoint.cs" />
@@ -280,7 +276,9 @@
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
   <Import Project="..\..\..\EMU7800.Core\EMU7800.Core.Shared.projitems" Label="Shared" />
   <Import Project="..\EMU7800.D2D.Shared.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

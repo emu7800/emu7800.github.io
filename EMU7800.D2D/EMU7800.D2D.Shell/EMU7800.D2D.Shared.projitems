@@ -48,7 +48,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProfilerTools.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollColumnInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AssetService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\AssetService.Shared.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ApplicationSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ErrorInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfo.cs" />
@@ -59,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\MachineStateInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\GameProgramLibraryService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MachineFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Md5HashService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RomBytesService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RomImportService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RomPropertiesService.cs" />

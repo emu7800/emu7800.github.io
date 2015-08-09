@@ -70,10 +70,6 @@
     <Compile Include="GameControllersWrapper.cs" />
     <Compile Include="MogaController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AssetService.cs" />
-    <Compile Include="Services\DatastoreService.cs" />
-    <Compile Include="Services\DatastoreServiceExtensions.cs" />
-    <Compile Include="Services\Md5HashService.cs" />
     <Compile Include="TitlePage.WinRT.cs" />
     <Compile Include="WinRTEntryPoint.cs" />
   </ItemGroup>
