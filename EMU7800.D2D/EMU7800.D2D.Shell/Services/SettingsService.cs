@@ -30,7 +30,8 @@ namespace EMU7800.Services
             if (_applicationSettings != null)
             {
                 // don't bother saving if nothing has changed
-                if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls)
+                if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls
+                    && settings.TouchControlSeparation == _applicationSettings.TouchControlSeparation)
                     return;
             }
             _applicationSettings = ToDeepCopy(settings);
@@ -41,7 +42,11 @@ namespace EMU7800.Services
 
         static ApplicationSettings ToDeepCopy(ApplicationSettings settings)
         {
-            var copyOfSettings = new ApplicationSettings { ShowTouchControls = settings.ShowTouchControls };
+            var copyOfSettings = new ApplicationSettings
+            {
+                ShowTouchControls = settings.ShowTouchControls,
+                TouchControlSeparation = settings.TouchControlSeparation
+            };
             return copyOfSettings;
         }
 

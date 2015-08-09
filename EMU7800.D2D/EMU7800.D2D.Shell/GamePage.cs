@@ -330,6 +330,7 @@ namespace EMU7800.D2D.Shell
 
             var touchWidth = (int)_touchbuttonLeft.Size.Width;
             var touchY = (int)size.Height / 2 - 3 * touchWidth / 2;
+            var separation = _settings.TouchControlSeparation;
 #if WINDOWS_PHONE_APP
             // WP8.1 introduced a notification window activated by swiping from the edge.
             // The on-screen directional controls needed to be moved to the right and out of the way a bit.
@@ -337,11 +338,11 @@ namespace EMU7800.D2D.Shell
 #else
             const int LEFTG = 0;
 #endif
-            _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth, touchY);
+            _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth + separation, touchY - separation);
             _touchbuttonLeft.Location  = Struct.ToPointF(LEFTG + 0, touchY + touchWidth);
-            _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth, touchY + touchWidth);
-            _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth, touchY + 2 * touchWidth);
-            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth, touchY + touchWidth);
+            _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth + 2 * separation, touchY + touchWidth);
+            _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth + separation, touchY + 2 * touchWidth + separation);
+            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth - separation, touchY + touchWidth + separation);
             _touchbuttonFire2.Location = Struct.ToPointF(size.Width - touchWidth, touchY);
 
             _isTooNarrowForHud = size.Width < 330f;
@@ -434,6 +435,11 @@ namespace EMU7800.D2D.Shell
         public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
         {
             ResetBackAndSettingsButtonVisibilityCounter();
+            if (_isHudOn && down && _settings.ShowTouchControls && y >= _touchbuttonUp.Location.Y && y <= _touchbuttonDown.Location.Y)
+            {
+                _settings.TouchControlSeparation += 5;
+                Resized(_lastResize);
+            }
             base.MouseButtonChanged(pointerId, x, y, down);
         }
 
@@ -608,6 +614,8 @@ namespace EMU7800.D2D.Shell
         void HandleShowTouchControlsCheckedChanged(bool isChecked)
         {
             _settings.ShowTouchControls = _touchbuttonCollection.IsVisible = _gameControl.IsInTouchMode = isChecked;
+            if (!isChecked)
+                _settings.TouchControlSeparation = 0;
             Resized(_lastResize);
         }
 

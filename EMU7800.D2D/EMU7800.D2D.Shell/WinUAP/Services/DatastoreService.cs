@@ -359,7 +359,7 @@ namespace EMU7800.Services
 
             try
             {
-                var file = ApplicationData.Current.LocalFolder.GetFile(ApplicationSettingsName);
+                var file = ApplicationData.Current.LocalFolder.CreateFile(ApplicationSettingsName);
                 SaveSettingsImpl(file, settings);
             }
             catch (Exception ex)
@@ -376,10 +376,11 @@ namespace EMU7800.Services
             using (var stream = file.OpenStreamForRead())
             using (var br = new BinaryReader(stream))
             {
-                br.ReadInt32(); // version
+                var version = br.ReadInt32();
                 var settings = new ApplicationSettings
                 {
-                    ShowTouchControls = br.ReadBoolean()
+                    ShowTouchControls = br.ReadBoolean(),
+                    TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
                 };
                 return settings;
             }
@@ -393,8 +394,9 @@ namespace EMU7800.Services
             using (var stream = file.OpenStreamForWrite())
             using (var bw = new BinaryWriter(stream))
             {
-                bw.Write(1); // version
+                bw.Write(2); // version
                 bw.Write(settings.ShowTouchControls);
+                bw.Write(settings.TouchControlSeparation);
                 bw.Flush();
             }
         }
@@ -605,11 +607,31 @@ namespace EMU7800.Services
 
         static IStorageFile GetStorageFileFromPath(string path)
         {
-            var file = StorageFile.GetFileFromPathAsync(path)
-                .AsTask()
-                    .ConfigureAwait(false)
-                        .GetAwaiter()
-                            .GetResult();
+            var pathPrefix1 = Package.Current.InstalledLocation.Path;
+            var pathPrefix2 = ApplicationData.Current.LocalFolder.Path;
+
+            Windows.Foundation.IAsyncOperation<StorageFile> op = null;
+
+            if (path.StartsWith(pathPrefix1, StringComparison.OrdinalIgnoreCase))
+            {
+                var shortPath = path.Substring(pathPrefix1.Length + 1);
+                op = Package.Current.InstalledLocation.GetFileAsync(shortPath);
+            }
+            else if (path.StartsWith(pathPrefix2, StringComparison.OrdinalIgnoreCase))
+            {
+                var shortPath = path.Substring(pathPrefix2.Length + 1);
+                op = ApplicationData.Current.LocalFolder.GetFileAsync(shortPath);
+            }
+            else
+            {
+                op = StorageFile.GetFileFromPathAsync(path);
+            }
+
+            var file = op.AsTask()
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+
             return file;
         }
 
