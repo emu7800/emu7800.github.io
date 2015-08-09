@@ -78,10 +78,6 @@
     <Content Include="EMUIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EMU7800.Core\EMU7800.Core.csproj">
-      <Project>{75E76CE4-80D3-4CEE-836D-CB5120DA1806}</Project>
-      <Name>EMU7800.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EMU7800.D2D.Shell\Win32\EMU7800.D2D.csproj">
       <Project>{f3c71f2a-1386-472f-ad5d-18c026faf0d8}</Project>
       <Name>EMU7800.D2D</Name>

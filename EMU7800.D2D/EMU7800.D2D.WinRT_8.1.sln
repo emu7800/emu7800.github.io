@@ -1,15 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.Shell\WinRT_8.1\EMU7800.D2D.csproj", "{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Core.WinRT_8.1", "..\EMU7800.Core\EMU7800.Core.WinRT_8.1.csproj", "{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop", "EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinRT_8.1.vcxproj", "{D7A976A8-0D54-410E-8123-2EF21F5FC032}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.Core.Shared", "..\EMU7800.Core\EMU7800.Core.Shared.shproj", "{9304275B-BF2E-47F6-B223-140B4B7AA32B}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.D2D.Shared", "EMU7800.D2D.Shell\EMU7800.D2D.Shared.shproj", "{9866CFF5-65E5-4269-89D2-16963A05D523}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{6aeb50a6-32b8-4109-adce-ce69d3a6fa25}*SharedItemsImports = 4
+		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{6aeb50a6-32b8-4109-adce-ce69d3a6fa25}*SharedItemsImports = 4
+		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{9866cff5-65e5-4269-89d2-16963a05d523}*SharedItemsImports = 13
+		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{9304275b-bf2e-47f6-b223-140b4b7aa32b}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
@@ -49,24 +57,6 @@ Global
 		{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}.Release|x86.ActiveCfg = Release|x86
 		{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}.Release|x86.Build.0 = Release|x86
 		{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}.Release|x86.Deploy.0 = Release|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|ARM.ActiveCfg = Debug|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|ARM.Build.0 = Debug|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x64.ActiveCfg = Debug|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x64.Build.0 = Debug|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x86.ActiveCfg = Debug|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Debug|x86.Build.0 = Debug|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|ARM.ActiveCfg = Release|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|ARM.Build.0 = Release|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x64.ActiveCfg = Release|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x64.Build.0 = Release|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x86.ActiveCfg = Release|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Profile|x86.Build.0 = Release|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|ARM.ActiveCfg = Release|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|ARM.Build.0 = Release|ARM
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|x64.ActiveCfg = Release|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|x64.Build.0 = Release|x64
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|x86.ActiveCfg = Release|x86
-		{4D70AEA7-7A93-445A-A1D8-6C30D9DD906D}.Release|x86.Build.0 = Release|x86
 		{D7A976A8-0D54-410E-8123-2EF21F5FC032}.Debug|ARM.ActiveCfg = Debug|ARM
 		{D7A976A8-0D54-410E-8123-2EF21F5FC032}.Debug|ARM.Build.0 = Debug|ARM
 		{D7A976A8-0D54-410E-8123-2EF21F5FC032}.Debug|x64.ActiveCfg = Debug|x64

@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9866cff5-65e5-4269-89d2-16963a05d523</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>EMU7800.D2D.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AboutPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ButtonBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ButtonCircleImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ButtonToggle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ButtonTouchControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControlBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControlCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FindRomsPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FindRomsPage2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameRenderer160.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameRenderer160Blender.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameRenderer320.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FrameRendererDefault.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GamePage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameProgramInfoViewItemCollectionEx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameProgramInfoViewItemEx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameProgramSelectedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameProgramSelectionControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameProgramSelectionPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IFrameRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IInputAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterDrivingPaddle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterJoystick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterKeypad.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterLightgun.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterNull.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterPaddle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputAdapterProlineJoystick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KeyboardKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LabelControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NumberControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PageBackStackHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PageBackStackStateService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PageBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProfilerTools.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScrollColumnInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AssetService.Shared.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ApplicationSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ErrorInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItemCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedGameProgramInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedSpecialBinaryInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\MachineStateInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\GameProgramLibraryService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MachineFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\RomBytesService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\RomImportService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\RomPropertiesService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Struct.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Styles.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TextControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TimerDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TitleControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TitlePage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\Asset.cs" />
+  </ItemGroup>
+</Project>
