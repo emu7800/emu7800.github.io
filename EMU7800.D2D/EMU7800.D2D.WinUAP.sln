@@ -13,8 +13,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.D2D.Shared", "EMU78
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
 		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
+		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
 		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{9866cff5-65e5-4269-89d2-16963a05d523}*SharedItemsImports = 13
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{9304275b-bf2e-47f6-b223-140b4b7aa32b}*SharedItemsImports = 13
 	EndGlobalSection
@@ -39,15 +39,15 @@ Global
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Debug|x86.ActiveCfg = Debug|x86
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Debug|x86.Build.0 = Debug|x86
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Debug|x86.Deploy.0 = Debug|x86
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.ActiveCfg = Release|ARM
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.Build.0 = Release|ARM
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.Deploy.0 = Release|ARM
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.ActiveCfg = Release|x64
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.Build.0 = Release|x64
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.Deploy.0 = Release|x64
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.ActiveCfg = Release|x86
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.Build.0 = Release|x86
-		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.Deploy.0 = Release|x86
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.ActiveCfg = Profile|ARM
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.Build.0 = Profile|ARM
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|ARM.Deploy.0 = Profile|ARM
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.ActiveCfg = Profile|x64
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.Build.0 = Profile|x64
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x64.Deploy.0 = Profile|x64
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.ActiveCfg = Profile|x86
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.Build.0 = Profile|x86
+		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Profile|x86.Deploy.0 = Profile|x86
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Release|ARM.ActiveCfg = Release|ARM
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Release|ARM.Build.0 = Release|ARM
 		{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}.Release|ARM.Deploy.0 = Release|ARM
@@ -63,7 +63,8 @@ Global
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Debug|x64.Build.0 = Debug|x64
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Debug|x86.ActiveCfg = Debug|Win32
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Debug|x86.Build.0 = Debug|Win32
-		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|ARM.ActiveCfg = Profile|Win32
+		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|ARM.ActiveCfg = Profile|ARM
+		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|ARM.Build.0 = Profile|ARM
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.ActiveCfg = Profile|x64
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.Build.0 = Profile|x64
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.Deploy.0 = Profile|x64
