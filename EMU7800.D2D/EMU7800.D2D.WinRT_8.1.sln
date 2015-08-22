@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.Shell\WinRT_8.1\EMU7800.D2D.csproj", "{6AEB50A6-32B8-4109-ADCE-CE69D3A6FA25}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7A976A8-0D54-410E-8123-2EF21F5FC032} = {D7A976A8-0D54-410E-8123-2EF21F5FC032}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop", "EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinRT_8.1.vcxproj", "{D7A976A8-0D54-410E-8123-2EF21F5FC032}"
 EndProject
@@ -13,8 +16,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.D2D.Shared", "EMU78
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{6aeb50a6-32b8-4109-adce-ce69d3a6fa25}*SharedItemsImports = 4
 		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{6aeb50a6-32b8-4109-adce-ce69d3a6fa25}*SharedItemsImports = 4
+		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{6aeb50a6-32b8-4109-adce-ce69d3a6fa25}*SharedItemsImports = 4
 		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{9866cff5-65e5-4269-89d2-16963a05d523}*SharedItemsImports = 13
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{9304275b-bf2e-47f6-b223-140b4b7aa32b}*SharedItemsImports = 13
 	EndGlobalSection

@@ -28,7 +28,9 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "dxguid.lib")
+#if !(NTDDI_VERSION == NTDDI_WIN10)
 #pragma comment(lib, "ole32.lib")
+#endif
 #pragma comment(lib, "runtimeobject.lib")
 #pragma comment(lib, "shcore.lib")
 #pragma comment(lib, "windowscodecs.lib")

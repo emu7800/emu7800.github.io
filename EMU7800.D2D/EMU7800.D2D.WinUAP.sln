@@ -7,14 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.Core.Shared", "..\EMU7800.Core\EMU7800.Core.Shared.shproj", "{9304275B-BF2E-47F6-B223-140B4B7AA32B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop", "EMU7800.D2D.Interop.WinUAP\EMU7800.D2D.Interop.WinUAP.vcxproj", "{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "EMU7800.D2D.Shared", "EMU7800.D2D.Shell\EMU7800.D2D.Shared.shproj", "{9866CFF5-65E5-4269-89D2-16963A05D523}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop", "EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinUAP.vcxproj", "{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
+		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{d8261ff6-fec1-4054-a7b0-fe68e4cf0820}*SharedItemsImports = 4
 		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{9866cff5-65e5-4269-89d2-16963a05d523}*SharedItemsImports = 13
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{9304275b-bf2e-47f6-b223-140b4b7aa32b}*SharedItemsImports = 13
 	EndGlobalSection
@@ -67,10 +67,8 @@ Global
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|ARM.Build.0 = Profile|ARM
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.ActiveCfg = Profile|x64
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.Build.0 = Profile|x64
-		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x64.Deploy.0 = Profile|x64
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x86.ActiveCfg = Profile|Win32
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x86.Build.0 = Profile|Win32
-		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Profile|x86.Deploy.0 = Profile|Win32
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Release|ARM.ActiveCfg = Release|ARM
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Release|ARM.Build.0 = Release|ARM
 		{ABA1DAF2-2BCD-4896-B2DF-3659CD0235B8}.Release|x64.ActiveCfg = Release|x64
