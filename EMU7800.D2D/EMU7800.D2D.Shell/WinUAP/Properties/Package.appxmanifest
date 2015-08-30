@@ -31,5 +31,10 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <DeviceCapability Name="humaninterfacedevice">
+        <Device Id="any">
+            <Function Type="usage:0001 0004" />
+        </Device>
+    </DeviceCapability>
   </Capabilities>
 </Package>
