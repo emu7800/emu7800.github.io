@@ -1,6 +1,6 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Added ability to swap input jacks via the W key. Back and Settings buttons on game screen now reappear when the keyboard or screen are touched. .NET Native builds are coming soon, which will improve performance on lower-end hardware.
+WHATS NEW—Port to the Windows Universal Application platform, unifying codebases across phone, PC, and beyond. An Android port is also available via Xamarin.
 
 BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; use the search icon on the title screen to import them. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
@@ -19,5 +19,3 @@ GAME CONTROLLERS—Up to four (4) Xbox 360 controllers are supported and should 
 - Left and right fire buttons are mapped to the Z/X keys respectively
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title. Touch screen game controls can be activated here.
-
-ABOUT—EMU7800 is fundamentally a Windows platform porting experiment, using an Atari emulator code base from a previous project. It is primarily authored in C# with some C++ to interoperate with Direct2D. Current platforms are Win32, Win8-8.1 PC, Win8-8.1 RT, and Windows Phone 8.1. Xbox One will become a new target should the requisite SDK become available in the future.
