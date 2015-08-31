@@ -13,3 +13,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © 2012-2015 Mike Murphy")]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
+
+#if DEBUG
+[assembly: Android.App.Application(Debuggable=true)]
+#else
+[assembly: Android.App.Application(Debuggable=false)]
+#endif
