@@ -1092,7 +1092,7 @@ namespace EMU7800.Services
             var dir = _userAppDataStoreRoot;
 #endif
             var root = Path.Combine(dir, "Assets");
-            var path = Path.Combine(root, fileName);
+            var path = string.IsNullOrWhiteSpace(fileName) ? root : Path.Combine(root, fileName);
             return path;
         }
 

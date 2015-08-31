@@ -79,12 +79,6 @@ namespace EMU7800.Services
 
     public partial class AssetService
     {
-        #region Fields
-
-        static readonly string _currentWorkingDir = AppDomain.CurrentDomain.BaseDirectory;
-
-        #endregion
-
         public async Task<byte[]> GetAssetBytesAsync(Asset asset)
         {
             ClearLastErrorInfo();
@@ -96,12 +90,21 @@ namespace EMU7800.Services
             }
 
             var assetFilename = _assetToFilenameMapping[asset];
-            var path = ToLocalAssetsPath(assetFilename);
 
             byte[] bytes = null;
             try
             {
+#if WIN32
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", assetFilename);
                 bytes = await Task.Run(() => File.ReadAllBytes(path));
+#elif MONODROID
+                using (var input = MonoDroid.MainActivity.App.Assets.Open(assetFilename))
+                using (var ms = new MemoryStream())
+                {
+                    await input.CopyToAsync(ms);
+                    bytes = ms.ToArray();
+                }
+#endif
             }
             catch (Exception ex)
             {
@@ -116,17 +119,10 @@ namespace EMU7800.Services
                     _resourceCache.Add(asset, bytes);
             }
 
-            return bytes;
+            return bytes ?? new byte[0];
         }
 
         #region Helpers
-
-        string ToLocalAssetsPath(string fileName)
-        {
-            var root = Path.Combine(_currentWorkingDir, "Assets");
-            var path = Path.Combine(root, fileName);
-            return path;
-        }
 
         static bool IsCriticalException(Exception ex)
         {
