@@ -13,7 +13,8 @@ namespace EMU7800.MonoDroid
         Label                = "EMU7800",
         MainLauncher         = true,
         Icon                 = "@drawable/appicon_128x128",
-        ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize
+        ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize,
+        LaunchMode           = LaunchMode.SingleInstance
 #if __ANDROID_11__
        ,HardwareAccelerated  = false
 #endif

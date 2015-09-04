@@ -144,10 +144,10 @@ namespace EMU7800.D2D.Interop
         public void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode)
         {
             GL.Enable(All.ScissorTest);
-            var x = (int)rect.Left;
-            var y = (int)(Height - rect.Bottom);
-            var w = (int)(rect.Right - rect.Left);
-            var h = (int)(rect.Bottom - rect.Top);
+            var x = (int)(rect.Left / _todipx);
+            var y = (int)((Height - rect.Bottom) / _todipy);
+            var w = (int)((rect.Right - rect.Left) / _todipx);
+            var h = (int)((rect.Bottom - rect.Top) / _todipy);
             GL.Scissor(x, y, w, h);
         }
 
@@ -156,11 +156,15 @@ namespace EMU7800.D2D.Interop
             GL.Disable(All.ScissorTest);
         }
 
-        public void UpdateForWindowSizeChange()
+        float _todipx, _todipy;
+
+        public void UpdateForWindowSizeChange(Android.Util.DisplayMetrics metrics)
         {
-            Width = _view.Width;
-            Height = _view.Height;
-            GL.Viewport(0, 0, Width, Height);
+            _todipx = metrics.Xdpi / 96.0f;
+            _todipy = metrics.Ydpi / 96.0f;
+            Width = (int)(metrics.WidthPixels * _todipx);
+            Height = (int)(metrics.HeightPixels * _todipy);
+            GL.Viewport(0, 0, metrics.WidthPixels, metrics.HeightPixels);
         }
 
         public void Present()

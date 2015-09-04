@@ -45,9 +45,14 @@ namespace EMU7800.D2D
 
         protected override void OnResize(EventArgs e)
         {
-            var size = Struct.ToSizeF(Width, Height);
+            var metrics = Resources.DisplayMetrics;
+
+            var todipx = metrics.Xdpi / 96.0f;
+            var todipy = metrics.Ydpi / 96.0f;
+            var size = Struct.ToSizeF(metrics.WidthPixels * todipx, metrics.HeightPixels * todipy);
             _pageBackStack.Resized(size);
-            _graphicsDevice.UpdateForWindowSizeChange();
+
+            _graphicsDevice.UpdateForWindowSizeChange(metrics);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -80,8 +85,8 @@ namespace EMU7800.D2D
         public override bool OnTouchEvent(MotionEvent e)
         {
             var pointerId = (uint)e.DeviceId;
-            var x = (int)e.RawX;
-            var y = (int)e.RawY;
+            var x = (int)(e.RawX * 0.75f);
+            var y = (int)(e.RawY * 0.75f);
 
             switch (e.Action)
             {
