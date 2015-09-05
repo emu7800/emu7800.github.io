@@ -25,6 +25,8 @@ namespace EMU7800.D2D.Interop
 
         AndroidGameView _view;
 
+        float _todipx, _todipy;
+
         #endregion
 
         internal int Width { get; private set; }
@@ -156,15 +158,15 @@ namespace EMU7800.D2D.Interop
             GL.Disable(All.ScissorTest);
         }
 
-        float _todipx, _todipy;
-
-        public void UpdateForWindowSizeChange(Android.Util.DisplayMetrics metrics)
+        public void UpdateForWindowSizeChange(float width, float height, float todipx, float todipy)
         {
-            _todipx = metrics.Xdpi / 96.0f;
-            _todipy = metrics.Ydpi / 96.0f;
-            Width = (int)(metrics.WidthPixels * _todipx);
-            Height = (int)(metrics.HeightPixels * _todipy);
-            GL.Viewport(0, 0, metrics.WidthPixels, metrics.HeightPixels);
+            _todipx = todipx;
+            _todipy = todipy;
+
+            Width = (int)(width * _todipx);
+            Height = (int)(height * _todipy);
+
+            GL.Viewport(0, 0, (int)width, (int)height);
         }
 
         public void Present()
