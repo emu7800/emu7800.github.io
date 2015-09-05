@@ -25,7 +25,7 @@ namespace EMU7800.D2D.Interop
 
         AndroidGameView _view;
 
-        float _todipx, _todipy;
+        float _scaleFactor;
 
         #endregion
 
@@ -146,10 +146,10 @@ namespace EMU7800.D2D.Interop
         public void PushAxisAlignedClip(RectF rect, D2DAntiAliasMode antiAliasMode)
         {
             GL.Enable(All.ScissorTest);
-            var x = (int)(rect.Left / _todipx);
-            var y = (int)((Height - rect.Bottom) / _todipy);
-            var w = (int)((rect.Right - rect.Left) / _todipx);
-            var h = (int)((rect.Bottom - rect.Top) / _todipy);
+            var x = ToInt(rect.Left / _scaleFactor);
+            var y = ToInt((Height - rect.Bottom) / _scaleFactor);
+            var w = ToInt((rect.Right - rect.Left) / _scaleFactor);
+            var h = ToInt((rect.Bottom - rect.Top) / _scaleFactor);
             GL.Scissor(x, y, w, h);
         }
 
@@ -158,15 +158,14 @@ namespace EMU7800.D2D.Interop
             GL.Disable(All.ScissorTest);
         }
 
-        public void UpdateForWindowSizeChange(float width, float height, float todipx, float todipy)
+        public void UpdateForWindowSizeChange(float width, float height, float scaleFactor)
         {
-            _todipx = todipx;
-            _todipy = todipy;
+            _scaleFactor = scaleFactor;
 
-            Width = (int)(width * _todipx);
-            Height = (int)(height * _todipy);
+            Width = ToInt(width * _scaleFactor);
+            Height = ToInt(height * _scaleFactor);
 
-            GL.Viewport(0, 0, (int)width, (int)height);
+            GL.Viewport(0, 0, ToInt(width), ToInt(height));
         }
 
         public void Present()
@@ -217,6 +216,15 @@ namespace EMU7800.D2D.Interop
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+        #region Helpers
+
+        static int ToInt(float value)
+        {
+            return (int)(value + 0.5f);
         }
 
         #endregion

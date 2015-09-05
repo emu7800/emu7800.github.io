@@ -21,7 +21,7 @@ namespace EMU7800.D2D
         int _lastMouseX, _lastMouseY;
         uint _lastMousePointerId;
 
-        float _todipx, _todipy;
+        float _scaleFactor;
 
         #endregion
 
@@ -47,20 +47,14 @@ namespace EMU7800.D2D
 
         protected override void OnResize(EventArgs e)
         {
-            const float dipDpi = 96.0f;
-
             var metrics = Resources.DisplayMetrics;
 
-            var xdpi = metrics.Xdpi < 1.0f ? dipDpi : metrics.Xdpi;
-            var ydpi = metrics.Ydpi < 1.0f ? dipDpi : metrics.Ydpi;
+            _scaleFactor = 1.0f / metrics.Density;
 
-            _todipx = xdpi / dipDpi;
-            _todipy = ydpi / dipDpi;
-
-            var size = Struct.ToSizeF(metrics.WidthPixels * _todipx, metrics.HeightPixels * _todipy);
+            var size = Struct.ToSizeF(metrics.WidthPixels * _scaleFactor, metrics.HeightPixels * _scaleFactor);
             _pageBackStack.Resized(size);
 
-            _graphicsDevice.UpdateForWindowSizeChange(metrics.WidthPixels, metrics.HeightPixels, _todipx, _todipy);
+            _graphicsDevice.UpdateForWindowSizeChange(metrics.WidthPixels, metrics.HeightPixels, _scaleFactor);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -93,8 +87,8 @@ namespace EMU7800.D2D
         public override bool OnTouchEvent(MotionEvent e)
         {
             var pointerId = (uint)e.DeviceId;
-            var x = (int)(e.RawX * _todipx);
-            var y = (int)(e.RawY * _todipy);
+            var x = (int)(e.RawX * _scaleFactor + 0.5f);
+            var y = (int)(e.RawY * _scaleFactor + 0.5f);
 
             switch (e.Action)
             {
