@@ -1,0 +1,32 @@
+
+Monodroid: KitKat (v4.4 API Level 19) Target and Minimum Level
+
+mikmurphy onedrive public sharelink:
+http://1drv.ms/1IAa31i
+
+http://developer.amazon.com/home.html
+
+https://developer.xamarin.com/guides/android/deployment,_testing,_and_metrics/publishing_an_application/part_7_-_publishing_to_the_amazon_app_store/
+
+http://en.wikipedia.org/wiki/Android_version_history
+4.4 (KitKat) is the most widely used Android version as of May 2015
+
+Code Name		Version		API Level
+Alpha 			1.0		1
+Beta 			1.1		2
+Cupcake 		1.5		3
+Donut 			1.6		4
+Eclair 			2.0-2.1		5-7
+Froyo 			2.2-2.2.3	8
+Gingerbread 		2.3-2.37	9-10
+Honeycomb 		3.0-3.2.6	11-13
+Ice Cream Sandwich 	4.0-4.0.4	14-15
+Jelly Bean 		4.1-4.3.1	16-18
+KitKat 			4.4-4.4.4	19-20
+Lollipop 		5.0-5.1.1	21-22
+
+
+
+
+
+
