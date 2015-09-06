@@ -49,7 +49,7 @@ namespace EMU7800.D2D
         {
             var metrics = Resources.DisplayMetrics;
 
-            _scaleFactor = 1.0f / metrics.Density;
+            _scaleFactor = (160f / 96f) * (1f / metrics.Density);
 
             var size = Struct.ToSizeF(metrics.WidthPixels * _scaleFactor, metrics.HeightPixels * _scaleFactor);
             _pageBackStack.Resized(size);
