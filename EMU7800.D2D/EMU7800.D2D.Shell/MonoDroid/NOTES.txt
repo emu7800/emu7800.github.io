@@ -1,12 +1,7 @@
-
 Monodroid: KitKat (v4.4 API Level 19) Target and Minimum Level
 
 mikmurphy onedrive public sharelink:
 http://1drv.ms/1IAa31i
-
-http://developer.amazon.com/home.html
-
-https://developer.xamarin.com/guides/android/deployment,_testing,_and_metrics/publishing_an_application/part_7_-_publishing_to_the_amazon_app_store/
 
 http://en.wikipedia.org/wiki/Android_version_history
 4.4 (KitKat) is the most widely used Android version as of May 2015
