@@ -6,11 +6,21 @@ namespace EMU7800.Launcher
     static class Program
     {
         [STAThread]
-        static void Main()
+        static int Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            if (args.Length > 0 && System.IO.File.Exists(args[0]))
+            {
+                D2D.Shell.Win32.Win32EntryPoint.StartGameProgram(args[0]);
+            }
+            else
+            {
+                Application.Run(new Form1());
+            }
+
+            return 0;
         }
     }
 }
