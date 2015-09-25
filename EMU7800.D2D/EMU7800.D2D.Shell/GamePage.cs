@@ -172,10 +172,10 @@ namespace EMU7800.D2D.Shell
 
             _gameControl.IsInTouchMode = _touchbuttonCollection.IsVisible = _settings.ShowTouchControls;
 
-            Controls.Add(_gameControl, _buttonSettings, _labelInfoText, _hud_controlCollection, _touchbuttonCollection);
+            Controls.Add(_gameControl, _labelInfoText, _hud_controlCollection, _touchbuttonCollection);
 
             if (!_startFreshReq)
-                Controls.Add(_buttonBack);
+                Controls.Add(_buttonBack, _buttonSettings);
 
             ResetBackAndSettingsButtonVisibilityCounter();
 
