@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;WIN32</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -70,8 +70,8 @@
     <Compile Include="..\EMU7800.D2D.Shell\Services\RomBytesService.cs">
       <Link>RomBytesService.cs</Link>
     </Compile>
-    <Compile Include="..\EMU7800.D2D.Shell\Win32\Services\Md5HashService..cs">
-      <Link>Md5HashService..cs</Link>
+    <Compile Include="..\EMU7800.D2D.Shell\Services\Md5HashService.cs">
+      <Link>Md5HashService.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -5,7 +5,7 @@
     <Import Project=".\MSBuildExtensionPack\MSBuild.ExtensionPack.tasks"/>
     <PropertyGroup>
         <MajorVersion>1</MajorVersion>
-        <MinorVersion>7</MinorVersion>
+        <MinorVersion>8</MinorVersion>
         <BuildVersion>0</BuildVersion>
         <RevisionVersion>0</RevisionVersion>
         <ClickOnceRevision>0</ClickOnceRevision>
@@ -23,9 +23,9 @@
         <EMU7800DumpBinRoot>$(EMU7800Root)\EMU7800.D2D\EMU7800.DumpBin</EMU7800DumpBinRoot>
         <EMU7800LauncherBinRoot>$(EMU7800Root)\EMU7800.D2D\EMU7800.Launcher</EMU7800LauncherBinRoot>
         <EMU7800SoundEmulatorRoot>$(EMU7800Root)\EMU7800.SoundEmulator</EMU7800SoundEmulatorRoot>
-        <EMU7800WinSln>$(EMU7800WinRoot)\EMU7800.Win.sln</EMU7800WinSln>
+        <EMU7800WinSln>$(EMU7800WinRoot)\EMU7800.Win.VS2013.sln</EMU7800WinSln>
         <EMU7800SLSln>$(EMU7800SLRoot)\EMU7800.SL.sln</EMU7800SLSln>
-        <EMU7800D2DWinSln>$(EMU7800D2DRoot)\EMU7800.D2D.Win32.sln</EMU7800D2DWinSln>
+        <EMU7800D2DWinSln>$(EMU7800D2DRoot)\EMU7800.D2D.Win32.v120.sln</EMU7800D2DWinSln>
         <EMU7800WebInstallerSln>$(EMU7800WebInstallerRoot)\EMU7800.WebInstaller.sln</EMU7800WebInstallerSln>
         <EMU7800DumpBinSln>$(EMU7800DumpBinRoot)\EMU7800.DumpBin.sln</EMU7800DumpBinSln>
         <PublishThumbprint>c7 c9 b5 3b d3 ca 84 c4 6e 62 9f c0 76 f6 1f 27 b0 d0 39 b6</PublishThumbprint>
@@ -300,7 +300,7 @@ $(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.csv;
 $(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.txt;
 $(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.config;
 $(EMU7800D2DRoot)\EMU7800.D2D.Shell\**\*.manifest;
-$(EMU7800D2DRoot)\EMU7800.D2D.Win32.sln;
+$(EMU7800D2DRoot)\EMU7800.D2D.Win32.v120.sln;
 $(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.cpp;
 $(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.h;
 $(EMU7800D2DRoot)\EMU7800.D2D.Interop.Win32\**\*.rc;
