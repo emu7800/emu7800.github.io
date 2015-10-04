@@ -115,6 +115,8 @@ namespace EMU7800.MonoDroid
                 case Keycode.F2:                return KeyboardKey.F2;
                 case Keycode.F3:                return KeyboardKey.F3;
                 case Keycode.F4:                return KeyboardKey.F4;
+                case Keycode.PageUp:            return KeyboardKey.PageUp;
+                case Keycode.PageDown:          return KeyboardKey.PageDown;
                 default:                        return KeyboardKey.None;
             }
         }

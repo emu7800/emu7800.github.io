@@ -429,6 +429,14 @@ namespace EMU7800.D2D.Shell
                     PostInfoText("P3/P4 paddles swapped");
                     _gameControl.SwapRightControllerPaddles();
                     break;
+                case KeyboardKey.PageUp:
+                    if (!_hud_buttonPower.IsChecked)
+                        PowerOn();
+                    break;
+                case KeyboardKey.PageDown:
+                    if (_hud_buttonPower.IsChecked)
+                        PowerOff();
+                    break;
             }
         }
 
@@ -550,17 +558,12 @@ namespace EMU7800.D2D.Shell
 
         void _hud_buttonPower_Checked(object sender, EventArgs e)
         {
-            _gameControl.Stop();
-            _hud_buttonPaused.IsChecked = _gameControl.IsPaused = false;
-            _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, true);
-            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
+            PowerOn();
         }
 
         void _hud_buttonPower_Unchecked(object sender, EventArgs e)
         {
-            _gameControl.Stop();
-            _gameControl.StartSnow();
-            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = false;
+            PowerOff();
         }
 
         void _hud_buttonInput_Clicked(object sender, EventArgs e)
@@ -572,6 +575,23 @@ namespace EMU7800.D2D.Shell
         #endregion
 
         #region Helpers
+
+        void PowerOn()
+        {
+            _gameControl.Stop();
+            _hud_buttonPaused.IsChecked = _gameControl.IsPaused = false;
+            _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, true);
+            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
+            _hud_buttonPower.IsChecked = true;
+        }
+
+        void PowerOff()
+        {
+            _gameControl.Stop();
+            _gameControl.StartSnow();
+            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = false;
+            _hud_buttonPower.IsChecked = false;
+        }
 
         void ShowHud()
         {

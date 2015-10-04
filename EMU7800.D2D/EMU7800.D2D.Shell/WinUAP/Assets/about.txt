@@ -17,5 +17,6 @@ GAME CONTROLLERS—Up to four (4) Xbox 360 controllers are supported and should 
 - Number pad keys are mapped to the Atari Keypad controller
 - The H key toggles the Heads Up Display (HUD) during gameplay where recognized controllers are shown
 - Left and right fire buttons are mapped to the Z/X keys respectively
+- The PageDown/PageUp keys toggle power
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title. Touch screen game controls can be activated here; tap or click middle of the screen to adjust separation.

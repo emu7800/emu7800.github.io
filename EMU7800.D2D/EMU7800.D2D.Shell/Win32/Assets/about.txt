@@ -14,6 +14,7 @@ GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, includi
 - Number pad keys are mapped to the Atari Keypad controller
 - The H key toggles the Heads Up Display (HUD) during gameplay
 - Left and right fire buttons are mapped to the Z/X keys respectively
+- The PageDown/PageUp keys toggle power
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
 

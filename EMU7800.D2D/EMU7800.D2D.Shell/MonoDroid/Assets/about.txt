@@ -8,6 +8,6 @@ PERFORMANCE—EMU7800 will be able to run full speed on systems with the equival
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title. Touch screen game controls can be activated here; tap or click middle of the screen to adjust separation.
 
-KEYBOARD INPUT—Available keys: Left/Right Fire (Z/X), Directional (DPad/Arrows), Game Select (S), Game Reset (R), Game Pause (P), Toggle HUD (H), Player # Switch (F1-F4).
+KEYBOARD INPUT—Available keys: Left/Right Fire (Z/X), Directional (DPad/Arrows), Game Select (S), Game Reset (R), Game Pause (P), Toggle HUD (H), Player # Switch (F1-F4), Power (PageUp/PageDown).
 
 ABOUT—EMU7800 is a .NET-based Atari 7800 emulator running on Windows, Windows 10/Universal, and Android devices.
