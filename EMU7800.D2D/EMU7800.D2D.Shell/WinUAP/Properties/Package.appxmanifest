@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="56691MikeMurphy.EMU7800" Publisher="CN=978124C8-D68F-4C5D-9E10-955C3A49CB93" Version="2.0.0.0" />
+  <Identity Name="56691MikeMurphy.EMU7800" Publisher="CN=978124C8-D68F-4C5D-9E10-955C3A49CB93" Version="2.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="9b2b3bb7-51bd-4f66-a73a-5933641923ca" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>EMU7800</DisplayName>
