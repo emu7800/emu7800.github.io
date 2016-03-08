@@ -1,10 +1,10 @@
 /*
  * Machine2600.cs
- * 
+ *
  * The realization of a 2600 machine.
- * 
- * Copyright © 2003, 2004 Mike Murphy
- * 
+ *
+ * Copyright Â© 2003, 2004 Mike Murphy
+ *
  */
 namespace EMU7800.Core
 {

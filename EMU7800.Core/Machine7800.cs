@@ -1,10 +1,10 @@
 /*
  * Machine7800.cs
- * 
+ *
  * The realization of a 7800 machine.
- * 
- * Copyright © 2003-2005 Mike Murphy
- * 
+ *
+ * Copyright Â© 2003-2005 Mike Murphy
+ *
  */
 namespace EMU7800.Core
 {

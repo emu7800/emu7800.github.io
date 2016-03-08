@@ -2,8 +2,8 @@
  * M6502.cs
  *
  * CPU emulator for the MOS Technology 6502 microprocessor.
- * 
- * Copyright © 2003-2005 Mike Murphy
+ *
+ * Copyright Â© 2003-2005 Mike Murphy
  *
  */
 using System;
@@ -156,7 +156,7 @@ namespace EMU7800.Core
             get { return fget(1 << 0); }
             set { fset(1 << 0, value); }
         }
-    
+
         // Zero: set if the result of the last operation was zero
         bool fZ
         {
@@ -332,7 +332,7 @@ namespace EMU7800.Core
             var zpa = Mem[PC++];
             var lsb = Mem[zpa++];
             var msb = Mem[zpa];
-            if (lsb + Y > 0xff) 
+            if (lsb + Y > 0xff)
             {
                 clk(eclk);
             }

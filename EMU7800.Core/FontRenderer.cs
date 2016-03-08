@@ -4,7 +4,7 @@
  * A simple font renderer for displaying text during emulation.  Font data and
  * rendering algorithm courtesy of Bradford W. Mott's Stella source.
  *
- * Copyright © 2004 Mike Murphy
+ * Copyright Â© 2004 Mike Murphy
  *
  */
 

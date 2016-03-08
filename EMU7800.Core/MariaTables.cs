@@ -4,7 +4,7 @@
  * Palette tables for the Maria class.
  * All derived from Dan Boris' 7800/MAME code.
  *
- * Copyright © 2004 Mike Murphy
+ * Copyright Â© 2004 Mike Murphy
  *
  */
 namespace EMU7800.Core

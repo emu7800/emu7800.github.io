@@ -3,7 +3,7 @@
  *
  * The class representing the memory map or address space of a machine.
  *
- * Copyright © 2003, 2011 Mike Murphy
+ * Copyright Â© 2003, 2011 Mike Murphy
  *
  */
 using System;

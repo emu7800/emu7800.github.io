@@ -2,7 +2,7 @@
  * Maria.cs
  *
  * The Maria display device.
- * 
+ *
  * Derived from much of Dan Boris' work with 7800 emulation
  * within the MESS emulator.
  *
@@ -10,8 +10,8 @@
  * the BuildLineRAM320B() method to correspond closer to real hardware.
  * (Matthias credited an insightful response by Eckhard Stolberg on a forum on
  * Atari Age circa June 2005.)
- * 
- * Copyright © 2004-2012 Mike Murphy
+ *
+ * Copyright Â© 2004-2012 Mike Murphy
  *
  */
 using System;
@@ -974,7 +974,7 @@ namespace EMU7800.Core
             if (version == 1)
             {
                 // formerly persisted values, MariaPalette[8,4]
-                for (var i = 0; i < 32; i++) 
+                for (var i = 0; i < 32; i++)
                     input.ReadByte();
             }
             Registers = input.ReadExpectedBytes(0x40);

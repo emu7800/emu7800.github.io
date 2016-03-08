@@ -3,7 +3,7 @@
  *
  * The Television Interface Adaptor device.
  *
- * Copyright © 2003-2008 Mike Murphy
+ * Copyright Â© 2003-2008 Mike Murphy
  *
  */
 using System;
@@ -494,7 +494,7 @@ namespace EMU7800.Core
             {
                 fbyte = colup0;
                 cxflags |= TIACxFlags.P0;
-            } 
+            }
             if (pfpriority && colupfon)
             {
                 fbyte = fbyte_colupf;

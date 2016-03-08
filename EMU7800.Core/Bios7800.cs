@@ -1,10 +1,10 @@
 /*
  * BIOS7800.cs
- * 
+ *
  * The BIOS of the Atari 7800.
- * 
- * Copyright © 2004 Mike Murphy
- * 
+ *
+ * Copyright Â© 2004 Mike Murphy
+ *
  */
 using System;
 

@@ -4,7 +4,7 @@
  * Class containing the input state of the console and its controllers,
  * mapping emulator input devices to external input.
  *
- * Copyright © 2003-2010 Mike Murphy
+ * Copyright Â© 2003-2010 Mike Murphy
  *
  */
 using System;

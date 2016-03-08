@@ -1,9 +1,9 @@
 /*
  * TIASound.cs
  *
- * Sound emulation for the 2600.  Based upon TIASound © 1997 by Ron Fries.
+ * Sound emulation for the 2600.  Based upon TIASound Â© 1997 by Ron Fries.
  *
- * Copyright © 2003, 2004 Mike Murphy
+ * Copyright Â© 2003, 2004 Mike Murphy
  *
  */
 

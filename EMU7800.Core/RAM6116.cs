@@ -3,7 +3,7 @@
  *
  * Implements a 6116 RAM device found in the 7800.
  *
- * Copyright © 2004 Mike Murphy
+ * Copyright Â© 2004 Mike Murphy
  *
  */
 using System;

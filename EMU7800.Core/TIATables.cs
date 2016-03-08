@@ -4,7 +4,7 @@
  * Mask tables for the Television Interface Adaptor class.  All derived from
  * Bradford Mott's Stella code.
  *
- * Copyright © 2003, 2004 Mike Murphy
+ * Copyright Â© 2003, 2004 Mike Murphy
  *
  */
 namespace EMU7800.Core

@@ -1,10 +1,10 @@
 /*
  * M6502DASM.cs
- * 
+ *
  * Provides disassembly services.
- * 
- * Copyright © 2003, 2004 Mike Murphy
- * 
+ *
+ * Copyright Â© 2003, 2004 Mike Murphy
+ *
  */
 using System;
 using System.Text;

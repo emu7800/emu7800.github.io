@@ -2,9 +2,9 @@
  * Cart.cs
  *
  * An abstraction of a game cart.  Attributable to Kevin Horton's Bankswitching
- * document, the Stella source code, and Eckhard Stolberg's 7800 Bankswitching Guide. 
+ * document, the Stella source code, and Eckhard Stolberg's 7800 Bankswitching Guide.
  *
- * Copyright © 2003, 2004, 2010, 2011 Mike Murphy
+ * Copyright Â© 2003, 2004, 2010, 2011 Mike Murphy
  *
  */
 using System;

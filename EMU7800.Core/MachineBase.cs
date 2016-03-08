@@ -1,11 +1,11 @@
 /*
 /*
  * MachineBase.cs
- * 
+ *
  * Abstraction of an emulated machine.
- * 
- * Copyright © 2003, 2004 Mike Murphy
- * 
+ *
+ * Copyright Â© 2003, 2004 Mike Murphy
+ *
  */
 using System;
 using System.IO;

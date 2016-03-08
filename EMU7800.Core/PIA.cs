@@ -4,7 +4,7 @@
  * The Peripheral Interface Adapter (6532) device.
  * a.k.a. RIOT (RAM I/O Timer?)
  *
- * Copyright © 2003, 2004, 2012 Mike Murphy
+ * Copyright Â© 2003, 2004, 2012 Mike Murphy
  *
  */
 using System;
