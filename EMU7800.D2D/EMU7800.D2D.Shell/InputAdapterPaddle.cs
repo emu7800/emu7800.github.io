@@ -1,4 +1,4 @@
-// © Mike Murphy
+// Â© Mike Murphy
 
 using EMU7800.Core;
 using EMU7800.D2D.Interop;

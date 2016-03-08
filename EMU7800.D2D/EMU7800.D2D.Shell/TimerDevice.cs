@@ -1,4 +1,4 @@
-// © Mike Murphy
+// Â© Mike Murphy
 
 using System;
 using System.Diagnostics;

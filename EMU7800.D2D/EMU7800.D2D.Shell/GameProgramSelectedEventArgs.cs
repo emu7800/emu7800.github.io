@@ -1,4 +1,4 @@
-// © Mike Murphy
+// Â© Mike Murphy
 
 using System;
 using EMU7800.Services.Dto;
