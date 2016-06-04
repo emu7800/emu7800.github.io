@@ -98,8 +98,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>bin.WinUAP\$(PlatformShortName)\$(Configuration)\</OutDir>
-    <IntDir>obj.WinUAP\$(PlatformShortName)\$(Configuration)\</IntDir>
+    <OutDir>bin.WinUWP\$(PlatformShortName)\$(Configuration)\</OutDir>
+    <IntDir>obj.WinUWP\$(PlatformShortName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug'">
     <ClCompile>

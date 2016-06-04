@@ -22,6 +22,7 @@ namespace EMU7800.D2D.Shell.WinRT
         bool _windowClosed, _windowVisible;
         int _lastMouseX, _lastMouseY;
         uint _lastMousePointerId;
+        float _scaleFactor;
 
         #endregion
 
@@ -53,15 +54,17 @@ namespace EMU7800.D2D.Shell.WinRT
             window.Closed += WindowOnClosed;
             window.VisibilityChanged += WindowOnVisibilityChanged;
 
+            DisplayInformation.DisplayContentsInvalidated += DisplayInformationOnDisplayContentsInvalidated;
+
             var displayInformation = DisplayInformation.GetForCurrentView();
             displayInformation.DpiChanged += DisplayInformationOnDpiChanged;
 
-            DisplayInformation.DisplayContentsInvalidated += DisplayInformationOnDisplayContentsInvalidated;
+            _scaleFactor = GetScaleFactor(window.Bounds.Width);
 
-            var size = Struct.ToSizeF((float)window.Bounds.Width, (float)window.Bounds.Height);
+            var size = Struct.ToSizeF((float)window.Bounds.Width * _scaleFactor, (float)window.Bounds.Height * _scaleFactor);
             _pageBackStack.Resized(size);
 
-            var logicalDpi = displayInformation.LogicalDpi;
+            var logicalDpi = displayInformation.LogicalDpi / _scaleFactor;
             _graphicsDevice.Initialize(window, logicalDpi, 0);
         }
 
@@ -108,8 +111,8 @@ namespace EMU7800.D2D.Shell.WinRT
             var current = args.CurrentPoint;
             var pointerId = current.PointerId;
             var pos = current.Position;
-            var x = (int)pos.X;
-            var y = (int)pos.Y;
+            var x = (int)(pos.X * _scaleFactor);
+            var y = (int)(pos.Y * _scaleFactor);
 
             if (_lastMousePointerId != pointerId)
             {
@@ -131,8 +134,8 @@ namespace EMU7800.D2D.Shell.WinRT
             var current = args.CurrentPoint;
             var pointerId = current.PointerId;
             var pos = current.Position;
-            var x = (int)pos.X;
-            var y = (int)pos.Y;
+            var x = (int)(pos.X * _scaleFactor);
+            var y = (int)(pos.Y * _scaleFactor);
             _pageBackStack.MouseButtonChanged(pointerId, x, y, down);
         }
 
@@ -150,15 +153,17 @@ namespace EMU7800.D2D.Shell.WinRT
             var current = args.CurrentPoint;
             var pointerId = current.PointerId;
             var pos = current.Position;
-            var x = (int)pos.X;
-            var y = (int)pos.Y;
+            var x = (int)(pos.X * _scaleFactor);
+            var y = (int)(pos.Y * _scaleFactor);
             var delta = current.Properties.MouseWheelDelta;
             _pageBackStack.MouseWheelChanged(pointerId, x, y, delta);
         }
 
         void WindowOnSizeChanged(CoreWindow sender, WindowSizeChangedEventArgs args)
         {
-            var size = Struct.ToSizeF((float)args.Size.Width, (float)args.Size.Height);
+            _scaleFactor = GetScaleFactor(args.Size.Width);
+
+            var size = Struct.ToSizeF((float)args.Size.Width * _scaleFactor, (float)args.Size.Height * _scaleFactor);
             _pageBackStack.Resized(size);
 
             _graphicsDevice.UpdateForWindowSizeChange();
@@ -169,7 +174,7 @@ namespace EMU7800.D2D.Shell.WinRT
 
         void DisplayInformationOnDpiChanged(DisplayInformation displayInformation, object args)
         {
-            var logicalDpi = displayInformation.LogicalDpi;
+            var logicalDpi = displayInformation.LogicalDpi / _scaleFactor;
             _graphicsDevice.SetDpi(logicalDpi);
         }
 
@@ -250,6 +255,14 @@ namespace EMU7800.D2D.Shell.WinRT
             _graphicsDevice.BeginDraw();
             _pageBackStack.Render(_graphicsDevice);
             _graphicsDevice.EndDraw();
+        }
+
+        float GetScaleFactor(double width)
+        {
+            // This application has an assumption the width will be at least 800 pixels.
+            // WinX scaling on mobile devices can make this width less than this.
+            // In these situations, apply a scaling factor to reach this minimum.
+            return width < 800f ? 800f / (float)width : 1f;
         }
 
         #endregion

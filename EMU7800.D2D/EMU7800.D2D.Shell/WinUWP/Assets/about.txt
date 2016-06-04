@@ -1,6 +1,6 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Port to the Windows Universal Application platform, unifying codebases across phone, PC, and beyond. An Android port is also available via Xamarin.
+WHATS NEW—Minor scaling adjustments for better results on Win X mobile platforms.
 
 BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; use the search icon on the title screen to import them. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 

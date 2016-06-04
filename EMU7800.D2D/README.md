@@ -8,7 +8,7 @@ June 2015
 - **WinRT_8.1WP v1.9** - did not release, failed certification, need Moga library update, will wait for .NET Native
 - **Win32** - no longer upgrading C++ project tools version for backward compatibility, left at v120 (VS2013)
 - **MonoDroid** - actively serviced Android/Xamarin version
-- **WinRT_10** - TBD
+- **WinUWP** - actively serviced
 
 File ``Moga.Windows.Phone.dll`` has failed the AppContainerCheck check.
 Apply the required linker options - ``SAFESEH``, ``DYNAMICBASE``, ``NXCOMPAT``, and ``APPCONTAINER`` - when you link the app.

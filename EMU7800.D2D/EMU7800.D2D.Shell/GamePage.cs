@@ -285,13 +285,7 @@ namespace EMU7800.D2D.Shell
 
             var x = size.Width / 2 - screenWidth / 2;
             var y = size.Height / 2 - screenHeight / 2;
-#if WINDOWS_PHONE_APP
-            // WP8.1 introduced a notification window activated by swiping from the edge.
-            // The on-screen directional controls needed to be moved to the right and out of the way a bit.
-            // To limit the amount the on-screen controls overlap the playfield, this moves the playfield to the right too.
-            if (_gameControl.IsInTouchMode)
-                x = size.Width - screenWidth - 35;
-#endif
+
             _gameControl.Location = Struct.ToPointF(x, y);
             _gameControl.Size = Struct.ToSizeF(screenWidth, screenHeight);
 
@@ -331,19 +325,18 @@ namespace EMU7800.D2D.Shell
             var touchWidth = (int)_touchbuttonLeft.Size.Width;
             var touchY = (int)size.Height / 2 - 3 * touchWidth / 2;
             var separation = _settings.TouchControlSeparation;
-#if WINDOWS_PHONE_APP
+
             // WP8.1 introduced a notification window activated by swiping from the edge.
             // The on-screen directional controls needed to be moved to the right and out of the way a bit.
-            const int LEFTG = 25;
-#else
-            const int LEFTG = 0;
-#endif
+            // Do this only when the touch controls are activated.
+            var LEFTG = _gameControl.IsInTouchMode ? 25 : 0;
+
             _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth + separation, touchY - separation);
             _touchbuttonLeft.Location  = Struct.ToPointF(LEFTG + 0, touchY + touchWidth);
             _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth + 2 * separation, touchY + touchWidth);
             _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth + separation, touchY + 2 * touchWidth + separation);
-            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth - separation, touchY + touchWidth + separation);
-            _touchbuttonFire2.Location = Struct.ToPointF(size.Width - touchWidth, touchY);
+            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 3 * touchWidth - separation, touchY + touchWidth + separation);
+            _touchbuttonFire2.Location = Struct.ToPointF(size.Width - 2 * touchWidth, touchY);
 
             _isTooNarrowForHud = size.Width < 330f;
 

@@ -11,17 +11,17 @@
     <AssemblyName>EMU7800.D2D.UAP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <UapDefaultAssetScale>100</UapDefaultAssetScale>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>EMU7800.D2D_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>EMU7800.D2D_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>98C2084C9B914D3CB3B716E5DBF4EEE3C5342D4B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>DDDEFC587EE8325AF079BFE4EBF2B1EF97B9C62C</PackageCertificateThumbprint>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -120,9 +120,17 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <None Include="EMU7800.D2D_StoreKey.pfx" />
+    <None Include="EMU7800.D2D_TemporaryKey.pfx" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -308,7 +316,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinUAP.vcxproj">
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.WinRT\EMU7800.D2D.Interop.WinUWP.vcxproj">
       <Project>{aba1daf2-2bcd-4896-b2df-3659cd0235b8}</Project>
       <Name>EMU7800.D2D.Interop</Name>
     </ProjectReference>
