@@ -121,7 +121,7 @@ namespace EMU7800.Services
                 throw new ArgumentNullException("csvFileContent");
 
             var md5dict = ToMD5Dict(gameProgramInfoSet);
-            var importedGameProgramInfoMd5Dict = new Dictionary<string, IList<ImportedGameProgramInfo>>();
+            var importedGameProgramInfoMd5Dict = new Dictionary<string, IList<ImportedGameProgramInfo>>(StringComparer.OrdinalIgnoreCase);
 
             var csvSplitter = new CsvSplitter();
             foreach (var line in csvFileContent)
@@ -149,7 +149,7 @@ namespace EMU7800.Services
                 IList<ImportedGameProgramInfo> igpiList;
                 if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out igpiList))
                 {
-                    igpiList = gpiList.Select(gpi => new ImportedGameProgramInfo { GameProgramInfo = gpi, StorageKeySet = new List<string>() }).ToList();
+                    igpiList = gpiList.Select(gpi => new ImportedGameProgramInfo { GameProgramInfo = gpi }).ToList();
                     importedGameProgramInfoMd5Dict.Add(md5key, igpiList);
                 }
 
@@ -218,7 +218,7 @@ namespace EMU7800.Services
             if (gameProgramInfoSet == null)
                 throw new ArgumentNullException("gameProgramInfoSet");
 
-            var dict = new Dictionary<string, IList<GameProgramInfo>>();
+            var dict = new Dictionary<string, IList<GameProgramInfo>>(StringComparer.OrdinalIgnoreCase);
             foreach (var gpi in gameProgramInfoSet)
             {
                 IList<GameProgramInfo> gpiList;

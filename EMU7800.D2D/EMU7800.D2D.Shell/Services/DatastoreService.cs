@@ -447,27 +447,25 @@ namespace EMU7800.Services
             PersistedGameProgramsName = "PersistedGamePrograms",
             ApplicationSettingsName = "Settings.emusettings";
 
-        static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
+        static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo)
         {
             var gpi = gameProgramInfo;
-            var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.emustate",
-                gpi.Title, gpi.MachineType, gpi.LController, gpi.RController, saveSlot);
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{gpi.MD5}.emustate";
             var name = EscapeFileNameChars(fileName);
             return name;
         }
 
-        static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
+        static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo)
         {
             var gpi = gameProgramInfo;
-            var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.png",
-                gpi.Title, gpi.MachineType, gpi.LController, gpi.RController, saveSlot);
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{gpi.MD5}.png";
             var name = EscapeFileNameChars(fileName);
             return name;
         }
 
         static string ToPersistedStateStoragePath(string name)
         {
-            var path = string.Format(@"{0}\{1}", PersistedGameProgramsName, name);
+            var path = $@"{PersistedGameProgramsName}\{name}";
             return path;
         }
 
@@ -558,7 +556,7 @@ namespace EMU7800.Services
             using (var za = new ZipArchive(file.OpenStreamForRead(), ZipArchiveMode.Read))
             {
                 var zipPathList = za.Entries
-                    .Select(entry => string.Format("{0}|{1}", file.Path, entry.FullName));
+                    .Select(entry => $"{file.Path}|{entry.FullName}");
                 return zipPathList;
             }
         }
@@ -671,7 +669,7 @@ namespace EMU7800.Services
         static string GetVersionString()
         {
             var version = Package.Current.Id.Version;
-            var versionStr = string.Format("{0}.{1}.0.0", version.Major, version.Minor);
+            var versionStr = $"{version.Major}.{version.Minor}";
             return versionStr;
         }
 

@@ -32,7 +32,7 @@ namespace EMU7800.Services
             var pathSet = _datastoreService.QueryLocalMyDocumentsForRomCandidates().Take(32768);
             ImportWithDefaults(pathSet);
         }
-        
+
         public void ImportDefaultsIfNecessary()
         {
             ClearLastErrorInfo();
@@ -111,11 +111,7 @@ namespace EMU7800.Services
                     ImportedGameProgramInfo igpi;
                     if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out igpi))
                     {
-                        igpi = new ImportedGameProgramInfo
-                        {
-                            GameProgramInfo = gpi,
-                            StorageKeySet   = new List<string>()
-                        };
+                        igpi = new ImportedGameProgramInfo { GameProgramInfo = gpi };
                         importedGameProgramInfoMd5Dict.Add(md5key, igpi);
                     }
                     igpi.StorageKeySet.Add(path);
