@@ -21,7 +21,7 @@
     <PackageCertificateKeyFile>EMU7800.D2D_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>DDDEFC587EE8325AF079BFE4EBF2B1EF97B9C62C</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>CEDECAF2B744F46A7C45D1FD0B3B32B75EA02874</PackageCertificateThumbprint>
     <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
