@@ -102,7 +102,8 @@ namespace EMU7800.Services
             if (_cachedPersistedDir == null)
                 _cachedPersistedDir = GetFilesFromPersistedGameProgramsImpl();
             var name = ToPersistedStateStorageName(gameProgramInfo);
-            var exists = _cachedPersistedDir.Contains(name);
+            var oldName = ToPersistedStateStorageOldName(gameProgramInfo);
+            var exists = _cachedPersistedDir.Contains(name) || _cachedPersistedDir.Contains(oldName);
             return exists;
         }
 
@@ -128,6 +129,22 @@ namespace EMU7800.Services
             catch (Exception ex)
             {
                 LastErrorInfo = new ErrorInfo(ex, "PersistMachine: Unexpected exception.");
+            }
+
+            var oldName = ToPersistedStateStorageOldName(machineStateInfo.GameProgramInfo);
+            var oldPath = ToPersistedStateStoragePath(oldName);
+
+            try
+            {
+                var file = ApplicationData.Current.LocalFolder.CreateFile(oldPath);
+                file.DeleteAsync()
+                    .AsTask()
+                        .ConfigureAwait(false)
+                            .GetAwaiter()
+                                .GetResult();
+            }
+            catch (Exception)
+            {
             }
 
             if (_cachedPersistedDir != null)
@@ -159,6 +176,22 @@ namespace EMU7800.Services
             {
                 LastErrorInfo = new ErrorInfo(ex, "PersistScreenshot: Unexpected exception.");
             }
+
+            var oldName = ToScreenshotStorageOldName(machineStateInfo.GameProgramInfo);
+            var oldPath = ToPersistedStateStoragePath(oldName);
+
+            try
+            {
+                var file = ApplicationData.Current.LocalFolder.CreateFile(oldPath);
+                file.DeleteAsync()
+                    .AsTask()
+                        .ConfigureAwait(false)
+                            .GetAwaiter()
+                                .GetResult();
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)
@@ -171,9 +204,36 @@ namespace EMU7800.Services
             var name = ToPersistedStateStorageName(gameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
 
+            var oldName = ToPersistedStateStorageOldName(gameProgramInfo);
+            var oldPath = ToPersistedStateStoragePath(oldName);
+
+            IStorageFile file = null;
+
             try
             {
-                var file = ApplicationData.Current.LocalFolder.GetFile(path);
+                file = ApplicationData.Current.LocalFolder.GetFile(path);
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            catch (Exception ex)
+            {
+                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unexpected exception.");
+                return null;
+            }
+
+            try
+            {
+                file = file ?? ApplicationData.Current.LocalFolder.GetFile(oldPath);
+            }
+            catch (Exception ex)
+            {
+                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unexpected exception.");
+                return null;
+            }
+
+            try
+            {
                 var machineStateInfo = RestoreMachineImpl(file, gameProgramInfo);
                 return machineStateInfo;
             }
@@ -459,6 +519,22 @@ namespace EMU7800.Services
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{gpi.MD5}.png";
+            var name = EscapeFileNameChars(fileName);
+            return name;
+        }
+
+        static string ToPersistedStateStorageOldName(GameProgramInfo gameProgramInfo)
+        {
+            var gpi = gameProgramInfo;
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.0.emustate";
+            var name = EscapeFileNameChars(fileName);
+            return name;
+        }
+
+        static string ToScreenshotStorageOldName(GameProgramInfo gameProgramInfo)
+        {
+            var gpi = gameProgramInfo;
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.0.png";
             var name = EscapeFileNameChars(fileName);
             return name;
         }
