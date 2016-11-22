@@ -327,16 +327,16 @@ namespace EMU7800.D2D.Shell
             var separation = _settings.TouchControlSeparation;
 
             // WP8.1 introduced a notification window activated by swiping from the edge.
-            // The on-screen directional controls needed to be moved to the right and out of the way a bit.
-            // Do this only when the touch controls are activated.
-            var LEFTG = _gameControl.IsInTouchMode ? 25 : 0;
+            // WinX mobile can have navigation buttons occlude a margin on the right.
+            // So, keep the touch buttons off of the left and right edge of the screen.
+            const int LEFTG = 35, RIGHTG = 35;
 
             _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth + separation, touchY - separation);
             _touchbuttonLeft.Location  = Struct.ToPointF(LEFTG + 0, touchY + touchWidth);
             _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth + 2 * separation, touchY + touchWidth);
             _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth + separation, touchY + 2 * touchWidth + separation);
-            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 3 * touchWidth - separation, touchY + touchWidth + separation);
-            _touchbuttonFire2.Location = Struct.ToPointF(size.Width - 2 * touchWidth, touchY);
+            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth - separation - RIGHTG, touchY + touchWidth + separation);
+            _touchbuttonFire2.Location = Struct.ToPointF(size.Width - touchWidth - RIGHTG, touchY);
 
             _isTooNarrowForHud = size.Width < 330f;
 
