@@ -9,6 +9,9 @@ namespace EMU7800.D2D.Shell
 {
     public sealed partial class TitlePage : PageBase
     {
+        static int EasterEggCounter;
+        internal static bool IsEasterEggOn => EasterEggCounter > 0 && EasterEggCounter % 7 == 0;
+
         readonly TitleControl _titleControl;
         readonly Button _buttonPlayAtariToday;
         readonly ButtonCircleImage _buttonAbout, _buttonFindRoms;
@@ -39,7 +42,7 @@ namespace EMU7800.D2D.Shell
             _buttonFindRoms = new SearchButton();
             _labelCopyr = new LabelControl
             {
-                Text = "© 2012-2017 Mike Murphy (mike@emu7800.net)",
+                Text = "© 2012-2018 Mike Murphy (mike@emu7800.net)",
                 TextFontFamilyName = Styles.SmallFontFamily,
                 TextFontSize = Styles.SmallFontSize,
                 TextAlignment = DWriteTextAlignment.Center,
@@ -106,10 +109,12 @@ namespace EMU7800.D2D.Shell
                 );
 
             _buttonAbout.Location  = Struct.ToPointF(
-                size.Width / 2 - (_buttonAbout.Size.Width + _buttonFindRoms.Size.Width + 48 + 5) / 2,
-                size.Height - _buttonAbout.Size.Height - 5
+                IsEasterEggOn ? size.Width / 2 - (_buttonAbout.Size.Width + _buttonFindRoms.Size.Width + 48 + 5) / 2
+                              : size.Width / 2 - _buttonAbout.Size.Width / 2,
+                size.Height - _buttonAbout.Size.Height - 50
                 );
             _buttonFindRoms.Location = Struct.ToRightOf(_buttonAbout, 48 + 5, 0);
+            _buttonFindRoms.IsVisible = _buttonFindRoms.IsEnabled = IsEasterEggOn;
         }
 
         #endregion
@@ -118,6 +123,7 @@ namespace EMU7800.D2D.Shell
 
         void _buttonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
         {
+            EasterEggCounter++;
             PushPage(new GameProgramSelectionPage());
         }
 

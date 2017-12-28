@@ -119,9 +119,21 @@ namespace EMU7800.D2D.Shell
             var csvFileContent1 = datastoreService.GetGameProgramInfoFromReferenceRepository();
             var csvFileContent2 = datastoreService.GetGameProgramInfoFromImportRepository();
             var gameProgramInfoSet = romPropertiesService.ToGameProgramInfo(csvFileContent1);
-            var importedGameProgramInfoSet = romPropertiesService.ToImportedGameProgramInfo(gameProgramInfoSet, csvFileContent2);
+
+            var isEasterEggOn = TitlePage.IsEasterEggOn;
+            var importedGameProgramInfoSet = romPropertiesService.ToImportedGameProgramInfo(gameProgramInfoSet, csvFileContent2)
+                .Where(igpi => isEasterEggOn || Filter(igpi.GameProgramInfo));
+
             var result = gameProgramLibraryService.GetGameProgramInfoViewItemCollections(importedGameProgramInfoSet);
             return result.ToArray();
+        }
+
+        static bool Filter(GameProgramInfo gpi)
+        {
+            return gpi.Manufacturer != "Activision"
+                && gpi.Manufacturer != "Mystique"
+                && gpi.Manufacturer != "Playaround"
+                && gpi.Title        != "Pitfall!";
         }
 
         static void CheckPersistedMachineStates(IEnumerable<GameProgramInfoViewItemCollection> gpivics)
