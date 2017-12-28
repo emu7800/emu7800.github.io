@@ -1,15 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Launcher", "EMU7800.Launcher.csproj", "{DB89B101-8350-40B8-B39F-0F9E223CD2CC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "..\EMU7800.D2D.Shell\Win32\EMU7800.D2D.csproj", "{F3C71F2A-1386-472F-AD5D-18C026FAF0D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.Core", "..\..\EMU7800.Core\EMU7800.Core.csproj", "{75E76CE4-80D3-4CEE-836D-CB5120DA1806}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop", "..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.vcxproj", "{6199F126-6489-4778-A320-4712BE423520}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.D2D.Interop.v141", "..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v141.vcxproj", "{6199F126-6489-4778-A320-4712BE423520}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\EMU7800.Core\EMU7800.Core.Shared.projitems*{f3c71f2a-1386-472f-ad5d-18c026faf0d8}*SharedItemsImports = 4
+		..\EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{f3c71f2a-1386-472f-ad5d-18c026faf0d8}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
@@ -70,6 +76,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F3AA87AB-3A7F-42BA-8EF5-A84C9F5C8642}
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

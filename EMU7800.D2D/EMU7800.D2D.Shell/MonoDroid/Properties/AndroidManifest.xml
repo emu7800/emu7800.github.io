@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.mikemurphy.EMU7800" android:versionName="2.0.0" android:installLocation="auto" android:versionCode="020000">
-	<uses-sdk android:targetSdkVersion="19" android:minSdkVersion="19" />
+	<uses-sdk android:targetSdkVersion="25" android:minSdkVersion="25" />
 	<application android:label="EMU7800" android:icon="@drawable/appicon_128x128"></application>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

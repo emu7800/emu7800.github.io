@@ -296,7 +296,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v120.vcxproj">
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v141.vcxproj">
       <Project>{6199f126-6489-4778-a320-4712be423520}</Project>
       <Name>EMU7800.D2D.Interop.v120</Name>
     </ProjectReference>

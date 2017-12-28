@@ -72,7 +72,7 @@ namespace EMU7800.D2D.Shell.Win32
                     {
                         GameProgramInfo      = gpi,
                         PersistedStateExists = false,
-                        StorageKeySet        = new List<string> { romPath }
+                        StorageKeySet        = new HashSet<string> { romPath }
                     }
                 })
                 .FirstOrDefault();

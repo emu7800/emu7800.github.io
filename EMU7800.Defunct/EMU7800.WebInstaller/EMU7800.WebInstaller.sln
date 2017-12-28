@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.WebInstaller", "EMU7800.WebInstaller.csproj", "{724CE014-1B64-4DBF-83D0-C9B910E28D07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{724CE014-1B64-4DBF-83D0-C9B910E28D07}.Release|x86.ActiveCfg = Release|x86
+		{724CE014-1B64-4DBF-83D0-C9B910E28D07}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD759493-5550-4E56-8920-1477413D935A}
+	EndGlobalSection
+EndGlobal

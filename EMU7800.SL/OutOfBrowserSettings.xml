@@ -1,9 +1,0 @@
-<OutOfBrowserSettings ShortName="EMU7800 SL" EnableGPUAcceleration="True" ShowInstallMenuItem="True">
-  <OutOfBrowserSettings.Blurb>A .NET Atari 2600/7800 Emulator.</OutOfBrowserSettings.Blurb>
-  <OutOfBrowserSettings.WindowSettings>
-    <WindowSettings Title="EMU7800 SL" />
-  </OutOfBrowserSettings.WindowSettings>
-  <OutOfBrowserSettings.Icons>
-    <Icon Size="32,32">EMUIcon.png</Icon>
-  </OutOfBrowserSettings.Icons>
-</OutOfBrowserSettings>

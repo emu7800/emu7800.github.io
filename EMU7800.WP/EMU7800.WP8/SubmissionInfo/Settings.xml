@@ -1,6 +1,0 @@
-<MarketplaceDetails>
-  <SmallAppTile>marketplace_appicon_300x300.png</SmallAppTile>
-  <ScreenShots>marketplace_screenshot.png;marketplace_screenshot2.png;marketplace_screenshot3.png;marketplace_screenshot4.png;marketplace_screenshot5.png;marketplace_screenshot6.png;marketplace_screenshot7.png;;</ScreenShots>
-  <ScreenShotsWXGA>marketplace_screenshot.wxga.png;marketplace_screenshot2.wxga.png;marketplace_screenshot3.wxga.png;marketplace_screenshot4.wxga.png;marketplace_screenshot5.wxga.png;marketplace_screenshot6.wxga.png;marketplace_screenshot7.wxga.png;;</ScreenShotsWXGA>
-  <ScreenShots720P>marketplace_screenshot.720p.png;marketplace_screenshot2.720p.png;marketplace_screenshot3.720p.png;marketplace_screenshot4.720p.png;marketplace_screenshot5.720p.png;marketplace_screenshot6.720p.png;marketplace_screenshot7.720p.png;;</ScreenShots720P>
-</MarketplaceDetails>

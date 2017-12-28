@@ -169,7 +169,7 @@ namespace EMU7800.Launcher
                         Qualifier = string.Empty
                     },
                     PersistedStateExists = false,
-                    StorageKeySet = new List<string> { textBoxRomPath.Text }
+                    StorageKeySet = new HashSet<string> { textBoxRomPath.Text }
                 }
             };
 

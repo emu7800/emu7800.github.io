@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "EMU7800.Installer", "EMU7800.Installer.vdproj", "{45979ADA-78FA-4411-BBBD-86C7D7F90804}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45979ADA-78FA-4411-BBBD-86C7D7F90804}.Debug|x86.ActiveCfg = Release
+		{45979ADA-78FA-4411-BBBD-86C7D7F90804}.Debug|x86.Build.0 = Release
+		{45979ADA-78FA-4411-BBBD-86C7D7F90804}.Release|x86.ActiveCfg = Release
+		{45979ADA-78FA-4411-BBBD-86C7D7F90804}.Release|x86.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

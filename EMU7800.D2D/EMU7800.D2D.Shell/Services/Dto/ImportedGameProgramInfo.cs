@@ -8,7 +8,7 @@ namespace EMU7800.Services.Dto
     public class ImportedGameProgramInfo
     {
         public GameProgramInfo GameProgramInfo { get; set; }
-        public ISet<string> StorageKeySet { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public ISet<string> StorageKeySet { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public bool PersistedStateExists { get; set; }
     }
 }
