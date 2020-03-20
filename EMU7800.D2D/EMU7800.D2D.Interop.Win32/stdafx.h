@@ -6,11 +6,11 @@
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd370997%28v=vs.85%29.aspx
 
 #ifndef WINVER
-#define WINVER 0x0601         // Allow use of features specific to Windows 7 or later
+#define WINVER 0x0605         // Allow use of features specific to Windows 10 version 1607 or later
 #endif
 
 #ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0601   // Allow use of features specific to Windows 7 or later
+#define _WIN32_WINNT 0x0601   // Allow use of features specific to Windows 10 version 1607 or later
 #endif
 
 #ifndef UNICODE
@@ -22,6 +22,7 @@
 #include <sdkddkver.h>
 #include <windows.h>
 #include <WindowsX.h>
+#include <winuser.h>
 
 // C RunTime Header Files
 #include <stdlib.h>

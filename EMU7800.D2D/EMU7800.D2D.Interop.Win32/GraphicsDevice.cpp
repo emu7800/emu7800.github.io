@@ -374,11 +374,6 @@ HRESULT GraphicsDevice::Initialize()
     return S_OK;
 }
 
-void GraphicsDevice::GetDesktopDpi(float *dpiX, float *dpiY)
-{
-    m_pD2D1Factory->GetDesktopDpi(dpiX, dpiY);
-}
-
 void GraphicsDevice::AttachHwnd(HWND hWnd)
 {
     if (!hWnd)

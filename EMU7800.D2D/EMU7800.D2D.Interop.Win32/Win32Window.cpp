@@ -252,10 +252,9 @@ Win32Window::Win32Window() : m_hWnd(0)
         Environment::Exit(hr);
     }
 
-    float dpiX, dpiY;
-    m_pGraphicsDevice->GetDesktopDpi(&dpiX, &dpiY);
-    m_dpiX = dpiY;
-    m_dpiY = dpiY;
+    float dpi = (float)GetDpiForSystem();
+    m_dpiX = dpi;
+    m_dpiY = dpi;
 
     int windowWidth = static_cast<UINT>(round(WINDOW_MIN_WIDTH  * m_dpiX / D2D_DPI));
     int windowHeight = static_cast<UINT>(round(WINDOW_MIN_HEIGHT * m_dpiY / D2D_DPI));

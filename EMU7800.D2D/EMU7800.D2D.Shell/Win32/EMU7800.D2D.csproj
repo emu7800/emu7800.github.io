@@ -296,12 +296,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v141.vcxproj">
-      <Project>{6199f126-6489-4778-a320-4712be423520}</Project>
-      <Name>EMU7800.D2D.Interop.v120</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\Assets\roms.zip">
       <Link>Assets\roms.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -330,7 +324,12 @@
     </None>
     <None Include="Properties\app.manifest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\EMU7800.D2D.Interop.Win32\EMU7800.D2D.Interop.v142.vcxproj">
+      <Project>{6199f126-6489-4778-a320-4712be423520}</Project>
+      <Name>EMU7800.D2D.Interop.v142</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\..\..\EMU7800.Core\EMU7800.Core.Shared.projitems" Label="Shared" />
   <Import Project="..\EMU7800.D2D.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

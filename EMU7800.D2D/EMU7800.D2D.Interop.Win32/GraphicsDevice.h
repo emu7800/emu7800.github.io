@@ -56,7 +56,6 @@ public:
     void PopAxisAlignedClip();
 
     HRESULT Initialize();
-    void GetDesktopDpi(float* dpiX, float* dpiY);
     void AttachHwnd(HWND hWnd);
     void Resize(SizeU size);
 
