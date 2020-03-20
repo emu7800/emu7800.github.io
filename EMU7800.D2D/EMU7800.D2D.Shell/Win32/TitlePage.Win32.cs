@@ -9,7 +9,7 @@ namespace EMU7800.D2D.Shell
         string GetVersionInfo()
         {
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            var versionInfo = string.Format("Version {0}.{1} (Core 1.4) {2}", version.Major, version.Minor, GetBuildConfiguration());
+            var versionInfo = $"Version {version.Major}.{version.Minor} (Core 1.4) {GetBuildConfiguration()}";
             return versionInfo;
         }
     }

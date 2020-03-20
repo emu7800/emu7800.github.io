@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyProduct("EMU7800 for Win32")]
 [assembly: AssemblyCompany("Mike Murphy")]
-[assembly: AssemblyCopyright("Copyright © 2012-2015 Mike Murphy")]
-[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
+[assembly: AssemblyCopyright("Copyright © 2012-2020 Mike Murphy")]
+[assembly: AssemblyVersion("2.5.0.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]
 
