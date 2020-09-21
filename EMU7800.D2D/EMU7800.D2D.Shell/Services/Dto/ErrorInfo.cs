@@ -14,9 +14,9 @@ namespace EMU7800.Services.Dto
         {
         }
 
-        public ErrorInfo(string format, params object[] args)
+        public ErrorInfo(string message)
         {
-            Message = (args != null) ? string.Format(format, args) : format;
+            Message = message;
         }
 
         public ErrorInfo(Exception exception)
@@ -25,17 +25,17 @@ namespace EMU7800.Services.Dto
             Message = "An exception occurred.";
         }
 
-        public ErrorInfo(Exception exception, string format, params object[] args) : this(format, args)
+        public ErrorInfo(Exception exception, string message) : this(message)
         {
             OriginatingException = exception;
         }
 
-        public ErrorInfo(ErrorInfo innerErrorInfo, string format, params object[] args) : this(format, args)
+        public ErrorInfo(ErrorInfo innerErrorInfo, string message) : this(message)
         {
             InnerErrorInfo = innerErrorInfo;
         }
 
-        public ErrorInfo(ErrorInfo innerErrorInfo, Exception exception, string format, params object[] args) : this(format, args)
+        public ErrorInfo(ErrorInfo innerErrorInfo, Exception exception, string message) : this(message)
         {
             InnerErrorInfo = innerErrorInfo;
             OriginatingException = exception;

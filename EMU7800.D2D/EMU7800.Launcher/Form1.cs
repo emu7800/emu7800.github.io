@@ -116,7 +116,7 @@ namespace EMU7800.Launcher
                 var bytes = br.ReadBytes(1000000);
                 var svc = new RomBytesService();
                 textBoxMd5Key.Text = svc.ToMD5Key(bytes);
-                labelSize.Text = string.Format("Size {0} / 0x{0:X4} bytes", bytes.Length);
+                labelSize.Text = $"Size {bytes.Length} / 0x{bytes.Length:X4} bytes";
                 _isa78format = svc.IsA78Format(bytes);
                 _a78gameProgramInfo = _isa78format ? svc.ToGameProgramInfoFromA78Format(bytes) : null;
                 if (_a78gameProgramInfo != null)

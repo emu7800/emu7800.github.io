@@ -202,7 +202,7 @@ namespace EMU7800.Services
 
             return from igpi in importedGameProgramInfo
                    from storageKey in igpi.StorageKeySet
-                   select string.Format("{0},\"{1}\"", igpi.GameProgramInfo.MD5, storageKey);
+                   select $"{igpi.GameProgramInfo.MD5},\"{storageKey}\"";
         }
 
         public IEnumerable<string> ToCsvFileContent(IEnumerable<ImportedSpecialBinaryInfo> importedSpecialBinaries)
@@ -210,7 +210,7 @@ namespace EMU7800.Services
             if (importedSpecialBinaries == null)
                 throw new ArgumentNullException("importedSpecialBinaries");
 
-            return importedSpecialBinaries.Select(isbi => string.Format("{0},\"{1}\"", isbi.Type, isbi.StorageKey));
+            return importedSpecialBinaries.Select(isbi => $"{isbi.Type},\"{isbi.StorageKey}\"");
         }
 
         public IDictionary<string, IList<GameProgramInfo>> ToMD5Dict(IEnumerable<GameProgramInfo> gameProgramInfoSet)

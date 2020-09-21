@@ -101,9 +101,7 @@ namespace EMU7800.Core
         public static string GetRegisters(M6502 cpu)
         {
             var dSB = new StringBuilder();
-            dSB.Append(String.Format(
-                "PC:{0:x4} A:{1:x2} X:{2:x2} Y:{3:x2} S:{4:x2} P:",
-                cpu.PC, cpu.A, cpu.X, cpu.Y, cpu.S));
+            dSB.Append($"PC:{cpu.PC:x4} A:{cpu.A:x2} X:{cpu.X:x2} Y:{cpu.Y:x2} S:{cpu.S:x2} P:");
 
             const string flags = "nv0bdizcNV1BDIZC";
 
@@ -120,20 +118,20 @@ namespace EMU7800.Core
             var dPC = atAddr;
             while (atAddr < untilAddr)
             {
-                dSB.AppendFormat("{0:x4}: ", dPC);
+                dSB.Append($"{dPC:x4}: ");
                 var len = GetInstructionLength(addrSpace, dPC);
                 for (var i = 0; i < 3; i++)
                 {
                     if (i < len)
                     {
-                        dSB.AppendFormat("{0:x2} ", addrSpace[atAddr++]);
+                        dSB.Append($"{addrSpace[atAddr++]:x2} ");
                     }
                     else
                     {
                         dSB.Append("   ");
                     }
                 }
-                dSB.AppendFormat("{0,-15}{1}", RenderOpCode(addrSpace, dPC), Environment.NewLine);
+                dSB.Append($"{RenderOpCode(addrSpace, dPC),-15}{Environment.NewLine}");
                 dPC += (ushort)len;
             }
             if (dSB.Length > 0)
@@ -149,10 +147,10 @@ namespace EMU7800.Core
             var len = untilAddr - atAddr;
             while (len-- >= 0)
             {
-                dSB.AppendFormat("{0:x4}: ", atAddr);
+                dSB.Append($"{atAddr:x4}: ");
                 for (var i = 0; i < 8; i++)
                 {
-                    dSB.AppendFormat("{0:x2} ", addrSpace[atAddr++]);
+                    dSB.Append($"{addrSpace[atAddr++]:x2} ");
                     if (i == 3)
                     {
                         dSB.Append(" ");
@@ -176,7 +174,7 @@ namespace EMU7800.Core
             switch (AddressingModeMatrix[addrSpace[PC]])
             {
                 case a.REL:
-                    addrmodeStr = String.Format("${0:x4}", (ushort)(PC + (sbyte)(addrSpace[PC1]) + 2));
+                    addrmodeStr = $"${(ushort)(PC + (sbyte)addrSpace[PC1] + 2):x4}";
                     break;
                 case a.ZPG:
                 case a.ABS:
@@ -208,7 +206,7 @@ namespace EMU7800.Core
                     break;
             }
 
-            return string.Format("{0} {1}", MnemonicMatrix[addrSpace[PC]], addrmodeStr);
+            return $"{MnemonicMatrix[addrSpace[PC]]} {addrmodeStr}";
         }
 
         static int GetInstructionLength(AddressSpace addrSpace, ushort PC)
@@ -236,7 +234,7 @@ namespace EMU7800.Core
             var lsb = addrSpace[PC];
             var msb = (bytes == 2) ? addrSpace[(ushort)(PC + 1)] : (byte)0;
             var ea = (ushort)(lsb | (msb << 8));
-            return string.Format((bytes == 1) ? "${0:x2}" : "${0:x4}", ea);
+            return bytes == 1 ? $"${ea:x2}" : $"${ea:x4}";
         }
     }
 }

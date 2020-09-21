@@ -23,7 +23,7 @@ namespace EMU7800.Services
     {
         public ErrorInfo LastErrorInfo { get; private set; }
 
-        #region ROM Files
+    #region ROM Files
 
         public IEnumerable<string> QueryLocalMyDocumentsForRomCandidates()
         {
@@ -86,9 +86,9 @@ namespace EMU7800.Services
             return bytes;
         }
 
-        #endregion
+    #endregion
 
-        #region Machine Persistence
+    #region Machine Persistence
 
         ISet<string> _cachedPersistedDir;
 
@@ -302,9 +302,9 @@ namespace EMU7800.Services
             }
         }
 
-        #endregion
+    #endregion
 
-        #region CSV File IO
+    #region CSV File IO
 
         public IEnumerable<string> GetGameProgramInfoFromReferenceRepository()
         {
@@ -393,9 +393,9 @@ namespace EMU7800.Services
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Global Settings
+    #region Global Settings
 
         public ApplicationSettings GetSettings()
         {
@@ -464,16 +464,16 @@ namespace EMU7800.Services
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Crash Dumping
+    #region Crash Dumping
 
         public void DumpCrashReport(Exception ex)
         {
             if (ex == null)
                 return;
 
-            var name = string.Format("EMU7800_CRASH_REPORT_{0}.txt", Guid.NewGuid());
+            var name = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
             try
             {
                 var file = ApplicationData.Current.LocalFolder.CreateFile(name);
@@ -484,26 +484,24 @@ namespace EMU7800.Services
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    #region Constructors
 
         public DatastoreService()
         {
             ClearLastErrorInfo();
         }
 
-        #endregion
+    #endregion
 
-        #region Helpers
+    #region Helpers
 
         // Import filenames include version to force re-import on version upgrade.
         // Otherwise, import files can reference ROMs in prior version distributions.
 
         const string
             RomPropertiesName = "ROMProperties.csv",
-            RomImportsNameFormat = "ROMImports_{0}.csv",
-            RomImportsSpecialBinariesNameFormat = "ROMImports_{0}.sb.csv",
             PersistedGameProgramsName = "PersistedGamePrograms",
             ApplicationSettingsName = "Settings.emusettings";
 
@@ -733,13 +731,13 @@ namespace EMU7800.Services
         static string ToRomImportsName()
         {
             var versionStr = GetVersionString();
-            return string.Format(RomImportsNameFormat, versionStr);
+            return $"ROMImports_{versionStr}.csv";
         }
 
         static string ToRomImportsSpecialBinariesName()
         {
             var versionStr = GetVersionString();
-            return string.Format(RomImportsSpecialBinariesNameFormat, versionStr);
+            return $"ROMImports_{versionStr}.sb.csv";
         }
 
         static string GetVersionString()
@@ -749,7 +747,7 @@ namespace EMU7800.Services
             return versionStr;
         }
 
-        #endregion
+    #endregion
 
     }
 
@@ -965,7 +963,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "PersistScreenshot: Unable to persist screenshot: {0}", path);
+                LastErrorInfo = new ErrorInfo(ex, "PersistScreenshot: Unable to persist screenshot: " + path);
             }
         }
 
@@ -1004,7 +1002,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unable to obtain persisted machine state: {0}", path);
+                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unable to obtain persisted machine state: " + path);
                 return null;
             }
         }
@@ -1082,7 +1080,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "GetSettings: Unable to obtain persisted application settings: {0}", path);
+                LastErrorInfo = new ErrorInfo(ex, "GetSettings: Unable to obtain persisted application settings: " + path);
                 return null;
             }
         }
@@ -1122,7 +1120,7 @@ namespace EMU7800.Services
             if (string.IsNullOrWhiteSpace(_userAppDataStoreRoot))
                 return;
 
-            var filename = string.Format("EMU7800_CRASH_REPORT_{0}.txt", Guid.NewGuid());
+            var filename = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
             var path = ToLocalUserAppDataPath(filename);
             if (string.IsNullOrWhiteSpace(path))
                 return;
@@ -1179,8 +1177,7 @@ namespace EMU7800.Services
         static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
-            var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.emustate",
-                gpi.Title, gpi.MachineType, gpi.LController, gpi.RController, saveSlot);
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{saveSlot}.emustate";
             var name = EscapeFileNameChars(fileName);
             return name;
         }
@@ -1188,8 +1185,7 @@ namespace EMU7800.Services
         static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
-            var fileName = string.Format("{0}.{1}.{2}.{3}.{4}.png",
-                gpi.Title, gpi.MachineType, gpi.LController, gpi.RController, saveSlot);
+            var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{saveSlot}.png";
             var name = EscapeFileNameChars(fileName);
             return name;
         }
@@ -1211,7 +1207,7 @@ namespace EMU7800.Services
                 DirectoryCreateDirectory(persistedGameProgramsDir);
                 if (LastErrorInfo != null)
                 {
-                    LastErrorInfo = new ErrorInfo(LastErrorInfo, "Unable to create PersistedGamePrograms folder: {0}", persistedGameProgramsDir);
+                    LastErrorInfo = new ErrorInfo(LastErrorInfo, "Unable to create PersistedGamePrograms folder: " + persistedGameProgramsDir);
                 }
             }
         }
@@ -1440,7 +1436,7 @@ namespace EMU7800.Services
             using (var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read))
             {
                 var zipPathList = za.Entries
-                    .Select(entry => string.Format("{0}|{1}", filepath, entry.FullName))
+                    .Select(entry => $"{filepath}|{entry.FullName}")
                         .ToArray();
                 return zipPathList;
             }
@@ -1558,7 +1554,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "Exception during Directory.CreateDirectory of {0}", path);
+                LastErrorInfo = new ErrorInfo(ex, "Exception during Directory.CreateDirectory of " + path);
                 return false;
             }
             return true;
@@ -1575,7 +1571,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "Exception during Environment.GetFolderPath of {0}", specialFolder);
+                LastErrorInfo = new ErrorInfo(ex, "Exception during Environment.GetFolderPath of " + specialFolder);
                 return null;
             }
         }

@@ -34,7 +34,7 @@ namespace EMU7800.Services
             }
             catch (AggregateException ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: {0}", assetFilename);
+                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: " + assetFilename);
             }
 
             lock (_locker)
@@ -55,7 +55,7 @@ namespace EMU7800.Services
             const int limit = 1 << 22;
             if (buffer.Length > limit)
             {
-                LastErrorInfo = new ErrorInfo(LastErrorInfo, "GetBytesAsync: File exceeded {0} size limit.", limit);
+                LastErrorInfo = new ErrorInfo(LastErrorInfo, $"GetBytesAsync: File exceeded {limit} size limit");
                 return null;
             }
 
@@ -110,7 +110,7 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: {0}", assetFilename);
+                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: " + assetFilename);
             }
 
             lock (_locker)

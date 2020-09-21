@@ -99,7 +99,7 @@ namespace EMU7800.D2D.Shell
 
         public override string ToString()
         {
-            return string.Format("EMU7800.D2D.Shell.PageBase: ID={0}", _id);
+            return $"EMU7800.D2D.Shell.PageBase: ID={_id}";
         }
 
         #endregion
