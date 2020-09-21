@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30509.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EMU7800.D2D", "EMU7800.D2D.Shell\WinUWP\EMU7800.D2D.csproj", "{D8261FF6-FEC1-4054-A7B0-FE68E4CF0820}"
 	ProjectSection(ProjectDependencies) = postProject
