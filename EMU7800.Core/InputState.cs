@@ -43,23 +43,19 @@ namespace EMU7800.Core
         /// Enables the incoming input state buffer to be populated prior to the start of the frame.
         /// Useful for input playback senarios.
         /// </summary>
-        /// <return>Return value is ignored.</return>
-        public Func<int[], object> InputAdvancing { get; set; }
+        public Action<int[]> InputAdvancing { get; set; } = nis => {};
 
         /// <summary>
         /// Enables access to the input state buffer.
         /// Useful for input recording senarios.
         /// </summary>
-        /// <return>Return value is ignored.</return>
-        public Func<int[], object> InputAdvanced { get; set; }
+        public Action<int[]> InputAdvanced { get; set; } = nis => {};
 
         public void CaptureInputState()
         {
-            if (InputAdvancing != null)
-                InputAdvancing(_nextInputState);
+            InputAdvancing(_nextInputState);
             Buffer.BlockCopy(_nextInputState, 0, _inputState, 0, InputStateSize * sizeof(int));
-            if (InputAdvanced != null)
-                InputAdvanced(_inputState);
+            InputAdvanced(_inputState);
         }
 
         public Controller LeftControllerJack
@@ -224,15 +220,11 @@ namespace EMU7800.Core
         {
             _nextInputState[OhmsIndex] = _nextInputState[OhmsIndex + 1] = 0;
             _nextInputState[ControllerActionStateIndex] = 0;
-            switch (LeftControllerJack)
+            _nextInputState[ControllerActionStateIndex] = LeftControllerJack switch
             {
-                case Controller.Paddles:
-                    _nextInputState[ControllerActionStateIndex] = _nextInputState[ControllerActionStateIndex + 1] = 0;
-                    break;
-                default:
-                    _nextInputState[ControllerActionStateIndex] = 0;
-                    break;
-            }
+                Controller.Paddles => _nextInputState[ControllerActionStateIndex + 1] = 0,
+                _                  => 0,
+            };
             _nextInputState[LightgunPositionIndex] = _nextInputState[LightgunPositionIndex + 1] = 0;
         }
 
@@ -262,7 +254,7 @@ namespace EMU7800.Core
         public InputState(DeserializationContext input)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
             _rotState = input.ReadIntegers(2);
@@ -273,7 +265,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(_rotState);
@@ -325,9 +317,7 @@ namespace EMU7800.Core
         #region Object Overrides
 
         public override string ToString()
-        {
-            return "EMU7800.Core.InputState";
-        }
+            => "EMU7800.Core.InputState";
 
         #endregion
 

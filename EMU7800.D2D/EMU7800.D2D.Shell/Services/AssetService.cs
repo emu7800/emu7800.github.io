@@ -11,61 +11,70 @@ namespace EMU7800.Services
     using Windows.Storage;
     using Windows.Storage.Streams;
     using Dto;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public partial class AssetService
     {
-        public async Task<byte[]> GetAssetBytesAsync(Asset asset)
+        public async Task<Result<BytesType>> GetAssetBytesAsync(Asset asset)
         {
-            ClearLastErrorInfo();
-
             lock (_locker)
             {
                 if (_resourceCache.ContainsKey(asset))
-                    return _resourceCache[asset];
+                    return Ok(new BytesType(_resourceCache[asset]));
             }
 
             var assetFilename = _assetToFilenameMapping[asset];
 
-            byte[] bytes = null;
+            Result<BytesType> result;
             try
             {
                 var file = await Package.Current.InstalledLocation.GetFileAsync(@"Assets\" + assetFilename);
-                bytes = await GetBytesAsync(file);
+                result = await GetBytesAsync(file);
             }
             catch (AggregateException ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: " + assetFilename);
+                return Fail<BytesType>("GetAssetBytesAsync: Failure loading asset: " + assetFilename, ex);
             }
 
             lock (_locker)
             {
-                if (bytes != null && !_resourceCache.ContainsKey(asset))
-                    _resourceCache.Add(asset, bytes);
+                if (result.IsOk && !_resourceCache.ContainsKey(asset))
+                    _resourceCache.Add(asset, result.Value.Bytes);
             }
 
-            return bytes;
+            return result;
         }
 
         #region Helpers
 
-        async Task<byte[]> GetBytesAsync(IStorageFile file)
+        async Task<Result<BytesType>> GetBytesAsync(IStorageFile file)
         {
             var buffer = await FileIO.ReadBufferAsync(file);
 
             const int limit = 1 << 22;
             if (buffer.Length > limit)
             {
-                LastErrorInfo = new ErrorInfo(LastErrorInfo, $"GetBytesAsync: File exceeded {limit} size limit");
-                return null;
+                return Fail<BytesType>($"GetBytesAsync: File exceeded {limit} size limit");
             }
 
-            using (var dr = DataReader.FromBuffer(buffer))
-            {
-                var bytes = new byte[buffer.Length];
-                dr.ReadBytes(bytes);
-                return bytes;
-            }
+            using var dr = DataReader.FromBuffer(buffer);
+            var bytes = new byte[buffer.Length];
+            dr.ReadBytes(bytes);
+            return Ok(new BytesType(bytes));
         }
+
+        static Result<T> Ok<T>(T value) where T : class, new()
+            => ResultHelper.Ok(value);
+
+        static Result<T> Fail<T>(string message, Exception ex) where T : class, new()
+            => ResultHelper.Fail<T>(ToResultMessage(message, ex));
+
+        static Result<T> Fail<T>(string message) where T : class, new()
+            => ResultHelper.Fail<T>(message);
+
+        static string ToResultMessage(string message, Exception ex)
+            => message + $": Unexpected exception: {ex.GetType().Name}: " + ex.Message;
 
         #endregion
     }
@@ -79,19 +88,17 @@ namespace EMU7800.Services
 
     public partial class AssetService
     {
-        public async Task<byte[]> GetAssetBytesAsync(Asset asset)
+        public static async Task<(Result, byte[])> GetAssetBytesAsync(Asset asset)
         {
-            ClearLastErrorInfo();
-
             lock (_locker)
             {
                 if (_resourceCache.ContainsKey(asset))
-                    return _resourceCache[asset];
+                    return (Ok(), _resourceCache[asset]);
             }
 
             var assetFilename = _assetToFilenameMapping[asset];
 
-            byte[] bytes = null;
+            byte[] bytes;
             try
             {
 #if WIN32
@@ -110,30 +117,34 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "GetAssetBytesAsync: Failure loading asset: " + assetFilename);
+                return (Fail("GetAssetBytesAsync: Failure loading asset: " + assetFilename, ex), Array.Empty<byte>());
             }
 
             lock (_locker)
             {
-                if (bytes != null && !_resourceCache.ContainsKey(asset))
+                if (!_resourceCache.ContainsKey(asset))
                     _resourceCache.Add(asset, bytes);
             }
 
-            return bytes ?? new byte[0];
+            return (Ok(), bytes);
         }
 
         #region Helpers
 
-        static bool IsCriticalException(Exception ex)
-        {
-            return ex is OutOfMemoryException
-                || ex is StackOverflowException
-                || ex is System.Threading.ThreadAbortException
-                || ex is System.Threading.ThreadInterruptedException
-                || ex is TypeInitializationException;
-        }
+        static Result Ok()
+            => new();
 
-        #endregion
+        static Result Fail(string message, Exception ex)
+            => new(message + $": {ex.GetType().Name}: {ex.Message}");
+
+        static bool IsCriticalException(Exception ex)
+            => ex is OutOfMemoryException
+                  or StackOverflowException
+                  or System.Threading.ThreadAbortException
+                  or System.Threading.ThreadInterruptedException
+                  or TypeInitializationException;
+
+    #endregion
     }
 
 #else

@@ -33,6 +33,8 @@ public:
 
     int SetTextAlignment(DWriteTextAlignment textAlignment);
     int SetParagraphAlignment(DWriteParaAlignment paragraphAlignment);
+
+    TextLayout() : TextLayout(NULL, "", 0, 0, 0, 0.0, "", 0, 0) {};
     virtual ~TextLayout() {}
 };
 

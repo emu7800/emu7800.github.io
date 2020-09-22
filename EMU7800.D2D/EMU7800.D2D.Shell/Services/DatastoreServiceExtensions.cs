@@ -112,7 +112,7 @@ namespace EMU7800.Services.Extensions
 
         public static void WriteUtf8Lines(this IStorageFile file, IEnumerable<string> lines)
         {
-            FileIO.WriteLinesAsync(file, lines ?? new string[0], UnicodeEncoding.Utf8)
+            FileIO.WriteLinesAsync(file, lines ?? Array.Empty<string>(), UnicodeEncoding.Utf8)
                 .AsTask()
                    .ConfigureAwait(false)
                        .GetAwaiter()

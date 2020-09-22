@@ -3,9 +3,7 @@
     public sealed class Machine7800PAL : Machine7800
     {
         public override string ToString()
-        {
-            return "EMU7800.Core.Machine7800PAL";
-        }
+            => "EMU7800.Core.Machine7800PAL";
 
         public Machine7800PAL(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger)
             : base(cart, bios, hsc, logger, 312, 34, 50, 31200 /* PAL_SAMPLES_PER_SEC */, MariaTables.PALPalette)

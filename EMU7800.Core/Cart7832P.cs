@@ -10,7 +10,7 @@
         //                            0x4000:0x4000 Pokey
         // 0x0000:0x8000              0x8000:0x8000
         //
-        PokeySound _pokeySound;
+        PokeySound _pokeySound = PokeySound.Default;
 
         #region IDevice Members
 
@@ -39,26 +39,21 @@
         public override void Attach(MachineBase m)
         {
             base.Attach(m);
-            if (_pokeySound == null)
-                _pokeySound = new PokeySound(M);
+            _pokeySound = new PokeySound(M);
         }
 
         public override void StartFrame()
         {
-            if (_pokeySound != null)
-                _pokeySound.StartFrame();
+            _pokeySound.StartFrame();
         }
 
         public override void EndFrame()
         {
-            if (_pokeySound != null)
-                _pokeySound.EndFrame();
+            _pokeySound.EndFrame();
         }
 
         public override string ToString()
-        {
-            return "EMU7800.Core.Cart7832P";
-        }
+            => "EMU7800.Core.Cart7832P";
 
         public Cart7832P(byte[] romBytes)
         {

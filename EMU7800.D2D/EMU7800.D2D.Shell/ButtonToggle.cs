@@ -7,16 +7,18 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class ButtonToggle : ButtonBase
     {
-        TextLayout _textLayout;
+        static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
 
-        public string Text { get; set; }
-        public string TextFontFamilyName { get; set; }
+        TextLayout _textLayout = TextLayoutDefault;
+
+        public string Text { get; set; } = string.Empty;
+        public string TextFontFamilyName { get; set; } = string.Empty;
         public int TextFontSize { get; set; }
 
         public bool IsChecked { get; set; }
 
-        public event EventHandler<EventArgs> Checked;
-        public event EventHandler<EventArgs> Unchecked;
+        public event EventHandler<EventArgs> Checked = DefaultEventHandler;
+        public event EventHandler<EventArgs> Unchecked = DefaultEventHandler;
 
         public ButtonToggle()
         {
@@ -69,8 +71,8 @@ namespace EMU7800.D2D.Shell
         {
             if (disposing)
             {
-                Checked = null;
-                Unchecked = null;
+                Checked = DefaultEventHandler;
+                Unchecked = DefaultEventHandler;
             }
             base.Dispose(disposing);
         }
@@ -84,13 +86,11 @@ namespace EMU7800.D2D.Shell
             IsChecked = !IsChecked;
             if (IsChecked)
             {
-                if (Checked != null)
-                    Checked(sender, e);
+                Checked(sender, e);
             }
             else
             {
-                if (Unchecked != null)
-                    Unchecked(sender, e);
+                Unchecked(sender, e);
             }
         }
 

@@ -8,6 +8,8 @@
  */
 using System;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace EMU7800.Core
 {
     #region Collision Flags
@@ -47,6 +49,8 @@ namespace EMU7800.Core
 
     public sealed class TIA : IDevice
     {
+        public static readonly TIA Default = new TIA(MachineBase.Default);
+
         #region Constants
 
         const int
@@ -118,12 +122,12 @@ namespace EMU7800.Core
         #region Data Structures
 
         readonly byte[] RegW = new byte[0x40];
-        readonly MachineBase M;
-        readonly TIASound TIASound;
+        readonly MachineBase M = MachineBase.Default;
+        readonly TIASound TIASound = TIASound.Default;
 
         delegate void PokeOpTyp(ushort addr, byte data);
 
-        PokeOpTyp[] PokeOp;
+        readonly PokeOpTyp[] PokeOp;
 
         #endregion
 
@@ -346,13 +350,11 @@ namespace EMU7800.Core
 
             TIASound.Reset();
 
-            Log("{0} reset", this);
+            Log($"{this} reset");
         }
 
-        public override String ToString()
-        {
-            return "TIA 1A";
-        }
+        public override string ToString()
+            => "TIA 1A";
 
         public void StartFrame()
         {
@@ -366,8 +368,8 @@ namespace EMU7800.Core
 
         public byte this[ushort addr]
         {
-            get { return peek(addr); }
-            set { poke(addr, value); }
+            get => Peek(addr);
+            set => Poke(addr, value);
         }
 
         public void EndFrame()
@@ -381,14 +383,11 @@ namespace EMU7800.Core
 
         private TIA()
         {
-            BuildPokeOpTable();
+            PokeOp = BuildPokeOpTable();
         }
 
         public TIA(MachineBase m) : this()
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
-
             M = m;
             TIASound = new TIASound(M, CPU_TICKS_PER_AUDIO_SAMPLE);
         }
@@ -530,7 +529,7 @@ namespace EMU7800.Core
 
         #region TIA Peek
 
-        byte peek(ushort addr)
+        byte Peek(ushort addr)
         {
             var retval = 0;
             addr &= 0xf;
@@ -648,7 +647,7 @@ namespace EMU7800.Core
 
         #region TIA Poke
 
-        void poke(ushort addr, byte data)
+        void Poke(ushort addr, byte data)
         {
             addr &= 0x3f;
 
@@ -749,7 +748,7 @@ namespace EMU7800.Core
 
         void opRSYNC(ushort addr, byte data)
         {
-            LogDebug("TIA RSYNC: frame={0} scanline={0} hsync={0}", M.FrameNumber, ScanLine, PokeOpHSync);
+            LogDebug($"TIA RSYNC: frame={M.FrameNumber} scanline={ScanLine} hsync={PokeOpHSync}");
         }
 
         void opNUSIZ0(ushort addr, byte data)
@@ -1039,58 +1038,59 @@ namespace EMU7800.Core
             Collisions = 0;
         }
 
-        void BuildPokeOpTable()
+        PokeOpTyp[] BuildPokeOpTable()
         {
-            PokeOp = new PokeOpTyp[64];
-            for (var i = 0; i < PokeOp.Length; i++)
+            var pokeOp = new PokeOpTyp[64];
+            for (var i = 0; i < pokeOp.Length; i++)
             {
-                PokeOp[i] = opNULL;
+                pokeOp[i] = opNULL;
             }
-            PokeOp[VSYNC]  = opVSYNC;
-            PokeOp[VBLANK] = opVBLANK;
-            PokeOp[WSYNC]  = opWSYNC;
-            PokeOp[RSYNC]  = opRSYNC;
-            PokeOp[NUSIZ0] = opNUSIZ0;
-            PokeOp[NUSIZ1] = opNUSIZ1;
-            PokeOp[COLUP0] = opCOLUP0;
-            PokeOp[COLUP1] = opCOLUP1;
-            PokeOp[COLUPF] = opCOLUPF;
-            PokeOp[COLUBK] = opCOLUBK;
-            PokeOp[CTRLPF] = opCTRLPF;
-            PokeOp[REFP0]  = opREFP0;
-            PokeOp[REFP1]  = opREFP1;
-            PokeOp[PF0]    = opPF;
-            PokeOp[PF1]    = opPF;
-            PokeOp[PF2]    = opPF;
-            PokeOp[RESP0]  = opRESP0;
-            PokeOp[RESP1]  = opRESP1;
-            PokeOp[RESM0]  = opRESM0;
-            PokeOp[RESM1]  = opRESM1;
-            PokeOp[RESBL]  = opRESBL;
-            PokeOp[AUDC0]  = opAUD;
-            PokeOp[AUDC1]  = opAUD;
-            PokeOp[AUDF0]  = opAUD;
-            PokeOp[AUDF1]  = opAUD;
-            PokeOp[AUDV0]  = opAUD;
-            PokeOp[AUDV1]  = opAUD;
-            PokeOp[GRP0]   = opGRP0;
-            PokeOp[GRP1]   = opGRP1;
-            PokeOp[ENAM0]  = opENAM0;
-            PokeOp[ENAM1]  = opENAM1;
-            PokeOp[ENABL]  = opENABL;
-            PokeOp[HMP0]   = opHM;
-            PokeOp[HMP1]   = opHM;
-            PokeOp[HMM0]   = opHM;
-            PokeOp[HMM1]   = opHM;
-            PokeOp[HMBL]   = opHM;
-            PokeOp[VDELP0] = opVDELP0;
-            PokeOp[VDELP1] = opVDELP1;
-            PokeOp[VDELBL] = opVDELBL;
-            PokeOp[RESMP0] = opRESMP0;
-            PokeOp[RESMP1] = opRESMP1;
-            PokeOp[HMOVE]  = opHMOVE;
-            PokeOp[HMCLR]  = opHMCLR;
-            PokeOp[CXCLR]  = opCXCLR;
+            pokeOp[VSYNC]  = opVSYNC;
+            pokeOp[VBLANK] = opVBLANK;
+            pokeOp[WSYNC]  = opWSYNC;
+            pokeOp[RSYNC]  = opRSYNC;
+            pokeOp[NUSIZ0] = opNUSIZ0;
+            pokeOp[NUSIZ1] = opNUSIZ1;
+            pokeOp[COLUP0] = opCOLUP0;
+            pokeOp[COLUP1] = opCOLUP1;
+            pokeOp[COLUPF] = opCOLUPF;
+            pokeOp[COLUBK] = opCOLUBK;
+            pokeOp[CTRLPF] = opCTRLPF;
+            pokeOp[REFP0]  = opREFP0;
+            pokeOp[REFP1]  = opREFP1;
+            pokeOp[PF0]    = opPF;
+            pokeOp[PF1]    = opPF;
+            pokeOp[PF2]    = opPF;
+            pokeOp[RESP0]  = opRESP0;
+            pokeOp[RESP1]  = opRESP1;
+            pokeOp[RESM0]  = opRESM0;
+            pokeOp[RESM1]  = opRESM1;
+            pokeOp[RESBL]  = opRESBL;
+            pokeOp[AUDC0]  = opAUD;
+            pokeOp[AUDC1]  = opAUD;
+            pokeOp[AUDF0]  = opAUD;
+            pokeOp[AUDF1]  = opAUD;
+            pokeOp[AUDV0]  = opAUD;
+            pokeOp[AUDV1]  = opAUD;
+            pokeOp[GRP0]   = opGRP0;
+            pokeOp[GRP1]   = opGRP1;
+            pokeOp[ENAM0]  = opENAM0;
+            pokeOp[ENAM1]  = opENAM1;
+            pokeOp[ENABL]  = opENABL;
+            pokeOp[HMP0]   = opHM;
+            pokeOp[HMP1]   = opHM;
+            pokeOp[HMM0]   = opHM;
+            pokeOp[HMM1]   = opHM;
+            pokeOp[HMBL]   = opHM;
+            pokeOp[VDELP0] = opVDELP0;
+            pokeOp[VDELP1] = opVDELP1;
+            pokeOp[VDELBL] = opVDELBL;
+            pokeOp[RESMP0] = opRESMP0;
+            pokeOp[RESMP1] = opRESMP1;
+            pokeOp[HMOVE]  = opHMOVE;
+            pokeOp[HMCLR]  = opHMCLR;
+            pokeOp[CXCLR]  = opCXCLR;
+            return pokeOp;
         }
 
         #endregion
@@ -1197,7 +1197,7 @@ namespace EMU7800.Core
             }
             else
             {
-                return Int32.MaxValue;
+                return int.MaxValue;
             }
 
             // playerno = inpt/2
@@ -1211,11 +1211,9 @@ namespace EMU7800.Core
         public TIA(DeserializationContext input, MachineBase m) : this()
         {
             if (input == null)
-                throw new ArgumentNullException("input");
-            if (m == null)
-                throw new ArgumentNullException("m");
+                throw new ArgumentNullException(nameof(input));
 
-            M = m;
+            M = m ?? throw new ArgumentNullException(nameof(m));
             TIASound = input.ReadTIASound(M, CPU_TICKS_PER_AUDIO_SAMPLE);
 
             input.CheckVersion(1);
@@ -1274,7 +1272,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.Write(TIASound);
 
@@ -1335,20 +1333,12 @@ namespace EMU7800.Core
 
         #region Helpers
 
-        void Log(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void Log(string message)
+            => M?.Logger?.WriteLine(message);
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void LogDebug(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void LogDebug(string message)
+            => M?.Logger?.WriteLine(message);
 
         #endregion
     }

@@ -8,6 +8,7 @@ namespace EMU7800.Launcher
         [STAThread]
         static int Main(string[] args)
         {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

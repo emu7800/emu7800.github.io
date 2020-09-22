@@ -19,6 +19,7 @@ internal:
 public:
     property int HR { int get() { return m_hr; } };
     int CopyFromMemory(array<byte> ^data);
+    DynamicBitmap() {};
     ~DynamicBitmap();
     !DynamicBitmap();
 };

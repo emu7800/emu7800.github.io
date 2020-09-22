@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)FrameRenderer320.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameRendererDefault.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameControllersWrapperbase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GamePage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameProgramInfoViewItemCollectionEx.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameProgramInfoViewItemEx.cs" />
@@ -53,13 +54,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ApplicationSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ErrorInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItemCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedGameProgramInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedSpecialBinaryInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\MachineStateInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\Result.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\GameProgramLibraryService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MachineFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Md5HashService.cs" />

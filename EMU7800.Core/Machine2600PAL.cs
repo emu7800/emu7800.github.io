@@ -3,9 +3,7 @@
     public sealed class Machine2600PAL : Machine2600
     {
         public override string ToString()
-        {
-            return "EMU7800.Core.Machine2600PAL";
-        }
+            => "EMU7800.Core.Machine2600PAL";
 
         public Machine2600PAL(Cart cart, ILogger logger)
             : base(cart, logger, 312, 32, 50, 31200 /* PAL_SAMPLES_PER_SEC */, TIATables.PALPalette)

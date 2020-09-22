@@ -17,15 +17,14 @@
         // Bank7: 0x1c000:0x4000
         //
         readonly int[] _bank = new int[4];
-        PokeySound _pokeySound;
+        PokeySound _pokeySound = PokeySound.Default;
 
         #region IDevice Members
 
         public override void Reset()
         {
             base.Reset();
-            if (_pokeySound != null)
-                _pokeySound.Reset();
+            _pokeySound.Reset();
         }
 
         public override byte this[ushort addr]
@@ -33,13 +32,11 @@
             get
             {
                 var bankNo = addr >> 14;
-                switch (bankNo)
+                return bankNo switch
                 {
-                    case 1:
-                        return (_pokeySound != null) ? _pokeySound.Read(addr) : (byte)0;
-                    default:
-                        return ROM[(_bank[bankNo] << 14) | (addr & 0x3fff)];
-                }
+                    1 => _pokeySound.Read(addr),
+                    _ => ROM[(_bank[bankNo] << 14) | (addr & 0x3fff)],
+                };
             }
             set
             {
@@ -47,8 +44,7 @@
                 switch (bankNo)
                 {
                     case 1:
-                        if (_pokeySound != null)
-                            _pokeySound.Update(addr, value);
+                        _pokeySound.Update(addr, value);
                         break;
                     case 2:
                         _bank[2] = value & 7;
@@ -60,27 +56,22 @@
         #endregion
 
         public override string ToString()
-        {
-            return "EMU7800.Core.Cart78SGP";
-        }
+            => "EMU7800.Core.Cart78SGP";
 
         public override void Attach(MachineBase m)
         {
             base.Attach(m);
-            if (_pokeySound == null)
-                _pokeySound = new PokeySound(M);
+            _pokeySound = new PokeySound(M);
         }
 
         public override void StartFrame()
         {
-            if (_pokeySound != null)
-                _pokeySound.StartFrame();
+            _pokeySound.StartFrame();
         }
 
         public override void EndFrame()
         {
-            if (_pokeySound != null)
-                _pokeySound.EndFrame();
+            _pokeySound.EndFrame();
         }
 
         public Cart78SGP(byte[] romBytes)
@@ -103,9 +94,6 @@
 
         public override void GetObjectData(SerializationContext output)
         {
-            if (_pokeySound == null)
-                throw new Emu7800SerializationException("Cart78SGP must be attached before serialization.");
-
             base.GetObjectData(output);
 
             output.WriteVersion(1);

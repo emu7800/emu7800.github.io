@@ -9,9 +9,6 @@ namespace EMU7800.D2D.Shell
 {
     public sealed partial class TitlePage : PageBase
     {
-        static int EasterEggCounter;
-        internal static bool IsEasterEggOn => EasterEggCounter > 0 && EasterEggCounter % 7 == 0;
-
         readonly TitleControl _titleControl;
         readonly Button _buttonPlayAtariToday;
         readonly ButtonCircleImage _buttonAbout, _buttonFindRoms;
@@ -61,9 +58,9 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _buttonFindRoms, _labelCopyr, _labelVers);
 
-            _buttonPlayAtariToday.Clicked += _buttonPlayAtariToday_Clicked;
-            _buttonAbout.Clicked += _buttonAbout_Clicked;
-            _buttonFindRoms.Clicked += _buttonFindRoms_Clicked;
+            _buttonPlayAtariToday.Clicked += ButtonPlayAtariToday_Clicked;
+            _buttonAbout.Clicked += ButtonAbout_Clicked;
+            _buttonFindRoms.Clicked += ButtonFindRoms_Clicked;
         }
 
         #region PageBase Overrides
@@ -109,30 +106,28 @@ namespace EMU7800.D2D.Shell
                 );
 
             _buttonAbout.Location  = Struct.ToPointF(
-                IsEasterEggOn ? size.Width / 2 - (_buttonAbout.Size.Width + _buttonFindRoms.Size.Width + 48 + 5) / 2
-                              : size.Width / 2 - _buttonAbout.Size.Width / 2,
+                size.Width / 2 - _buttonAbout.Size.Width / 2,
                 size.Height - _buttonAbout.Size.Height - 50
                 );
             _buttonFindRoms.Location = Struct.ToRightOf(_buttonAbout, 48 + 5, 0);
-            _buttonFindRoms.IsVisible = _buttonFindRoms.IsEnabled = IsEasterEggOn;
+            _buttonFindRoms.IsVisible = _buttonFindRoms.IsEnabled;
         }
 
         #endregion
 
         #region Event Handlers
 
-        void _buttonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
+        void ButtonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
         {
-            EasterEggCounter++;
             PushPage(new GameProgramSelectionPage());
         }
 
-        void _buttonAbout_Clicked(object sender, EventArgs eventArgs)
+        void ButtonAbout_Clicked(object sender, EventArgs eventArgs)
         {
             PushPage(new AboutPage());
         }
 
-        void _buttonFindRoms_Clicked(object sender, EventArgs eventArgs)
+        void ButtonFindRoms_Clicked(object sender, EventArgs eventArgs)
         {
             PushPage(new FindRomsPage());
         }

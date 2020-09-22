@@ -7,6 +7,8 @@ namespace EMU7800.D2D.Shell
 {
     public abstract class PageBase : IDisposable
     {
+        public static readonly PageBase Default = new PageDefault();
+
         #region Fields
 
         readonly PageBackStackStateService _pageStateService = new PageBackStackStateService();
@@ -35,17 +37,17 @@ namespace EMU7800.D2D.Shell
             Controls.KeyboardKeyPressed(key, down);
         }
 
-        public virtual void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public virtual void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
             Controls.MouseMoved(pointerId, x, y, dx, dy);
         }
 
-        public virtual void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public virtual void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             Controls.MouseButtonChanged(pointerId, x, y, down);
         }
 
-        public virtual void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public virtual void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
             Controls.MouseWheelChanged(pointerId, x, y, delta);
         }
@@ -86,21 +88,14 @@ namespace EMU7800.D2D.Shell
 
         #region Object Overrides
 
-        public override bool Equals(object obj)
-        {
-            var them = (PageBase)obj;
-            return _id == them._id;
-        }
+        public override bool Equals(object them)
+            => _id == ((PageBase)them)._id;
 
         public override int GetHashCode()
-        {
-            return _id;
-        }
+            => _id;
 
         public override string ToString()
-        {
-            return $"EMU7800.D2D.Shell.PageBase: ID={_id}";
-        }
+            => $"EMU7800.D2D.Shell.PageBase: ID={_id}";
 
         #endregion
 
@@ -116,12 +111,12 @@ namespace EMU7800.D2D.Shell
         {
             if (disposing)
             {
-                if (Controls != null)
-                {
-                    Controls.Dispose();
-                    Controls = null;
-                }
+                Controls.Dispose();
             }
+        }
+
+        class PageDefault : PageBase
+        {
         }
 
         #endregion

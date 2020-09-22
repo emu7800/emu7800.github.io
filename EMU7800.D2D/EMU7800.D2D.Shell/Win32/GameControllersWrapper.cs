@@ -6,7 +6,7 @@ using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
-    public sealed class GameControllersWrapper : IDisposable
+    public sealed class GameControllersWrapper : GameControllersWrapperBase
     {
         #region Fields
 
@@ -35,10 +35,7 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        public bool LeftJackHasAtariAdaptor { get; private set; }
-        public bool RightJackHasAtariAdaptor { get; private set; }
-
-        public void Poll()
+        public override void Poll()
         {
             if (_joystickDeviceList == null)
                 return;
@@ -46,7 +43,7 @@ namespace EMU7800.D2D.Shell
                 _joystickDeviceList.Joysticks[i].Poll();
         }
 
-        public string GetControllerInfo(int controllerNo)
+        public override string GetControllerInfo(int controllerNo)
         {
             if (controllerNo < 0 || controllerNo >= _productNames.Length)
                 return null;
@@ -69,13 +66,14 @@ namespace EMU7800.D2D.Shell
 
         #region IDisposable Members
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (_joystickDeviceList != null)
             {
                 _joystickDeviceList.Dispose();
                 _joystickDeviceList = null;
             }
+            base.Dispose();
         }
 
         #endregion

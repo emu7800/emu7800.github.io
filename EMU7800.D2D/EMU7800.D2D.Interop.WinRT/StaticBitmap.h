@@ -19,6 +19,7 @@ internal:
 
 public:
     property int HR { int get() { return m_hr; } };
+    StaticBitmap() : StaticBitmap(NULL, NULL, nullptr) {};
     virtual ~StaticBitmap();
 };
 

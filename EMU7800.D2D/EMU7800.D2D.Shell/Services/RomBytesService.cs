@@ -43,8 +43,8 @@ namespace EMU7800.Services
 
         public GameProgramInfo ToGameProgramInfoFromA78Format(byte[] bytes)
         {
-            if (bytes == null)
-                return null;
+            if (bytes == null || bytes.Length < 0x40)
+                bytes = new byte[0x40];
 
             var title = Encoding.UTF8.GetString(bytes, 0x11, 0x20).Trim('\0');
             var cartSize = (bytes[0x31] << 24) | (bytes[0x32] << 16) | (bytes[0x33] << 8) | bytes[0x34];
@@ -56,10 +56,8 @@ namespace EMU7800.Services
             var region = bytes[0x39];
 
             var cartType = To78CartType(cartSize, usesPokey, cartType1, cartType2);
-            if (cartType == CartType.None)
-                return null;
 
-            var gpi = new GameProgramInfo
+            return new GameProgramInfo
             {
                 Title       = title,
                 MachineType = (region == 0) ? MachineType.A7800NTSC : MachineType.A7800PAL,
@@ -67,7 +65,6 @@ namespace EMU7800.Services
                 LController = (lcontroller == 1) ? Controller.ProLineJoystick : Controller.Lightgun,
                 RController = (rcontroller == 1) ? Controller.ProLineJoystick : Controller.Lightgun,
             };
-            return gpi;
         }
 
         public byte[] RemoveA78HeaderIfNecessary(byte[] bytes)
@@ -128,7 +125,7 @@ namespace EMU7800.Services
                     }
                     break;
             }
-            return CartType.None;
+            return CartType.Unknown;
         }
 
         #region Constructors
@@ -143,7 +140,7 @@ namespace EMU7800.Services
 
         #region Helpers
 
-        CartType To78CartType(int cartSize, bool usesPokey, byte cartType1, byte cartType2)
+        static CartType To78CartType(int cartSize, bool usesPokey, byte cartType1, byte cartType2)
         {
             CartType cartType;
             switch (cartType1)
@@ -154,28 +151,13 @@ namespace EMU7800.Services
                         cartType = CartType.A78S9;
                         break;
                     }
-                    switch (cartType2)
+                    cartType = cartType2 switch
                     {
-                        case 2:
-                        case 3:
-                            cartType = usesPokey ? CartType.A78SGP : CartType.A78SG;
-                            break;
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                            cartType = CartType.A78S4R;
-                            break;
-                        case 8:
-                        case 9:
-                        case 10:
-                        case 11:
-                            cartType = CartType.A78S4;
-                            break;
-                        default:
-                            cartType = To78CartTypeBySize(cartSize, usesPokey);
-                            break;
-                    }
+                        2 or 3             => usesPokey ? CartType.A78SGP : CartType.A78SG,
+                        4 or 5 or 6 or 7   => CartType.A78S4R,
+                        8 or 9 or 10 or 11 => CartType.A78S4,
+                        _                  => To78CartTypeBySize(cartSize, usesPokey),
+                    };
                     break;
                 case 1:
                     cartType = CartType.A78AB;
@@ -190,7 +172,7 @@ namespace EMU7800.Services
             return cartType;
         }
 
-        CartType To78CartTypeBySize(int size, bool usesPokey)
+        static CartType To78CartTypeBySize(int size, bool usesPokey)
         {
             if (size <= 0x2000)
                 return CartType.A7808;
@@ -200,7 +182,7 @@ namespace EMU7800.Services
                 return usesPokey ? CartType.A7832P : CartType.A7832;
             if (size <= 0xC000)
                 return CartType.A7848;
-            return CartType.None;
+            return CartType.Unknown;
         }
 
         #endregion

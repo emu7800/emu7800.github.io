@@ -12,34 +12,35 @@ namespace EMU7800.Core
     {
         #region Fields
 
-        protected Maria Maria { get; set; }
-        protected RAM6116 RAM1 { get; set; }
-        protected RAM6116 RAM2 { get; set; }
-        protected Bios7800 BIOS { get; private set; }
-        protected HSC7800 HSC { get; private set; }
+        protected Maria Maria { get; }
+        protected RAM6116 RAM1 { get; }
+        protected RAM6116 RAM2 { get; }
+        protected Bios7800 BIOS { get; }
+        protected HSC7800 HSC { get; }
 
         #endregion
 
         public void SwapInBIOS()
         {
-            if (BIOS == null)
-                return;
-            Mem.Map((ushort)(0x10000 - BIOS.Size), BIOS.Size, BIOS);
+            if (BIOS != Bios7800.Default)
+            {
+                Mem.Map((ushort)(0x10000 - BIOS.Size), BIOS.Size, BIOS);
+            }
         }
 
         public void SwapOutBIOS()
         {
-            if (BIOS == null)
-                return;
-            Mem.Map((ushort)(0x10000 - BIOS.Size), BIOS.Size, Cart);
+            if (BIOS != Bios7800.Default)
+            {
+                Mem.Map((ushort)(0x10000 - BIOS.Size), BIOS.Size, Cart);
+            }
         }
 
         public override void Reset()
         {
             base.Reset();
             SwapInBIOS();
-            if (HSC != null)
-                HSC.Reset();
+            HSC.Reset();
             Cart.Reset();
             Maria.Reset();
             PIA.Reset();
@@ -156,7 +157,7 @@ namespace EMU7800.Core
             BIOS = bios;
             HSC = hsc;
 
-            if (HSC != null)
+            if (HSC != HSC7800.Default)
             {
                 Mem.Map(0x1000, 0x800, HSC.SRAM);
                 Mem.Map(0x3000, 0x1000, HSC);
@@ -202,7 +203,7 @@ namespace EMU7800.Core
             BIOS = input.ReadOptionalBios7800();
             HSC = input.ReadOptionalHSC7800();
 
-            if (HSC != null)
+            if (HSC != HSC7800.Default)
             {
                 Mem.Map(0x1000, 0x800, HSC.SRAM);
                 Mem.Map(0x3000, 0x1000, HSC);

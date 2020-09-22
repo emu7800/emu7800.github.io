@@ -53,17 +53,17 @@ namespace EMU7800.D2D.Shell
             _currentPage.KeyboardKeyPressed(key, down);
         }
 
-        public void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
             _currentPage.MouseMoved(pointerId, x, y, dx, dy);
         }
 
-        public void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             _currentPage.MouseButtonChanged(pointerId, x, y, down);
         }
 
-        public void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
             _currentPage.MouseWheelChanged(pointerId, x, y, delta);
         }
@@ -92,9 +92,7 @@ namespace EMU7800.D2D.Shell
 
         public PageBackStackHost(PageBase startPage)
         {
-            if (startPage == null)
-                throw new ArgumentNullException("startPage");
-            _pageStateService.Push(startPage);
+            _pageStateService.Push(startPage ?? throw new ArgumentNullException(nameof(startPage)));
         }
 
         #endregion

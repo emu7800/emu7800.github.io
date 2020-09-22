@@ -7,19 +7,22 @@ namespace EMU7800.D2D.Shell
 {
     public abstract class ButtonBase : ControlBase
     {
+        static readonly EventArgs DefaultEventArgs = new EventArgs();
+        static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
+
         #region Fields
 
         RectF _boundingRect;
 
         #endregion
 
-        public event EventHandler<EventArgs> Pressed;
-        public event EventHandler<EventArgs> Released;
-        public event EventHandler<EventArgs> Clicked;
+        public event EventHandler<EventArgs> Pressed = DefaultEventHandler;
+        public event EventHandler<EventArgs> Released = DefaultEventHandler;
+        public event EventHandler<EventArgs> Clicked = DefaultEventHandler;
 
         public bool IsPressed
         {
-            get { return IsPressedByPointerId.HasValue; }
+            get => IsPressedByPointerId >= 0;
         }
 
         #region ControlBase Overrides
@@ -36,7 +39,7 @@ namespace EMU7800.D2D.Shell
             _boundingRect = ComputeBoundingRectangle();
         }
 
-        public override void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
             if (IsInBounds(x, y, _boundingRect))
             {
@@ -49,16 +52,16 @@ namespace EMU7800.D2D.Shell
             {
                 if (IsMouseOver && IsMouseOverPointerId == pointerId)
                 {
-                    IsMouseOverPointerId = null;
+                    IsMouseOverPointerId = -1;
                 }
             }
         }
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             if (IsMouseOver && IsMouseOverPointerId == pointerId)
             {
-                IsMouseOverPointerId = null;
+                IsMouseOverPointerId = -1;
             }
 
             if (IsInBounds(x, y, _boundingRect))
@@ -70,16 +73,16 @@ namespace EMU7800.D2D.Shell
                 }
                 else if (!down && IsPressed && IsPressedByPointerId == pointerId)
                 {
-                    IsPressedByPointerId = null;
-                    IsMouseOverPointerId = null;
+                    IsPressedByPointerId = -1;
+                    IsMouseOverPointerId = -1;
                     OnReleased();
                     OnClicked();
                 }
             }
             else if (IsPressed && IsPressedByPointerId == pointerId)
             {
-                IsPressedByPointerId = null;
-                IsMouseOverPointerId = null;
+                IsPressedByPointerId = -1;
+                IsMouseOverPointerId = -1;
                 OnReleased();
             }
         }
@@ -92,41 +95,30 @@ namespace EMU7800.D2D.Shell
         {
             if (disposing)
             {
-                Pressed = null;
-                Released = null;
-                Clicked = null;
+                Pressed = DefaultEventHandler;
+                Released = DefaultEventHandler;
+                Clicked = DefaultEventHandler;
             }
             base.Dispose(disposing);
         }
 
         #endregion
 
-        protected uint? IsPressedByPointerId { get; set; }
+        protected int IsPressedByPointerId { get; set; } = -1;
 
         protected virtual RectF ComputeBoundingRectangle()
-        {
-            return Struct.ToRectF(Location, Size);
-        }
+            => Struct.ToRectF(Location, Size);
 
         #region Helpers
 
         void OnClicked()
-        {
-            if (Clicked != null)
-                Clicked(this, null);
-        }
+            => Clicked(this, DefaultEventArgs);
 
         void OnPressed()
-        {
-            if (Pressed != null)
-                Pressed(this, null);
-        }
+            => Pressed(this, DefaultEventArgs);
 
         void OnReleased()
-        {
-            if (Released != null)
-                Released(this, null);
-        }
+            => Released(this, DefaultEventArgs);
 
         #endregion
     }

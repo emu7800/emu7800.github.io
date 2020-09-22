@@ -2,19 +2,13 @@
 {
     public class NullLogger : ILogger
     {
-        public void WriteLine(string format, params object[] args)
+        public static readonly ILogger Default = new NullLogger();
+
+        public void WriteLine(string message)
         {
         }
 
-        public void WriteLine(object value)
-        {
-        }
-
-        public void Write(string format, params object[] args)
-        {
-        }
-
-        public void Write(object value)
+        public void Write(string message)
         {
         }
     }

@@ -11,10 +11,10 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly AssetService _assetService = new AssetService();
         readonly Asset _image;
         readonly D2DSolidColorBrush _mouseOverColor;
-        StaticBitmap _circleBitmap, _imageBitmap;
+        StaticBitmap _circleBitmap = StaticBitmapDefault;
+        StaticBitmap _imageBitmap = StaticBitmapDefault;
 
         #endregion
 
@@ -75,11 +75,10 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
+        static async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
         {
-            var bytes = await _assetService.GetAssetBytesAsync(asset);
-            var bitmap = gd.CreateStaticBitmap(bytes);
-            return bitmap;
+            var (_, bytes) = await AssetService.GetAssetBytesAsync(asset);
+            return gd.CreateStaticBitmap(bytes);
         }
 
         #endregion

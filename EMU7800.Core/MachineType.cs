@@ -10,7 +10,7 @@ namespace EMU7800.Core
 {
     public enum MachineType
     {
-        None,
+        Unknown,
         A2600NTSC,
         A2600PAL,
         A7800NTSC,

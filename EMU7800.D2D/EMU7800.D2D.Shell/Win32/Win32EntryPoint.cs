@@ -53,14 +53,13 @@ namespace EMU7800.D2D.Shell.Win32
         public static GameProgramInfoViewItem ToGameProgramInfoViewItem(string romPath)
         {
             var datastoreService = new DatastoreService();
-            var romPropertiesService = new RomPropertiesService();
             var romBytesService = new RomBytesService();
 
-            var bytes = datastoreService.GetRomBytes(romPath);
+            var (getBytesResult, bytes) = DatastoreService.GetRomBytes(romPath);
             var md5key = romBytesService.ToMD5Key(bytes);
 
-            var csvFileContent = datastoreService.GetGameProgramInfoFromReferenceRepository();
-            var gameProgramInfoSet = romPropertiesService.ToGameProgramInfo(csvFileContent);
+            var (getContentResult, csvFileContent) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
+            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContent);
 
             return gameProgramInfoSet
                 .Where(gpi => gpi.MD5 == md5key)

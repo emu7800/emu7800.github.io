@@ -8,48 +8,35 @@ namespace EMU7800.Services
     {
         #region Fields
 
-        static ApplicationSettings _applicationSettings;
+        static ApplicationSettings _applicationSettings = new ApplicationSettings();
+        static bool _applicationSettingsLoaded;
+
         readonly DatastoreService _datastoreService = new DatastoreService();
 
         #endregion
 
         public ApplicationSettings GetSettings()
         {
-            if (_applicationSettings == null)
+            if (!_applicationSettingsLoaded)
             {
-                _applicationSettings = _datastoreService.GetSettings()
-                    ?? new ApplicationSettings { ShowTouchControls = false };
+                var (result, settings) = _datastoreService.GetSettings();
+                if (result.IsOk)
+                {
+                    _applicationSettings = settings;
+                    _applicationSettingsLoaded = true;
+                }
             }
-            return ToDeepCopy(_applicationSettings);
+            return _applicationSettings.ToDeepCopy();
         }
 
         public void SaveSettings(ApplicationSettings settings)
         {
-            if (settings == null)
+            // don't bother saving if nothing has changed
+            if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls
+                && settings.TouchControlSeparation == _applicationSettings.TouchControlSeparation)
                 return;
-            if (_applicationSettings != null)
-            {
-                // don't bother saving if nothing has changed
-                if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls
-                    && settings.TouchControlSeparation == _applicationSettings.TouchControlSeparation)
-                    return;
-            }
-            _applicationSettings = ToDeepCopy(settings);
+            _applicationSettings = settings.ToDeepCopy();
             _datastoreService.SaveSettings(settings);
         }
-
-        #region Helpers
-
-        static ApplicationSettings ToDeepCopy(ApplicationSettings settings)
-        {
-            var copyOfSettings = new ApplicationSettings
-            {
-                ShowTouchControls = settings.ShowTouchControls,
-                TouchControlSeparation = settings.TouchControlSeparation
-            };
-            return copyOfSettings;
-        }
-
-        #endregion
     }
 }

@@ -15,29 +15,20 @@ namespace EMU7800.Core
 {
     public abstract class MachineBase
     {
+        public static readonly MachineBase Default = new MachineUnknown();
+
         #region Fields
 
-        ILogger _Logger;
-        FrameBuffer _FrameBuffer;
+        ILogger _Logger = NullLogger.Default;
+        FrameBuffer _FrameBuffer = FrameBuffer.Default;
 
         bool _MachineHalt;
         int _FrameHZ;
         readonly int _VisiblePitch, _Scanlines;
 
-        protected Cart Cart { get; set; }
+        protected Cart Cart { get; set; } = Cart.Default;
 
-        #endregion
-
-        #region Internal Properties
-
-        internal FrameBuffer FrameBuffer
-        {
-            get
-            {
-                AssertDebug(_FrameBuffer != null);
-                return _FrameBuffer;
-            }
-        }
+        internal FrameBuffer FrameBuffer { get => _FrameBuffer; }
 
         #endregion
 
@@ -46,31 +37,31 @@ namespace EMU7800.Core
         /// <summary>
         /// The machine's Central Processing Unit.
         /// </summary>
-        public M6502 CPU { get; protected set; }
+        public M6502 CPU { get; protected set; } = M6502.Default;
 
         /// <summary>
         /// The machine's Address Space.
         /// </summary>
-        public AddressSpace Mem { get; protected set; }
+        public AddressSpace Mem { get; protected set; } = AddressSpace.Default;
 
         /// <summary>
         /// The machine's Peripheral Interface Adaptor device.
         /// </summary>
-        public PIA PIA { get; protected set; }
+        public PIA PIA { get; protected set; } = PIA.Default;
 
         /// <summary>
         /// Reports whether the machine has been halted due to an internal condition or error.
         /// </summary>
         public bool MachineHalt
         {
-            get { return _MachineHalt; }
-            internal set { if (value) _MachineHalt = true; }
+            get => _MachineHalt;
+            internal set => _MachineHalt = value || true;
         }
 
         /// <summary>
         /// The machine input state.
         /// </summary>
-        public InputState InputState { get; private set; }
+        public InputState InputState { get; } = new InputState();
 
         /// <summary>
         /// The current frame number.
@@ -80,21 +71,21 @@ namespace EMU7800.Core
         /// <summary>
         /// The first scanline that is visible.
         /// </summary>
-        public int FirstScanline { get; private set; }
+        public int FirstScanline { get; }
 
         /// <summary>
         /// Frame rate.
         /// </summary>
         public int FrameHZ
         {
-            get { return _FrameHZ < 1 ? 1 : _FrameHZ; }
-            set { _FrameHZ = value < 1 ? 1 : value; }
+            get => _FrameHZ < 1 ? 1 : _FrameHZ;
+            set => _FrameHZ = value < 1 ? 1 : value;
         }
 
         /// <summary>
         /// Number of sound samples per second.
         /// </summary>
-        public int SoundSampleFrequency { get; private set; }
+        public int SoundSampleFrequency { get; } = 1;
 
         /// <summary>
         /// The color palette for the configured machine.
@@ -111,8 +102,8 @@ namespace EMU7800.Core
         /// </summary>
         public ILogger Logger
         {
-            get { return _Logger ?? (_Logger = new NullLogger()); }
-            set { _Logger = value; }
+            get => _Logger;
+            set => _Logger = value;
         }
 
         #endregion
@@ -129,32 +120,17 @@ namespace EMU7800.Core
         /// <param name="p1">Left controller, optional.</param>
         /// <param name="p2">Right controller, optional.</param>
         /// <param name="logger"></param>
-        /// <exception cref="ArgumentNullException">Cart must not be null.</exception>
         /// <exception cref="Emu7800Exception">Specified MachineType is unexpected.</exception>
         public static MachineBase Create(MachineType machineType, Cart cart, Bios7800 bios, HSC7800 hsc, Controller p1, Controller p2, ILogger logger)
         {
-            if (cart == null)
-                throw new ArgumentNullException("cart");
-
-            MachineBase m;
-            switch (machineType)
+            MachineBase m = machineType switch
             {
-                case MachineType.A2600NTSC:
-                    m = new Machine2600NTSC(cart, logger);
-                    break;
-                case MachineType.A2600PAL:
-                    m = new Machine2600PAL(cart, logger);
-                    break;
-                case MachineType.A7800NTSC:
-                    m = new Machine7800NTSC(cart, bios, hsc, logger);
-                    break;
-                case MachineType.A7800PAL:
-                    m = new Machine7800PAL(cart, bios, hsc, logger);
-                    break;
-                default:
-                    throw new Emu7800Exception("Unexpected MachineType: " + machineType);
-            }
-
+                MachineType.A2600NTSC => new Machine2600NTSC(cart, logger),
+                MachineType.A2600PAL  => new Machine2600PAL(cart, logger),
+                MachineType.A7800NTSC => new Machine7800NTSC(cart, bios, hsc, logger),
+                MachineType.A7800PAL  => new Machine7800PAL(cart, bios, hsc, logger),
+                _                     => throw new Emu7800Exception("Unexpected MachineType: " + machineType),
+            };
             m.InputState.LeftControllerJack = p1;
             m.InputState.RightControllerJack = p2;
 
@@ -198,7 +174,7 @@ namespace EMU7800.Core
         /// </summary>
         public virtual void Reset()
         {
-            Logger.WriteLine("Machine {0}  reset ({1} HZ  {2} scanlines)", this, FrameHZ, _Scanlines);
+            Logger.WriteLine($"Machine {this}  reset ({FrameHZ} HZ  {_Scanlines} scanlines)");
             FrameNumber = 0;
             _MachineHalt = false;
             InputState.ClearAllInput();
@@ -218,20 +194,20 @@ namespace EMU7800.Core
             InputState.CaptureInputState();
 
             _FrameBuffer = frameBuffer;
+
             FrameNumber++;
 
             for (var i = 0; i < _FrameBuffer.SoundBufferElementLength; i++)
+            {
                 _FrameBuffer.SoundBuffer[i].ClearAll();
+            }
         }
 
         /// <summary>
         /// Create a <see cref="FrameBuffer"/> with compatible dimensions for this machine.
         /// </summary>
         public FrameBuffer CreateFrameBuffer()
-        {
-            var fb = new FrameBuffer(_VisiblePitch, _Scanlines);
-            return fb;
-        }
+            => new FrameBuffer(_VisiblePitch, _Scanlines);
 
         /// <summary>
         /// Serialize the state of the machine to the specified stream.
@@ -260,18 +236,13 @@ namespace EMU7800.Core
 
         #region Constructors
 
-        private MachineBase()
+        protected MachineBase(ILogger logger, int scanLines, int firstScanline, int fHZ, int soundSampleFreq, int[] palette, int vPitch)
         {
-        }
-
-        protected MachineBase(ILogger logger, int scanLines, int firstScanline, int fHZ, int soundSampleFreq, int[] palette, int vPitch) : this()
-        {
-            InputState = new InputState();
             Logger = logger;
             _Scanlines = scanLines;
             FirstScanline = firstScanline;
             FrameHZ = fHZ;
-            SoundSampleFrequency = soundSampleFreq;
+            SoundSampleFrequency = soundSampleFreq > 0 ? soundSampleFreq : throw new ArgumentException("Must be a positive integer", nameof(soundSampleFreq));
             Palette = palette;
             _VisiblePitch = vPitch;
         }
@@ -283,9 +254,9 @@ namespace EMU7800.Core
         protected MachineBase(DeserializationContext input, int[] palette)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
             if (palette == null)
-                throw new ArgumentNullException("palette");
+                throw new ArgumentNullException(nameof(palette));
             if (palette.Length != 0x100)
                 throw new ArgumentException("palette incorrect size, must be 256.");
 
@@ -300,13 +271,12 @@ namespace EMU7800.Core
             InputState = input.ReadInputState();
 
             Palette = palette;
-            Logger = null;
         }
 
         public virtual void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(_MachineHalt);
@@ -321,11 +291,29 @@ namespace EMU7800.Core
 
         #endregion
 
-        [System.Diagnostics.Conditional("DEBUG")]
-        void AssertDebug(bool cond)
+        class MachineUnknown : MachineBase
         {
-            if (!cond)
-                System.Diagnostics.Debugger.Break();
+            public override void ComputeNextFrame(FrameBuffer frameBuffer)
+            {
+                base.ComputeNextFrame(frameBuffer);
+            }
+
+            public override void GetObjectData(SerializationContext output)
+            {
+                base.GetObjectData(output);
+            }
+
+            public override void Reset()
+            {
+                base.Reset();
+            }
+
+            public override string ToString()
+                => "EMU7800.Core.MachineUnknown";
+
+            public MachineUnknown() : base(new NullLogger(), 100, 1, 1, 1, Array.Empty<int>(), 1)
+            {
+            }
         }
     }
 }

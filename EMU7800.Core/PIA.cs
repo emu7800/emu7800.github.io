@@ -13,6 +13,8 @@ namespace EMU7800.Core
 {
     public sealed class PIA : IDevice
     {
+        public static readonly PIA Default = new PIA(MachineBase.Default);
+
         readonly MachineBase M;
 
         readonly byte[] RAM = new byte[0x80];
@@ -40,34 +42,30 @@ namespace EMU7800.Core
 
             DDRA = 0;
 
-            Log("{0} reset", this);
+            Log($"{this} reset");
         }
 
         public byte this[ushort addr]
         {
-            get { return peek(addr); }
-            set { poke(addr, value); }
+            get => Peek(addr);
+            set => Poke(addr, value);
         }
 
         #endregion
 
         public override string ToString()
-        {
-            return "PIA/RIOT M6532";
-        }
+            => "PIA/RIOT M6532";
 
         #region Constructors
 
         public PIA(MachineBase m)
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
             M = m;
         }
 
         #endregion
 
-        byte peek(ushort addr)
+        byte Peek(ushort addr)
         {
             if ((addr & 0x200) == 0)
             {
@@ -91,12 +89,12 @@ namespace EMU7800.Core
                 case 7:
                     return ReadInterruptFlag();
                 default:
-                    LogDebug("PIA: Unhandled peek ${0:x4}, PC=${1:x4}", addr, M.CPU.PC);
+                    LogDebug($"PIA: Unhandled peek ${addr:x4}, PC=${M.CPU.PC:x4}");
                     return 0;
             }
         }
 
-        void poke(ushort addr, byte data)
+        void Poke(ushort addr, byte data)
         {
             if ((addr & 0x200) == 0)
             {
@@ -114,7 +112,7 @@ namespace EMU7800.Core
                 }
                 else
                 {
-                    LogDebug("PIA: Timer: Unhandled poke ${0:x4} w/${1:x2}, PC=${2:x4}", addr, data, M.CPU.PC);
+                    LogDebug($"PIA: Timer: Unhandled poke ${addr:x4} w/${data:x2}, PC=${M.CPU.PC:x4}");
                 }
             }
             else
@@ -137,14 +135,16 @@ namespace EMU7800.Core
             }
         }
 
-        // 0: TIM1T:  set    1 clock interval (  838 nsec/interval)
-        // 1: TIM8T:  set    8 clock interval (  6.7 usec/interval)
-        // 2: TIM64T: set   64 clock interval ( 53.6 usec/interval)
-        // 3: T1024T: set 1024 clock interval (858.2 usec/interval)
         void SetTimerRegister(byte data, int interval)
         {
             IRQTriggered = false;
-            TimerShift = new[] { 0, 3, 6, 10 }[interval];
+            TimerShift = (interval & 3) switch
+            {
+                0 =>  0,  // 0: TIM1T:  set    1 clock interval (  838 nsec/interval)
+                1 =>  3,  // 1: TIM8T:  set    8 clock interval (  6.7 usec/interval)
+                2 =>  6,  // 2: TIM64T: set   64 clock interval ( 53.6 usec/interval)
+                _ => 10,  // 3: T1024T: set 1024 clock interval (858.2 usec/interval)
+            };
             TimerTarget = M.CPU.Clock + (ulong)(data << TimerShift);
         }
 
@@ -279,7 +279,7 @@ namespace EMU7800.Core
         public PIA(DeserializationContext input, MachineBase m) : this(m)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             var version = input.CheckVersion(1, 2);
             RAM = input.ReadExpectedBytes(0x80);
@@ -299,7 +299,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(2);
             output.Write(RAM);
@@ -317,20 +317,12 @@ namespace EMU7800.Core
 
         #region Helpers
 
-        void Log(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void Log(string message)
+            => M.Logger.WriteLine(message);
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void LogDebug(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void LogDebug(string message)
+            => M.Logger.WriteLine(message);
 
         #endregion
     }

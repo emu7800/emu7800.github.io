@@ -8,13 +8,17 @@
  */
 using System;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace EMU7800.Core
 {
     public sealed class M6502
     {
+        public static readonly M6502 Default = new M6502(MachineBase.Default, 1);
+
         delegate void OpcodeHandler();
 
-        OpcodeHandler[] Opcodes;
+        readonly OpcodeHandler[] Opcodes = new OpcodeHandler[0x100];
 
         const ushort
             // non-maskable interrupt vector
@@ -24,12 +28,13 @@ namespace EMU7800.Core
             // interrupt request vector
             IRQ_VEC = 0xfffe;
 
-        readonly MachineBase M;
-        AddressSpace Mem { get { return M.Mem; } }
+        readonly MachineBase M = MachineBase.Default;
+
+        AddressSpace Mem => M.Mem;
 
         public ulong Clock { get; set; }
         public int RunClocks { get; set; }
-        public int RunClocksMultiple { get; private set; }
+        public int RunClocksMultiple { get; }
 
         public bool EmulatorPreemptRequest { get; set; }
         public bool Jammed { get; set; }
@@ -66,13 +71,11 @@ namespace EMU7800.Core
 
             clk(6);
 
-            Log("{0} (PC:${1:x4}) reset", this, PC);
+            Log($"{this} (PC:${PC:x4}) reset");
         }
 
-        public override String ToString()
-        {
-            return "M6502 CPU";
-        }
+        public override string ToString()
+            => "M6502 CPU";
 
         public void Execute()
         {
@@ -111,8 +114,6 @@ namespace EMU7800.Core
 
         public M6502(MachineBase m, int runClocksMultiple) : this()
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
             if (runClocksMultiple <= 0)
                 throw new ArgumentException("runClocksMultiple must be greater than zero.");
 
@@ -121,69 +122,59 @@ namespace EMU7800.Core
         }
 
         static byte MSB(ushort u16)
-        {
-            return (byte)(u16 >> 8);
-        }
+            => (byte)(u16 >> 8);
 
         static byte LSB(ushort u16)
-        {
-            return (byte)u16;
-        }
+            => (byte)u16;
 
         static ushort WORD(byte lsb, byte msb)
-        {
-            return (ushort)(lsb | msb << 8);
-        }
+            => (ushort)(lsb | msb << 8);
 
         // Processor Status Flag Bits
         //
 
         // Flag bit setters and getters
-        void fset(byte flag, bool value)
-        {
-            P = (byte)(value ? P | flag : P & ~flag);
-        }
+        void Fset(byte flag, bool value)
+            => P = (byte)(value ? P | flag : P & ~flag);
 
-        bool fget(byte flag)
-        {
-            return (P & flag) != 0;
-        }
+        bool Fget(byte flag)
+            => (P & flag) != 0;
 
         // Carry: set if the add produced a carry, if the subtraction
         //      produced a borrow.  Also used in shift instructions.
         bool fC
         {
-            get { return fget(1 << 0); }
-            set { fset(1 << 0, value); }
+            get => Fget(1 << 0);
+            set => Fset(1 << 0, value);
         }
 
         // Zero: set if the result of the last operation was zero
         bool fZ
         {
-            get { return fget(1 << 1); }
-            set { fset(1 << 1, value); }
+            get => Fget(1 << 1);
+            set => Fset(1 << 1, value);
         }
 
         // Irq Disable: set if maskable interrupts are disabled
         bool fI
         {
-            get { return fget(1 << 2); }
-            set { fset(1 << 2, value); }
+            get => Fget(1 << 2);
+            set => Fset(1 << 2, value);
         }
 
         // Decimal Mode: set if decimal mode active
         bool fD
         {
-            get { return fget(1 << 3); }
-            set { fset(1 << 3, value); }
+            get => Fget(1 << 3);
+            set => Fset(1 << 3, value);
         }
 
         // Brk: set if an interrupt caused by a BRK instruction,
         //      reset if caused by an internal interrupt
         bool fB
         {
-            get { return fget(1 << 4); }
-            set { fset(1 << 4, value); }
+            get => Fget(1 << 4);
+            set => Fset(1 << 4, value);
         }
 
         // Overflow: set if the addition of two-like-signed numbers
@@ -191,15 +182,15 @@ namespace EMU7800.Core
         //      produces a result greater than +127 or less than -128.
         bool fV
         {
-            get { return fget(1 << 6); }
-            set { fset(1 << 6, value); }
+            get => Fget(1 << 6);
+            set => Fset(1 << 6, value);
         }
 
         // Negative: set if bit 7 of the accumulator is set
         bool fN
         {
-            get { return fget(1 << 7); }
-            set { fset(1 << 7, value); }
+            get => Fget(1 << 7);
+            set => Fset(1 << 7, value);
         }
 
         void set_fNZ(byte u8)
@@ -223,14 +214,15 @@ namespace EMU7800.Core
         void clk(int ticks)
         {
             Clock += (ulong)ticks;
-            RunClocks -= (ticks*RunClocksMultiple);
+            RunClocks -= ticks * RunClocksMultiple;
         }
 
         void InterruptNMI()
         {
             push(MSB(PC));
             push(LSB(PC));
-            fB = false;
+            if (fB)
+                fB = false;
             push(P);
             fI = true;
             PC = WORD(Mem[NMI_VEC], Mem[NMI_VEC + 1]);
@@ -271,21 +263,15 @@ namespace EMU7800.Core
 
         // Zero Page: $aa
         ushort aZPG()
-        {
-            return WORD(Mem[PC++], 0x00);
-        }
+            => WORD(Mem[PC++], 0x00);
 
         // Zero Page Indexed,X: $aa,X
         ushort aZPX()
-        {
-            return WORD((byte)(Mem[PC++] + X), 0x00);
-        }
+            => WORD((byte)(Mem[PC++] + X), 0x00);
 
         // Zero Page Indexed,Y: $aa,Y
         ushort aZPY()
-        {
-            return WORD((byte)(Mem[PC++] + Y), 0x00);
-        }
+            => WORD((byte)(Mem[PC++] + Y), 0x00);
 
         // Absolute: $aaaa
         ushort aABS()
@@ -424,27 +410,19 @@ namespace EMU7800.Core
 
         // CLC: Clear carry flag
         void iCLC()
-        {
-            fC = false;
-        }
+            => fC = false;
 
         // CLD: Clear decimal mode
         void iCLD()
-        {
-            fD = false;
-        }
+            => fD = false;
 
         // CLI: Clear interrupt disable */
         void iCLI()
-        {
-            fI = false;
-        }
+            => fI = false;
 
         // CLV: Clear overflow flag
         void iCLV()
-        {
-            fV = false;
-        }
+            => fV = false;
 
         // CMP: Compare accumulator
         void iCMP(byte mem)
@@ -520,9 +498,7 @@ namespace EMU7800.Core
 
         // JMP Jump to address
         void iJMP(ushort ea)
-        {
-            PC = ea;
-        }
+            => PC = ea;
 
         // JSR Jump to subroutine
         void iJSR(ushort ea)
@@ -568,7 +544,7 @@ namespace EMU7800.Core
         {
             if (M.NOPRegisterDumping)
             {
-                Log("NOP: {0}", M6502DASM.GetRegisters(this));
+                Log("NOP: " + M6502DASM.GetRegisters(this));
             }
         }
 
@@ -581,15 +557,11 @@ namespace EMU7800.Core
 
         // PHA: Push accumulator
         void iPHA()
-        {
-            push(A);
-        }
+            => push(A);
 
         // PHP: Push processor status (flags)
         void iPHP()
-        {
-            push(P);
-        }
+            => push(P);
 
         // PLA: Pull accumuator
         void iPLA()
@@ -680,39 +652,27 @@ namespace EMU7800.Core
 
         // SEC: Set carry flag
         void iSEC()
-        {
-            fC = true;
-        }
+            => fC = true;
 
         // SED: Set decimal mode
         void iSED()
-        {
-            fD = true;
-        }
+            => fD = true;
 
         // SEI: Set interrupt disable
         void iSEI()
-        {
-            fI = true;
-        }
+            => fI = true;
 
         // STA: Store accumulator
         byte iSTA()
-        {
-            return A;
-        }
+            => A;
 
         // STX: Store index X
         byte iSTX()
-        {
-            return X;
-        }
+            => X;
 
         // STY: Store index Y
         byte iSTY()
-        {
-            return Y;
-        }
+            => Y;
 
         // TAX: Transfer accumlator to index X
         void iTAX()
@@ -762,7 +722,7 @@ namespace EMU7800.Core
         void iKIL()
         {
             Jammed = true;
-            Log("{0}: Processor jammed!", this);
+            Log($"{this}: Processor jammed!");
         }
 
         // LAX: Load accumulator and index x
@@ -795,13 +755,10 @@ namespace EMU7800.Core
 
         // SAX: logical and accumulator with index X and store
         byte iSAX()
-        {
-            return (byte)(A & X);
-        }
+            => (byte)(A & X);
 
         void InstallOpcodes()
         {
-            Opcodes = new OpcodeHandler[0x100];
             ushort EA;
 
             Opcodes[0x65] = delegate { EA = aZPG();  clk(3); iADC(Mem[EA]); };
@@ -1028,7 +985,7 @@ namespace EMU7800.Core
             Opcodes[0xbf] = delegate { EA = aABY(0); clk(6); iLAX(Mem[EA]); };
             Opcodes[0xff] = delegate { EA = aABX(0); clk(7); iISB(Mem[EA]); };
 
-            OpcodeHandler opNULL = () => Log("{0}:**UNKNOWN OPCODE: ${1:x2} at ${2:x4}\n", this, Mem[(ushort)(PC - 1)], PC - 1);
+            void opNULL() => Log($"{this}:**UNKNOWN OPCODE: ${Mem[(ushort)(PC - 1)]:x2} at ${PC - 1:x4}\n");
 
             for (var i=0; i < Opcodes.Length; i++)
             {
@@ -1044,7 +1001,7 @@ namespace EMU7800.Core
         public M6502(DeserializationContext input, MachineBase m, int runClocksMultiple) : this(m, runClocksMultiple)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
             Clock = input.ReadUInt64();
@@ -1065,7 +1022,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(Clock);
@@ -1087,12 +1044,8 @@ namespace EMU7800.Core
 
         #region Helpers
 
-        void Log(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void Log(string message)
+            => M?.Logger?.WriteLine(message);
 
         #endregion
     }

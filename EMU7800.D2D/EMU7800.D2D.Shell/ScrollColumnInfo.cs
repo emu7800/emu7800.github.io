@@ -10,6 +10,6 @@ namespace EMU7800.D2D.Shell
         public float ScrollYAcceleration { get; set; }
         public float ScrollYTopMostBoundary { get; set; }
         public float ScrollYBottomMostBoundary { get; set; }
-        public GameProgramInfoViewItemCollectionEx GameProgramInfoViewItemCollection { get; set; }
+        public GameProgramInfoViewItemCollectionEx GameProgramInfoViewItemCollection { get; set; } = new GameProgramInfoViewItemCollectionEx();
     }
 }

@@ -7,10 +7,10 @@ namespace EMU7800.D2D.Shell
 {
     public class GameProgramInfoViewItemEx
     {
-        public string Title { get; set; }
-        public TextLayout TitleTextLayout { get; set; }
-        public string SubTitle { get; set; }
-        public TextLayout SubTitleTextLayout { get; set; }
-        public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public TextLayout TitleTextLayout { get; set; } = ControlBase.TextLayoutDefault;
+        public string SubTitle { get; set; } = string.Empty;
+        public TextLayout SubTitleTextLayout { get; set; } = ControlBase.TextLayoutDefault;
+        public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; } = new ImportedGameProgramInfo();
     }
 }

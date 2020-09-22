@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using System;
+using System.Linq;
 using EMU7800.Core;
 using EMU7800.D2D.Interop;
 using EMU7800.Services;
@@ -33,7 +34,7 @@ namespace EMU7800.D2D.Shell
         readonly ButtonTouchControl _touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2;
         readonly ControlCollection _touchbuttonCollection;
 
-        GameControllersWrapper _gameControllers;
+        GameControllersWrapperBase _gameControllers = new GameControllersWrapperBase();
 
         float _infoTextVisibilityTimer, _fpsChangeTimer;
         int _fpsChangeDirection, _hudPlayerInputNo;
@@ -50,10 +51,7 @@ namespace EMU7800.D2D.Shell
 
         public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, bool startFresh = false)
         {
-            if (gameProgramInfoViewItem == null)
-                throw new ArgumentNullException("gameProgramInfoViewItem");
-
-            _gameProgramInfoViewItem = gameProgramInfoViewItem;
+            _gameProgramInfoViewItem = gameProgramInfoViewItem ?? throw new ArgumentNullException(nameof(gameProgramInfoViewItem));
             _startFreshReq = startFresh;
 
             _settings = _settingsService.GetSettings();
@@ -184,8 +182,8 @@ namespace EMU7800.D2D.Shell
             Controls.Add(_numbercontrolRefreshRate);
 #endif
 
-            _buttonBack.Clicked += _buttonBack_Clicked;
-            _buttonSettings.Clicked += _buttonSettings_Clicked;
+            _buttonBack.Clicked += ButtonBack_Clicked;
+            _buttonSettings.Clicked += ButtonSettings_Clicked;
 
             _hud_buttonClose.Clicked += (s, e) => HideHud();
             _hud_buttonSound.Checked += (s, e) => _gameControl.IsSoundOn = true;
@@ -196,10 +194,10 @@ namespace EMU7800.D2D.Shell
             _hud_buttonAntiAliasMode.Unchecked += (s, e) => _gameControl.IsAntiAliasOn = false;
             _hud_buttonShowTouchControls.Checked += (s, e) => HandleShowTouchControlsCheckedChanged(true);
             _hud_buttonShowTouchControls.Unchecked += (s, e) => HandleShowTouchControlsCheckedChanged(false);
-            _hud_buttonInput.Clicked += _hud_buttonInput_Clicked;
+            _hud_buttonInput.Clicked += Hud_buttonInput_Clicked;
 
-            _hud_buttonPower.Checked += _hud_buttonPower_Checked;
-            _hud_buttonPower.Unchecked += _hud_buttonPower_Unchecked;
+            _hud_buttonPower.Checked += Hud_buttonPower_Checked;
+            _hud_buttonPower.Unchecked += Hud_buttonPower_Unchecked;
             _hud_buttonColor.Pressed += (s, e) => RaiseMachineInputFromHud(MachineInput.Color, true);
             _hud_buttonColor.Released += (s, e) => RaiseMachineInputFromHud(MachineInput.Color, false);
             _hud_buttonLD.Pressed += (s, e) => RaiseMachineInputFromHud(MachineInput.LeftDifficulty, true);
@@ -247,11 +245,8 @@ namespace EMU7800.D2D.Shell
             _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _startFreshReq);
             _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
 
-            if (_gameControllers != null)
-            {
-                _gameControllers.Dispose();
-                _gameControllers = null;
-            }
+            _gameControllers.Dispose();
+
             _gameControllers = new GameControllersWrapper(_gameControl, this);
         }
 
@@ -405,19 +400,19 @@ namespace EMU7800.D2D.Shell
                     ChangeCurrentKeyboardPlayerNo(4);
                     break;
                 case KeyboardKey.Q:
-                    if (down || _gameControllers == null || !_gameControllers.LeftJackHasAtariAdaptor)
+                    if (down || !_gameControllers.LeftJackHasAtariAdaptor)
                         return;
                     PostInfoText("P1/P2 paddles swapped");
                     _gameControl.SwapLeftControllerPaddles();
                     break;
                 case KeyboardKey.W:
-                    if (down || _gameControllers == null)
+                    if (down)
                         return;
                     PostInfoText("Input jacks swapped");
                     _gameControl.SwapJacks();
                     break;
                 case KeyboardKey.E:
-                    if (down || _gameControllers == null || !_gameControllers.RightJackHasAtariAdaptor)
+                    if (down || !_gameControllers.RightJackHasAtariAdaptor)
                         return;
                     PostInfoText("P3/P4 paddles swapped");
                     _gameControl.SwapRightControllerPaddles();
@@ -433,7 +428,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             ResetBackAndSettingsButtonVisibilityCounter();
             if (_isHudOn && down && _settings.ShowTouchControls && y >= _touchbuttonUp.Location.Y && y <= _touchbuttonDown.Location.Y)
@@ -520,11 +515,8 @@ namespace EMU7800.D2D.Shell
         {
             if (disposing)
             {
-                if (_gameControllers != null)
-                {
-                    _gameControllers.Dispose();
-                    _gameControllers = null;
-                }
+                _gameControllers.Dispose();
+                _gameControllers = new GameControllersWrapperBase();
             }
             base.Dispose(disposing);
         }
@@ -533,7 +525,7 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void _buttonBack_Clicked(object sender, EventArgs e)
+        void ButtonBack_Clicked(object sender, EventArgs e)
         {
             if (_isHudOn)
                 HideHud();
@@ -541,7 +533,7 @@ namespace EMU7800.D2D.Shell
                 PopPage();
         }
 
-        void _buttonSettings_Clicked(object sender, EventArgs e)
+        void ButtonSettings_Clicked(object sender, EventArgs e)
         {
             if (_isHudOn)
                 HideHud();
@@ -549,17 +541,17 @@ namespace EMU7800.D2D.Shell
                 ShowHud();
         }
 
-        void _hud_buttonPower_Checked(object sender, EventArgs e)
+        void Hud_buttonPower_Checked(object sender, EventArgs e)
         {
             PowerOn();
         }
 
-        void _hud_buttonPower_Unchecked(object sender, EventArgs e)
+        void Hud_buttonPower_Unchecked(object sender, EventArgs e)
         {
             PowerOff();
         }
 
-        void _hud_buttonInput_Clicked(object sender, EventArgs e)
+        void Hud_buttonInput_Clicked(object sender, EventArgs e)
         {
             var key = new[] { KeyboardKey.F1, KeyboardKey.F2, KeyboardKey.F3, KeyboardKey.F4 }[++_hudPlayerInputNo & 3];
             KeyboardKeyPressed(key, false);
@@ -645,19 +637,14 @@ namespace EMU7800.D2D.Shell
         }
 
         string BuildControllersTextForHud()
-        {
-            var sb = new System.Text.StringBuilder();
-            for (var i = 0; i < 4; i++)
-            {
-                var s = _gameControllers.GetControllerInfo(i);
-                if (s == null)
-                    break;
-                if (sb.Length > 0)
-                    sb.Append("; ");
-                sb.AppendFormat("P{0}: {1}", (i + 1), s);
-            }
-            return sb.ToString();
-        }
+            => string.Join("; ", Enumerable.Range(0, 4)
+                .Select(i => new
+                {
+                    P = i + 1,
+                    C = _gameControllers.GetControllerInfo(i)
+                })
+                .Where(r => !string.IsNullOrWhiteSpace(r.C))
+                .Select(r => $"P{r.P}: {r.C}"));
 
         void ResetBackAndSettingsButtonVisibilityCounter()
         {

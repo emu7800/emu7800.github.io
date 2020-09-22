@@ -22,6 +22,7 @@ internal:
 public:
     property int HR { int get() { return m_hr; } };
     int CopyFromMemory(const Array<uint8>^ data);
+    DynamicBitmap() : DynamicBitmap(NULL, { 0 }) {};
     virtual ~DynamicBitmap();
 };
 

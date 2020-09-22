@@ -3,9 +3,7 @@
     public sealed class Machine2600NTSC : Machine2600
     {
         public override string ToString()
-        {
-            return "EMU7800.Core.Machine2600NTSC";
-        }
+            => "EMU7800.Core.Machine2600NTSC";
 
         public Machine2600NTSC(Cart cart, ILogger logger)
             : base(cart, logger, 262, 16, 60, 31440 /* NTSC_SAMPLES_PER_SEC */, TIATables.NTSCPalette)

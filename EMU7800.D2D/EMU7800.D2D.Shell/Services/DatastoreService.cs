@@ -21,49 +21,35 @@ namespace EMU7800.Services
 
     public class DatastoreService
     {
-        public ErrorInfo LastErrorInfo { get; private set; }
-
     #region ROM Files
 
-        public IEnumerable<string> QueryLocalMyDocumentsForRomCandidates()
-        {
-            // not needed in WinRT version
-            ClearLastErrorInfo();
-            return new string[0];
-        }
+        public Results<StringType> QueryLocalMyDocumentsForRomCandidates()
+            => Ok(Array.Empty<StringType>()); // not needed in WinRT version
 
-        public IEnumerable<string> QueryProgramFolderForRomCandidates()
+        public Results<StringType> QueryProgramFolderForRomCandidates()
         {
-            ClearLastErrorInfo();
-
             try
             {
                 var folder = Package.Current.InstalledLocation.GetFolder("Assets");
                 var folder2 = ApplicationData.Current.LocalFolder; // look for ROMs previously imported
-                return QueryForRomCandidates(folder).Concat(QueryForRomCandidates(folder2));
+                return Ok(QueryForRomCandidates(folder).Concat(QueryForRomCandidates(folder2)));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "QueryProgramFolderForRomCandidates: Unexpected exception.");
-                return new string[0];
+                return FailResults<StringType>("QueryProgramFolderForRomCandidates: Unexpected exception", ex);
             }
         }
 
-        public byte[] GetRomBytes(string path)
+        public Result<BytesType> GetRomBytes(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException("path");
-
-            ClearLastErrorInfo();
-
             try
             {
-                return GetRomBytesImpl(path);
+                var bytes = GetRomBytesImpl(path);
+                return Ok(new BytesType(bytes));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetRomBytes: Unexpected exception.");
-                return null;
+                return Fail<BytesType>("GetRomBytes", ex);
             }
         }
 
@@ -74,7 +60,7 @@ namespace EMU7800.Services
             {
                 var splitPath = path.Split('|');
                 if (splitPath.Length != 2 || !splitPath[0].EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    return null;
+                    return Array.Empty<byte>();
                 var zipFile = GetStorageFileFromPath(splitPath[0]);
                 bytes = GetZipBytes(zipFile, splitPath[1]);
             }
@@ -90,34 +76,18 @@ namespace EMU7800.Services
 
     #region Machine Persistence
 
-        ISet<string> _cachedPersistedDir;
+        ISet<string> _cachedPersistedDir = new HashSet<string>();
 
         public bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
         {
-            ClearLastErrorInfo();
-
-            if (gameProgramInfo == null)
-                return false;
-
-            if (_cachedPersistedDir == null)
-                _cachedPersistedDir = GetFilesFromPersistedGameProgramsImpl();
+            _cachedPersistedDir = GetFilesFromPersistedGameProgramsImpl();
             var name = ToPersistedStateStorageName(gameProgramInfo);
             var oldName = ToPersistedStateStorageOldName(gameProgramInfo);
-            var exists = _cachedPersistedDir.Contains(name) || _cachedPersistedDir.Contains(oldName);
-            return exists;
+            return _cachedPersistedDir.Contains(name) || _cachedPersistedDir.Contains(oldName);
         }
 
-        public void PersistMachine(MachineStateInfo machineStateInfo)
+        public Result PersistMachine(MachineStateInfo machineStateInfo)
         {
-            if (machineStateInfo == null)
-                throw new ArgumentNullException("machineStateInfo");
-            if (machineStateInfo.Machine == null)
-                throw new ArgumentException("machineStateInfo.Machine is unspecified");
-            if (machineStateInfo.GameProgramInfo == null)
-                throw new ArgumentException("machineStateInfo.GameProgramInfo is unspecified");
-
-            ClearLastErrorInfo();
-
             var name = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
 
@@ -128,7 +98,7 @@ namespace EMU7800.Services
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "PersistMachine: Unexpected exception.");
+                return Fail("PersistMachine", ex);
             }
 
             var oldName = ToPersistedStateStorageOldName(machineStateInfo.GameProgramInfo);
@@ -143,27 +113,18 @@ namespace EMU7800.Services
                             .GetAwaiter()
                                 .GetResult();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                return Fail("PersistMachine", ex);
             }
 
-            if (_cachedPersistedDir != null)
-                _cachedPersistedDir.Add(name);
+            _cachedPersistedDir.Add(name);
+
+            return Ok();
         }
 
-        public void PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
+        public Result PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
         {
-            if (machineStateInfo == null)
-                throw new ArgumentNullException("machineStateInfo");
-            if (machineStateInfo.Machine == null)
-                throw new ArgumentException("machineStateInfo.Machine is unspecified");
-            if (machineStateInfo.GameProgramInfo == null)
-                throw new ArgumentException("machineStateInfo.GameProgramInfo is unspecified");
-            if (data == null)
-                throw new ArgumentNullException("data");
-
-            ClearLastErrorInfo();
-
             var name = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
 
@@ -174,7 +135,7 @@ namespace EMU7800.Services
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "PersistScreenshot: Unexpected exception.");
+                return Fail("PersistScreenshot", ex);
             }
 
             var oldName = ToScreenshotStorageOldName(machineStateInfo.GameProgramInfo);
@@ -189,116 +150,91 @@ namespace EMU7800.Services
                             .GetAwaiter()
                                 .GetResult();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                return Fail("PersistScreenshot", ex);
             }
+
+            return Ok();
         }
 
-        public MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)
+        public Result<MachineStateInfo> RestoreMachine(GameProgramInfo gameProgramInfo)
         {
-            if (gameProgramInfo == null)
-                throw new ArgumentNullException("gameProgramInfo");
-
-            ClearLastErrorInfo();
-
             var name = ToPersistedStateStorageName(gameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
 
             var oldName = ToPersistedStateStorageOldName(gameProgramInfo);
             var oldPath = ToPersistedStateStoragePath(oldName);
 
-            IStorageFile file = null;
-
+            IStorageFile file;
             try
             {
-                file = ApplicationData.Current.LocalFolder.GetFile(path);
-            }
-            catch (FileNotFoundException)
-            {
+                try
+                {
+                    file = ApplicationData.Current.LocalFolder.GetFile(path);
+                }
+                catch (FileNotFoundException)
+                {
+                    file = ApplicationData.Current.LocalFolder.GetFile(oldPath);
+                }
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unexpected exception.");
-                return null;
-            }
-
-            try
-            {
-                file = file ?? ApplicationData.Current.LocalFolder.GetFile(oldPath);
-            }
-            catch (Exception ex)
-            {
-                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unexpected exception.");
-                return null;
+                return Fail<MachineStateInfo>("RestoreMachine(1)", ex);
             }
 
             try
             {
-                var machineStateInfo = RestoreMachineImpl(file, gameProgramInfo);
-                return machineStateInfo;
+                return Ok(RestoreMachineImpl(file, gameProgramInfo));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unexpected exception.");
-                return null;
+                return Fail<MachineStateInfo>("RestoreMachine(2)", ex);
             }
         }
 
         static void PersistMachineImpl(IStorageFile file, MachineStateInfo machineStateInfo)
         {
-            if (file == null)
-                return;
-
-            using (var stream = file.OpenStreamForWrite())
-            using (var bw = new BinaryWriter(stream))
-            {
-                bw.Write(2); // version
-                bw.Write(machineStateInfo.FramesPerSecond);
-                bw.Write(machineStateInfo.SoundOff);
-                bw.Write(machineStateInfo.CurrentPlayerNo);
-                bw.Write(machineStateInfo.InterpolationMode);
-                machineStateInfo.Machine.Serialize(bw);
-                bw.Flush();
-            }
+            using var stream = file.OpenStreamForWrite();
+            using var bw = new BinaryWriter(stream);
+            bw.Write(2); // version
+            bw.Write(machineStateInfo.FramesPerSecond);
+            bw.Write(machineStateInfo.SoundOff);
+            bw.Write(machineStateInfo.CurrentPlayerNo);
+            bw.Write(machineStateInfo.InterpolationMode);
+            machineStateInfo.Machine.Serialize(bw);
+            bw.Flush();
         }
 
         static void PersistScreenshotImpl(IStorageFile file, byte[] data)
         {
-            if (file == null)
-                return;
-
             const int width = 320, height = 230;
-            using (var stream = file.Open(FileAccessMode.ReadWrite))
-            {
-                var encoder = CreateBitmapEncoder(BitmapEncoder.PngEncoderId, stream);
-                encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96f, 96f, data);
-                encoder.Flush();
-            }
+            using var stream = file.Open(FileAccessMode.ReadWrite);
+            var encoder = CreateBitmapEncoder(BitmapEncoder.PngEncoderId, stream);
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore, width, height, 96f, 96f, data);
+            encoder.Flush();
         }
 
         static MachineStateInfo RestoreMachineImpl(IStorageFile file, GameProgramInfo gameProgramInfo)
         {
-            if (file == null)
-                return null;
-
-            using (var stream = file.OpenStreamForRead())
-            using (var br = new BinaryReader(stream))
+            using var stream = file.OpenStreamForRead();
+            using var br = new BinaryReader(stream);
+            var version = br.ReadInt32();
+            return Fixup(new MachineStateInfo
             {
-                var version = br.ReadInt32();
-                var machineStateInfo = new MachineStateInfo
-                {
-                    FramesPerSecond = br.ReadInt32(),
-                    SoundOff = br.ReadBoolean(),
-                    CurrentPlayerNo = br.ReadInt32(),
-                    InterpolationMode = (version > 1) ? br.ReadInt32() : 0,
-                    Machine = MachineBase.Deserialize(br),
-                    GameProgramInfo = gameProgramInfo
-                };
+                FramesPerSecond   = br.ReadInt32(),
+                SoundOff          = br.ReadBoolean(),
+                CurrentPlayerNo   = br.ReadInt32(),
+                InterpolationMode = (version > 1) ? br.ReadInt32() : 0,
+                Machine           = MachineBase.Deserialize(br),
+                GameProgramInfo   = gameProgramInfo
+            });
 
-                if (machineStateInfo.FramesPerSecond == 0)
-                    machineStateInfo.FramesPerSecond = machineStateInfo.Machine.FrameHZ;
-
-                return machineStateInfo;
+            static MachineStateInfo Fixup(MachineStateInfo msi)
+            {
+                if (msi.FramesPerSecond == 0)
+                    msi.FramesPerSecond = msi.Machine.FrameHZ;
+                return msi;
             }
         }
 
@@ -306,64 +242,50 @@ namespace EMU7800.Services
 
     #region CSV File IO
 
-        public IEnumerable<string> GetGameProgramInfoFromReferenceRepository()
+        public Results<StringType> GetGameProgramInfoFromReferenceRepository()
         {
-            ClearLastErrorInfo();
-
             try
             {
                 var file = GetAssetFile(RomPropertiesName);
                 var lines = file.ReadUtf8Lines();
-                return lines.ToArray();
+                return Ok(lines.Select(StringType.ToStringType));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetGameProgramInfoFromReferenceRepository: Unexpected exception.");
-                return new string[0];
+                return FailResults<StringType>("GetGameProgramInfoFromReferenceRepository", ex);
             }
         }
 
-        public IEnumerable<string> GetGameProgramInfoFromImportRepository()
+        public Results<StringType> GetGameProgramInfoFromImportRepository()
         {
-            ClearLastErrorInfo();
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.GetFile(ToRomImportsName());
                 var lines = file.ReadUtf8Lines();
-                return lines.ToArray();
+                return Ok(lines.Select(StringType.ToStringType));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetGameProgramInfoFromImportRepository: Unexpected exception.");
-                return new string[0];
+                return FailResults<StringType>("GetGameProgramInfoFromImportRepository", ex);
             }
         }
 
-        public IEnumerable<string> GetSpecialBinaryInfoFromImportRepository()
+        public Results<StringType> GetSpecialBinaryInfoFromImportRepository()
         {
-            ClearLastErrorInfo();
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.GetFile(ToRomImportsSpecialBinariesName());
                 var lines = file.ReadUtf8Lines();
-                return lines.ToArray();
+                return Ok(lines.Select(StringType.ToStringType));
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetSpecialBinaryInfoFromImportRepository: Unexpected exception.");
-                return new string[0];
+                return FailResults<StringType>("GetSpecialBinaryInfoFromImportRepository", ex);
             }
         }
 
-        public void SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public Result SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
-            if (csvFileContent == null)
-                throw new ArgumentNullException("csvFileContent");
-
-            ClearLastErrorInfo();
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.CreateFile(ToRomImportsName());
@@ -371,17 +293,13 @@ namespace EMU7800.Services
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "SetGameProgramInfoToImportRepository: Unexpected exception.");
+                return Fail("SetGameProgramInfoToImportRepository", ex);
             }
+            return Ok();
         }
 
-        public void SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public Result SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
-            if (csvFileContent == null)
-                throw new ArgumentNullException("csvFileContent");
-
-            ClearLastErrorInfo();
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.CreateFile(ToRomImportsSpecialBinariesName());
@@ -389,37 +307,31 @@ namespace EMU7800.Services
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "SetSpecialBinaryInfoToImportRepository: Unexpected exception.");
+                return Fail("SetSpecialBinaryInfoToImportRepository", ex);
             }
+            return Ok();
         }
 
     #endregion
 
     #region Global Settings
 
-        public ApplicationSettings GetSettings()
+        public Result<ApplicationSettings> GetSettings()
         {
-            ClearLastErrorInfo();
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.GetFile(ApplicationSettingsName);
                 var settings = GetSettingsImpl(file);
-                return settings;
+                return Ok(settings);
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "GetSettings: Unexpected exception.");
-                return null;
+                return Fail<ApplicationSettings>("GetSettings: Unexpected exception", ex);
             }
         }
 
-        public void SaveSettings(ApplicationSettings settings)
+        public Result SaveSettings(ApplicationSettings settings)
         {
-            ClearLastErrorInfo();
-            if (settings == null)
-                return;
-
             try
             {
                 var file = ApplicationData.Current.LocalFolder.CreateFile(ApplicationSettingsName);
@@ -427,41 +339,32 @@ namespace EMU7800.Services
             }
             catch (Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "SaveSettings: Unexpected exception.");
+                return Fail("SaveSettings: Unexpected exception: ", ex);
             }
+            return Ok();
         }
 
         static ApplicationSettings GetSettingsImpl(IStorageFile file)
         {
-            if (file == null)
-                return null;
-
-            using (var stream = file.OpenStreamForRead())
-            using (var br = new BinaryReader(stream))
+            using var stream = file.OpenStreamForRead();
+            using BinaryReader br = new BinaryReader(stream);
+            var version = br.ReadInt32();
+            var settings = new ApplicationSettings
             {
-                var version = br.ReadInt32();
-                var settings = new ApplicationSettings
-                {
-                    ShowTouchControls = br.ReadBoolean(),
-                    TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
-                };
-                return settings;
-            }
+                ShowTouchControls = br.ReadBoolean(),
+                TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
+            };
+            return settings;
         }
 
         static void SaveSettingsImpl(IStorageFile file, ApplicationSettings settings)
         {
-            if (file == null || settings == null)
-                return;
-
-            using (var stream = file.OpenStreamForWrite())
-            using (var bw = new BinaryWriter(stream))
-            {
-                bw.Write(2); // version
-                bw.Write(settings.ShowTouchControls);
-                bw.Write(settings.TouchControlSeparation);
-                bw.Flush();
-            }
+            using var stream = file.OpenStreamForWrite();
+            using var bw = new BinaryWriter(stream);
+            bw.Write(2); // version
+            bw.Write(settings.ShowTouchControls);
+            bw.Write(settings.TouchControlSeparation);
+            bw.Flush();
         }
 
     #endregion
@@ -470,9 +373,6 @@ namespace EMU7800.Services
 
         public void DumpCrashReport(Exception ex)
         {
-            if (ex == null)
-                return;
-
             var name = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
             try
             {
@@ -490,7 +390,6 @@ namespace EMU7800.Services
 
         public DatastoreService()
         {
-            ClearLastErrorInfo();
         }
 
     #endregion
@@ -509,98 +408,63 @@ namespace EMU7800.Services
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{gpi.MD5}.emustate";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo)
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{gpi.MD5}.png";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToPersistedStateStorageOldName(GameProgramInfo gameProgramInfo)
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.0.emustate";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToScreenshotStorageOldName(GameProgramInfo gameProgramInfo)
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.0.png";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToPersistedStateStoragePath(string name)
-        {
-            var path = $@"{PersistedGameProgramsName}\{name}";
-            return path;
-        }
+            => $@"{PersistedGameProgramsName}\{name}";
 
         static ISet<string> GetFilesFromPersistedGameProgramsImpl()
         {
-            IStorageFolder folder = null;
+            IEnumerable<string> fileNames = Array.Empty<string>();
             try
             {
-                folder = ApplicationData.Current.LocalFolder.GetFolder(PersistedGameProgramsName);
-            }
-            catch (FileNotFoundException)
-            {
-            }
-            catch (IOException)
-            {
+                var folder = ApplicationData.Current.LocalFolder.GetFolder(PersistedGameProgramsName);
+                fileNames = folder.GetFiles().Where(IsPathPresent).Select(file => file.Name);
             }
             catch (Exception)
             {
-                return new HashSet<string>();
             }
-
-            var query = folder != null
-                ? folder.GetFiles()
-                    .Where(IsPathPresent)
-                    .Select(file => file.Name)
-                : new string[0];
-
-            var set = ToHashSet(query);
-            return set;
-        }
-
-        static ISet<T> ToHashSet<T>(IEnumerable<T> source)
-        {
-            var set = new HashSet<T>();
-            foreach (var item in source)
-                set.Add(item);
-            return set;
+            return new HashSet<string>(fileNames);
         }
 
         static IStorageFile GetAssetFile(string name)
-        {
-            return Package.Current.InstalledLocation.GetFile(@"Assets\" + name);
-        }
+            => Package.Current.InstalledLocation.GetFile(@"Assets\" + name);
 
         static byte[] GetZipBytes(IStorageFile file, string entryPath)
         {
-            if (file == null || string.IsNullOrWhiteSpace(entryPath))
-                return null;
+            if (string.IsNullOrWhiteSpace(entryPath))
+                return Array.Empty<byte>();
 
-            using (var stream = file.OpenStreamForRead())
-            using (var za = new ZipArchive(stream, ZipArchiveMode.Read))
-            {
-                var entry = za.GetEntry(entryPath);
-                using (var br = new BinaryReader(entry.Open()))
-                {
-                    return br.ReadBytes((int)entry.Length);
-                }
-            }
+            using var stream = file.OpenStreamForRead();
+            using var za = new ZipArchive(stream, ZipArchiveMode.Read);
+            var entry = za.GetEntry(entryPath);
+            using var br = new BinaryReader(entry.Open());
+            return br.ReadBytes((int)entry.Length);
         }
 
-        static IEnumerable<string> QueryForRomCandidates(StorageFolder folder)
+        static IEnumerable<StringType> QueryForRomCandidates(StorageFolder folder)
         {
             var files = folder.GetFilesAsync()
                 .AsTask()
@@ -610,29 +474,23 @@ namespace EMU7800.Services
 
             var filterExtList = new[] { ".bin", ".a26", ".a78", ".zip" };
 
-            var list = files
+            return files
                 .Where(IsPathPresent)
                 .Where(file => !file.Name.StartsWith("_"))
                 .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
                 .SelectMany(ToPaths);
-
-            return list;
         }
 
-        static IEnumerable<string> ToPaths(IStorageFile file)
+        static IEnumerable<StringType> ToPaths(IStorageFile file)
         {
             if (!IsPathPresent(file))
-                return new string[0];
+                return Array.Empty<StringType>();
 
             if (!file.Path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                return new[] { file.Path };
+                return new[] { file.Path }.Select(StringType.ToStringType);
 
-            using (var za = new ZipArchive(file.OpenStreamForRead(), ZipArchiveMode.Read))
-            {
-                var zipPathList = za.Entries
-                    .Select(entry => $"{file.Path}|{entry.FullName}");
-                return zipPathList;
-            }
+            using var za = new ZipArchive(file.OpenStreamForRead(), ZipArchiveMode.Read);
+            return za.Entries.Select(entry => $"{file.Path}|{entry.FullName}").Select(StringType.ToStringType);
         }
 
         static string EscapeFileNameChars(string fileName)
@@ -675,17 +533,12 @@ namespace EMU7800.Services
             return false;
         }
 
-        void ClearLastErrorInfo()
-        {
-            LastErrorInfo = null;
-        }
-
         static IStorageFile GetStorageFileFromPath(string path)
         {
-            Windows.Foundation.IAsyncOperation<StorageFile> op = null;
-
             var pathPrefix1 = Package.Current.InstalledLocation.Path;
             var pathPrefix2 = ApplicationData.Current.LocalFolder.Path;
+
+            Windows.Foundation.IAsyncOperation<StorageFile> op;
 
             if (path.StartsWith(pathPrefix1, StringComparison.OrdinalIgnoreCase))
             {
@@ -697,9 +550,10 @@ namespace EMU7800.Services
                 var shortPath = path.Substring(pathPrefix2.Length + 1);
                 op = ApplicationData.Current.LocalFolder.GetFileAsync(shortPath);
             }
-
-            if (op == null)
+            else
+            {
                 op = StorageFile.GetFileFromPathAsync(path);
+            }
 
             return op.AsTask()
                 .ConfigureAwait(false)
@@ -708,25 +562,18 @@ namespace EMU7800.Services
         }
 
         static BitmapEncoder CreateBitmapEncoder(Guid encoderId, IRandomAccessStream stream)
-        {
-            var encoder = BitmapEncoder
+            => BitmapEncoder
                 .CreateAsync(encoderId, stream)
                     .AsTask()
                         .ConfigureAwait(false)
                             .GetAwaiter()
                                 .GetResult();
-            return encoder;
-        }
 
         static bool IsPathPresent(IStorageItem file)
-        {
-            return file != null && IsPathPresent(file.Path);
-        }
+            => IsPathPresent(file.Path);
 
         static bool IsPathPresent(string path)
-        {
-            return !string.IsNullOrEmpty(path);
-        }
+            => !string.IsNullOrEmpty(path);
 
         static string ToRomImportsName()
         {
@@ -743,9 +590,17 @@ namespace EMU7800.Services
         static string GetVersionString()
         {
             var version = Package.Current.Id.Version;
-            var versionStr = $"{version.Major}.{version.Minor}";
-            return versionStr;
+            return $"{version.Major}.{version.Minor}";
         }
+
+        static Result Ok()
+            => new();
+
+        static Result Fail(string message, Exception ex)
+            => new (ToResultMessage(message, ex));
+
+        static string ToResultMessage(string message, Exception ex)
+            => message + $": Unexpected exception: {ex.GetType().Name}: " + ex.Message;
 
     #endregion
 
@@ -769,7 +624,7 @@ namespace EMU7800.Services
     public class DatastoreService
     {
 
-        #region Fields
+    #region Fields
 
 #if WIN32
         readonly static string _currentWorkingDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -779,93 +634,75 @@ namespace EMU7800.Services
 
         static string _userAppDataStoreRoot;
 
-        #endregion
+    #endregion
 
-        public ErrorInfo LastErrorInfo { get; private set; }
+    #region ROM Files
 
-        #region ROM Files
-
-        public IEnumerable<string> QueryLocalMyDocumentsForRomCandidates()
+        public (Result, IEnumerable<string>) QueryLocalMyDocumentsForRomCandidates()
         {
-            ClearLastErrorInfo();
 #if WIN32
             var path = EnvironmentGetFolderPath(Environment.SpecialFolder.MyDocuments);
 #elif MONODROID
             var path = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
 #endif
-            return QueryForRomCandidates(path);
+            return (Ok(), QueryForRomCandidates(path));
         }
 
-        public IEnumerable<string> QueryProgramFolderForRomCandidates()
+        public (Result, IEnumerable<string>) QueryProgramFolderForRomCandidates()
         {
-            ClearLastErrorInfo();
 #if WIN32
             var path = Path.Combine(_currentWorkingDir, "Assets");
 #elif MONODROID
             var path = Path.Combine(_userAppDataStoreRoot, "Assets");
 #endif
-            return QueryForRomCandidates(path);
+            return (Ok(), QueryForRomCandidates(path));
         }
 
-        public byte[] GetRomBytes(string path)
+        public static (Result, byte[]) GetRomBytes(string path)
         {
-            if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentNullException("path");
-
-            ClearLastErrorInfo();
-
-            byte[] bytes = null;
-
             if (path.Contains('|'))
             {
                 var splitPath = path.Split('|');
                 if (splitPath.Length != 2 || !splitPath[0].EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    return null;
+                    return (Ok(), Array.Empty<byte>());
 
                 try
                 {
-                    using (var za = new ZipArchive(new FileStream(splitPath[0], FileMode.Open)))
-                    {
-                        var entry = za.GetEntry(splitPath[1]);
-                        using (var br = new BinaryReader(entry.Open()))
-                        {
-                            bytes = br.ReadBytes((int)entry.Length);
-                        }
-                    }
+                    using var za = new ZipArchive(new FileStream(splitPath[0], FileMode.Open));
+                    var entry = za.GetEntry(splitPath[1]);
+                    using var br = new BinaryReader(entry.Open());
+                    var bytes = br.ReadBytes((int)entry.Length);
+                    return (Ok(), bytes);
                 }
                 catch (Exception ex)
                 {
                     if (IsCriticalException(ex))
                         throw;
-                    LastErrorInfo = new ErrorInfo(ex, "LoadRomBytes: Unable to load ROM bytes from zip archive.");
+                    return (Fail("LoadRomBytes: Unable to load ROM bytes from zip archive", ex), Array.Empty<byte>());
                 }
-                return bytes;
             }
 
             try
             {
-                bytes = File.ReadAllBytes(path);
+                var bytes = File.ReadAllBytes(path);
+                return (Ok(), bytes);
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "LoadRomBytes: Unable to load ROM bytes.");
+                return (Fail("LoadRomBytes: Unable to load ROM bytes", ex), Array.Empty<byte>());
             }
-
-            return bytes;
         }
 
-        #endregion
+    #endregion
 
-        #region Machine Persistence
+    #region Machine Persistence
 
         ISet<string> _cachedPersistedDir;
 
         public bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
         {
-            ClearLastErrorInfo();
-
             if (gameProgramInfo == null)
                 return false;
 
@@ -877,16 +714,8 @@ namespace EMU7800.Services
             return exists;
         }
 
-        public void PersistMachine(MachineStateInfo machineStateInfo)
+        public Result PersistMachine(MachineStateInfo machineStateInfo)
         {
-            if (machineStateInfo == null)
-                throw new ArgumentNullException("machineStateInfo");
-            if (machineStateInfo.Machine == null)
-                throw new ArgumentException("machineStateInfo.Machine is unspecified");
-            if (machineStateInfo.GameProgramInfo == null)
-                throw new ArgumentException("machineStateInfo.GameProgramInfo is unspecified");
-
-            ClearLastErrorInfo();
             EnsurePersistedStateGameProgramsDir();
 
             var name = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
@@ -894,41 +723,30 @@ namespace EMU7800.Services
 
             try
             {
-                using (var stream = new FileStream(path, FileMode.Create))
-                using (var bw = new BinaryWriter(stream))
-                {
-                    bw.Write(2); // version
-                    bw.Write(machineStateInfo.FramesPerSecond);
-                    bw.Write(machineStateInfo.SoundOff);
-                    bw.Write(machineStateInfo.CurrentPlayerNo);
-                    bw.Write(machineStateInfo.InterpolationMode);
-                    machineStateInfo.Machine.Serialize(bw);
-                    bw.Flush();
-                }
+                using var stream = new FileStream(path, FileMode.Create);
+                using var bw = new BinaryWriter(stream);
+                bw.Write(2); // version
+                bw.Write(machineStateInfo.FramesPerSecond);
+                bw.Write(machineStateInfo.SoundOff);
+                bw.Write(machineStateInfo.CurrentPlayerNo);
+                bw.Write(machineStateInfo.InterpolationMode);
+                machineStateInfo.Machine.Serialize(bw);
+                bw.Flush();
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "PersistMachine: Unable to persist machine state.");
+                return Fail("PersistMachine: Unable to persist machine state", ex);
             }
 
-            if (_cachedPersistedDir != null)
-                _cachedPersistedDir.Add(name);
+            _cachedPersistedDir.Add(name);
+
+            return Ok();
         }
 
-        public void PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
+        public Result PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
         {
-            if (machineStateInfo == null)
-                throw new ArgumentNullException("machineStateInfo");
-            if (machineStateInfo.Machine == null)
-                throw new ArgumentException("machineStateInfo.Machine is unspecified");
-            if (machineStateInfo.GameProgramInfo == null)
-                throw new ArgumentException("machineStateInfo.GameProgramInfo is unspecified");
-            if (data == null)
-                throw new ArgumentNullException("data");
-
-            ClearLastErrorInfo();
             EnsurePersistedStateGameProgramsDir();
 
             var name = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
@@ -937,13 +755,12 @@ namespace EMU7800.Services
             const int width = 320, height = 230;
             try
             {
-                using (var fs = new FileStream(path, FileMode.OpenOrCreate))
-                {
+                using var fs = new FileStream(path, FileMode.OpenOrCreate);
 #if WIN32
-                    var image = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, BitmapPalettes.Halftone256, data, width*4);
-                    var encoder = new PngBitmapEncoder {Interlace = PngInterlaceOption.Off};
-                    encoder.Frames.Add(BitmapFrame.Create(image));
-                    encoder.Save(fs);
+                var image = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, BitmapPalettes.Halftone256, data, width * 4);
+                var encoder = new PngBitmapEncoder { Interlace = PngInterlaceOption.Off };
+                encoder.Frames.Add(BitmapFrame.Create(image));
+                encoder.Save(fs);
 #elif MONODROID
                     var intData = new int[data.Length / 3];
                     for (var i = 0; i < intData.Length; i++)
@@ -955,24 +772,21 @@ namespace EMU7800.Services
                         image.Compress(Android.Graphics.Bitmap.CompressFormat.Png, 100, fs);
                     }
 #endif
-                    fs.Flush(true);
-                    fs.Close();
-                }
+                fs.Flush(true);
+                fs.Close();
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "PersistScreenshot: Unable to persist screenshot: " + path);
+                return Fail("PersistScreenshot: Unable to persist screenshot: " + path, ex);
             }
+
+            return Ok();
         }
 
-        public MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)
+        public (Result, MachineStateInfo) RestoreMachine(GameProgramInfo gameProgramInfo)
         {
-            if (gameProgramInfo == null)
-                throw new ArgumentNullException("gameProgramInfo");
-
-            ClearLastErrorInfo();
             EnsurePersistedStateGameProgramsDir();
 
             var name = ToPersistedStateStorageName(gameProgramInfo);
@@ -980,144 +794,124 @@ namespace EMU7800.Services
 
             try
             {
-                using (var stream = new FileStream(path, FileMode.Open))
-                using (var br = new BinaryReader(stream))
+                using var stream = new FileStream(path, FileMode.Open);
+                using var br = new BinaryReader(stream);
+                var version = br.ReadInt32();
+                var machineStateInfo = new MachineStateInfo
                 {
-                    var version = br.ReadInt32();
-                    var machineStateInfo = new MachineStateInfo
-                    {
-                        FramesPerSecond     = br.ReadInt32(),
-                        SoundOff            = br.ReadBoolean(),
-                        CurrentPlayerNo     = br.ReadInt32(),
-                        InterpolationMode   = (version > 1) ? br.ReadInt32() : 0,
-                        Machine             = MachineBase.Deserialize(br),
-                        GameProgramInfo     = gameProgramInfo
-                    };
-                    if (machineStateInfo.FramesPerSecond == 0)
-                        machineStateInfo.FramesPerSecond = machineStateInfo.Machine.FrameHZ;
-                    return machineStateInfo;
-                }
+                    FramesPerSecond = br.ReadInt32(),
+                    SoundOff = br.ReadBoolean(),
+                    CurrentPlayerNo = br.ReadInt32(),
+                    InterpolationMode = (version > 1) ? br.ReadInt32() : 0,
+                    Machine = MachineBase.Deserialize(br),
+                    GameProgramInfo = gameProgramInfo
+                };
+                if (machineStateInfo.FramesPerSecond == 0)
+                    machineStateInfo.FramesPerSecond = machineStateInfo.Machine.FrameHZ;
+                return (Ok(), machineStateInfo);
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "RestoreMachine: Unable to obtain persisted machine state: " + path);
-                return null;
+                return (Fail("RestoreMachine: Unable to obtain persisted machine state: " + path, ex), new MachineStateInfo());
             }
         }
 
-        #endregion
+    #endregion
 
-        #region CSV File IO
+    #region CSV File IO
 
-        public IEnumerable<string> GetGameProgramInfoFromReferenceRepository()
+        public static (Result, IEnumerable<string>) GetGameProgramInfoFromReferenceRepository()
         {
-            ClearLastErrorInfo();
             var lines = GetFileTextLines(ToGameProgramInfoReferenceRepositoryPath());
-            return lines.ToArray();
+            return (Ok(), lines);
         }
 
-        public IEnumerable<string> GetGameProgramInfoFromImportRepository()
+        public (Result, IEnumerable<string>) GetGameProgramInfoFromImportRepository()
         {
-            ClearLastErrorInfo();
             EnsureUserAppDataStoreRoot();
             var lines = GetFileTextLines(ToGameProgramInfoImportRepositoryPath());
-            return lines.ToArray();
+            return (Ok(), lines);
         }
 
-        public IEnumerable<string> GetSpecialBinaryInfoFromImportRepository()
+        public (Result, IEnumerable<string>) GetSpecialBinaryInfoFromImportRepository()
         {
-            ClearLastErrorInfo();
             EnsureUserAppDataStoreRoot();
             var lines = GetFileTextLines(ToSpecialBinaryInfoImportRepositoryPath());
-            return lines.ToArray();
+            return (Ok(), lines);
         }
 
-        public void SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public Result SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
-            ClearLastErrorInfo();
             EnsureUserAppDataStoreRoot();
-            SetFileTextLines(ToGameProgramInfoImportRepositoryPath(), csvFileContent);
+            return SetFileTextLines(ToGameProgramInfoImportRepositoryPath(), csvFileContent);
         }
 
-        public void SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public Result SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
-            ClearLastErrorInfo();
             EnsureUserAppDataStoreRoot();
-            SetFileTextLines(ToSpecialBinaryInfoImportRepositoryPath(), csvFileContent);
+            return SetFileTextLines(ToSpecialBinaryInfoImportRepositoryPath(), csvFileContent);
         }
 
-        #endregion
+    #endregion
 
-        #region Global Settings
+    #region Global Settings
 
-        public ApplicationSettings GetSettings()
-        {
-            ClearLastErrorInfo();
-            EnsureUserAppDataStoreRoot();
-
-            var path = ToLocalUserAppDataPath(ApplicationSettingsName);
-            try
-            {
-                using (var stream = new FileStream(path, FileMode.Open))
-                using (var br = new BinaryReader(stream))
-                {
-                    var version = br.ReadInt32();
-                    var settings = new ApplicationSettings
-                    {
-                        ShowTouchControls = br.ReadBoolean(),
-                        TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
-                    };
-                    return settings;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-            catch (Exception ex)
-            {
-                if (IsCriticalException(ex))
-                    throw;
-                LastErrorInfo = new ErrorInfo(ex, "GetSettings: Unable to obtain persisted application settings: " + path);
-                return null;
-            }
-        }
-
-        public void SaveSettings(ApplicationSettings settings)
+        public (Result, ApplicationSettings) GetSettings()
         {
             EnsureUserAppDataStoreRoot();
 
             var path = ToLocalUserAppDataPath(ApplicationSettingsName);
             try
             {
-                using (var stream = new FileStream(path, FileMode.Create))
-                using (var bw = new BinaryWriter(stream))
+                using var stream = new FileStream(path, FileMode.Open);
+                using var br = new BinaryReader(stream);
+                var version = br.ReadInt32();
+                return (Ok(), new()
                 {
-                    bw.Write(2); // version
-                    bw.Write(settings.ShowTouchControls);
-                    bw.Write(settings.TouchControlSeparation);
-                    bw.Flush();
-                }
+                    ShowTouchControls = br.ReadBoolean(),
+                    TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
+                });
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "SaveSettings: Unable to persist application settings.");
+                return (Fail("GetSettings: Unable to obtain persisted application settings: " + path, ex), new());
             }
         }
 
-        #endregion
-
-        #region Crash Dumping
-
-        public void DumpCrashReport(Exception ex)
+        public Result SaveSettings(ApplicationSettings settings)
         {
-            if (ex == null)
-                return;
-            if (string.IsNullOrWhiteSpace(_userAppDataStoreRoot))
+            EnsureUserAppDataStoreRoot();
+
+            var path = ToLocalUserAppDataPath(ApplicationSettingsName);
+            try
+            {
+                using var stream = new FileStream(path, FileMode.Create);
+                using var bw = new BinaryWriter(stream);
+                bw.Write(2); // version
+                bw.Write(settings.ShowTouchControls);
+                bw.Write(settings.TouchControlSeparation);
+                bw.Flush();
+            }
+            catch (Exception ex)
+            {
+                if (IsCriticalException(ex))
+                    throw;
+                return Fail("SaveSettings: Unable to persist application settings", ex);
+            }
+            return Ok();
+        }
+
+    #endregion
+
+    #region Crash Dumping
+
+        public static void DumpCrashReport(Exception ex)
+        {
+             if (string.IsNullOrWhiteSpace(_userAppDataStoreRoot))
                 return;
 
             var filename = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
@@ -1142,7 +936,6 @@ namespace EMU7800.Services
 
         public DatastoreService()
         {
-            ClearLastErrorInfo();
         }
 
         #endregion
@@ -1197,19 +990,22 @@ namespace EMU7800.Services
             return path;
         }
 
-        void EnsurePersistedStateGameProgramsDir()
+        Result EnsurePersistedStateGameProgramsDir()
         {
             EnsureUserAppDataStoreRoot();
+
             var persistedGameProgramsDir = Path.Combine(_userAppDataStoreRoot, PersistedGameProgramsName);
 
             if (!DirectoryExists(persistedGameProgramsDir))
             {
-                DirectoryCreateDirectory(persistedGameProgramsDir);
-                if (LastErrorInfo != null)
+                var result = DirectoryCreateDirectory(persistedGameProgramsDir);
+                if (result.IsFail)
                 {
-                    LastErrorInfo = new ErrorInfo(LastErrorInfo, "Unable to create PersistedGamePrograms folder: " + persistedGameProgramsDir);
+                    return Fail("Unable to create PersistedGamePrograms folder: " + persistedGameProgramsDir);
                 }
             }
+
+            return Ok();
         }
 
         ISet<string> GetFilesFromPersistedGameProgramsDir()
@@ -1225,27 +1021,18 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                paths = new string[0];
+                paths = Array.Empty<string>();
             }
             var files = paths.Select(Path.GetFileName);
             var set = new HashSet<string>(files);
             return set;
         }
 
-        static string ToGameProgramInfoReferenceRepositoryPath()
-        {
-            return ToLocalAssetsPath(RomPropertiesName);
-        }
+        static string ToGameProgramInfoReferenceRepositoryPath() => ToLocalAssetsPath(RomPropertiesName);
 
-        static string ToGameProgramInfoImportRepositoryPath()
-        {
-            return ToLocalUserAppDataPath(RomImportsName);
-        }
+        static string ToGameProgramInfoImportRepositoryPath() => ToLocalUserAppDataPath(RomImportsName);
 
-        static string ToSpecialBinaryInfoImportRepositoryPath()
-        {
-            return ToLocalUserAppDataPath(RomImportsSpecialBinariesName);
-        }
+        static string ToSpecialBinaryInfoImportRepositoryPath() => ToLocalUserAppDataPath(RomImportsSpecialBinariesName);
 
         void EnsureUserAppDataStoreRoot()
         {
@@ -1294,8 +1081,7 @@ namespace EMU7800.Services
                     continue;
                 if (fileName.Length <= directoryPrefix.Length || !fileName.StartsWith(directoryPrefix, StringComparison.OrdinalIgnoreCase))
                     continue;
-                Guid guid;
-                if (!Guid.TryParse(fileName.Substring(directoryPrefix.Length), out guid))
+                if (!Guid.TryParse(fileName[directoryPrefix.Length..], out Guid guid))
                     continue;
                 var directoryCreationTimeUtc = Directory.GetCreationTimeUtc(directory);
                 if (directoryCreationTimeUtc <= selectedDirectoryPathCreationTimeUtc)
@@ -1308,7 +1094,7 @@ namespace EMU7800.Services
             {
                 var directoryName = directoryPrefix + Guid.NewGuid();
                 selectedDirectoryPath = Path.Combine(appDataRoot, directoryName);
-                if (!DirectoryCreateDirectory(selectedDirectoryPath))
+                if (DirectoryCreateDirectory(selectedDirectoryPath).IsFail)
                     throw new ApplicationException("Unable to create LocalApplicationData folder: " + directoryName);
             }
 
@@ -1355,7 +1141,7 @@ namespace EMU7800.Services
             return false;
         }
 
-        IEnumerable<string> QueryForRomCandidates(string path)
+        static IEnumerable<string> QueryForRomCandidates(string path)
         {
             var stack = new Stack<string>();
             stack.Push(path);
@@ -1370,7 +1156,7 @@ namespace EMU7800.Services
             }
         }
 
-        IEnumerable<string> EnumerateFiles(string path)
+        static IEnumerable<string> EnumerateFiles(string path)
         {
             IEnumerator<string> enumerator;
             try
@@ -1422,7 +1208,7 @@ namespace EMU7800.Services
                     {
                         if (IsCriticalException(ex))
                             throw;
-                        zipPathList = new string[0];
+                        zipPathList = Array.Empty<string>();
                     }
                     foreach (var zippath in zipPathList)
                         yield return zippath;
@@ -1433,13 +1219,10 @@ namespace EMU7800.Services
 
         static string[] GetZipPaths(string filepath)
         {
-            using (var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read))
-            {
-                var zipPathList = za.Entries
-                    .Select(entry => $"{filepath}|{entry.FullName}")
-                        .ToArray();
-                return zipPathList;
-            }
+            using var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read);
+            return za.Entries
+                .Select(entry => $"{filepath}|{entry.FullName}")
+                    .ToArray();
         }
 
         static IEnumerable<string> EnumerateDirectories(string path)
@@ -1479,7 +1262,7 @@ namespace EMU7800.Services
             while (moveNextResult);
         }
 
-        IEnumerable<string> GetFileTextLines(string path)
+        static IEnumerable<string> GetFileTextLines(string path)
         {
             StreamReader fs = null;
             while (true)
@@ -1497,7 +1280,6 @@ namespace EMU7800.Services
                         throw;
                     if (fs != null)
                         fs.Dispose();
-                    LastErrorInfo = new ErrorInfo(ex, "GetFileTextLines: Unable to read file.");
                     yield break;
                 }
                 if (line == null)
@@ -1509,26 +1291,34 @@ namespace EMU7800.Services
             }
         }
 
-        void SetFileTextLines(string path, IEnumerable<string> csvFileContent)
+        static Result SetFileTextLines(string path, IEnumerable<string> csvFileContent)
         {
             try
             {
-                using (var sw = new StreamWriter(new FileStream(path, FileMode.Create), Encoding.UTF8))
+                using var sw = new StreamWriter(new FileStream(path, FileMode.Create), Encoding.UTF8);
+                foreach (var line in csvFileContent)
                 {
-                    foreach (var line in csvFileContent)
-                    {
-                        sw.WriteLine(line);
-                    }
-                    sw.Flush();
+                    sw.WriteLine(line);
                 }
+                sw.Flush();
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "DatastoreService.SetFileTextLines: Unable to write file.");
+                return Fail("DatastoreService.SetFileTextLines: Unable to write file", ex);
             }
+            return Ok();
         }
+
+        static Result Ok()
+            => new();
+
+        static Result Fail(string message)
+            => new(message);
+
+        static Result Fail(string message, Exception ex)
+            => new(message + $": {ex.GetType().Name}: {ex.Message}");
 
         static bool DirectoryExists(string path)
         {
@@ -1544,7 +1334,7 @@ namespace EMU7800.Services
             }
         }
 
-        bool DirectoryCreateDirectory(string path)
+        static Result DirectoryCreateDirectory(string path)
         {
             try
             {
@@ -1554,41 +1344,31 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "Exception during Directory.CreateDirectory of " + path);
-                return false;
+                return Fail("Unable to create directory", ex);
             }
-            return true;
+            return Ok();
         }
 
-        string EnvironmentGetFolderPath(Environment.SpecialFolder specialFolder)
+        static string EnvironmentGetFolderPath(Environment.SpecialFolder specialFolder)
         {
             try
             {
-                var path = Environment.GetFolderPath(specialFolder);
-                return path;
+                return Environment.GetFolderPath(specialFolder);
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                LastErrorInfo = new ErrorInfo(ex, "Exception during Environment.GetFolderPath of " + specialFolder);
-                return null;
+                return string.Empty;
             }
         }
 
         static bool IsCriticalException(Exception ex)
-        {
-            return ex is OutOfMemoryException
-                || ex is StackOverflowException
-                || ex is System.Threading.ThreadAbortException
-                || ex is System.Threading.ThreadInterruptedException
-                || ex is TypeInitializationException;
-        }
-
-        void ClearLastErrorInfo()
-        {
-            LastErrorInfo = null;
-        }
+            => ex is OutOfMemoryException
+                  or StackOverflowException
+                  or System.Threading.ThreadAbortException
+                  or System.Threading.ThreadInterruptedException
+                  or TypeInitializationException;
 
         #endregion
 

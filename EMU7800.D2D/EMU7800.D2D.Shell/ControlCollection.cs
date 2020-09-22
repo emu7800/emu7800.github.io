@@ -1,15 +1,18 @@
 // © Mike Murphy
 
 using EMU7800.D2D.Interop;
+using System.Linq;
 
 namespace EMU7800.D2D.Shell
 {
     public sealed class ControlCollection : ControlBase
     {
+        public static new readonly ControlCollection Default = new ControlCollection(0);
+
         #region Fields
 
         const int ArrayAllocationChunkSize = 8;
-        ControlBase[] _controls = new ControlBase[ArrayAllocationChunkSize];
+        ControlBase[] _controls;
 
         #endregion
 
@@ -22,49 +25,49 @@ namespace EMU7800.D2D.Shell
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.KeyboardKeyPressed(key, down);
             }
         }
 
-        public override void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
             if (!IsVisible)
                 return;
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.MouseMoved(pointerId, x, y, dx, dy);
             }
         }
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             if (!IsVisible)
                 return;
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.MouseButtonChanged(pointerId, x, y, down);
             }
         }
 
-        public override void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public override void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
             if (!IsVisible)
                 return;
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.MouseWheelChanged(pointerId, x, y, delta);
@@ -76,7 +79,7 @@ namespace EMU7800.D2D.Shell
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 control.LoadResources(gd);
             }
@@ -89,7 +92,7 @@ namespace EMU7800.D2D.Shell
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.Update(td);
@@ -103,7 +106,7 @@ namespace EMU7800.D2D.Shell
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
-                if (control == null)
+                if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.Render(gd);
@@ -116,19 +119,19 @@ namespace EMU7800.D2D.Shell
 
         public void Add(params ControlBase[] controls)
         {
-            if (controls == null)
-                return;
             foreach (var control in controls)
+            {
                 Add(control);
+            }
         }
 
         public void Add(ControlBase control)
         {
-            if (control == null)
+            if (control == ControlBase.Default)
                 return;
             for (var i = 0; i < _controls.Length; i++)
             {
-                if (_controls[i] != null)
+                if (_controls[i] != ControlBase.Default)
                     continue;
                 _controls[i] = control;
                 return;
@@ -139,7 +142,7 @@ namespace EMU7800.D2D.Shell
 
         public void Remove(ControlBase control)
         {
-            if (control == null)
+            if (control == ControlBase.Default)
                 return;
             for (var i = 0; i < _controls.Length; i++)
             {
@@ -149,7 +152,7 @@ namespace EMU7800.D2D.Shell
                 {
                     var nextControl = _controls[j + 1];
                     _controls[j] = nextControl;
-                    if (nextControl == null)
+                    if (nextControl == ControlBase.Default)
                         break;
                 }
                 break;
@@ -166,13 +169,24 @@ namespace EMU7800.D2D.Shell
             {
                 for (var i = 0; i < _controls.Length; i++)
                 {
-                    if (_controls[i] == null)
-                        break;
-                    _controls[i].Dispose();
-                    _controls[i] = null;
+                    using (_controls[i]) {}
+                    _controls[i] = ControlBase.Default;
                 }
             }
             base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Constructors
+
+        public ControlCollection() : this(ArrayAllocationChunkSize)
+        {
+        }
+
+        public ControlCollection(int arrayAllocationChunkSize)
+        {
+            _controls = CreateEmptyControlsArray(arrayAllocationChunkSize);
         }
 
         #endregion
@@ -181,11 +195,14 @@ namespace EMU7800.D2D.Shell
 
         int IncreaseArraySizeByArrayAllocationChunkSize()
         {
-            var nControls = new ControlBase[_controls.Length + ArrayAllocationChunkSize];
+            var nControls = CreateEmptyControlsArray(_controls.Length + ArrayAllocationChunkSize);
             _controls.CopyTo(nControls, 0);
             _controls = nControls;
             return _controls.Length - ArrayAllocationChunkSize;
         }
+
+        static ControlBase[] CreateEmptyControlsArray(int size)
+            => Enumerable.Range(0, size).Select(i => ControlBase.Default).ToArray();
 
         #endregion
     }

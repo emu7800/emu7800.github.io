@@ -10,11 +10,11 @@ namespace EMU7800.D2D.Shell
         {
             _buttonCancel.IsVisible = true;
 
-            await Task.Run(() => _romImportService.Import());
+            var result = await Task.Run(() => _romImportService.Import());
 
             if (_romImportService.CancelRequested)
             {
-                _labelStep.Text = _romImportService.LastErrorInfo != null ? "Canceled via internal error." : "Canceled.";
+                _labelStep.Text = result.IsFail ? "Canceled via internal error." : "Canceled.";
             }
             else
             {

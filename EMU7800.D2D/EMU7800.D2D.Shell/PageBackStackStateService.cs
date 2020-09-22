@@ -11,7 +11,7 @@ namespace EMU7800.D2D.Shell
 
         static readonly Stack<PageBase> _pageStack = new Stack<PageBase>();
         static readonly HashSet<PageBase> _disposingPages = new HashSet<PageBase>();
-        static PageBase _pendingPage;
+        static PageBase _pendingPage = PageBase.Default;
         static bool _isPagePending, _isDisposablePages;
 
         #endregion
@@ -23,7 +23,7 @@ namespace EMU7800.D2D.Shell
         {
             _pageStack.Push(newPage);
             _pendingPage = newPage;
-            IsPagePending = _pendingPage != null;
+            IsPagePending = _pendingPage != PageBase.Default;
         }
 
         public void Replace(PageBase newPage)
@@ -32,7 +32,7 @@ namespace EMU7800.D2D.Shell
             _pageStack.Push(newPage);
             _pendingPage = newPage;
             _disposingPages.Add(replacedPage);
-            IsPagePending = _pendingPage != null;
+            IsPagePending = _pendingPage != PageBase.Default;
             IsDisposablePages = true;
         }
 
@@ -44,7 +44,7 @@ namespace EMU7800.D2D.Shell
             var newPage = _pageStack.Peek();
             _pendingPage = newPage;
             _disposingPages.Add(poppedPage);
-            IsPagePending = _pendingPage != null;
+            IsPagePending = _pendingPage != PageBase.Default;
             IsDisposablePages = true;
             return true;
         }
@@ -52,7 +52,7 @@ namespace EMU7800.D2D.Shell
         public PageBase GetPendingPage()
         {
             var pendingPage = _pendingPage;
-            _pendingPage = null;
+            _pendingPage = PageBase.Default;
             IsPagePending = false;
             return pendingPage;
         }
@@ -61,7 +61,7 @@ namespace EMU7800.D2D.Shell
         {
             IsDisposablePages = _disposingPages.Count > 0;
             if (!IsDisposablePages)
-                return null;
+                return PageBase.Default;
             var page = _disposingPages.First();
             _disposingPages.Remove(page);
             IsDisposablePages = _disposingPages.Count > 0;

@@ -15,44 +15,28 @@ namespace EMU7800.Core
         #endregion
 
         public void Write(byte value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(ushort value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(int value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(uint value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(long value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(ulong value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(bool value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(double value)
-        {
-            _binaryWriter.Write(value);
-        }
+            => _binaryWriter.Write(value);
 
         public void Write(BufferElement bufferElement)
         {
@@ -105,34 +89,22 @@ namespace EMU7800.Core
         }
 
         public void Write(AddressSpace mem)
-        {
-            mem.GetObjectData(this);
-        }
+            => mem.GetObjectData(this);
 
         public void Write(M6502 cpu)
-        {
-            cpu.GetObjectData(this);
-        }
+            => cpu.GetObjectData(this);
 
         public void Write(PIA pia)
-        {
-            pia.GetObjectData(this);
-        }
+            => pia.GetObjectData(this);
 
         public void Write(TIA tia)
-        {
-            tia.GetObjectData(this);
-        }
+            => tia.GetObjectData(this);
 
         public void Write(TIASound tiaSound)
-        {
-            tiaSound.GetObjectData(this);
-        }
+            => tiaSound.GetObjectData(this);
 
         public void Write(Maria maria)
-        {
-            maria.GetObjectData(this);
-        }
+            => maria.GetObjectData(this);
 
         public void Write(Cart cart)
         {
@@ -141,14 +113,10 @@ namespace EMU7800.Core
         }
 
         public void Write(RAM6116 ram6116)
-        {
-            ram6116.GetObjectData(this);
-        }
+            => ram6116.GetObjectData(this);
 
         public void Write(InputState inputState)
-        {
-            inputState.GetObjectData(this);
-        }
+            => inputState.GetObjectData(this);
 
         public void WriteVersion(int version)
         {
@@ -158,7 +126,7 @@ namespace EMU7800.Core
 
         public void WriteOptional(byte[] bytes)
         {
-            var hasBytes = (bytes != null);
+            var hasBytes = bytes.Length > 0;
             _binaryWriter.Write(hasBytes);
             if (!hasBytes)
                 return;
@@ -169,7 +137,7 @@ namespace EMU7800.Core
 
         public void WriteOptional(HSC7800 hsc7800)
         {
-            var exist = (hsc7800 != null);
+            var exist = hsc7800 != HSC7800.Default;
             Write(exist);
             if (!exist)
                 return;
@@ -178,7 +146,7 @@ namespace EMU7800.Core
 
         public void WriteOptional(Bios7800 bios7800)
         {
-            var exist = (bios7800 != null);
+            var exist = bios7800 != Bios7800.Default;
             Write(exist);
             if (!exist)
                 return;
@@ -187,7 +155,7 @@ namespace EMU7800.Core
 
         public void WriteOptional(PokeySound pokeySound)
         {
-            var exist = (pokeySound != null);
+            var exist = pokeySound != PokeySound.Default;
             Write(exist);
             if (!exist)
                 return;
@@ -202,9 +170,7 @@ namespace EMU7800.Core
         /// <param name="binaryWriter"/>
         internal SerializationContext(BinaryWriter binaryWriter)
         {
-            if (binaryWriter == null)
-                throw new ArgumentNullException("binaryWriter");
-            _binaryWriter = binaryWriter;
+            _binaryWriter = binaryWriter ?? throw new ArgumentNullException(nameof(binaryWriter));
         }
 
         #endregion
