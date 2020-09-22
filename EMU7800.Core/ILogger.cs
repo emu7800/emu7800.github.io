@@ -2,9 +2,7 @@
 {
     public interface ILogger
     {
-        void WriteLine(string format, params object[] args);
-        void WriteLine(object value);
-        void Write(string format, params object[] args);
-        void Write(object value);
+        void WriteLine(string message);
+        void Write(string message);
     }
 }

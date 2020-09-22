@@ -13,11 +13,8 @@ namespace EMU7800.Services
 
         readonly DatastoreService _datastoreService = new DatastoreService();
         readonly RomBytesService _romBytesService = new RomBytesService();
-        readonly RomPropertiesService _romPropertiesService = new RomPropertiesService();
 
         #endregion
-
-        public ErrorInfo LastErrorInfo { get; private set; }
 
         public bool CancelRequested { get; set; }
         public bool DirectoryScanCompleted { get; set; }
@@ -25,55 +22,43 @@ namespace EMU7800.Services
         public int FilesExamined { get; private set; }
         public int FilesRecognized { get; private set; }
 
-        public void Import()
+        public Result Import()
         {
-            ClearLastErrorInfo();
-
-            var pathSet = _datastoreService.QueryLocalMyDocumentsForRomCandidates().Take(32768);
-            ImportWithDefaults(pathSet);
+            var result = _datastoreService.QueryLocalMyDocumentsForRomCandidates();
+            return ImportWithDefaults(result.Values.Select(st => st.Line).Take(32768));
         }
 
-        public void ImportDefaultsIfNecessary()
+        public Result ImportDefaultsIfNecessary()
         {
-            ClearLastErrorInfo();
+            var result1 = _datastoreService.GetSpecialBinaryInfoFromImportRepository();
+            var result2 = _datastoreService.GetGameProgramInfoFromImportRepository();
 
-            if (_datastoreService.GetSpecialBinaryInfoFromImportRepository().Any()
-                && _datastoreService.GetGameProgramInfoFromImportRepository().Any())
-                return;
+             if (result1.IsOk && result1.Values.Any()
+                && result2.IsOk && result2.Values.Any())
+                    return Ok();
 
-            ImportDefaults();
+            return ImportDefaults();
         }
 
-        public void ImportDefaults()
-        {
-            ClearLastErrorInfo();
+        public Result ImportDefaults()
+            => ImportWithDefaults(Array.Empty<string>());
 
-            ImportWithDefaults(new string[0]);
+        public Result ImportWithDefaults(IEnumerable<string> pathSet)
+        {
+            var result = _datastoreService.QueryProgramFolderForRomCandidates();
+            return Import(pathSet.Take(32768).Concat(result.Values.Select(st => st.Line)));
         }
 
-        public void ImportWithDefaults(IEnumerable<string> pathSet)
-        {
-            if (pathSet == null)
-                throw new ArgumentNullException("pathSet");
-
-            ClearLastErrorInfo();
-
-            pathSet = pathSet.Take(32768)
-                .Concat(_datastoreService.QueryProgramFolderForRomCandidates());
-
-            Import(pathSet);
-        }
-
-        void Import(IEnumerable<string> pathSet)
+        Result Import(IEnumerable<string> pathSet)
         {
             DirectoryScanCompleted = false;
             CancelRequested = false;
             FilesExamined = 0;
             FilesRecognized = 0;
 
-            var csvFileContent = _datastoreService.GetGameProgramInfoFromReferenceRepository();
-            var gameProgramInfoSet = _romPropertiesService.ToGameProgramInfo(csvFileContent);
-            var gameProgramInfoMd5Dict = _romPropertiesService.ToMD5Dict(gameProgramInfoSet);
+            var csvFileContentResult = _datastoreService.GetGameProgramInfoFromReferenceRepository();
+            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContentResult.Values.Select(st => st.Line));
+            var gameProgramInfoMd5Dict = gameProgramInfoSet.GroupBy(r => r.MD5).ToDictionary(g => g.Key, g => g.ToList());
             var importedGameProgramInfoMd5Dict = new Dictionary<string, ImportedGameProgramInfo>();
             var importedSpecialBinaryInfoSet = new List<ImportedSpecialBinaryInfo>();
 
@@ -86,14 +71,14 @@ namespace EMU7800.Services
 
                 FilesExamined++;
 
-                var bytes = _datastoreService.GetRomBytes(path);
-                if (bytes == null)
+                var bytesResult = _datastoreService.GetRomBytes(path);
+
+                if (bytesResult.IsFail || bytesResult.Value.Bytes.Length == 0)
                     continue;
 
-                var md5key = _romBytesService.ToMD5Key(bytes);
+                var md5key = _romBytesService.ToMD5Key(bytesResult.Value.Bytes);
 
-                IList<GameProgramInfo> gpiList;
-                if (!gameProgramInfoMd5Dict.TryGetValue(md5key, out gpiList))
+                if (!gameProgramInfoMd5Dict.TryGetValue(md5key, out var gpiList))
                 {
                     var specialBinaryType = _romBytesService.ToSpecialBinaryType(md5key);
                     if (specialBinaryType != SpecialBinaryType.None)
@@ -108,8 +93,7 @@ namespace EMU7800.Services
 
                 foreach (var gpi in gpiList)
                 {
-                    ImportedGameProgramInfo igpi;
-                    if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out igpi))
+                    if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out var igpi))
                     {
                         igpi = new ImportedGameProgramInfo { GameProgramInfo = gpi };
                         importedGameProgramInfoMd5Dict.Add(md5key, igpi);
@@ -119,47 +103,48 @@ namespace EMU7800.Services
             }
 
             if (CancelRequested)
-                return;
+                return Fail("RomImportService.Import: Cancel requested");
 
             var importedGameProgramInfo = importedGameProgramInfoMd5Dict.Values
                 .Where(igpi => igpi.StorageKeySet.Count > 0)
                     .OrderBy(igpi => igpi.GameProgramInfo.Title);
 
-            csvFileContent = _romPropertiesService.ToCsvFileContent(importedGameProgramInfo);
-            _datastoreService.SetGameProgramInfoToImportRepository(csvFileContent);
+            var csvFileContent1 = RomPropertiesService.ToImportRepositoryCsvFileContent(importedGameProgramInfo);
+            var result1 = _datastoreService.SetGameProgramInfoToImportRepository(csvFileContent1);
 
-            if (_datastoreService.LastErrorInfo != null)
+            if (result1.IsFail)
             {
-                LastErrorInfo = new ErrorInfo(_datastoreService.LastErrorInfo, "RomImportService.Import: Unable to save ROM import data.");
                 CancelRequested = true;
-                return;
+                return Fail("RomImportService.Import: Unable to save ROM import data: " + result1.ErrorMessage);
             }
 
-            csvFileContent = _romPropertiesService.ToCsvFileContent(importedSpecialBinaryInfoSet);
-            _datastoreService.SetSpecialBinaryInfoToImportRepository(csvFileContent);
+            var csvFileContent2 = RomPropertiesService.ToImportSpecialBinaryCsvFileContent(importedSpecialBinaryInfoSet);
+            var result2 = _datastoreService.SetSpecialBinaryInfoToImportRepository(csvFileContent2);
 
-            if (_datastoreService.LastErrorInfo != null)
+            if (result2.IsFail)
             {
-                LastErrorInfo = new ErrorInfo(_datastoreService.LastErrorInfo, "RomImportService.Import: Unable to save ROM import data (special binaries.)");
                 CancelRequested = true;
+                return Fail("RomImportService.Import: Unable to save ROM import data (special binaries): " + result2.ErrorMessage);
             }
+
+            return Ok();
         }
 
         #region Constructors
 
         public RomImportService()
         {
-            ClearLastErrorInfo();
         }
 
         #endregion
 
         #region Helpers
 
-        void ClearLastErrorInfo()
-        {
-            LastErrorInfo = null;
-        }
+        static Result Ok()
+            => ResultHelper.Ok();
+
+        static Result Fail(string message)
+            => ResultHelper.Fail(message);
 
         #endregion
     }

@@ -89,15 +89,10 @@ namespace EMU7800.D2D.Shell
 
         public FrameRenderer160Blender(int firstVisibleScanline, FrameBuffer frameBuffer, byte[] dynamicBitmapData)
         {
-            if (frameBuffer == null)
-                throw new ArgumentNullException("frameBuffer");
-            if (dynamicBitmapData == null)
-                throw new ArgumentNullException("dynamicBitmapData");
-
             _startSourceIndex = firstVisibleScanline * BufferElementsPerScanline;
             _endSourceIndex = _startSourceIndex + BufferElementsPerScanline * Height;
-            _frameBuffer = frameBuffer;
-            _dynamicBitmapData = dynamicBitmapData;
+            _frameBuffer = frameBuffer ?? throw new ArgumentNullException(nameof(frameBuffer));
+            _dynamicBitmapData = dynamicBitmapData ?? throw new ArgumentNullException(nameof(dynamicBitmapData));
         }
 
         #endregion

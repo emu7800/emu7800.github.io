@@ -10,16 +10,16 @@ using namespace EMU7800::D2D::Interop;
 StaticBitmap::StaticBitmap(ID2D1DeviceContext* pD2DContext, IWICImagingFactory* pWICFactory, const Array<uint8>^ data) :
     m_hr(0)
 {
+    IWICStream* pStream = NULL;
+    IWICBitmapDecoder* pDecoder = NULL;
+    IWICBitmapFrameDecode* pSource = NULL;
+    IWICFormatConverter* pConverter = NULL;
+
     if (!pD2DContext || !pWICFactory || !data)
     {
         m_hr = E_POINTER;
         goto LExit;
     }
-
-    IWICStream *pStream = NULL;
-    IWICBitmapDecoder *pDecoder = NULL;
-    IWICBitmapFrameDecode *pSource = NULL;
-    IWICFormatConverter *pConverter = NULL;
 
     m_hr = pWICFactory->CreateStream(&pStream);
     if FAILED(m_hr)

@@ -10,7 +10,7 @@ namespace EMU7800.Core
 {
     public enum CartType
     {
-        None,
+        Unknown,
         A2K,          // Atari 2kb cart
         TV8K,         // Tigervision 8kb bankswitched cart
         A4K,          // Atari 4kb cart

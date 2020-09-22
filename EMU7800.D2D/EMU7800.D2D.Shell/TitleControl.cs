@@ -12,10 +12,11 @@ namespace EMU7800.D2D.Shell
         readonly AssetService _assetService = new AssetService();
         readonly SizeF _size = Struct.ToSizeF(301, 100);
 
-        StaticBitmap _appicon;
+        StaticBitmap _appicon = StaticBitmapDefault;
         SizeF _appiconSize = Struct.ToSizeF(64, 64);
         RectF _appiconRect;
-        TextLayout _titleTextLayout, _subTitleTextLayout;
+        TextLayout _titleTextLayout = TextLayoutDefault;
+        TextLayout _subTitleTextLayout = TextLayoutDefault;
         PointF _titleTextLocation, _subTitleTextLocation;
 
         public TitleControl()
@@ -76,9 +77,8 @@ namespace EMU7800.D2D.Shell
 
         async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
         {
-            var bytes = await _assetService.GetAssetBytesAsync(asset);
-            var bitmap = gd.CreateStaticBitmap(bytes);
-            return bitmap;
+            var bytesResult = await _assetService.GetAssetBytesAsync(asset);
+            return gd.CreateStaticBitmap(bytesResult.Value.Bytes);
         }
     }
 }

@@ -6,10 +6,10 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class Button : ButtonBase
     {
-        TextLayout _textLayout;
+        TextLayout _textLayout = TextLayoutDefault;
 
-        public string Text { get; set; }
-        public string TextFontFamilyName { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public string TextFontFamilyName { get; set; } = string.Empty;
         public int TextFontSize { get; set; }
 
         public Button()

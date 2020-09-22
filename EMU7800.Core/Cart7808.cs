@@ -21,9 +21,7 @@
         #endregion
 
         public override string ToString()
-        {
-            return "EMU7800.Core.Cart7808";
-        }
+            => "EMU7800.Core.Cart7808";
 
         public Cart7808(byte[] romBytes)
         {
@@ -32,7 +30,7 @@
 
         #region Serialization Members
 
-        public Cart7808(DeserializationContext input, MachineBase m) : base(input)
+        public Cart7808(DeserializationContext input) : base(input)
         {
             input.CheckVersion(1);
             LoadRom(input.ReadExpectedBytes(0x2000), 0x2000);

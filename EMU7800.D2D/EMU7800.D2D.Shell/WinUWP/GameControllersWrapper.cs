@@ -6,9 +6,24 @@ using System.Linq;
 using EMU7800.Core;
 using EMU7800.D2D.Interop;
 
+#nullable disable
+
 namespace EMU7800.D2D.Shell
 {
-    public sealed class GameControllersWrapper : IDisposable
+    public class GameControllersWrapperBase : IDisposable
+    {
+        public bool LeftJackHasAtariAdaptor { get; protected set; }
+        public bool RightJackHasAtariAdaptor { get; protected set; }
+
+        public virtual void Poll() {}
+
+        public virtual string GetControllerInfo(int controllerNo)
+            => string.Empty;
+
+        public virtual void Dispose() {}
+    }
+
+    public sealed class GameControllersWrapper : GameControllersWrapperBase
     {
         #region Fields
 
@@ -55,10 +70,7 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        public bool LeftJackHasAtariAdaptor { get; private set; }
-        public bool RightJackHasAtariAdaptor { get; private set; }
-
-        public void Poll()
+        public override void Poll()
         {
             if (_disposed)
                 return;
@@ -79,22 +91,22 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public string GetControllerInfo(int controllerNo)
+        public override string GetControllerInfo(int controllerNo)
         {
             if (controllerNo < 0 || _disposed)
-                return null;
+                return string.Empty;
             if (controllerNo < _xinputDevices.Length)
                 return "XInput";
             var stelladaptorControllerNo = controllerNo - _xinputDevices.Length;
             var hcd = StelladaptorHost.GetHidControllerData(stelladaptorControllerNo);
             if (hcd.Type == HidControllerType.None)
-                return null;
+                return string.Empty;
             return _stelladaptorControllers[hcd.Type] + _daptor2ModeControllerNameSuffixes[_lastSeenDaptor2Mode[controllerNo & 1]];
         }
 
         #region IDisposable Members
 
-        public void Dispose()
+        public override void Dispose()
         {
             _disposed = true;
 
@@ -114,10 +126,7 @@ namespace EMU7800.D2D.Shell
 
         public GameControllersWrapper(GameProgramSelectionControl gameProgramSelectionControl)
         {
-            if (gameProgramSelectionControl == null)
-                throw new ArgumentNullException("gameProgramSelectionControl");
-
-            _gameProgramSelectionControl = gameProgramSelectionControl;
+            _gameProgramSelectionControl = gameProgramSelectionControl ?? throw new ArgumentNullException("gameProgramSelectionControl");
 
             LeftJackHasAtariAdaptor = false;
             RightJackHasAtariAdaptor = false;
@@ -136,16 +145,11 @@ namespace EMU7800.D2D.Shell
 
         public GameControllersWrapper(GameControl gameControl, GamePage gamePage)
         {
-            if (gameControl == null)
-                throw new ArgumentNullException("gameControl");
-            if (gamePage == null)
-                throw new ArgumentNullException("gamePage");
-
             LeftJackHasAtariAdaptor = false;
             RightJackHasAtariAdaptor = false;
 
-            _gameControl = gameControl;
-            _gamePage = gamePage;
+            _gameControl = gameControl ?? throw new ArgumentNullException(nameof(gameControl));
+            _gamePage = gamePage ?? throw new ArgumentNullException(nameof(gamePage));
 
             _xinputDevices = Enumerable.Range(0, 4)
                 .Select(i => new XInputDevice(i))
@@ -566,25 +570,13 @@ namespace EMU7800.D2D.Shell
         }
 
         static int ToDrivingPosition(ushort y)
-        {
-            int position;
-            switch (y >> 4)
+            => (y >> 4) switch
             {
-                case 0x00:
-                    position = 3; // up
-                    break;
-                case 0x7f:
-                    position = 0; // center
-                    break;
-                case 0xff:
-                    position = 1; // down
-                    break;
-                default:
-                    position = 2; // half-down
-                    break;
-            }
-            return position;
-        }
+                0x00 => 3,// up
+                0x7f => 0,// center
+                0xff => 1,// down
+                _    => 2,// half-down
+            };
 
         #endregion
     }

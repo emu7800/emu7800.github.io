@@ -36,8 +36,8 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_backButton, _nextButton, _findRomsTextControl);
 
-            _backButton.Clicked += _backButton_Clicked;
-            _nextButton.Clicked += _nextButton_Clicked;
+            _backButton.Clicked += BackButton_Clicked;
+            _nextButton.Clicked += NextButton_Clicked;
 
             GetTextForFindRomsTextControlAsync();
         }
@@ -56,12 +56,12 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void _backButton_Clicked(object sender, EventArgs eventArgs)
+        void BackButton_Clicked(object sender, EventArgs eventArgs)
         {
             PopPage();
         }
 
-        void _nextButton_Clicked(object sender, EventArgs eventArgs)
+        void NextButton_Clicked(object sender, EventArgs eventArgs)
         {
             ReplacePage(new FindRomsPage2());
         }
@@ -78,9 +78,8 @@ namespace EMU7800.D2D.Shell
 
         async Task<string> GetTextAssetAsync(Asset textAsset)
         {
-            var bytes = await _assetService.GetAssetBytesAsync(textAsset);
-            var text = System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-            return text;
+            var bytesResult = await _assetService.GetAssetBytesAsync(textAsset);
+            return System.Text.Encoding.UTF8.GetString(bytesResult.Value.Bytes, 0, bytesResult.Value.Bytes.Length);
         }
 
         #endregion

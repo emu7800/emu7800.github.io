@@ -9,6 +9,8 @@
 using System;
 using System.Text;
 
+#pragma warning disable IDE1006 // Naming Styles
+
 namespace EMU7800.Core
 {
     public static class M6502DASM
@@ -169,65 +171,28 @@ namespace EMU7800.Core
         {
             var num_operands = GetInstructionLength(addrSpace, PC) - 1;
             var PC1 = (ushort)(PC + 1);
-            string addrmodeStr;
-
-            switch (AddressingModeMatrix[addrSpace[PC]])
+            string addrmodeStr = (AddressingModeMatrix[addrSpace[PC]]) switch
             {
-                case a.REL:
-                    addrmodeStr = $"${(ushort)(PC + (sbyte)addrSpace[PC1] + 2):x4}";
-                    break;
-                case a.ZPG:
-                case a.ABS:
-                    addrmodeStr = RenderEA(addrSpace, PC1, num_operands);
-                    break;
-                case a.ZPX:
-                case a.ABX:
-                    addrmodeStr = RenderEA(addrSpace, PC1, num_operands) + ",X";
-                    break;
-                case a.ZPY:
-                case a.ABY:
-                    addrmodeStr = RenderEA(addrSpace, PC1, num_operands) + ",Y";
-                    break;
-                case a.IDX:
-                    addrmodeStr = "(" + RenderEA(addrSpace, PC1, num_operands) + ",X)";
-                    break;
-                case a.IDY:
-                    addrmodeStr = "(" + RenderEA(addrSpace, PC1, num_operands) + "),Y";
-                    break;
-                case a.IND:
-                    addrmodeStr = "(" + RenderEA(addrSpace, PC1, num_operands) + ")";
-                    break;
-                case a.IMM:
-                    addrmodeStr = "#" + RenderEA(addrSpace, PC1, num_operands);
-                    break;
-                default:
-                    // a.IMP, a.ACC
-                    addrmodeStr = string.Empty;
-                    break;
-            }
-
+                a.REL          => $"${(ushort)(PC + (sbyte)addrSpace[PC1] + 2):x4}",
+                a.ZPG or a.ABS => RenderEA(addrSpace, PC1, num_operands),
+                a.ZPX or a.ABX => RenderEA(addrSpace, PC1, num_operands) + ",X",
+                a.ZPY or a.ABY => RenderEA(addrSpace, PC1, num_operands) + ",Y",
+                a.IDX          => "(" + RenderEA(addrSpace, PC1, num_operands) + ",X)",
+                a.IDY          => "(" + RenderEA(addrSpace, PC1, num_operands) + "),Y",
+                a.IND          => "(" + RenderEA(addrSpace, PC1, num_operands) + ")",
+                a.IMM          => "#" + RenderEA(addrSpace, PC1, num_operands),
+                _              => string.Empty,// a.IMP, a.ACC
+            };
             return $"{MnemonicMatrix[addrSpace[PC]]} {addrmodeStr}";
         }
 
         static int GetInstructionLength(AddressSpace addrSpace, ushort PC)
-        {
-            switch (AddressingModeMatrix[addrSpace[PC]])
+            => (AddressingModeMatrix[addrSpace[PC]]) switch
             {
-                case a.ACC:
-                case a.IMP:
-                    return 1;
-                case a.REL:
-                case a.ZPG:
-                case a.ZPX:
-                case a.ZPY:
-                case a.IDX:
-                case a.IDY:
-                case a.IMM:
-                    return 2;
-                default:
-                    return 3;
-            }
-        }
+                a.ACC or a.IMP => 1,
+                a.REL or a.ZPG or a.ZPX or a.ZPY or a.IDX or a.IDY or a.IMM => 2,
+                _ => 3,
+            };
 
         static string RenderEA(AddressSpace addrSpace, ushort PC, int bytes)
         {

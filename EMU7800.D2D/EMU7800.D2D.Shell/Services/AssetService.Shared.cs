@@ -45,17 +45,5 @@ namespace EMU7800.Services
             { Asset.about,                                      "about.txt" },
             { Asset.romimport,                                  "romimport.txt" }
         };
-
-        public ErrorInfo LastErrorInfo { get; private set; }
-
-        public AssetService()
-        {
-            ClearLastErrorInfo();
-        }
-
-        void ClearLastErrorInfo()
-        {
-            LastErrorInfo = null;
-        }
     }
 }

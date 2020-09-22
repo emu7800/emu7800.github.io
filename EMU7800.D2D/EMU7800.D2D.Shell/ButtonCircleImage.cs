@@ -14,7 +14,10 @@ namespace EMU7800.D2D.Shell
         readonly AssetService _assetService = new AssetService();
         readonly Asset _image, _imageInverted;
         readonly D2DSolidColorBrush _mouseOverColor;
-        StaticBitmap _circleBitmap, _circleInvertedBitmap, _imageBitmap, _imageInvertedBitmap;
+        StaticBitmap _circleBitmap = StaticBitmapDefault;
+        StaticBitmap _circleInvertedBitmap = StaticBitmapDefault;
+        StaticBitmap _imageBitmap = StaticBitmapDefault;
+        StaticBitmap _imageInvertedBitmap = StaticBitmapDefault;
 
         #endregion
 
@@ -75,9 +78,8 @@ namespace EMU7800.D2D.Shell
 
         async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
         {
-            var bytes = await _assetService.GetAssetBytesAsync(asset);
-            var bitmap = gd.CreateStaticBitmap(bytes);
-            return bitmap;
+            var bytesResult = await _assetService.GetAssetBytesAsync(asset);
+            return gd.CreateStaticBitmap(bytesResult.Value.Bytes);
         }
 
         #endregion

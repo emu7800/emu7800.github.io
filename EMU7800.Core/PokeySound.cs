@@ -14,6 +14,8 @@ namespace EMU7800.Core
 {
     public sealed class PokeySound
     {
+        public static readonly PokeySound Default = new PokeySound(MachineBase.Default);
+
         #region Constants and Tables
 
         const int
@@ -104,8 +106,8 @@ namespace EMU7800.Core
             for (var ch = 0; ch < 4; ch++)
             {
                 _outvol[ch] = _output[ch] = _audc[ch] = _audf[ch] = 0;
-                _divideCount[ch] = Int32.MaxValue;
-                _divideMax[ch] = Int32.MaxValue;
+                _divideCount[ch] = int.MaxValue;
+                _divideMax[ch] = int.MaxValue;
             }
         }
 
@@ -124,15 +126,13 @@ namespace EMU7800.Core
         {
             addr &= 0xf;
 
-            switch (addr)
+            return addr switch
             {
                 // If the 2 least significant bits of SKCTL are 0, the random number generator is disabled (return all 1s.)
                 // Ballblazer music relies on this.
-                case RANDOM:
-                    return (_skctl & SKCTL_RESET) == 0 ? (byte)0xff : (byte)_random.Next(0xff);
-                default:
-                    return 0;
-            }
+                RANDOM => (_skctl & SKCTL_RESET) == 0 ? 0xff : (byte)_random.Next(0xff),
+                _      => 0,
+            };
         }
 
         public void Update(ushort addr, byte data)
@@ -204,24 +204,18 @@ namespace EMU7800.Core
 
         #region Constructors
 
-        private PokeySound()
+        public PokeySound(MachineBase m)
         {
+            M = m;
+
             _random.NextBytes(_poly17);
             for (var i = 0; i < _poly17.Length; i++)
                 _poly17[i] &= 0x01;
 
-            Reset();
-        }
-
-        public PokeySound(MachineBase m) : this()
-        {
-            if (m == null)
-                throw new ArgumentNullException("m");
-
-            M = m;
-
             // Add 8-bits of fractional representation to reduce distortion on output
             _pokeyTicksPerSample = (POKEY_FREQ << 8) / M.SoundSampleFrequency;
+
+            Reset();
         }
 
         #endregion
@@ -231,7 +225,7 @@ namespace EMU7800.Core
         public PokeySound(DeserializationContext input, MachineBase m) : this(m)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
             _lastUpdateCpuClock = input.ReadUInt64();
@@ -256,7 +250,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(_lastUpdateCpuClock);
@@ -419,8 +413,8 @@ namespace EMU7800.Core
             if (((_audc[ch] & AUDC_VOLUME_ONLY) != 0) || ((_audc[ch] & AUDC_VOLUME_MASK) == 0) || (_divideMax[ch] < (_pokeyTicksPerSample >> 8)))
             {
                 _outvol[ch] = (byte)(_audc[ch] & AUDC_VOLUME_MASK);
-                _divideCount[ch] = Int32.MaxValue;
-                _divideMax[ch] = Int32.MaxValue;
+                _divideCount[ch] = int.MaxValue;
+                _divideMax[ch] = int.MaxValue;
             }
         }
 

@@ -16,44 +16,28 @@ namespace EMU7800.Core
         #endregion
 
         public bool ReadBoolean()
-        {
-            return _binaryReader.ReadBoolean();
-        }
+            => _binaryReader.ReadBoolean();
 
         public byte ReadByte()
-        {
-            return _binaryReader.ReadByte();
-        }
+            => _binaryReader.ReadByte();
 
         public ushort ReadUInt16()
-        {
-            return _binaryReader.ReadUInt16();
-        }
+            => _binaryReader.ReadUInt16();
 
         public int ReadInt32()
-        {
-            return _binaryReader.ReadInt32();
-        }
+            => _binaryReader.ReadInt32();
 
         public uint ReadUInt32()
-        {
-            return _binaryReader.ReadUInt32();
-        }
+            => _binaryReader.ReadUInt32();
 
         public long ReadInt64()
-        {
-            return _binaryReader.ReadInt64();
-        }
+            => _binaryReader.ReadInt64();
 
         public ulong ReadUInt64()
-        {
-            return _binaryReader.ReadUInt64();
-        }
+            => _binaryReader.ReadUInt64();
 
         public double ReadDouble()
-        {
-            return _binaryReader.ReadDouble();
-        }
+            => _binaryReader.ReadDouble();
 
         public BufferElement ReadBufferElement()
         {
@@ -82,10 +66,7 @@ namespace EMU7800.Core
         }
 
         public byte[] ReadOptionalBytes(params int[] expectedSizes)
-        {
-            var hasBytes = _binaryReader.ReadBoolean();
-            return (hasBytes) ? ReadExpectedBytes(expectedSizes) : null;
-        }
+            => _binaryReader.ReadBoolean() ? ReadExpectedBytes(expectedSizes) : Array.Empty<byte>();
 
         public ushort[] ReadUnsignedShorts(params int[] expectedSizes)
         {
@@ -137,82 +118,48 @@ namespace EMU7800.Core
             if (string.IsNullOrWhiteSpace(typeName))
                 throw new Emu7800SerializationException("Invalid type name.");
 
-            switch (typeName)
+            return typeName switch
             {
-                case "EMU7800.Core.Machine2600NTSC": return new Machine2600NTSC(this);
-                case "EMU7800.Core.Machine2600PAL":  return new Machine2600PAL(this);
-                case "EMU7800.Core.Machine7800NTSC": return new Machine7800NTSC(this);
-                case "EMU7800.Core.Machine7800PAL":  return new Machine7800PAL(this);
-                default:
-                    throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
-            }
+                "EMU7800.Core.Machine2600NTSC" => new Machine2600NTSC(this),
+                "EMU7800.Core.Machine2600PAL"  => new Machine2600PAL(this),
+                "EMU7800.Core.Machine7800NTSC" => new Machine7800NTSC(this),
+                "EMU7800.Core.Machine7800PAL"  => new Machine7800PAL(this),
+                _                              => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+            };
         }
 
         public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
-        {
-            var addressSpace = new AddressSpace(this, m, addrSpaceShift, pageShift);
-            return addressSpace;
-        }
+            => new AddressSpace(this, m, addrSpaceShift, pageShift);
 
         public M6502 ReadM6502(MachineBase m, int runClocksMultiple)
-        {
-            var cpu = new M6502(this, m, runClocksMultiple);
-            return cpu;
-        }
+            => new M6502(this, m, runClocksMultiple);
 
         public Maria ReadMaria(Machine7800 m, int scanlines)
-        {
-            var maria = new Maria(this, m, scanlines);
-            return maria;
-        }
+            => new Maria(this, m, scanlines);
 
         public PIA ReadPIA(MachineBase m)
-        {
-            var pia = new PIA(this, m);
-            return pia;
-        }
+            => new PIA(this, m);
 
         public TIA ReadTIA(MachineBase m)
-        {
-            var tia = new TIA(this, m);
-            return tia;
-        }
+            => new TIA(this, m);
 
         public TIASound ReadTIASound(MachineBase m, int cpuClocksPerSample)
-        {
-            var tiaSound = new TIASound(this, m, cpuClocksPerSample);
-            return tiaSound;
-        }
+            => new TIASound(this, m, cpuClocksPerSample);
 
         public RAM6116 ReadRAM6116()
-        {
-            var ram6116 = new RAM6116(this);
-            return ram6116;
-        }
+            => new RAM6116(this);
 
         public InputState ReadInputState()
-        {
-            var inputState = new InputState(this);
-            return inputState;
-        }
+            => new InputState(this);
 
         public HSC7800 ReadOptionalHSC7800()
-        {
-            var exist = ReadBoolean();
-            return exist ? new HSC7800(this) : null;
-        }
+            => ReadBoolean() ? new HSC7800(this) : HSC7800.Default;
 
         public Bios7800 ReadOptionalBios7800()
-        {
-            var exist = ReadBoolean();
-            return exist ? new Bios7800(this) : null;
-        }
+            => ReadBoolean() ? new Bios7800(this) : Bios7800.Default;
 
         public PokeySound ReadOptionalPokeySound(MachineBase m)
-        {
-            var exist = ReadBoolean();
-            return exist ? new PokeySound(this, m) : null;
-        }
+            => ReadBoolean() ? new PokeySound(this, m) : PokeySound.Default;
 
         public Cart ReadCart(MachineBase m)
         {
@@ -220,36 +167,35 @@ namespace EMU7800.Core
             if (string.IsNullOrWhiteSpace(typeName))
                 throw new Emu7800SerializationException("Invalid type name.");
 
-            switch (typeName)
+            return typeName switch
             {
-                case "EMU7800.Core.CartA2K":     return new CartA2K(this, m);
-                case "EMU7800.Core.CartA4K":     return new CartA4K(this, m);
-                case "EMU7800.Core.CartA8K":     return new CartA8K(this, m);
-                case "EMU7800.Core.CartA8KR":    return new CartA8KR(this, m);
-                case "EMU7800.Core.CartA16K":    return new CartA16K(this, m);
-                case "EMU7800.Core.CartA16KR":   return new CartA16KR(this, m);
-                case "EMU7800.Core.CartDC8K":    return new CartDC8K(this, m);
-                case "EMU7800.Core.CartPB8K":    return new CartPB8K(this, m);
-                case "EMU7800.Core.CartTV8K":    return new CartTV8K(this, m);
-                case "EMU7800.Core.CartCBS12K":  return new CartCBS12K(this, m);
-                case "EMU7800.Core.CartA32K":    return new CartA32K(this, m);
-                case "EMU7800.Core.CartA32KR":   return new CartA32KR(this, m);
-                case "EMU7800.Core.CartMN16K":   return new CartMN16K(this, m);
-                case "EMU7800.Core.CartDPC":     return new CartDPC(this, m);
-                case "EMU7800.Core.Cart7808":    return new Cart7808(this, m);
-                case "EMU7800.Core.Cart7816":    return new Cart7816(this, m);
-                case "EMU7800.Core.Cart7832P":   return new Cart7832P(this, m);
-                case "EMU7800.Core.Cart7832":    return new Cart7832(this, m);
-                case "EMU7800.Core.Cart7848":    return new Cart7848(this, m);
-                case "EMU7800.Core.Cart78SGP":   return new Cart78SGP(this, m);
-                case "EMU7800.Core.Cart78SG":    return new Cart78SG(this, m);
-                case "EMU7800.Core.Cart78S9":    return new Cart78S9(this, m);
-                case "EMU7800.Core.Cart78S4":    return new Cart78S4(this, m);
-                case "EMU7800.Core.Cart78AB":    return new Cart78AB(this, m);
-                case "EMU7800.Core.Cart78AC":    return new Cart78AC(this, m);
-                default:
-                    throw new Emu7800SerializationException("Unable to resolve type name: " + typeName);
-            }
+                "EMU7800.Core.CartA2K"      => new CartA2K(this),
+                "EMU7800.Core.CartA4K"      => new CartA4K(this),
+                "EMU7800.Core.CartA8K"      => new CartA8K(this),
+                "EMU7800.Core.CartA8KR"     => new CartA8KR(this),
+                "EMU7800.Core.CartA16K"     => new CartA16K(this),
+                "EMU7800.Core.CartA16KR"    => new CartA16KR(this),
+                "EMU7800.Core.CartDC8K"     => new CartDC8K(this),
+                "EMU7800.Core.CartPB8K"     => new CartPB8K(this),
+                "EMU7800.Core.CartTV8K"     => new CartTV8K(this),
+                "EMU7800.Core.CartCBS12K"   => new CartCBS12K(this),
+                "EMU7800.Core.CartA32K"     => new CartA32K(this),
+                "EMU7800.Core.CartA32KR"    => new CartA32KR(this),
+                "EMU7800.Core.CartMN16K"    => new CartMN16K(this),
+                "EMU7800.Core.CartDPC"      => new CartDPC(this),
+                "EMU7800.Core.Cart7808"     => new Cart7808(this),
+                "EMU7800.Core.Cart7816"     => new Cart7816(this),
+                "EMU7800.Core.Cart7832P"    => new Cart7832P(this, m),
+                "EMU7800.Core.Cart7832"     => new Cart7832(this),
+                "EMU7800.Core.Cart7848"     => new Cart7848(this),
+                "EMU7800.Core.Cart78SGP"    => new Cart78SGP(this, m),
+                "EMU7800.Core.Cart78SG"     => new Cart78SG(this),
+                "EMU7800.Core.Cart78S9"     => new Cart78S9(this),
+                "EMU7800.Core.Cart78S4"     => new Cart78S4(this),
+                "EMU7800.Core.Cart78AB"     => new Cart78AB(this),
+                "EMU7800.Core.Cart78AC"     => new Cart78AC(this),
+                _                           => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+            };
         }
 
         #region Constructors
@@ -260,8 +206,6 @@ namespace EMU7800.Core
         /// <param name="binaryReader"/>
         internal DeserializationContext(BinaryReader binaryReader)
         {
-            if (binaryReader == null)
-                throw new ArgumentNullException("binaryReader");
             _binaryReader = binaryReader;
         }
 

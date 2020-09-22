@@ -7,6 +7,11 @@ namespace EMU7800.D2D.Shell
 {
     public abstract class ControlBase : IDisposable
     {
+        public static readonly ControlBase Default = new ControlDefault();
+        public static readonly TextLayout TextLayoutDefault = new TextLayout();
+        public static readonly StaticBitmap StaticBitmapDefault = new StaticBitmap();
+        public static readonly DynamicBitmap DynamicBitmapDefault = new DynamicBitmap();
+
         #region Fields
 
         static int _nextIdToProvision;
@@ -19,7 +24,7 @@ namespace EMU7800.D2D.Shell
 
         public PointF Location
         {
-            get { return _location; }
+            get => _location;
             set
             {
                 _location = value;
@@ -29,7 +34,7 @@ namespace EMU7800.D2D.Shell
 
         public SizeF Size
         {
-            get { return _size; }
+            get => _size;
             set
             {
                 _size = value;
@@ -39,7 +44,7 @@ namespace EMU7800.D2D.Shell
 
         public bool IsMouseOver
         {
-            get { return IsMouseOverPointerId.HasValue; }
+            get => IsMouseOverPointerId >= 0;
         }
 
         public bool IsVisible { get; set; }
@@ -57,15 +62,15 @@ namespace EMU7800.D2D.Shell
         {
         }
 
-        public virtual void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public virtual void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
         }
 
-        public virtual void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public virtual void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
         }
 
-        public virtual void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public virtual void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
         }
 
@@ -103,21 +108,14 @@ namespace EMU7800.D2D.Shell
 
         #region Object Overrides
 
-        public override bool Equals(object obj)
-        {
-            var them = (ControlBase)obj;
-            return _id == them._id;
-        }
+        public override bool Equals(object them)
+            => _id == ((ControlBase)them)._id;
 
         public override int GetHashCode()
-        {
-            return _id;
-        }
+            => _id;
 
         public override string ToString()
-        {
-            return $"EMU7800.D2D.Shell.ControlBase: ID={_id}";
-        }
+            => $"EMU7800.D2D.Shell.ControlBase: ID={_id}";
 
         #endregion
 
@@ -139,30 +137,30 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        protected uint? IsMouseOverPointerId { get; set; }
+        protected int IsMouseOverPointerId { get; set; } = -1;
 
         protected void SafeDispose(ref StaticBitmap bitmap)
         {
-            if (bitmap == null)
+            if (bitmap == StaticBitmapDefault)
                 return;
             bitmap.Dispose();
-            bitmap = null;
+            bitmap = StaticBitmapDefault;
         }
 
         protected void SafeDispose(ref DynamicBitmap bitmap)
         {
-            if (bitmap == null)
+            if (bitmap == DynamicBitmapDefault)
                 return;
             bitmap.Dispose();
-            bitmap = null;
+            bitmap = DynamicBitmapDefault;
         }
 
         protected void SafeDispose(ref TextLayout textLayout)
         {
-            if (textLayout == null)
+            if (textLayout == TextLayoutDefault)
                 return;
             textLayout.Dispose();
-            textLayout = null;
+            textLayout = TextLayoutDefault;
         }
 
         protected bool IsInBounds(int x, int y, RectF bounds)
@@ -172,6 +170,10 @@ namespace EMU7800.D2D.Shell
                     || y < bounds.Top
                         || y > bounds.Bottom;
             return !outOfBounds;
+        }
+
+        class ControlDefault : ControlBase
+        {
         }
     }
 }

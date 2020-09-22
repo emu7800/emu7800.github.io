@@ -1,292 +1,147 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
+using EMU7800.Services.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using EMU7800.Core;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.Services
 {
     public class GameProgramLibraryService
     {
-        #region Fields
-
-        readonly StringBuilder _sb = new StringBuilder();
-
-        #endregion
-
         public IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
-        {
-            if (importedGameProgramInfoSet == null)
-                throw new ArgumentNullException("importedGameProgramInfoSet");
-
-            var mtcDict = new Dictionary<string, IList<ImportedGameProgramInfo>>();
-            var mfcDict = new Dictionary<string, IList<ImportedGameProgramInfo>>();
-            var atcDict = new Dictionary<string, IList<ImportedGameProgramInfo>>();
-            foreach (var gpi in importedGameProgramInfoSet)
-            {
-                AddToMachineTypeDict(mtcDict, gpi);
-                AddToManufacturerDict(mfcDict, gpi);
-                AddToAuthorDict(atcDict, gpi);
-            }
-
-            var mtc = ToMachineTypeCollections(mtcDict);
-            var mfc = ToManufacturerCollections(mfcDict);
-            var atc = ToAuthorCollections(atcDict);
-
-            var gpivics = mtc.Concat(mfc).Concat(atc);
-            return gpivics;
-        }
+            => ToGameProgramInfoViewItemCollections(
+                    ToDict(importedGameProgramInfoSet, igpi => To2600or7800Word(igpi)),
+                    igpi => igpi.GameProgramInfo.Title,
+                    igpi => ToMachineTypeSubTitle(igpi))
+               .Concat(
+               ToGameProgramInfoViewItemCollections(
+                   ToDict(importedGameProgramInfoSet, igpi => igpi.GameProgramInfo.Manufacturer),
+                   igpi => igpi.GameProgramInfo.Title,
+                   igpi => ToManufacturerSubTitle(igpi))
+               ).Concat(
+               ToGameProgramInfoViewItemCollections(
+                   ToDict(importedGameProgramInfoSet, igpi => igpi.GameProgramInfo.Author),
+                   igpi => igpi.GameProgramInfo.Year,
+                   igpi => ToAuthorSubTitle(igpi))
+               ).ToList();
 
         #region Helpers
 
-        #region MachineType Collections
+        static IEnumerable<GameProgramInfoViewItemCollection> ToGameProgramInfoViewItemCollections(
+                Dictionary<string, List<ImportedGameProgramInfo>> dict,
+                Func<ImportedGameProgramInfo, string> orderByFunc,
+                Func<ImportedGameProgramInfo, string> subTitleFunc)
+            => dict.OrderBy(kvp => kvp.Key)
+                   .Select(kvp => new GameProgramInfoViewItemCollection
+                   {
+                       Name = kvp.Key,
+                       GameProgramInfoViewItemSet = kvp.Value
+                           .OrderBy(igpi => orderByFunc(igpi))
+                           .Select(igpi => ToGameProgramInfoViewItem(igpi, igpi => subTitleFunc(igpi)))
+                           .ToList(),
+                   });
 
-        IEnumerable<GameProgramInfoViewItemCollection> ToMachineTypeCollections(IDictionary<string, IList<ImportedGameProgramInfo>> dict)
-        {
-            var gpiviList = dict.Keys
-                .OrderBy(key => key)
-                    .Select(key => new GameProgramInfoViewItemCollection
-                    {
-                        Name                       = key,
-                        GameProgramInfoViewItemSet = dict[key]
-                            .OrderBy(igpi => igpi.GameProgramInfo.Title)
-                                .Select(igpi => new GameProgramInfoViewItem
-                                {
-                                    Title                   = igpi.GameProgramInfo.Title,
-                                    SubTitle                = ToMachineTypeSubTitle(igpi),
-                                    ImportedGameProgramInfo = igpi
-                                }).ToArray()
-                    });
-            return gpiviList;
-        }
-
-        static void AddToMachineTypeDict(IDictionary<string, IList<ImportedGameProgramInfo>> dict, ImportedGameProgramInfo igpi)
-        {
-            var machineTypeKey = ToMachineTypeKey(igpi);
-            IList<ImportedGameProgramInfo> gpiList;
-            if (!dict.TryGetValue(machineTypeKey, out gpiList))
+        static GameProgramInfoViewItem ToGameProgramInfoViewItem(ImportedGameProgramInfo igpi, Func<ImportedGameProgramInfo, string> subTitleFunc)
+            => new GameProgramInfoViewItem
             {
-                gpiList = new List<ImportedGameProgramInfo>();
-                dict.Add(machineTypeKey, gpiList);
-            }
-            dict[machineTypeKey].Add(igpi);
-        }
+                Title = igpi.GameProgramInfo.Title,
+                SubTitle = subTitleFunc(igpi),
+                ImportedGameProgramInfo = igpi
+            };
 
-        static string ToMachineTypeKey(ImportedGameProgramInfo igpi)
-        {
-            switch (igpi.GameProgramInfo.MachineType)
+        static Dictionary<string, List<ImportedGameProgramInfo>> ToDict(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet, Func<ImportedGameProgramInfo, string> keySelector)
+            => importedGameProgramInfoSet.GroupBy(keySelector)
+                                         .Where(g => !string.IsNullOrWhiteSpace(g.Key))
+                                         .ToDictionary(g => g.Key, g => g.ToList());
+
+        static string ToAuthorSubTitle(ImportedGameProgramInfo igpi)
+            => ToCommaDelimitedString(ToAuthorSubTitleWords(igpi));
+
+        static string ToManufacturerSubTitle(ImportedGameProgramInfo igpi)
+            => ToCommaDelimitedString(ToManufacturerSubTitleWords(igpi));
+
+        static string ToMachineTypeSubTitle(ImportedGameProgramInfo igpi)
+            => ToCommaDelimitedString(ToMachineTypeSubTitleWords(igpi));
+
+        static IEnumerable<string> ToAuthorSubTitleWords(ImportedGameProgramInfo igpi)
+            => new List<string>
             {
-                case MachineType.A2600NTSC:
-                case MachineType.A2600PAL:
-                    return "2600";
-                case MachineType.A7800NTSC:
-                case MachineType.A7800PAL:
-                    return "7800";
-                default:
-                    return null;
-            }
-        }
+                igpi.GameProgramInfo.Manufacturer,
+                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
+                ToMachineTypeWord(igpi.GameProgramInfo.MachineType),
+                igpi.GameProgramInfo.Year
+            };
 
-        string ToMachineTypeSubTitle(ImportedGameProgramInfo igpi)
-        {
-            _sb.Clear();
-            AppendWord(igpi.GameProgramInfo.Manufacturer);
-            AddControllerInfo(igpi);
-            AppendTvTypeWord(igpi.GameProgramInfo.MachineType);
-            AppendWord(igpi.GameProgramInfo.Year);
-            return _sb.ToString();
-        }
-
-        #endregion
-
-        #region Author Collections
-
-        IEnumerable<GameProgramInfoViewItemCollection> ToAuthorCollections(IDictionary<string, IList<ImportedGameProgramInfo>> dict)
-        {
-            var gpiviList = dict.Keys
-                .OrderBy(key => key)
-                    .Select(key => new GameProgramInfoViewItemCollection
-                    {
-                        Name                       = key,
-                        GameProgramInfoViewItemSet = dict[key]
-                            .OrderBy(igpi => igpi.GameProgramInfo.Year)
-                                .Select(igpi => new GameProgramInfoViewItem
-                                {
-                                    Title                   = igpi.GameProgramInfo.Title,
-                                    SubTitle                = ToAuthorSubTitle(igpi),
-                                    ImportedGameProgramInfo = igpi
-                                }).ToArray()
-                    });
-            return gpiviList;
-        }
-
-        static void AddToAuthorDict(IDictionary<string, IList<ImportedGameProgramInfo>> dict, ImportedGameProgramInfo igpi)
-        {
-            if (string.IsNullOrWhiteSpace(igpi.GameProgramInfo.Author))
-                return;
-
-            IList<ImportedGameProgramInfo> gpiList;
-            if (!dict.TryGetValue(igpi.GameProgramInfo.Author, out gpiList))
+        static IEnumerable<string> ToManufacturerSubTitleWords(ImportedGameProgramInfo igpi)
+            => new List<string>
             {
-                gpiList = new List<ImportedGameProgramInfo>();
-                dict.Add(igpi.GameProgramInfo.Author, gpiList);
-            }
-            dict[igpi.GameProgramInfo.Author].Add(igpi);
-        }
+                igpi.GameProgramInfo.Author,
+                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
+                ToMachineTypeWord(igpi.GameProgramInfo.MachineType),
+                igpi.GameProgramInfo.Year
+            };
 
-        string ToAuthorSubTitle(ImportedGameProgramInfo igpi)
-        {
-            _sb.Clear();
-            AppendWord(igpi.GameProgramInfo.Manufacturer);
-            AddControllerInfo(igpi);
-            AppendMachineTypeWord(igpi.GameProgramInfo.MachineType);
-            AppendWord(igpi.GameProgramInfo.Year);
-            return _sb.ToString();
-        }
-
-        #endregion
-
-        #region Manufacturer Collections
-
-        IEnumerable<GameProgramInfoViewItemCollection> ToManufacturerCollections(IDictionary<string, IList<ImportedGameProgramInfo>> dict)
-        {
-            var gpiviList = dict.Keys
-                .OrderBy(key => key)
-                    .Select(key => new GameProgramInfoViewItemCollection
-                    {
-                        Name                       = key,
-                        GameProgramInfoViewItemSet = dict[key]
-                            .OrderBy(igpi => igpi.GameProgramInfo.Title)
-                                .Select(igpi => new GameProgramInfoViewItem
-                                {
-                                    Title                   = igpi.GameProgramInfo.Title,
-                                    SubTitle                = ToManufacturerSubTitle(igpi),
-                                    ImportedGameProgramInfo = igpi
-                                }).ToArray()
-                    });
-            return gpiviList;
-        }
-
-        static void AddToManufacturerDict(IDictionary<string, IList<ImportedGameProgramInfo>> dict, ImportedGameProgramInfo igpi)
-        {
-            if (string.IsNullOrWhiteSpace(igpi.GameProgramInfo.Manufacturer))
-                return;
-            IList<ImportedGameProgramInfo> gpiList;
-            if (!dict.TryGetValue(igpi.GameProgramInfo.Manufacturer, out gpiList))
+        static IEnumerable<string> ToMachineTypeSubTitleWords(ImportedGameProgramInfo igpi)
+            => new List<string>
             {
-                gpiList = new List<ImportedGameProgramInfo>();
-                dict.Add(igpi.GameProgramInfo.Manufacturer, gpiList);
-            }
-            dict[igpi.GameProgramInfo.Manufacturer].Add(igpi);
-        }
+                igpi.GameProgramInfo.Manufacturer,
+                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
+                ToTvTypeWord(igpi.GameProgramInfo.MachineType),
+                igpi.GameProgramInfo.Year
+            };
 
-        string ToManufacturerSubTitle(ImportedGameProgramInfo igpi)
-        {
-            _sb.Clear();
-            if (!string.IsNullOrWhiteSpace(igpi.GameProgramInfo.Author))
-                AppendWord(igpi.GameProgramInfo.Author);
-            AddControllerInfo(igpi);
-            AppendMachineTypeWord(igpi.GameProgramInfo.MachineType);
-            if (!string.IsNullOrWhiteSpace(igpi.GameProgramInfo.Year))
-                AppendWord(igpi.GameProgramInfo.Year);
-            return _sb.ToString();
-        }
+        static string ToCommaDelimitedString(IEnumerable<string> list)
+            => string.Join(", ", list.Where(s => !string.IsNullOrWhiteSpace(s)));
 
-        #endregion
+        static bool AreControllersSame(ImportedGameProgramInfo igpi)
+            => igpi.GameProgramInfo.LController == igpi.GameProgramInfo.RController;
 
-        void AddControllerInfo(ImportedGameProgramInfo igpi)
-        {
-            if (igpi.GameProgramInfo.LController == igpi.GameProgramInfo.RController)
+        static string ToControllerWord(Controller controller, bool plural)
+            => ToControllerWord(controller) + (plural ? "s" : string.Empty);
+
+        static string ToControllerWord(Controller controller)
+            => controller switch
             {
-                AddControllerInfo(igpi.GameProgramInfo.LController, true);
-            }
-            else
+                Controller.ProLineJoystick => "Proline Joystick",
+                Controller.Joystick        => "Joystick",
+                Controller.Paddles         => "Paddle",
+                Controller.Keypad          => "Keypad",
+                Controller.Driving         => "Driving Paddle",
+                Controller.BoosterGrip     => "Booster Grip",
+                Controller.Lightgun        => "Lightgun",
+                _                          => string.Empty,
+            };
+
+        static string To2600or7800Word(ImportedGameProgramInfo igpi)
+            => igpi.GameProgramInfo.MachineType switch
             {
-                AddControllerInfo(igpi.GameProgramInfo.LController, false);
-                AddControllerInfo(igpi.GameProgramInfo.RController, false);
-            }
-        }
+                MachineType.A2600NTSC or MachineType.A2600PAL => "2600",
+                MachineType.A7800NTSC or MachineType.A7800PAL => "7800",
+                _                                             => string.Empty,
+            };
 
-        void AddControllerInfo(Controller controller, bool plural)
-        {
-            switch (controller)
+        static string ToMachineTypeWord(MachineType machineType)
+            => machineType switch
             {
-                case Controller.ProLineJoystick:
-                    AppendControllerWord("Proline Joystick", plural);
-                    break;
-                case Controller.Joystick:
-                    AppendControllerWord("Joystick", plural);
-                    break;
-                case Controller.Paddles:
-                    AppendControllerWord("Paddle", plural);
-                    break;
-                case Controller.Keypad:
-                    AppendControllerWord("Keypad", plural);
-                    break;
-                case Controller.Driving:
-                    AppendControllerWord("Driving Paddle", plural);
-                    break;
-                case Controller.BoosterGrip:
-                    AppendControllerWord("Booster Grip", plural);
-                    break;
-                case Controller.Lightgun:
-                    AppendControllerWord("Lightgun", plural);
-                    break;
-            }
-        }
+                MachineType.A2600NTSC => "2600 NTSC",
+                MachineType.A2600PAL  => "2600 PAL",
+                MachineType.A7800NTSC => "7800 NTSC",
+                MachineType.A7800PAL  => "7800 PAL",
+                _                     => string.Empty,
+            };
 
-        void AppendControllerWord(string value, bool plural)
-        {
-            AppendWord(value);
-            if (plural)
-                _sb.Append("s");
-        }
-
-        void AppendMachineTypeWord(MachineType machineType)
-        {
-            switch (machineType)
+        static string ToTvTypeWord(MachineType machineType)
+            => machineType switch
             {
-                case MachineType.A2600NTSC:
-                    AppendWord("2600 NTSC");
-                    break;
-                case MachineType.A2600PAL:
-                    AppendWord("2600 PAL");
-                    break;
-                case MachineType.A7800NTSC:
-                    AppendWord("7800 NTSC");
-                    break;
-                case MachineType.A7800PAL:
-                    AppendWord("7800 PAL");
-                    break;
-            }
-        }
-
-        void AppendTvTypeWord(MachineType machineType)
-        {
-            switch (machineType)
-            {
-                case MachineType.A2600NTSC:
-                case MachineType.A7800NTSC:
-                    AppendWord("NTSC");
-                    break;
-                case MachineType.A2600PAL:
-                case MachineType.A7800PAL:
-                    AppendWord("PAL");
-                    break;
-            }
-        }
-
-        void AppendWord(string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return;
-            if (_sb.Length > 0)
-                _sb.Append(", ");
-            _sb.Append(value);
-        }
+                MachineType.A2600NTSC or MachineType.A7800NTSC => "NTSC",
+                MachineType.A2600PAL  or MachineType.A7800PAL  => "PAL",
+                _                                              => string.Empty,
+            };
 
         #endregion
     }

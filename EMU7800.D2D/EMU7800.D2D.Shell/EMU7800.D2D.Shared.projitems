@@ -53,13 +53,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\DatastoreServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ApplicationSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ErrorInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\BytesType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\GameProgramInfoViewItemCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedGameProgramInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\ImportedSpecialBinaryInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\MachineStateInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\Result.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Dto\StringType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\GameProgramLibraryService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MachineFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Md5HashService.cs" />

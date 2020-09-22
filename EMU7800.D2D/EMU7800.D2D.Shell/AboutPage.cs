@@ -28,7 +28,7 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_buttonBack, _textcontrolAbout);
 
-           _buttonBack.Clicked += _buttonBack_Clicked;
+           _buttonBack.Clicked += ButtonBack_Clicked;
 
             GetAboutTextAsync();
         }
@@ -72,7 +72,7 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        private void _buttonBack_Clicked(object sender, EventArgs eventArgs)
+        private void ButtonBack_Clicked(object sender, EventArgs eventArgs)
         {
             PopPage();
         }
@@ -89,9 +89,8 @@ namespace EMU7800.D2D.Shell
 
         async Task<string> GetTextAssetAsync(Asset textAsset)
         {
-            var bytes = await _assetService.GetAssetBytesAsync(textAsset);
-            var text = System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-            return text;
+            var bytesResult = await _assetService.GetAssetBytesAsync(textAsset);
+            return System.Text.Encoding.UTF8.GetString(bytesResult.Value.Bytes, 0, bytesResult.Value.Bytes.Length);
         }
 
         #endregion

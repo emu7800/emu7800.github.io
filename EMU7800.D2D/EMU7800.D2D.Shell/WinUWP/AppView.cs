@@ -21,7 +21,7 @@ namespace EMU7800.D2D.Shell.WinRT
 
         bool _windowClosed, _windowVisible;
         int _lastMouseX, _lastMouseY;
-        uint _lastMousePointerId;
+        int _lastMousePointerId;
         float _scaleFactor;
 
         #endregion
@@ -109,7 +109,7 @@ namespace EMU7800.D2D.Shell.WinRT
         void WindowOnPointerMoved(PointerEventArgs args)
         {
             var current = args.CurrentPoint;
-            var pointerId = current.PointerId;
+            var pointerId = (int)current.PointerId;
             var pos = current.Position;
             var x = (int)(pos.X * _scaleFactor);
             var y = (int)(pos.Y * _scaleFactor);
@@ -132,7 +132,7 @@ namespace EMU7800.D2D.Shell.WinRT
         void WindowOnPointerChanged(PointerEventArgs args, bool down)
         {
             var current = args.CurrentPoint;
-            var pointerId = current.PointerId;
+            var pointerId = (int)current.PointerId;
             var pos = current.Position;
             var x = (int)(pos.X * _scaleFactor);
             var y = (int)(pos.Y * _scaleFactor);
@@ -151,7 +151,7 @@ namespace EMU7800.D2D.Shell.WinRT
         void WindowOnPointerWheelChanged(CoreWindow sender, PointerEventArgs args)
         {
             var current = args.CurrentPoint;
-            var pointerId = current.PointerId;
+            var pointerId = (int)current.PointerId;
             var pos = current.Position;
             var x = (int)(pos.X * _scaleFactor);
             var y = (int)(pos.Y * _scaleFactor);

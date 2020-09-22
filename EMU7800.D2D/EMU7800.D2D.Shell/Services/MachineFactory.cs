@@ -13,47 +13,39 @@ namespace EMU7800.Services
         #region Fields
 
         readonly DatastoreService _datastoreService = new DatastoreService();
-        readonly RomPropertiesService _romPropertiesService = new RomPropertiesService();
         readonly RomBytesService _romBytesService = new RomBytesService();
 
         #endregion
 
-        public ErrorInfo LastErrorInfo { get; private set; }
-
-        public MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
+        public Result<MachineStateInfo> Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
         {
-            if (importedGameProgramInfo == null)
-                throw new ArgumentNullException("importedGameProgramInfo");
-            if (importedGameProgramInfo.StorageKeySet == null || importedGameProgramInfo.StorageKeySet.Count == 0)
-                throw new ArgumentException("importedGameProgramInfo.StorageKeySet");
+            if (importedGameProgramInfo.StorageKeySet.Count == 0)
+                throw new ArgumentException("importedGameProgramInfo.StorageKeySet", nameof(importedGameProgramInfo));
 
-            ClearLastErrorInfo();
+            var romBytes = importedGameProgramInfo.StorageKeySet
+                .Select(sk => _datastoreService.GetRomBytes(sk))
+                .Where(r => r.IsOk)
+                .Select(r => r.Value.Bytes)
+                .FirstOrDefault(b => b.Length > 0) ?? Array.Empty<byte>();
 
-            byte[] romBytes = null;
-            foreach (var storageKey in importedGameProgramInfo.StorageKeySet)
+            if (romBytes.Length == 0)
             {
-                romBytes = _datastoreService.GetRomBytes(storageKey);
-                if (romBytes != null)
-                    break;
+                return Fail<MachineStateInfo>("MachineService.Create: Unable to load ROM bytes");
             }
-            if (romBytes == null)
-            {
-                LastErrorInfo = new ErrorInfo(_datastoreService.LastErrorInfo, "MachineService: Unable to load ROM bytes.");
-                return null;
-            }
+
             romBytes = _romBytesService.RemoveA78HeaderIfNecessary(romBytes);
 
             var gameProgramInfo = importedGameProgramInfo.GameProgramInfo;
 
-            if (gameProgramInfo.CartType == CartType.None)
+            if (gameProgramInfo.CartType == CartType.Unknown)
                 gameProgramInfo.CartType = _romBytesService.InferCartTypeFromSize(gameProgramInfo.MachineType, romBytes.Length);
 
             if (gameProgramInfo.MachineType != MachineType.A7800NTSC
             &&  gameProgramInfo.MachineType != MachineType.A7800PAL)
                 use7800Bios = use7800Hsc = false;
 
-            var bios7800 = use7800Bios ? GetBios7800(gameProgramInfo) : null;
-            var hsc7800 = use7800Hsc ? GetHSC7800() : null;
+            var bios7800 = use7800Bios ? GetBios7800(gameProgramInfo) : Bios7800.Default;
+            var hsc7800 = use7800Hsc ? GetHSC7800() : HSC7800.Default;
 
             Cart cart;
             try
@@ -62,37 +54,33 @@ namespace EMU7800.Services
             }
             catch (Emu7800Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "MachineService.CreateMachine: Unable to create Cart.");
-                return null;
+                return Fail<MachineStateInfo>("MachineService.Create: Unable to create Cart", ex);
             }
 
             MachineBase machine;
             try
             {
                 machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800, hsc7800,
-                    gameProgramInfo.LController, gameProgramInfo.RController, null);
+                    gameProgramInfo.LController, gameProgramInfo.RController, NullLogger.Default);
             }
             catch (Emu7800Exception ex)
             {
-                LastErrorInfo = new ErrorInfo(ex, "MachineService.CreateMachine: Unable to create Machine.");
-                return null;
+                return Fail<MachineStateInfo>("MachineService.Create: Unable to create Machine", ex);
             }
 
-            var machineStateInfo = new MachineStateInfo
+            return Ok(new MachineStateInfo
             {
                 FramesPerSecond = machine.FrameHZ,
                 CurrentPlayerNo = 1,
                 GameProgramInfo = gameProgramInfo,
                 Machine         = machine
-            };
-            return machineStateInfo;
+            });
         }
 
         #region Constructors
 
         public MachineFactory()
         {
-            ClearLastErrorInfo();
         }
 
         #endregion
@@ -100,65 +88,55 @@ namespace EMU7800.Services
         #region Helpers
 
         Bios7800 GetBios7800(GameProgramInfo gameProgramInfo)
-        {
-            var query = ToBiosCandidateList(gameProgramInfo);
-            var bios = PickFirstBios7800(query);
-            return bios;
-        }
+            => PickFirstBios7800(ToBiosCandidateList(gameProgramInfo));
 
         IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
-        {
-            switch (gameProgramInfo.MachineType)
-            {
-                case MachineType.A7800NTSC:
-                    var specialBinaryInfoSet = GetSpecialBinaryInfoSet();
-                    return specialBinaryInfoSet.Where(sbi =>
-                        sbi.Type == SpecialBinaryType.Bios7800Ntsc ||
-                        sbi.Type == SpecialBinaryType.Bios7800NtscAlternate);
-                case MachineType.A7800PAL:
-                    specialBinaryInfoSet = GetSpecialBinaryInfoSet();
-                    return specialBinaryInfoSet.Where(sbi => sbi.Type == SpecialBinaryType.Bios7800Pal);
-            }
-            return new ImportedSpecialBinaryInfo[0];
-        }
+            => GetSpecialBinaryInfoSet()
+                .Where(sbi => gameProgramInfo.MachineType == MachineType.A7800NTSC
+                                && (sbi.Type == SpecialBinaryType.Bios7800Ntsc || sbi.Type == SpecialBinaryType.Bios7800NtscAlternate)
+                           || gameProgramInfo.MachineType == MachineType.A7800PAL
+                                && sbi.Type == SpecialBinaryType.Bios7800Pal);
 
         Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
-        {
-            var query = from specialBinaryInfo in specialBinaryInfoSet
-                        select _datastoreService.GetRomBytes(specialBinaryInfo.StorageKey) into bytes
-                        where bytes != null
-                        select new Bios7800(bytes);
-            return query.FirstOrDefault();
-        }
+            => specialBinaryInfoSet
+                .Select(sbi => _datastoreService.GetRomBytes(sbi.StorageKey))
+                .Where(r => r.IsOk)
+                .Select(r => r.Value.Bytes)
+                .Where(b => b.Length == 4096 || b.Length == 16384)
+                .Take(1)
+                .Select(b => new Bios7800(b))
+                .FirstOrDefault() ?? Bios7800.Default;
 
         HSC7800 GetHSC7800()
-        {
-            var specialBinaryInfoSet = GetSpecialBinaryInfoSet();
-            var query = specialBinaryInfoSet.Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800);
-            var hsc = PickFirstHSC7800(query);
-            return hsc;
-        }
+            => PickFirstHSC7800(GetSpecialBinaryInfoSet().Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800));
 
         HSC7800 PickFirstHSC7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
-        {
-            var query = from specialBinaryInfo in specialBinaryInfoSet
-                        select _datastoreService.GetRomBytes(specialBinaryInfo.StorageKey) into bytes
-                        where bytes != null
-                        select new HSC7800(bytes, new byte[0x800]);
-            return query.FirstOrDefault();
-        }
+            => specialBinaryInfoSet
+                .Select(sbi => _datastoreService.GetRomBytes(sbi.StorageKey))
+                .Where(r => r.IsOk)
+                .Select(r => r.Value.Bytes)
+                .Where(b => b.Length > 0)
+                .Select(b => new HSC7800(b))
+                .FirstOrDefault() ?? HSC7800.Default;
 
         IEnumerable<ImportedSpecialBinaryInfo> GetSpecialBinaryInfoSet()
         {
-            var csvFileContent = _datastoreService.GetSpecialBinaryInfoFromImportRepository();
-            var specialBinaryInfoSet = _romPropertiesService.ToImportedSpecialBinaryInfo(csvFileContent);
-            return specialBinaryInfoSet;
+            var results = _datastoreService.GetSpecialBinaryInfoFromImportRepository();
+            var lines = results.IsOk ? results.Values.Select(st => st.Line) : Array.Empty<string>();
+            return RomPropertiesService.ToImportedSpecialBinaryInfo(lines);
         }
 
-        void ClearLastErrorInfo()
-        {
-            LastErrorInfo = null;
-        }
+        static Result<T> Ok<T>(T value) where T : class, new()
+            => ResultHelper.Ok(value);
+
+        static Result<T> Fail<T>(string message) where T : class, new()
+            => ResultHelper.Fail<T>(message);
+
+        static Result<T> Fail<T>(string message, Exception ex) where T : class, new()
+            => ResultHelper.Fail<T>(ToResultMessage(message, ex));
+
+        static string ToResultMessage(string message, Exception ex)
+            => message + $": Unexpected exception: {ex.GetType().Name}: " + ex.Message;
 
         #endregion
     }

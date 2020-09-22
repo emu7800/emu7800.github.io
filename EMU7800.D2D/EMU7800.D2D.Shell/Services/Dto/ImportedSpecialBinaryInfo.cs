@@ -14,6 +14,6 @@ namespace EMU7800.Services.Dto
     public class ImportedSpecialBinaryInfo
     {
         public SpecialBinaryType Type { get; set; }
-        public string StorageKey { get; set; }
+        public string StorageKey { get; set; } = string.Empty;
     }
 }

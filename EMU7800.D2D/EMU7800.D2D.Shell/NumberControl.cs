@@ -1,13 +1,15 @@
 // © Mike Murphy
 
 using EMU7800.D2D.Interop;
+using System.Linq;
 
 namespace EMU7800.D2D.Shell
 {
     public sealed class NumberControl : ControlBase
     {
-        readonly TextLayout[] _textlayoutDigits = new TextLayout[10];
-        TextLayout _textlayoutRadix, _textlayoutComma;
+        readonly TextLayout[] _textlayoutDigits;
+        TextLayout _textlayoutRadix = TextLayoutDefault;
+        TextLayout _textlayoutComma = TextLayoutDefault;
 
         float _maxDigitWidth;
 
@@ -21,6 +23,7 @@ namespace EMU7800.D2D.Shell
 
         public NumberControl()
         {
+            _textlayoutDigits = Enumerable.Range(0, 10).Select(i => TextLayoutDefault).ToArray();
             TextFontFamilyName = Styles.NormalFontFamily;
             TextFontSize = Styles.NormalFontSize;
             Color = D2DSolidColorBrush.White;

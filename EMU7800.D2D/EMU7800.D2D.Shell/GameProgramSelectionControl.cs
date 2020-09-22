@@ -10,11 +10,16 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameProgramSelectionControl : ControlBase
     {
+        static readonly EventHandler<GameProgramSelectedEventArgs> DefaultEventHandler = (s, o) => {};
+
         #region Fields
 
         readonly AssetService _assetService = new AssetService();
 
-        StaticBitmap _playRest, _playRestInverted, _pauseRest, _pauseRestInverted;
+        StaticBitmap _playRest          = StaticBitmapDefault;
+        StaticBitmap _playRestInverted  = StaticBitmapDefault;
+        StaticBitmap _pauseRest         = StaticBitmapDefault;
+        StaticBitmap _pauseRestInverted = StaticBitmapDefault;
 
         const float
             EPILSON               = 1e-6f,
@@ -35,7 +40,7 @@ namespace EMU7800.D2D.Shell
         float _scrollXLeftMostBoundary, _scrollXRightMostBoundary, _scrollXAcceleration;
 
         bool _itemDown;
-        uint? _isMouseDownByPointerId;
+        int _isMouseDownByPointerId = -1;
         bool _mouseCollectionInIcon;
         int _mouseCollectionIndex, _mouseCollectionItemIndex;
 
@@ -56,7 +61,7 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        public event EventHandler<GameProgramSelectedEventArgs> Selected;
+        public event EventHandler<GameProgramSelectedEventArgs> Selected = DefaultEventHandler;
 
         public void BindTo(GameProgramInfoViewItemCollection[] gameProgramInfoViewItemCollection)
         {
@@ -77,16 +82,16 @@ namespace EMU7800.D2D.Shell
 
         #region ControlBase Overrides
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
-            if (down && _isMouseDownByPointerId.HasValue
-                || !down && !_isMouseDownByPointerId.HasValue
-                    || !down && _isMouseDownByPointerId.Value != pointerId)
+            if (down && _isMouseDownByPointerId >= 0
+                || !down && _isMouseDownByPointerId < 0
+                    || !down && _isMouseDownByPointerId != pointerId)
                 return;
 
-            _isMouseDownByPointerId = down ? pointerId : (uint?)null;
+            _isMouseDownByPointerId = down ? pointerId : -1;
 
-            if (_isMouseDownByPointerId.HasValue)
+            if (_isMouseDownByPointerId >= 0)
             {
                 RefreshMouseCollectionIndexes(x, y);
                 if (_mouseCollectionInIcon)
@@ -104,9 +109,9 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
-            if (_scrollColumnInfoSet.Length == 0 || !_isMouseDownByPointerId.HasValue)
+            if (_scrollColumnInfoSet.Length == 0 || _isMouseDownByPointerId < 0)
                 return;
 
             var ax = 9 * dx;
@@ -122,13 +127,13 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public override void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
 #if PROFILE
             _lastWheelX = x;
             _lastWheelY = y;
 #endif
-            if (_scrollColumnInfoSet.Length == 0 || _isMouseDownByPointerId.HasValue)
+            if (_scrollColumnInfoSet.Length == 0 || _isMouseDownByPointerId >= 0)
                 return;
 
             var mouseOutsideWindow = (y < Location.Y + GapForCollectionTitle
@@ -264,7 +269,7 @@ namespace EMU7800.D2D.Shell
 
                     if (j == 0)
                     {
-                        if (gpivic.NameTextLayout == null)
+                        if (gpivic.NameTextLayout == TextLayoutDefault)
                             gpivic.NameTextLayout = gd.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize,
                                 gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT
                                 );
@@ -299,11 +304,11 @@ namespace EMU7800.D2D.Shell
 
                     var gpivi = gpivic.GameProgramInfoViewItemSet[j];
 
-                    if (gpivi.TitleTextLayout == null)
+                    if (gpivi.TitleTextLayout == TextLayoutDefault)
                         gpivi.TitleTextLayout = gd.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize,
                             gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT
                             );
-                    if (gpivi.SubTitleTextLayout == null)
+                    if (gpivi.SubTitleTextLayout == TextLayoutDefault)
                         gpivi.SubTitleTextLayout = gd.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize,
                             gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT
                             );
@@ -351,15 +356,15 @@ namespace EMU7800.D2D.Shell
         {
             base.CreateResources(gd);
 
-            var playRest = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
-            var playRestInverted = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
-            var pauseRest = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
-            var pauseRestInverted = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
+            var playRestResult = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
+            var playRestInvertedResult = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
+            var pauseRestResult = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
+            var pauseRestInvertedResult = await _assetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
-            _playRest = gd.CreateStaticBitmap(playRest);
-            _playRestInverted = gd.CreateStaticBitmap(playRestInverted);
-            _pauseRest = gd.CreateStaticBitmap(pauseRest);
-            _pauseRestInverted = gd.CreateStaticBitmap(pauseRestInverted);
+            _playRest = gd.CreateStaticBitmap(playRestResult.Value.Bytes);
+            _playRestInverted = gd.CreateStaticBitmap(playRestInvertedResult.Value.Bytes);
+            _pauseRest = gd.CreateStaticBitmap(pauseRestResult.Value.Bytes);
+            _pauseRestInverted = gd.CreateStaticBitmap(pauseRestInvertedResult.Value.Bytes);
         }
 
         protected override void DisposeResources()
@@ -372,20 +377,20 @@ namespace EMU7800.D2D.Shell
             foreach (var sci in _scrollColumnInfoSet)
             {
                 var ntl = sci.GameProgramInfoViewItemCollection.NameTextLayout;
-                if (ntl != null)
+                if (ntl != TextLayoutDefault)
                     ntl.Dispose();
-                sci.GameProgramInfoViewItemCollection.NameTextLayout = null;
+                sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayoutDefault;
 
                 foreach (var gpivi in sci.GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet)
                 {
                     var ttl = gpivi.TitleTextLayout;
                     var sttl = gpivi.SubTitleTextLayout;
-                    if (ttl != null)
+                    if (ttl != TextLayoutDefault)
                         ttl.Dispose();
-                    if (sttl != null)
+                    if (sttl != TextLayoutDefault)
                         sttl.Dispose();
-                    gpivi.TitleTextLayout = null;
-                    gpivi.SubTitleTextLayout = null;
+                    gpivi.TitleTextLayout = TextLayoutDefault;
+                    gpivi.SubTitleTextLayout = TextLayoutDefault;
                 }
             }
 
@@ -448,7 +453,7 @@ namespace EMU7800.D2D.Shell
 
         void RaiseSelected()
         {
-            if (Selected == null || !IsFocusSet)
+            if (Selected == DefaultEventHandler || !IsFocusSet)
                 return;
             var gpivi = _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet[_focusedCollectionItemIndex];
             var e = new GameProgramSelectedEventArgs { GameProgramInfoViewItem = ToGameProgramInfoViewItem(gpivi) };

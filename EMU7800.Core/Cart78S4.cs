@@ -1,4 +1,6 @@
-﻿namespace EMU7800.Core
+﻿using System;
+
+namespace EMU7800.Core
 {
     /// <summary>
     /// Atari 7800 SuperGame S4 bankswitched cartridge
@@ -14,7 +16,7 @@
         //
         // Banks 0-3 are the same as banks 4-7
         //
-        readonly byte[] RAM;
+        readonly byte[] RAM = Array.Empty<byte>();
         readonly int[] Bank = new int[4];
 
         #region IDevice Members
@@ -23,7 +25,7 @@
         {
             get
             {
-                if (RAM != null && addr >= 0x6000 && addr <= 0x7fff)
+                if (RAM.Length >= 0x2000 && addr >= 0x6000 && addr <= 0x7fff)
                 {
                     return RAM[addr & 0x1fff];
                 }
@@ -31,7 +33,7 @@
             }
             set
             {
-                if (RAM != null && addr >= 0x6000 && addr <= 0x7fff)
+                if (RAM.Length >= 0x2000 && addr >= 0x6000 && addr <= 0x7fff)
                 {
                     RAM[addr & 0x1fff] = value;
                 }
@@ -45,9 +47,7 @@
         #endregion
 
         public override string ToString()
-        {
-            return "EMU7800.Core.Cart78S4";
-        }
+            => "EMU7800.Core.Cart78S4";
 
         public Cart78S4(byte[] romBytes, bool needRAM)
         {
@@ -65,7 +65,7 @@
 
         #region Serialization Members
 
-        public Cart78S4(DeserializationContext input, MachineBase m) : base(input)
+        public Cart78S4(DeserializationContext input) : base(input)
         {
             var version = input.CheckVersion(1, 2);
             LoadRom(input.ReadBytes());

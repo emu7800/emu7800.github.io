@@ -131,19 +131,17 @@ namespace EMU7800.Core
 
             TIASound.Reset();
 
-            Log("{0} reset", this);
+            Log($"{this} reset");
         }
 
         public byte this[ushort addr]
         {
-            get { return peek(addr); }
-            set { poke(addr, value); }
+            get => Peek(addr);
+            set => Poke(addr, value);
         }
 
         public override string ToString()
-        {
-            return "EMU7800.Core.Maria";
-        }
+            => "EMU7800.Core.Maria";
 
         public void StartFrame()
         {
@@ -209,10 +207,7 @@ namespace EMU7800.Core
 
         public Maria(Machine7800 m, int scanlines)
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
-
-            M = m;
+            M = m ?? throw new ArgumentNullException(nameof(m));
             InitializeVisibleScanlineValues(scanlines);
             TIASound = new TIASound(M, CPU_TICKS_PER_AUDIO_SAMPLE);
         }
@@ -751,7 +746,7 @@ namespace EMU7800.Core
 
         #region Maria Peek
 
-        byte peek(ushort addr)
+        byte Peek(ushort addr)
         {
             addr &= 0x3f;
             var mi = M.InputState;
@@ -770,7 +765,7 @@ namespace EMU7800.Core
                 case INPT4: return SampleINPTLatched(4)                                                 ? (byte)0    : (byte)0x80;  // player1,button L/R
                 case INPT5: return SampleINPTLatched(5)                                                 ? (byte)0    : (byte)0x80;  // player2,button L/R
                 default:
-                    LogDebug("Maria: Unhandled peek at ${0:x4}, PC=${1:x4}", addr, M.CPU.PC);
+                    LogDebug($"Maria: Unhandled peek at ${addr:x4}, PC=${M.CPU.PC:x4}");
                     var retval = Registers[addr];
                     return retval;
             }
@@ -780,7 +775,7 @@ namespace EMU7800.Core
 
         #region Maria Poke
 
-        void poke(ushort addr, byte data)
+        void Poke(ushort addr, byte data)
         {
             addr &= 0x3f;
 
@@ -796,7 +791,7 @@ namespace EMU7800.Core
                 case INPTCTRL:
                     if (CtrlLock)
                     {
-                        Log("Maria: INPTCTRL: LOCKED: Ignoring: ${0:x2}, PC=${1:x4}", data, M.CPU.PC);
+                        Log($"Maria: INPTCTRL: LOCKED: Ignoring: ${data:x2}, PC=${M.CPU.PC:x4}");
                         break;
                     }
 
@@ -805,8 +800,7 @@ namespace EMU7800.Core
                     var biosDisable = (data & (1 << 2)) != 0;
                     var tiaopEnable = (data & (1 << 3)) != 0;
 
-                    Log("Maria: INPTCTRL: ${0:x2}, PC=${1:x4}, lockMode={2}, mariaEnable={3} biosDisable={4} tiaOutput={5}",
-                        data, M.CPU.PC, CtrlLock, mariaEnable, biosDisable, tiaopEnable);
+                    Log($"Maria: INPTCTRL: ${data:x2}, PC=${M.CPU.PC:x4}, lockMode={CtrlLock}, mariaEnable={mariaEnable} biosDisable={biosDisable} tiaOutput={tiaopEnable}");
 
                     if (biosDisable)
                     {
@@ -872,11 +866,11 @@ namespace EMU7800.Core
                     TIASound.Update(addr, data);
                     break;
                 case OFFSET:
-                    Log("Maria: OFFSET: ROM wrote ${0:x2}, PC=${1:x4} (reserved for future expansion)", data, M.CPU.PC);
+                    Log($"Maria: OFFSET: ROM wrote ${data:x2}, PC=${M.CPU.PC:x4} (reserved for future expansion)");
                     break;
                 default:
                     Registers[addr] = data;
-                    LogDebug("Maria: Unhandled poke:${0:x4} w/${1:x2}, PC=${2:x4}", addr, data, M.CPU.PC);
+                    LogDebug($"Maria: Unhandled poke:${addr:x4} w/${data:x2}, PC=${M.CPU.PC:x4}");
                     break;
             }
         }
@@ -961,11 +955,9 @@ namespace EMU7800.Core
         public Maria(DeserializationContext input, Machine7800 m, int scanlines)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
-            if (m == null)
-                throw new ArgumentNullException("m");
+                throw new ArgumentNullException(nameof(input));
 
-            M = m;
+            M = m ?? throw new ArgumentNullException(nameof(m));
             InitializeVisibleScanlineValues(scanlines);
             TIASound = new TIASound(input, M, CPU_TICKS_PER_AUDIO_SAMPLE);
 
@@ -1027,7 +1019,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.Write(TIASound);
 
@@ -1098,12 +1090,8 @@ namespace EMU7800.Core
             }
         }
 
-        void Log(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void Log(string message)
+            => M?.Logger?.WriteLine(message);
 
         // convenience overload
         static ushort WORD(int lsb, int msb)
@@ -1126,18 +1114,14 @@ namespace EMU7800.Core
         {
 #if DEBUG
             if (addr < 0x1800)
-                LogDebug("Maria: Questionable DMA read at ${0:x4} by PC=${1:x4}", addr, M.CPU.PC);
+                LogDebug($"Maria: Questionable DMA read at ${addr:x4} by PC=${M.CPU.PC:x4}");
 #endif
             return M.Mem[addr];
         }
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void LogDebug(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void LogDebug(string message)
+            => M.Logger.WriteLine(message);
 
         [System.Diagnostics.Conditional("DEBUG")]
         void AssertDebug(bool cond)

@@ -36,6 +36,8 @@ namespace EMU7800.Core
 {
     public sealed class TIASound
     {
+        public static readonly TIASound Default = new TIASound(MachineBase.Default, 60);
+
         #region Constants and Tables
 
         //                                   Clock Source   Clock Modifier   Source Pattern
@@ -91,7 +93,7 @@ namespace EMU7800.Core
 
         #region Object State
 
-        readonly MachineBase M;
+        readonly MachineBase M = MachineBase.Default;
 
         // The TIA Sound registers
         readonly byte[] AUDC = new byte[2];
@@ -229,8 +231,6 @@ namespace EMU7800.Core
 
         public TIASound(MachineBase m, int cpuClocksPerSample) : this()
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
             if (cpuClocksPerSample <= 0)
                 throw new ArgumentException("cpuClocksPerSample must be positive.");
 
@@ -245,7 +245,7 @@ namespace EMU7800.Core
         public TIASound(DeserializationContext input, MachineBase m, int cpuClocksPerSample) : this(m, cpuClocksPerSample)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
             Bit9 = input.ReadExpectedBytes(511);
@@ -265,7 +265,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(Bit9);

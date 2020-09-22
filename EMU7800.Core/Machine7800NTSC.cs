@@ -3,9 +3,7 @@
     public sealed class Machine7800NTSC : Machine7800
     {
         public override string ToString()
-        {
-            return "EMU7800.Core.Machine7800NTSC";
-        }
+            => "EMU7800.Core.Machine7800NTSC";
 
         public Machine7800NTSC(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger)
             : base(cart, bios, hsc, logger, 262, 16, 60, 31440 /* NTSC_SAMPLES_PER_SEC */, MariaTables.NTSCPalette)

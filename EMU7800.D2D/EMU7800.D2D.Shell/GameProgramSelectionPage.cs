@@ -16,7 +16,7 @@ namespace EMU7800.D2D.Shell
         readonly LabelControl _labelSelectGameProgram;
         readonly GameProgramSelectionControl _gameProgramSelectionControl;
 
-        GameControllersWrapper _gameControllers;
+        GameControllersWrapperBase _gameControllers = new GameControllersWrapperBase();
 
         bool _isGetGameProgramInfoViewItemCollectionAsyncStarted;
 
@@ -41,8 +41,8 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_buttonBack, _labelSelectGameProgram, _gameProgramSelectionControl);
 
-            _buttonBack.Clicked += _buttonBack_Clicked;
-            _gameProgramSelectionControl.Selected += _gameProgramSelectionControl_Selected;
+            _buttonBack.Clicked += ButtonBack_Clicked;
+            _gameProgramSelectionControl.Selected += GameProgramSelectionControl_Selected;
         }
 
         #region PageBase Overrides
@@ -69,8 +69,6 @@ namespace EMU7800.D2D.Shell
         public override void Update(TimerDevice td)
         {
             base.Update(td);
-            if (_gameControllers == null)
-                return;
             _gameControllers.Poll();
         }
 
@@ -87,14 +85,14 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void _gameProgramSelectionControl_Selected(object sender, GameProgramSelectedEventArgs e)
+        void GameProgramSelectionControl_Selected(object sender, GameProgramSelectedEventArgs e)
         {
             var gameProgramInfoViewItem = e.GameProgramInfoViewItem;
             var gamePage = new GamePage(gameProgramInfoViewItem);
             PushPage(gamePage);
         }
 
-        void _buttonBack_Clicked(object sender, EventArgs eventArgs)
+        void ButtonBack_Clicked(object sender, EventArgs eventArgs)
         {
             PopPage();
         }
@@ -113,15 +111,17 @@ namespace EMU7800.D2D.Shell
         static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
         {
             var datastoreService = new DatastoreService();
-            var romPropertiesService = new RomPropertiesService();
             var gameProgramLibraryService = new GameProgramLibraryService();
 
-            var csvFileContent1 = datastoreService.GetGameProgramInfoFromReferenceRepository();
-            var csvFileContent2 = datastoreService.GetGameProgramInfoFromImportRepository();
-            var gameProgramInfoSet = romPropertiesService.ToGameProgramInfo(csvFileContent1);
+            var refRepositoryCsvResult = datastoreService.GetGameProgramInfoFromReferenceRepository();
+            var importRepositoryCsvResult = datastoreService.GetGameProgramInfoFromImportRepository();
+
+            var gameProgramInfoDict = RomPropertiesService.ToGameProgramInfo(refRepositoryCsvResult.Values.Select(st => st.Line))
+                .GroupBy(gpi => gpi.MD5).ToDictionary(g => g.Key, g => g.ToList());
 
             var isEasterEggOn = TitlePage.IsEasterEggOn;
-            var importedGameProgramInfoSet = romPropertiesService.ToImportedGameProgramInfo(gameProgramInfoSet, csvFileContent2)
+
+            var importedGameProgramInfoSet = RomPropertiesService.ToImportedGameProgramInfo(gameProgramInfoDict, importRepositoryCsvResult.Values.Select(st => st.Line))
                 .Where(igpi => isEasterEggOn || Filter(igpi.GameProgramInfo));
 
             var result = gameProgramLibraryService.GetGameProgramInfoViewItemCollections(importedGameProgramInfoSet);
@@ -129,12 +129,10 @@ namespace EMU7800.D2D.Shell
         }
 
         static bool Filter(GameProgramInfo gpi)
-        {
-            return gpi.Manufacturer != "Activision"
+            => gpi.Manufacturer     != "Activision"
                 && gpi.Manufacturer != "Mystique"
                 && gpi.Manufacturer != "Playaround"
                 && gpi.Title        != "Pitfall!";
-        }
 
         static void CheckPersistedMachineStates(IEnumerable<GameProgramInfoViewItemCollection> gpivics)
         {
@@ -147,10 +145,8 @@ namespace EMU7800.D2D.Shell
 
         void EnsureGameControllersAreDisposed()
         {
-            if (_gameControllers == null)
-                return;
             _gameControllers.Dispose();
-            _gameControllers = null;
+            _gameControllers = new GameControllersWrapperBase();
         }
 
         #endregion

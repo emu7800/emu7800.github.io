@@ -107,9 +107,7 @@
         #endregion
 
         public override string ToString()
-        {
-            return "EMU7800.Core.CartDPC";
-        }
+            => "EMU7800.Core.CartDPC";
 
         public CartDPC(byte[] romBytes)
         {
@@ -305,7 +303,7 @@
 
         #region Serialization Members
 
-        public CartDPC(DeserializationContext input, MachineBase m) : base(input)
+        public CartDPC(DeserializationContext input) : base(input)
         {
             input.CheckVersion(1);
             LoadRom(input.ReadExpectedBytes(0x28FF), 0x2800);

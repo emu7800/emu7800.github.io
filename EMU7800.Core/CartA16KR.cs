@@ -16,7 +16,7 @@
         //                            0x1080:0x0080  RAM read port
         //
         ushort BankBaseAddr;
-        readonly byte[] RAM;
+        readonly byte[] RAM = new byte[0x80];
 
         int Bank
         {
@@ -57,15 +57,12 @@
         #endregion
 
         public override string ToString()
-        {
-            return "EMU7800.Core.CartA16KR";
-        }
+            => "EMU7800.Core.CartA16KR";
 
         public CartA16KR(byte[] romBytes)
         {
             LoadRom(romBytes, 0x4000);
             Bank = 0;
-            RAM = new byte[0x80];
         }
 
         void UpdateBank(ushort addr)
@@ -80,7 +77,7 @@
 
         #region Serialization Members
 
-        public CartA16KR(DeserializationContext input, MachineBase m) : base(input)
+        public CartA16KR(DeserializationContext input) : base(input)
         {
             input.CheckVersion(1);
             LoadRom(input.ReadExpectedBytes(0x4000), 0x4000);

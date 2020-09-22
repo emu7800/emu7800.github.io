@@ -8,13 +8,13 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        TextLayout _textLayout;
-        uint? _isMouseDownByPointerId;
+        TextLayout _textLayout = TextLayoutDefault;
+        int _isMouseDownByPointerId;
         RectF _bounds;
         int _startY, _maxStartY;
         float _scrollbarLength, _scrollbarY;
 
-        string _text;
+        string _text = string.Empty;
         string _textFontFamily = Styles.NormalFontFamily;
         int _textFontSize = Styles.NormalFontSize;
 
@@ -22,7 +22,7 @@ namespace EMU7800.D2D.Shell
 
         public string Text
         {
-            get { return _text; }
+            get => _text;
             set
             {
                 if (_text == value)
@@ -34,7 +34,7 @@ namespace EMU7800.D2D.Shell
 
         public string TextFontFamilyName
         {
-            get { return _textFontFamily; }
+            get => _textFontFamily;
             set
             {
                 if (_textFontFamily == value)
@@ -46,7 +46,7 @@ namespace EMU7800.D2D.Shell
 
         public int TextFontSize
         {
-            get { return _textFontSize; }
+            get => _textFontSize;
             set
             {
                 if (_textFontSize == value)
@@ -81,36 +81,36 @@ namespace EMU7800.D2D.Shell
             SafeDispose(ref _textLayout);
         }
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
-            if (down && _isMouseDownByPointerId.HasValue
-                || !down && !_isMouseDownByPointerId.HasValue
-                    || !down && _isMouseDownByPointerId.Value != pointerId)
+            if (down && _isMouseDownByPointerId >= 0
+                || !down && _isMouseDownByPointerId < 0
+                    || !down && _isMouseDownByPointerId != pointerId)
                 return;
 
-            _isMouseDownByPointerId = down ? pointerId : (uint?)null;
+            _isMouseDownByPointerId = down ? pointerId : -1;
         }
 
-        public override void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
-            if (!_isMouseDownByPointerId.HasValue)
+            if (_isMouseDownByPointerId < 0)
                 return;
             if (!IsInBounds(x, y, _bounds))
                 return;
-            if (_isMouseDownByPointerId.Value == pointerId)
+            if (_isMouseDownByPointerId == pointerId)
                 _startY += dy;
         }
 
-        public override void MouseWheelChanged(uint pointerId, int x, int y, int delta)
+        public override void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
-            if (_isMouseDownByPointerId.HasValue)
+            if (_isMouseDownByPointerId >= 0)
                 return;
             _startY += delta / 10;
         }
 
         public override void Update(TimerDevice td)
         {
-            if (_textLayout == null)
+            if (_textLayout == TextLayoutDefault)
                 return;
 
             if (_startY > 0)
@@ -126,7 +126,7 @@ namespace EMU7800.D2D.Shell
 
         public override void Render(GraphicsDevice gd)
         {
-            if (_textLayout == null && Text != null)
+            if (_textLayout == TextLayoutDefault)
             {
                 _textLayout = gd.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue);
                 _maxStartY = (int)(Size.Height - _textLayout.Height);

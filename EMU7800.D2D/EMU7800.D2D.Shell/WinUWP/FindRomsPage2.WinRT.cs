@@ -10,6 +10,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using EMU7800.Services;
 using EMU7800.Services.Extensions;
+using EMU7800.Services.Dto;
 
 namespace EMU7800.D2D.Shell
 {
@@ -33,19 +34,20 @@ namespace EMU7800.D2D.Shell
             }
             catch (COMException)
             {
-                files = null;
+                files = Array.Empty<IStorageFile>();
             }
 
-            var csvFileContent = await Task.Run(() => new DatastoreService().GetGameProgramInfoFromReferenceRepository());
+            var csvFileContentResult = await Task.Run(() => new DatastoreService().GetGameProgramInfoFromReferenceRepository());
             var romBytesService = new RomBytesService();
-            var romPropertiesService = new RomPropertiesService();
-            var gameProgramInfoSet = romPropertiesService.ToGameProgramInfo(csvFileContent);
-            var gameProgramInfoMd5Dict = romPropertiesService.ToMD5Dict(gameProgramInfoSet);
+            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContentResult.Values.Select(st => st.Line));
+            var gameProgramInfoMd5Dict = gameProgramInfoSet
+                .GroupBy(gpi => gpi.MD5).ToDictionary(g => g.Key, g => g.ToList());
 
             var targetFolder = await GetOrCreateImportedRomLocalFolderAsync();
 
             var anyFiles = false;
-            foreach (var file in files ?? Enumerable.Empty<IStorageFile>())
+
+            foreach (var file in files)
             {
                 var bytes = await file.GetBytesAsync();
                 if (bytes == null)
@@ -64,16 +66,20 @@ namespace EMU7800.D2D.Shell
             if (anyFiles)
             {
                 var pathSet = await QueryForRomCandidatesAsync(targetFolder);
-                await Task.Run(() => _romImportService.ImportWithDefaults(pathSet));
-            }
+                var result = await Task.Run(() => _romImportService.ImportWithDefaults(pathSet));
 
-            if (_romImportService.CancelRequested)
-            {
-                _labelStep.Text = _romImportService.LastErrorInfo != null ? "Canceled via internal error." : "Canceled.";
+                if (_romImportService.CancelRequested)
+                {
+                    _labelStep.Text = result.IsFail ? "Canceled via internal error" : "Canceled";
+                }
+                else
+                {
+                    _labelStep.Text = "Completed";
+                }
             }
             else
             {
-                _labelStep.Text = anyFiles ? "Completed." : "Canceled.";
+                _labelStep.Text = "Canceled";
             }
 
             _buttonOk.IsVisible = true;
@@ -82,28 +88,14 @@ namespace EMU7800.D2D.Shell
 
         static async Task<StorageFolder> GetOrCreateImportedRomLocalFolderAsync()
         {
-            StorageFolder folder = null;
             try
             {
-                folder = await ApplicationData.Current.LocalFolder.GetFolderAsync(ImportedRomsDirName);
+                return await ApplicationData.Current.LocalFolder.GetFolderAsync(ImportedRomsDirName);
             }
             catch (FileNotFoundException)
             {
+                return await ApplicationData.Current.LocalFolder.CreateFolderAsync(ImportedRomsDirName);
             }
-
-            if (folder != null)
-                return folder;
-
-            try
-            {
-                folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(ImportedRomsDirName);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-
-            return folder;
         }
 
         static async Task<bool> ImportFileAsync(IStorageFolder targetFolder, IStorageFile sourceFile, string desiredNewName)
@@ -123,24 +115,18 @@ namespace EMU7800.D2D.Shell
         {
             var files = await folder.GetFilesAsync();
             var filterExtList = new[] { ".bin", ".a26", ".a78", ".zip" };
-            var list = files
+            return files
                 .Where(IsPathPresent)
                 .Where(file => !file.Name.StartsWith("_"))
                 .Where(file => filterExtList.Any(ext => file.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
                 .Select(file => file.Path)
-                .ToArray();
-
-            return list;
+                .ToList();
         }
 
         static bool IsPathPresent(IStorageItem file)
-        {
-            return file != null && IsPathPresent(file.Path);
-        }
+            => file != null && IsPathPresent(file.Path);
 
         static bool IsPathPresent(string path)
-        {
-            return !string.IsNullOrEmpty(path);
-        }
+            => !string.IsNullOrEmpty(path);
     }
 }

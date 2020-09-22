@@ -61,9 +61,9 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _buttonFindRoms, _labelCopyr, _labelVers);
 
-            _buttonPlayAtariToday.Clicked += _buttonPlayAtariToday_Clicked;
-            _buttonAbout.Clicked += _buttonAbout_Clicked;
-            _buttonFindRoms.Clicked += _buttonFindRoms_Clicked;
+            _buttonPlayAtariToday.Clicked += ButtonPlayAtariToday_Clicked;
+            _buttonAbout.Clicked += ButtonAbout_Clicked;
+            _buttonFindRoms.Clicked += ButtonFindRoms_Clicked;
         }
 
         #region PageBase Overrides
@@ -121,18 +121,18 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void _buttonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
+        void ButtonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
         {
             EasterEggCounter++;
             PushPage(new GameProgramSelectionPage());
         }
 
-        void _buttonAbout_Clicked(object sender, EventArgs eventArgs)
+        void ButtonAbout_Clicked(object sender, EventArgs eventArgs)
         {
             PushPage(new AboutPage());
         }
 
-        void _buttonFindRoms_Clicked(object sender, EventArgs eventArgs)
+        void ButtonFindRoms_Clicked(object sender, EventArgs eventArgs)
         {
             PushPage(new FindRomsPage());
         }

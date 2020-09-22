@@ -12,7 +12,9 @@ namespace EMU7800.Core
 {
     public sealed class AddressSpace
     {
-        public MachineBase M { get; private set; }
+        public static readonly AddressSpace Default = new AddressSpace(MachineBase.Default, 16, 6);
+
+        public MachineBase M { get; } = MachineBase.Default;
 
         readonly int AddrSpaceShift;
         readonly int AddrSpaceSize;
@@ -22,25 +24,21 @@ namespace EMU7800.Core
         readonly int PageSize;
 
         readonly IDevice[] MemoryMap;
-        IDevice Snooper;
+
+        IDevice Snooper = NullDevice.Default;
 
         public byte DataBusState { get; private set; }
 
         public override string ToString()
-        {
-            return "EMU7800.Core.AddressSpace";
-        }
+            => "EMU7800.Core.AddressSpace";
 
         public byte this[ushort addr]
         {
             get
             {
-                if (Snooper != null)
-                {
-                    // here DataBusState is just facilitating a dummy read to the snooper device
-                    // the read operation may have important side effects within the device
-                    DataBusState = Snooper[addr];
-                }
+                // here DataBusState is just facilitating a dummy read to the snooper device
+                // the read operation may have important side effects within the device
+                DataBusState = Snooper[addr];
                 var pageno = (addr & AddrSpaceMask) >> PageShift;
                 var dev = MemoryMap[pageno];
                 DataBusState = dev[addr];
@@ -49,10 +47,7 @@ namespace EMU7800.Core
             set
             {
                 DataBusState = value;
-                if (Snooper != null)
-                {
-                    Snooper[addr] = DataBusState;
-                }
+                Snooper[addr] = DataBusState;
                 var pageno = (addr & AddrSpaceMask) >> PageShift;
                 var dev = MemoryMap[pageno];
                 dev[addr] = DataBusState;
@@ -61,23 +56,17 @@ namespace EMU7800.Core
 
         public void Map(ushort basea, ushort size, IDevice device)
         {
-            if (device == null)
-                throw new ArgumentNullException("device");
-
             for (int addr = basea; addr < basea + size; addr += PageSize)
             {
                 var pageno = (addr & AddrSpaceMask) >> PageShift;
                 MemoryMap[pageno] = device;
             }
 
-            LogDebug("{0}: Mapped {1} to ${2:x4}:${3:x4}", this, device, basea, basea + size - 1);
+            LogDebug($"{this}: Mapped {device} to ${basea:x4}:${basea + size - 1:x4}");
         }
 
         public void Map(ushort basea, ushort size, Cart cart)
         {
-            if (cart == null)
-                throw new ArgumentNullException("cart");
-
             cart.Attach(M);
             var device = (IDevice)cart;
             if (cart.RequestSnooping)
@@ -91,9 +80,6 @@ namespace EMU7800.Core
 
         public AddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
-
             M = m;
 
             AddrSpaceShift = addrSpaceShift;
@@ -104,10 +90,10 @@ namespace EMU7800.Core
             PageSize = 1 << PageShift;
 
             MemoryMap = new IDevice[1 << addrSpaceShift >> PageShift];
-            IDevice nullDev = new NullDevice(M);
+
             for (var pageno=0; pageno < MemoryMap.Length; pageno++)
             {
-                MemoryMap[pageno] = nullDev;
+                MemoryMap[pageno] = NullDevice.Default;
             }
         }
 
@@ -117,18 +103,12 @@ namespace EMU7800.Core
 
         public AddressSpace(DeserializationContext input, MachineBase m, int addrSpaceShift, int pageShift) : this(m, addrSpaceShift, pageShift)
         {
-            if (input == null)
-                throw new ArgumentNullException("input");
-
             input.CheckVersion(1);
             DataBusState = input.ReadByte();
         }
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException("output");
-
             output.WriteVersion(1);
             output.Write(DataBusState);
         }
@@ -138,12 +118,8 @@ namespace EMU7800.Core
         #region Helpers
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void LogDebug(string format, params object[] args)
-        {
-            if (M == null || M.Logger == null)
-                return;
-            M.Logger.WriteLine(format, args);
-        }
+        void LogDebug(string message)
+            => M.Logger.WriteLine(message);
 
         #endregion
     }

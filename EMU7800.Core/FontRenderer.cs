@@ -74,7 +74,7 @@ namespace EMU7800.Core
         public void DrawText(FrameBuffer frameBuffer, string text, int xoffset, int yoffset, byte fore, byte back)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
 
             var textchars = text.ToUpper().ToCharArray();
 

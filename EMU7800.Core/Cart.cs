@@ -13,10 +13,12 @@ namespace EMU7800.Core
 {
     public abstract class Cart : IDevice
     {
+        public static readonly Cart Default = new UnknownCart();
+
         static int _multicartBankSelector;
 
-        protected MachineBase M { get; set; }
-        protected internal byte[] ROM { get; set; }
+        protected MachineBase M { get; set; } = MachineBase.Default;
+        protected internal byte[] ROM { get; set; } = Array.Empty<byte>();
 
         #region IDevice Members
 
@@ -28,10 +30,6 @@ namespace EMU7800.Core
 
         public virtual void Attach(MachineBase m)
         {
-            if (m == null)
-                throw new ArgumentNullException("m");
-            if (M != null && M != m)
-                throw new InvalidOperationException("Cart already attached to a different machine.");
             M = m;
         }
 
@@ -45,7 +43,7 @@ namespace EMU7800.Core
 
         protected internal virtual bool RequestSnooping
         {
-            get { return false; }
+            get => false;
         }
 
         /// <summary>
@@ -56,7 +54,7 @@ namespace EMU7800.Core
         /// <exception cref="Emu7800Exception">Specified CartType is unexpected.</exception>
         public static Cart Create(byte[] romBytes, CartType cartType)
         {
-            if (cartType == CartType.None)
+            if (cartType == CartType.Unknown)
             {
                 switch (romBytes.Length)
                 {
@@ -78,45 +76,44 @@ namespace EMU7800.Core
                 }
             }
 
-            switch (cartType)
+            return cartType switch
             {
-                case CartType.A2K:     return new CartA2K(romBytes);
-                case CartType.A4K:     return new CartA4K(romBytes);
-                case CartType.A8K:     return new CartA8K(romBytes);
-                case CartType.A8KR:    return new CartA8KR(romBytes);
-                case CartType.A16K:    return new CartA16K(romBytes);
-                case CartType.A16KR:   return new CartA16KR(romBytes);
-                case CartType.DC8K:    return new CartDC8K(romBytes);
-                case CartType.PB8K:    return new CartPB8K(romBytes);
-                case CartType.TV8K:    return new CartTV8K(romBytes);
-                case CartType.CBS12K:  return new CartCBS12K(romBytes);
-                case CartType.A32K:    return new CartA32K(romBytes);
-                case CartType.A32KR:   return new CartA32KR(romBytes);
-                case CartType.MN16K:   return new CartMN16K(romBytes);
-                case CartType.DPC:     return new CartDPC(romBytes);
-                case CartType.M32N12K: return new CartA2K(romBytes, _multicartBankSelector++);
-                case CartType.A7808:   return new Cart7808(romBytes);
-                case CartType.A7816:   return new Cart7816(romBytes);
-                case CartType.A7832P:  return new Cart7832P(romBytes);
-                case CartType.A7832:   return new Cart7832(romBytes);
-                case CartType.A7848:   return new Cart7848(romBytes);
-                case CartType.A78SGP:  return new Cart78SGP(romBytes);
-                case CartType.A78SG:   return new Cart78SG(romBytes, false);
-                case CartType.A78SGR:  return new Cart78SG(romBytes, true);
-                case CartType.A78S9:   return new Cart78S9(romBytes);
-                case CartType.A78S4:   return new Cart78S4(romBytes, false);
-                case CartType.A78S4R:  return new Cart78S4(romBytes, true);
-                case CartType.A78AB:   return new Cart78AB(romBytes);
-                case CartType.A78AC:   return new Cart78AC(romBytes);
-                default:
-                    throw new Emu7800Exception("Unexpected CartType: " + cartType);
-            }
+                CartType.A2K     => new CartA2K(romBytes),
+                CartType.A4K     => new CartA4K(romBytes),
+                CartType.A8K     => new CartA8K(romBytes),
+                CartType.A8KR    => new CartA8KR(romBytes),
+                CartType.A16K    => new CartA16K(romBytes),
+                CartType.A16KR   => new CartA16KR(romBytes),
+                CartType.DC8K    => new CartDC8K(romBytes),
+                CartType.PB8K    => new CartPB8K(romBytes),
+                CartType.TV8K    => new CartTV8K(romBytes),
+                CartType.CBS12K  => new CartCBS12K(romBytes),
+                CartType.A32K    => new CartA32K(romBytes),
+                CartType.A32KR   => new CartA32KR(romBytes),
+                CartType.MN16K   => new CartMN16K(romBytes),
+                CartType.DPC     => new CartDPC(romBytes),
+                CartType.M32N12K => new CartA2K(romBytes, _multicartBankSelector++),
+                CartType.A7808   => new Cart7808(romBytes),
+                CartType.A7816   => new Cart7816(romBytes),
+                CartType.A7832P  => new Cart7832P(romBytes),
+                CartType.A7832   => new Cart7832(romBytes),
+                CartType.A7848   => new Cart7848(romBytes),
+                CartType.A78SGP  => new Cart78SGP(romBytes),
+                CartType.A78SG   => new Cart78SG(romBytes, false),
+                CartType.A78SGR  => new Cart78SG(romBytes, true),
+                CartType.A78S9   => new Cart78S9(romBytes),
+                CartType.A78S4   => new Cart78S4(romBytes, false),
+                CartType.A78S4R  => new Cart78S4(romBytes, true),
+                CartType.A78AB   => new Cart78AB(romBytes),
+                CartType.A78AC   => new Cart78AC(romBytes),
+                _                => throw new Emu7800Exception("Unexpected CartType: " + cartType),
+            };
         }
 
         protected void LoadRom(byte[] romBytes, int multicartBankSize, int multicartBankNo)
         {
             if (romBytes == null)
-                throw new ArgumentNullException("romBytes");
+                throw new ArgumentNullException(nameof(romBytes));
 
             ROM = new byte[multicartBankSize];
             Buffer.BlockCopy(romBytes, multicartBankSize*multicartBankNo, ROM, 0, multicartBankSize);
@@ -125,7 +122,7 @@ namespace EMU7800.Core
         protected void LoadRom(byte[] romBytes, int minSize)
         {
             if (romBytes == null)
-                throw new ArgumentNullException("romBytes");
+                throw new ArgumentNullException(nameof(romBytes));
 
             if (romBytes.Length >= minSize)
             {
@@ -152,7 +149,7 @@ namespace EMU7800.Core
         protected Cart(DeserializationContext input)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
         }
@@ -160,11 +157,28 @@ namespace EMU7800.Core
         public virtual void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
         }
 
         #endregion
+
+        class UnknownCart : Cart
+        {
+            public override byte this[ushort addr]
+            {
+                get => 0;
+                set { }
+            }
+
+            public UnknownCart()
+            {
+                ROM = Array.Empty<byte>();
+            }
+
+            public override string ToString()
+                => "EMU7800.Core.UnknownCart";
+        }
     }
 }

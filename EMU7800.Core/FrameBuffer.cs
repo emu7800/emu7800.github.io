@@ -4,50 +4,52 @@ namespace EMU7800.Core
 {
     public class FrameBuffer
     {
+        public static readonly FrameBuffer Default = new FrameBuffer(0, 0);
+
         /// <summary>
         /// Number of visible pixels on a single horizontal line.
         /// </summary>
-        public int VisiblePitch { get; private set; }
+        public int VisiblePitch { get; }
 
         /// <summary>
         /// Number of <see cref="BufferElement"/>s that represent <c>VisiblePitch</c>.
         /// </summary>
-        public int VideoBufferElementVisiblePitch { get; private set; }
+        public int VideoBufferElementVisiblePitch { get; }
 
         /// <summary>
         /// Number of visible scan lines.
         /// </summary>
-        public int Scanlines { get; private set; }
+        public int Scanlines { get; }
 
         /// <summary>
         /// The number of bytes contained by <c>VideoBuffer</c>.
         /// </summary>
-        public int VideoBufferByteLength { get; private set; }
+        public int VideoBufferByteLength { get; }
 
         /// <summary>
         /// The number of <see cref="BufferElement"/>s contained by <c>VideoBuffer</c>
         /// </summary>
-        public int VideoBufferElementLength { get; private set; }
+        public int VideoBufferElementLength { get; }
 
         /// <summary>
         /// The number of bytes contained by <c>SoundBuffer</c>.
         /// </summary>
-        public int SoundBufferByteLength { get; private set; }
+        public int SoundBufferByteLength { get; }
 
         /// <summary>
         /// The number of <see cref="BufferElement"/>s contained by <c>SoundBuffer</c>
         /// </summary>
-        public int SoundBufferElementLength { get; private set; }
+        public int SoundBufferElementLength { get; }
 
         /// <summary>
         /// The buffer containing computed pixel data.
         /// </summary>
-        public BufferElement[] VideoBuffer { get; private set; }
+        public BufferElement[] VideoBuffer { get; }
 
         /// <summary>
         /// The buffer containing computed PCM audio data.
         /// </summary>
-        public BufferElement[] SoundBuffer { get; private set; }
+        public BufferElement[] SoundBuffer { get; }
 
         #region Constructors
 

@@ -12,18 +12,20 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameControl : ControlBase
     {
+        static readonly AudioDevice AudioDeviceDefault = new AudioDevice(0, 0, 0);
+
         #region Fields
 
         readonly uint[] _normalPalette = new uint[0x100];
         readonly uint[] _darkerPalette = new uint[0x100];
-        uint[] _currentPalette;
+        uint[] _currentPalette = Array.Empty<uint>();
 
         readonly static object _dynamicBitmapLocker = new object();
         readonly static byte[] _dynamicBitmapData = new byte[4 * 320 * 230];
         readonly static SizeU _dynamicBitmapDataSize = Struct.ToSizeU(320, 230);
         IFrameRenderer _frameRenderer = new FrameRendererDefault();
         D2DBitmapInterpolationMode _dynamicBitmapInterpolationMode = D2DBitmapInterpolationMode.NearestNeighbor;
-        DynamicBitmap _dynamicBitmap;
+        DynamicBitmap _dynamicBitmap = DynamicBitmapDefault;
         RectF _dynamicBitmapRect;
         bool _dynamicBitmapDataUpdated;
 
@@ -36,7 +38,7 @@ namespace EMU7800.D2D.Shell
         readonly int[] _paddleSwaps = { 0, 1, 2, 3 };
         int _currentKeyboardPlayerNo;
 
-        Task _workerTask;
+        Task _workerTask = Task.CompletedTask;
         bool _stopRequested, _paused, _soundOff;
 
         bool _calibrationNeeded, _calibrating, _frameRateChangeNeeded;
@@ -132,9 +134,7 @@ namespace EMU7800.D2D.Shell
 
         public void Start(ImportedGameProgramInfo importedGameProgramInfo, bool startFresh = false)
         {
-            if (importedGameProgramInfo == null)
-                throw new ArgumentNullException("importedGameProgramInfo");
-            if (_workerTask != null)
+            if (!_workerTask.IsCompleted)
                 return;
 
             _stopRequested = false;
@@ -147,7 +147,7 @@ namespace EMU7800.D2D.Shell
 
         public void StartSnow()
         {
-            if (_workerTask != null)
+            if (!_workerTask.IsCompleted)
                 return;
             _stopRequested = false;
             _workerTask = Task.Factory.StartNew(RunSnow, TaskCreationOptions.LongRunning);
@@ -155,7 +155,7 @@ namespace EMU7800.D2D.Shell
 
         public void Stop()
         {
-            if (_workerTask == null)
+            if (_workerTask.IsCompleted)
                 return;
             _stopRequested = true;
             try
@@ -165,7 +165,6 @@ namespace EMU7800.D2D.Shell
             catch (AggregateException)
             {
             }
-            _workerTask = null;
             SafeDispose(ref _dynamicBitmap);
         }
 
@@ -249,12 +248,12 @@ namespace EMU7800.D2D.Shell
             _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].KeyboardKeyPressed(_currentKeyboardPlayerNo, key, down);
         }
 
-        public override void MouseMoved(uint pointerId, int x, int y, int dx, int dy)
+        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
         {
             _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].MouseMoved(_currentKeyboardPlayerNo, x, y, dx, dy);
         }
 
-        public override void MouseButtonChanged(uint pointerId, int x, int y, bool down)
+        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].MouseButtonChanged(_currentKeyboardPlayerNo, x, y, down, IsInTouchMode);
         }
@@ -283,7 +282,7 @@ namespace EMU7800.D2D.Shell
         {
             lock (_dynamicBitmapLocker)
             {
-                if (_dynamicBitmap == null)
+                if (_dynamicBitmap == DynamicBitmapDefault)
                 {
                     _dynamicBitmap = gd.CreateDynamicBitmap(_dynamicBitmapDataSize);
                     _dynamicBitmap.CopyFromMemory(_dynamicBitmapData);
@@ -324,22 +323,38 @@ namespace EMU7800.D2D.Shell
             var importedGameProgramInfo = args.Item1;
             var startFresh = args.Item2;
 
-            var datastoreService = new DatastoreService();
-            var machineStateInfo = startFresh ? null : datastoreService.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
-            if (machineStateInfo == null)
+            var machineStateInfo = MachineStateInfo.Default;
+            var dsSvc = new DatastoreService();
+
+            if (!startFresh)
             {
-                var machineService = new MachineFactory();
-                machineStateInfo = machineService.Create(importedGameProgramInfo);
+                var result = dsSvc.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
+                if (result.IsOk)
+                {
+                    machineStateInfo = result.Value;
+                }
+            }
+
+            if (machineStateInfo == MachineStateInfo.Default)
+            {
+                var mSvc = new MachineFactory();
+                var result = mSvc.Create(importedGameProgramInfo);
+                if (result.IsOk)
+                {
+                    machineStateInfo = result.Value;
+                }
                 _calibrationNeeded = true;
             }
-            if (machineStateInfo == null)
+
+            if (machineStateInfo == MachineStateInfo.Default)
             {
                 _stopRequested = true;
                 return;
             }
 
-            _soundOff = machineStateInfo.SoundOff;
             var machine = machineStateInfo.Machine;
+
+            _soundOff = machineStateInfo.SoundOff;
 
             _maxFrameRate = machine.FrameHZ;
             CurrentFrameRate = _maxFrameRate;
@@ -385,7 +400,7 @@ namespace EMU7800.D2D.Shell
             stopwatch.Start();
 
             long ticksPerFrame = 0;
-            AudioDevice audioDevice = null;
+            var audioDevice = AudioDeviceDefault;
 
             while (!_stopRequested)
             {
@@ -423,10 +438,10 @@ namespace EMU7800.D2D.Shell
                 if (_frameRateChangeNeeded)
                 {
                     _frameRateChangeNeeded = false;
-                    if (audioDevice != null)
+                    if (audioDevice != AudioDeviceDefault)
                     {
                         audioDevice.Dispose();
-                        audioDevice = null;
+                        audioDevice = AudioDeviceDefault;
                     }
                     if (_proposedFrameRate > CurrentFrameRate)
                         _calibrationNeeded = true;
@@ -434,13 +449,13 @@ namespace EMU7800.D2D.Shell
                     ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
                 }
 
-                if (!_soundOff && audioDevice == null)
+                if (!_soundOff && audioDevice == AudioDeviceDefault)
                 {
                     var soundFrequency = frameBuffer.SoundBufferByteLength * CurrentFrameRate;
                     audioDevice = new AudioDevice(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
                 }
 
-                var buffersQueued = (audioDevice != null) ? audioDevice.BuffersQueued : -1;
+                var buffersQueued = (audioDevice != AudioDeviceDefault) ? audioDevice.BuffersQueued : -1;
                 long adjustment = 0;
                 if (buffersQueued < 0 || _soundOff || _paused)
                     adjustment = 0;
@@ -453,7 +468,7 @@ namespace EMU7800.D2D.Shell
                 if (!_paused)
                     machine.ComputeNextFrame(frameBuffer);
 
-                if (!_soundOff && !_paused && audioDevice != null)
+                if (!_soundOff && !_paused && audioDevice != AudioDeviceDefault)
                 {
                     UpdateAudioBytes(frameBuffer, audioBytes);
                     audioDevice.SubmitBuffer(audioBytes);
@@ -483,7 +498,7 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            if (audioDevice != null)
+            if (audioDevice != AudioDeviceDefault)
                 audioDevice.Dispose();
 
             machineStateInfo.CurrentPlayerNo = _currentKeyboardPlayerNo + 1;
@@ -491,8 +506,8 @@ namespace EMU7800.D2D.Shell
             machineStateInfo.InterpolationMode = (int)_dynamicBitmapInterpolationMode;
             machineStateInfo.SoundOff = _soundOff;
 
-            datastoreService.PersistMachine(machineStateInfo);
-            datastoreService.PersistScreenshot(machineStateInfo, _dynamicBitmapData);
+            dsSvc.PersistMachine(machineStateInfo);
+            dsSvc.PersistScreenshot(machineStateInfo, _dynamicBitmapData);
         }
 
         void RunSnow()
@@ -503,7 +518,7 @@ namespace EMU7800.D2D.Shell
             const int soundBufferByteLength = 524;
             var soundFrequency = soundBufferByteLength * CurrentFrameRate;
             var ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
-            var audioDevice = _soundOff ? null : new AudioDevice(soundFrequency, soundBufferByteLength, 8);
+            var audioDevice = _soundOff ? AudioDeviceDefault : new AudioDevice(soundFrequency, soundBufferByteLength, 8);
             var audioBytes = new byte[soundBufferByteLength];
 
             var stopwatch = new Stopwatch();
@@ -514,7 +529,7 @@ namespace EMU7800.D2D.Shell
                 var startTick = stopwatch.ElapsedTicks;
                 var endTick = startTick + ticksPerFrame;
 
-                var buffersQueued = (!_soundOff && audioDevice != null) ? audioDevice.BuffersQueued : -1;
+                var buffersQueued = (!_soundOff && audioDevice != AudioDeviceDefault) ? audioDevice.BuffersQueued : -1;
                 long adjustment = 0;
                 if (buffersQueued < 0)
                     adjustment = 0;
@@ -524,7 +539,7 @@ namespace EMU7800.D2D.Shell
                     adjustment = ticksPerFrame >> 1;
                 endTick += adjustment;
 
-                if (!_soundOff && audioDevice != null)
+                if (!_soundOff && audioDevice != AudioDeviceDefault)
                 {
                     for (var i = 0; i < audioBytes.Length; i++)
                         audioBytes[i] = (byte) (random.Next(2) | 0x80);
@@ -549,69 +564,43 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            if (audioDevice != null)
+            if (audioDevice != AudioDeviceDefault)
                 audioDevice.Dispose();
         }
 
         static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo, FrameBuffer frameBuffer)
-        {
-            switch (machineStateInfo.GameProgramInfo.MachineType)
+            => machineStateInfo.GameProgramInfo.MachineType switch
             {
-                case MachineType.A2600NTSC:
-                case MachineType.A2600PAL:
-                    return new FrameRenderer160Blender(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData);
-                    //return new FrameRenderer160(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData);
-                case MachineType.A7800NTSC:
-                case MachineType.A7800PAL:
-                    return new FrameRenderer320(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData);
-                default:
-                    return null;
-            }
-        }
+                MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160Blender(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
+              //MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData);
+                MachineType.A7800NTSC or MachineType.A7800PAL => new FrameRenderer320(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
+                _ => throw new ArgumentException("Unknown MachineType", nameof(machineStateInfo))
+            };
 
         IInputAdapter ToInputAdapter(MachineStateInfo machineState, int jackNo)
         {
-            IInputAdapter inputAdapter;
-            switch (ToController(machineState, jackNo))
+            IInputAdapter inputAdapter = (ToController(machineState, jackNo)) switch
             {
-                case Controller.Joystick:
-                case Controller.BoosterGrip:
-                    inputAdapter = new InputAdapterJoystick(_inputState, jackNo);
-                    break;
-                case Controller.ProLineJoystick:
-                    inputAdapter = new InputAdapterProlineJoystick(_inputState, jackNo);
-                    break;
-                case Controller.Keypad:
-                    inputAdapter = new InputAdapterKeypad(_inputState, jackNo);
-                    break;
-                case Controller.Paddles:
-                    inputAdapter = new InputAdapterPaddle(_inputState, jackNo);
-                    break;
-                case Controller.Driving:
-                    inputAdapter = new InputAdapterDrivingPaddle(_inputState, jackNo);
-                    break;
-                case Controller.Lightgun:
-                    inputAdapter = new InputAdapterLightgun(_inputState, jackNo, machineState.Machine.FirstScanline, machineState.GameProgramInfo.MachineType);
-                    break;
-                default:
-                    inputAdapter = _defaultInputAdapter;
-                    break;
-            }
+                Controller.Joystick or Controller.BoosterGrip => new InputAdapterJoystick(_inputState, jackNo),
+                Controller.ProLineJoystick => new InputAdapterProlineJoystick(_inputState, jackNo),
+                Controller.Keypad          => new InputAdapterKeypad(_inputState, jackNo),
+                Controller.Paddles         => new InputAdapterPaddle(_inputState, jackNo),
+                Controller.Driving         => new InputAdapterDrivingPaddle(_inputState, jackNo),
+                Controller.Lightgun        => new InputAdapterLightgun(_inputState, jackNo, machineState.Machine.FirstScanline, machineState.GameProgramInfo.MachineType),
+                _                          => _defaultInputAdapter,
+            };
             inputAdapter.ScreenResized(Location, Size);
             return inputAdapter;
         }
 
         static Controller ToController(MachineStateInfo machineState, int jackNo)
-        {
-            var controller = (jackNo & 1) == 0
+            => (jackNo & 1) == 0
                 ? machineState.Machine.InputState.LeftControllerJack
                 : machineState.Machine.InputState.RightControllerJack;
-            return controller;
-        }
 
         void InitializePalettes(int[] sourcePalette)
         {
-            for (var i = 0; i < _normalPalette.Length; i++)
+            for (var i = 0; i < _normalPalette.Length && i < sourcePalette.Length; i++)
             {
                 _normalPalette[i] = (uint)sourcePalette[i];
 

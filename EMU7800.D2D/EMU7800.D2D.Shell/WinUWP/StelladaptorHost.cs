@@ -10,6 +10,8 @@ using Windows.Storage;
 using Windows.System.Display;
 using Windows.UI.Core;
 
+#nullable disable
+
 namespace EMU7800.D2D.Shell
 {
     public enum HidControllerType : byte
@@ -205,10 +207,9 @@ namespace EMU7800.D2D.Shell
 
         static void DeviceOnRemoved2(DeviceInformationUpdate e)
         {
-            System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnRemoved2: {0}", e.Id);
+            System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnRemoved2: " + e.Id);
 
-            int controllerNo;
-            if (!_hidDeviceIds.TryGetValue(e.Id, out controllerNo))
+            if (!_hidDeviceIds.TryGetValue(e.Id, out int controllerNo))
                 return;
 
             CloseHidDevice(controllerNo);
@@ -231,10 +232,9 @@ namespace EMU7800.D2D.Shell
 
         static async void DeviceOnAdded2(DeviceInformation e)
         {
-            System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnAdded2: {0}", e.Id);
+            System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnAdded2: " + e.Id);
 
-            int controllerNo;
-            if (_hidDeviceIds.TryGetValue(e.Id, out controllerNo))
+            if (_hidDeviceIds.TryGetValue(e.Id, out int controllerNo))
                 return;
 
             for (; controllerNo < MAX_CONTROLLER_COUNT; controllerNo++)
@@ -278,7 +278,7 @@ namespace EMU7800.D2D.Shell
             catch (Exception)
             {
                 // InvalidOperationException can occur if this is not running on the UI thread and the user needs a consent prompt
-                System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnAdded2: Unexpected Exception on HidDevice.FromIdAsync: {0}", e.Id);
+                System.Diagnostics.Debug.WriteLine("EMU7800.D2D.Shell.StelladaptorHost.DeviceOnAdded2: Unexpected Exception on HidDevice.FromIdAsync: " + e.Id);
                 return;
             }
 

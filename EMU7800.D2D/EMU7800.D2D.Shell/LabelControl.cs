@@ -8,8 +8,8 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        TextLayout _textLayout;
-        string _text, _textFontFamilyName = Styles.NormalFontFamily;
+        TextLayout _textLayout = TextLayoutDefault;
+        string _text = string.Empty, _textFontFamilyName = Styles.NormalFontFamily;
         int _textFontSize = Styles.NormalFontSize;
         DWriteTextAlignment _textAlignment = DWriteTextAlignment.Leading;
         DWriteParaAlignment _paraAlignment = DWriteParaAlignment.Near;
@@ -20,7 +20,7 @@ namespace EMU7800.D2D.Shell
 
         public string Text
         {
-            get { return _text; }
+            get => _text;
             set
             {
                 if (_text == value)
@@ -90,7 +90,7 @@ namespace EMU7800.D2D.Shell
 
         public override void Render(GraphicsDevice gd)
         {
-            if (_textLayout == null && Text != null)
+            if (_textLayout == TextLayoutDefault)
                 CreateResources2(gd);
             gd.DrawText(_textLayout, Location, D2DSolidColorBrush.White);
         }

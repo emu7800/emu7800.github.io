@@ -12,7 +12,9 @@ namespace EMU7800.Core
 {
     public sealed class RAM6116 : IDevice
     {
-        readonly byte[] RAM;
+        public static readonly RAM6116 Default = new RAM6116();
+
+        readonly byte[] RAM = new byte[0x800];
 
         #region IDevice Members
 
@@ -20,8 +22,8 @@ namespace EMU7800.Core
 
         public byte this[ushort addr]
         {
-            get { return RAM[addr & 0x07ff]; }
-            set { RAM[addr & 0x07ff] = value; }
+            get => RAM[addr & 0x07ff];
+            set => RAM[addr & 0x07ff] = value;
         }
 
         #endregion
@@ -30,12 +32,6 @@ namespace EMU7800.Core
 
         public RAM6116()
         {
-            RAM = new byte[0x800];
-        }
-
-        public RAM6116(byte[] ram)
-        {
-            RAM = ram;
         }
 
         #endregion
@@ -45,7 +41,7 @@ namespace EMU7800.Core
         public RAM6116(DeserializationContext input)
         {
             if (input == null)
-                throw new ArgumentNullException("input");
+                throw new ArgumentNullException(nameof(input));
 
             input.CheckVersion(1);
             RAM = input.ReadExpectedBytes(0x800);
@@ -54,7 +50,7 @@ namespace EMU7800.Core
         public void GetObjectData(SerializationContext output)
         {
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
 
             output.WriteVersion(1);
             output.Write(RAM);
