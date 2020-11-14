@@ -930,17 +930,17 @@ namespace EMU7800.Services
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Constructors
+    #region Constructors
 
         public DatastoreService()
         {
         }
 
-        #endregion
+    #endregion
 
-        #region Helpers
+    #region Helpers
 
         const string
             RomPropertiesName              = "ROMProperties.csv",

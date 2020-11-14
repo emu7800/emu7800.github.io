@@ -103,13 +103,15 @@ namespace EMU7800.Services
             {
 #if WIN32
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", assetFilename);
-                bytes = await Task.Run(() => File.ReadAllBytes(path));
+                var bytes = await Task.Run(() => File.ReadAllBytes(path));
+                result = Ok(new BytesType(bytes));
 #elif MONODROID
                 using (var input = MonoDroid.MainActivity.App.Assets.Open(assetFilename))
                 using (var ms = new MemoryStream())
                 {
                     await input.CopyToAsync(ms);
-                    bytes = ms.ToArray();
+                    var bytes = ms.ToArray();
+                    result = Ok(new BytesType(bytes));
                 }
 #endif
             }
@@ -129,7 +131,7 @@ namespace EMU7800.Services
             return (Ok(), bytes);
         }
 
-        #region Helpers
+    #region Helpers
 
         static Result Ok()
             => new();

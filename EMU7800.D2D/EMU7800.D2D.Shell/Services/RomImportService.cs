@@ -76,7 +76,7 @@ namespace EMU7800.Services
                 if (getBytesResult.IsFail || bytes.Length == 0)
                     continue;
 
-                var md5key = _romBytesService.ToMD5Key(bytes);
+                var md5key = _romBytesService.ToMD5Key(bytesResult.Value.Bytes);
 
                 if (!gameProgramInfoMd5Dict.TryGetValue(md5key, out var gpiList))
                 {
