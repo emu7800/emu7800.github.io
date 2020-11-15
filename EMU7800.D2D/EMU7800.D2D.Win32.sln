@@ -14,7 +14,9 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{9304275b-bf2e-47f6-b223-140b4b7aa32b}*SharedItemsImports = 13
+		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{9866cff5-65e5-4269-89d2-16963a05d523}*SharedItemsImports = 13
 		..\EMU7800.Core\EMU7800.Core.Shared.projitems*{f3c71f2a-1386-472f-ad5d-18c026faf0d8}*SharedItemsImports = 5
+		EMU7800.D2D.Shell\EMU7800.D2D.Shared.projitems*{f3c71f2a-1386-472f-ad5d-18c026faf0d8}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

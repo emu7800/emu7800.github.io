@@ -12,7 +12,7 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameControl : ControlBase
     {
-        static readonly AudioDevice AudioDeviceDefault = new AudioDevice(0, 0, 0);
+        static readonly AudioDevice AudioDeviceDefault = new(0, 0, 0);
 
         #region Fields
 
@@ -118,7 +118,7 @@ namespace EMU7800.D2D.Shell
 
         public int BuffersQueued { get; private set; }
 
-        public int MinFramesPerSecond { get { return 4; } }
+        public static int MinFramesPerSecond { get { return 4; } }
 
         public int MaxFramesPerSecond { get { return _maxFrameRate; } }
 
@@ -324,11 +324,10 @@ namespace EMU7800.D2D.Shell
             var startFresh = args.Item2;
 
             var machineStateInfo = MachineStateInfo.Default;
-            var dsSvc = new DatastoreService();
 
             if (!startFresh)
             {
-                var (result, newNachineStateInfo) = dsSvc.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
+                var (result, newNachineStateInfo) = DatastoreService.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
                 if (result.IsOk)
                 {
                     machineStateInfo = newNachineStateInfo;
@@ -506,8 +505,8 @@ namespace EMU7800.D2D.Shell
             machineStateInfo.InterpolationMode = (int)_dynamicBitmapInterpolationMode;
             machineStateInfo.SoundOff = _soundOff;
 
-            dsSvc.PersistMachine(machineStateInfo);
-            dsSvc.PersistScreenshot(machineStateInfo, _dynamicBitmapData);
+            DatastoreService.PersistMachine(machineStateInfo);
+            DatastoreService.PersistScreenshot(machineStateInfo, _dynamicBitmapData);
         }
 
         void RunSnow()

@@ -154,14 +154,12 @@ namespace EMU7800.D2D.Shell
 
         static void ImportCheck()
         {
-            var importService = new RomImportService();
-            importService.ImportDefaultsIfNecessary();
+            RomImportService.ImportDefaultsIfNecessary();
         }
 
         static void SettingsCheck()
         {
-            var settingsService = new SettingsService();
-            settingsService.GetSettings();
+            SettingsService.GetSettings();
         }
 
         static string GetBuildConfiguration()

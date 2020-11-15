@@ -77,7 +77,7 @@ namespace EMU7800.D2D.Shell
 
         static async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
         {
-            var (_, bytes) = await AssetService.GetAssetBytesAsync(asset);
+            var bytes = await AssetService.GetAssetBytesAsync(asset);
             return gd.CreateStaticBitmap(bytes);
         }
 

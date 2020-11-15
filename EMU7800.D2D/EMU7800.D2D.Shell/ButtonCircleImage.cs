@@ -76,10 +76,7 @@ namespace EMU7800.D2D.Shell
         #region Helpers
 
         static async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
-        {
-            var (_, bytes) = await AssetService.GetAssetBytesAsync(asset);
-            return gd.CreateStaticBitmap(bytes);
-        }
+            => gd.CreateStaticBitmap(await AssetService.GetAssetBytesAsync(asset));
 
         #endregion
     }

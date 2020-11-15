@@ -11,14 +11,14 @@ namespace EMU7800.D2D.Shell
 
         #region Fields
 
-        readonly PageBackStackStateService _pageStateService = new PageBackStackStateService();
+        readonly PageBackStackStateService _pageStateService = new();
 
         static int _nextIdToProvision;
         readonly int _id = _nextIdToProvision++;
 
         #endregion
 
-        protected ControlCollection Controls = new ControlCollection();
+        protected ControlCollection Controls = new();
 
         public virtual void OnNavigatingHere()
         {

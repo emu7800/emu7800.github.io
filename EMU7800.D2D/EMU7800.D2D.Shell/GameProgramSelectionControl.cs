@@ -14,8 +14,6 @@ namespace EMU7800.D2D.Shell
 
         #region Fields
 
-        readonly AssetService _assetService = new();
-
         StaticBitmap _playRest          = StaticBitmapDefault;
         StaticBitmap _playRestInverted  = StaticBitmapDefault;
         StaticBitmap _pauseRest         = StaticBitmapDefault;
@@ -47,7 +45,7 @@ namespace EMU7800.D2D.Shell
         int _focusedCollectionIndex = -1, _focusedCollectionItemIndex = -1;
         int _focusCandidateCollectionIndex, _focusCandidateCollectionItemIndex;
 
-        ScrollColumnInfo[] _scrollColumnInfoSet = new ScrollColumnInfo[0];
+        ScrollColumnInfo[] _scrollColumnInfoSet = Array.Empty<ScrollColumnInfo>();
         RectF _gameProgramViewItemCollectionsRect;
         RectF _clipRect;
 
@@ -356,10 +354,10 @@ namespace EMU7800.D2D.Shell
         {
             base.CreateResources(gd);
 
-            var (_, playRestBytes) = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
-            var (_, playRestInvertedBytes) = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
-            var (_, pauseRestBytes) = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
-            var (_, pauseRestInvertedBytes) = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
+            var playRestBytes          = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
+            var playRestInvertedBytes  = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
+            var pauseRestBytes         = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
+            var pauseRestInvertedBytes = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
             _playRest = gd.CreateStaticBitmap(playRestBytes);
             _playRestInverted = gd.CreateStaticBitmap(playRestInvertedBytes);

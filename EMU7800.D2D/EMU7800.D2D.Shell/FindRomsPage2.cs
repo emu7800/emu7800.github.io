@@ -9,7 +9,6 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly RomImportService _romImportService = new RomImportService();
         readonly LabelControl _labelStep;
         readonly ButtonBase _buttonOk, _buttonCancel;
         readonly NumberControl _numbercontrolRomCount;
@@ -44,8 +43,8 @@ namespace EMU7800.D2D.Shell
             };
             Controls.Add(_labelStep, _buttonOk, _buttonCancel, _numbercontrolRomCount);
 
-            _buttonOk.Clicked += _buttonOk_Clicked;
-            _buttonCancel.Clicked += _buttonCancel_Clicked;
+            _buttonOk.Clicked += ButtonOk_Clicked;
+            _buttonCancel.Clicked += ButtonCancel_Clicked;
 
             StartImport();
         }
@@ -63,21 +62,21 @@ namespace EMU7800.D2D.Shell
         public override void Update(TimerDevice td)
         {
             base.Update(td);
-            _numbercontrolRomCount.Value = _romImportService.FilesRecognized;
+            _numbercontrolRomCount.Value = RomImportService.FilesRecognized;
         }
 
         #endregion
 
         #region Event Handlers
 
-        void _buttonOk_Clicked(object sender, EventArgs eventArgs)
+        void ButtonOk_Clicked(object sender, EventArgs eventArgs)
         {
             PopPage();
         }
 
-        void _buttonCancel_Clicked(object sender, EventArgs eventArgs)
+        void ButtonCancel_Clicked(object sender, EventArgs eventArgs)
         {
-            _romImportService.CancelRequested = true;
+            RomImportService.CancelRequested = true;
         }
 
         #endregion

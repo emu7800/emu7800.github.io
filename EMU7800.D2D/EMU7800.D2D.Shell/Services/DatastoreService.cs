@@ -638,7 +638,7 @@ namespace EMU7800.Services
 
     #region ROM Files
 
-        public (Result, IEnumerable<string>) QueryLocalMyDocumentsForRomCandidates()
+        public static (Result, IEnumerable<string>) QueryLocalMyDocumentsForRomCandidates()
         {
 #if WIN32
             var path = EnvironmentGetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -648,7 +648,7 @@ namespace EMU7800.Services
             return (Ok(), QueryForRomCandidates(path));
         }
 
-        public (Result, IEnumerable<string>) QueryProgramFolderForRomCandidates()
+        public static (Result, IEnumerable<string>) QueryProgramFolderForRomCandidates()
         {
 #if WIN32
             var path = Path.Combine(_currentWorkingDir, "Assets");
@@ -699,9 +699,9 @@ namespace EMU7800.Services
 
     #region Machine Persistence
 
-        ISet<string> _cachedPersistedDir;
+        static ISet<string> _cachedPersistedDir;
 
-        public bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
+        public static bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
         {
             if (gameProgramInfo == null)
                 return false;
@@ -714,7 +714,7 @@ namespace EMU7800.Services
             return exists;
         }
 
-        public Result PersistMachine(MachineStateInfo machineStateInfo)
+        public static Result PersistMachine(MachineStateInfo machineStateInfo)
         {
             EnsurePersistedStateGameProgramsDir();
 
@@ -745,7 +745,7 @@ namespace EMU7800.Services
             return Ok();
         }
 
-        public Result PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
+        public static Result PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
         {
             EnsurePersistedStateGameProgramsDir();
 
@@ -785,7 +785,7 @@ namespace EMU7800.Services
             return Ok();
         }
 
-        public (Result, MachineStateInfo) RestoreMachine(GameProgramInfo gameProgramInfo)
+        public static (Result, MachineStateInfo) RestoreMachine(GameProgramInfo gameProgramInfo)
         {
             EnsurePersistedStateGameProgramsDir();
 
@@ -828,27 +828,27 @@ namespace EMU7800.Services
             return (Ok(), lines);
         }
 
-        public (Result, IEnumerable<string>) GetGameProgramInfoFromImportRepository()
+        public static (Result, IEnumerable<string>) GetGameProgramInfoFromImportRepository()
         {
             EnsureUserAppDataStoreRoot();
             var lines = GetFileTextLines(ToGameProgramInfoImportRepositoryPath());
             return (Ok(), lines);
         }
 
-        public (Result, IEnumerable<string>) GetSpecialBinaryInfoFromImportRepository()
+        public static (Result, IEnumerable<string>) GetSpecialBinaryInfoFromImportRepository()
         {
             EnsureUserAppDataStoreRoot();
             var lines = GetFileTextLines(ToSpecialBinaryInfoImportRepositoryPath());
             return (Ok(), lines);
         }
 
-        public Result SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public static Result SetGameProgramInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
             EnsureUserAppDataStoreRoot();
             return SetFileTextLines(ToGameProgramInfoImportRepositoryPath(), csvFileContent);
         }
 
-        public Result SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
+        public static Result SetSpecialBinaryInfoToImportRepository(IEnumerable<string> csvFileContent)
         {
             EnsureUserAppDataStoreRoot();
             return SetFileTextLines(ToSpecialBinaryInfoImportRepositoryPath(), csvFileContent);
@@ -858,7 +858,7 @@ namespace EMU7800.Services
 
     #region Global Settings
 
-        public (Result, ApplicationSettings) GetSettings()
+        public static (Result, ApplicationSettings) GetSettings()
         {
             EnsureUserAppDataStoreRoot();
 
@@ -882,7 +882,7 @@ namespace EMU7800.Services
             }
         }
 
-        public Result SaveSettings(ApplicationSettings settings)
+        public static Result SaveSettings(ApplicationSettings settings)
         {
             EnsureUserAppDataStoreRoot();
 
@@ -990,7 +990,7 @@ namespace EMU7800.Services
             return path;
         }
 
-        Result EnsurePersistedStateGameProgramsDir()
+        static Result EnsurePersistedStateGameProgramsDir()
         {
             EnsureUserAppDataStoreRoot();
 
@@ -1008,7 +1008,7 @@ namespace EMU7800.Services
             return Ok();
         }
 
-        ISet<string> GetFilesFromPersistedGameProgramsDir()
+        static ISet<string> GetFilesFromPersistedGameProgramsDir()
         {
             EnsurePersistedStateGameProgramsDir();
             var persistedGameProgramsDir = Path.Combine(_userAppDataStoreRoot, PersistedGameProgramsName);
@@ -1034,7 +1034,7 @@ namespace EMU7800.Services
 
         static string ToSpecialBinaryInfoImportRepositoryPath() => ToLocalUserAppDataPath(RomImportsSpecialBinariesName);
 
-        void EnsureUserAppDataStoreRoot()
+        static void EnsureUserAppDataStoreRoot()
         {
             if (_userAppDataStoreRoot == null)
                 _userAppDataStoreRoot = DiscoverOrCreateUserAppDataStoreRoot();
@@ -1062,7 +1062,7 @@ namespace EMU7800.Services
         }
 #endif
 
-        string DiscoverOrCreateUserAppDataStoreRoot()
+        static string DiscoverOrCreateUserAppDataStoreRoot()
         {
             const string directoryPrefix = "EMU7800.";
 
@@ -1071,6 +1071,7 @@ namespace EMU7800.Services
                 throw new ApplicationException("Unable to probe SpecialFolder.LocalApplicationData.");
 
             string selectedDirectoryPath = null;
+
             var selectedDirectoryPathCreationTimeUtc = DateTime.MinValue;
 
             var directories = EnumerateDirectories(appDataRoot);
@@ -1263,33 +1264,7 @@ namespace EMU7800.Services
         }
 
         static IEnumerable<string> GetFileTextLines(string path)
-        {
-            StreamReader fs = null;
-            while (true)
-            {
-                string line;
-                try
-                {
-                    if (fs == null)
-                        fs = new StreamReader(new FileStream(path, FileMode.Open), Encoding.UTF8);
-                    line = fs.ReadLine();
-                }
-                catch (Exception ex)
-                {
-                    if (IsCriticalException(ex))
-                        throw;
-                    if (fs != null)
-                        fs.Dispose();
-                    yield break;
-                }
-                if (line == null)
-                {
-                    fs.Dispose();
-                    yield break;
-                }
-                yield return line;
-            }
-        }
+            => File.ReadAllLines(path, Encoding.UTF8);
 
         static Result SetFileTextLines(string path, IEnumerable<string> csvFileContent)
         {

@@ -110,18 +110,15 @@ namespace EMU7800.D2D.Shell
 
         static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
         {
-            var datastoreService = new DatastoreService();
-            var gameProgramLibraryService = new GameProgramLibraryService();
-
             var (_, refRepoLines) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
-            var (_, importRepoLines) = datastoreService.GetGameProgramInfoFromImportRepository();
+            var (_, importRepoLines) = DatastoreService.GetGameProgramInfoFromImportRepository();
 
             var gameProgramInfoDict = RomPropertiesService.ToGameProgramInfo(refRepoLines)
                 .GroupBy(gpi => gpi.MD5).ToDictionary(g => g.Key, g => g.ToList());
 
             var importedGameProgramInfoSet = RomPropertiesService.ToImportedGameProgramInfo(gameProgramInfoDict, importRepoLines);
 
-            var result = gameProgramLibraryService.GetGameProgramInfoViewItemCollections(importedGameProgramInfoSet);
+            var result = GameProgramLibraryService.GetGameProgramInfoViewItemCollections(importedGameProgramInfoSet);
             return result.ToArray();
         }
 
@@ -130,7 +127,7 @@ namespace EMU7800.D2D.Shell
             var datastoreService = new DatastoreService();
             foreach (var gpvi in gpivics.SelectMany(gpvi => gpvi.GameProgramInfoViewItemSet))
             {
-                gpvi.ImportedGameProgramInfo.PersistedStateExists = datastoreService.PersistedMachineExists(gpvi.ImportedGameProgramInfo.GameProgramInfo);
+                gpvi.ImportedGameProgramInfo.PersistedStateExists = DatastoreService.PersistedMachineExists(gpvi.ImportedGameProgramInfo.GameProgramInfo);
             }
         }
 

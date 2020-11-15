@@ -19,29 +19,29 @@ namespace EMU7800.Services
 
         #region Fields
 
-        readonly Md5HashService _md5HashService = new Md5HashService();
-        readonly byte[] _atari7800Tag, _actualCartDataStartsHereTag;
+        static readonly byte[] Atari7800Tag                = Encoding.UTF8.GetBytes("ATARI7800");
+        static readonly byte[] ActualCartDataStartsHereTag = Encoding.UTF8.GetBytes("ACTUAL CART DATA STARTS HERE");
 
         #endregion
 
-        public bool IsA78Format(byte[] bytes)
+        public static bool IsA78Format(byte[] bytes)
         {
             if (bytes == null || bytes.Length < A78FILE_HEADER_SIZE)
                 return false;
 
             var offset = 0x01;
-            for (var i = 0; i < _atari7800Tag.Length; i++)
-                if (bytes[offset + i] != _atari7800Tag[i])
+            for (var i = 0; i < Atari7800Tag.Length; i++)
+                if (bytes[offset + i] != Atari7800Tag[i])
                     return false;
             offset = 0x64;
-            for (var i = 0; i < _actualCartDataStartsHereTag.Length; i++)
-                if (bytes[offset + i] != _actualCartDataStartsHereTag[i])
+            for (var i = 0; i < ActualCartDataStartsHereTag.Length; i++)
+                if (bytes[offset + i] != ActualCartDataStartsHereTag[i])
                     return true;  // Used to return false when this tag did not match, however, it does not seem strictly required for the a78 format
 
             return true;
         }
 
-        public GameProgramInfo ToGameProgramInfoFromA78Format(byte[] bytes)
+        public static GameProgramInfo ToGameProgramInfoFromA78Format(byte[] bytes)
         {
             if (bytes == null || bytes.Length < 0x40)
                 bytes = new byte[0x40];
@@ -57,7 +57,7 @@ namespace EMU7800.Services
 
             var cartType = To78CartType(cartSize, usesPokey, cartType1, cartType2);
 
-            return new GameProgramInfo
+            return new()
             {
                 Title       = title,
                 MachineType = (region == 0) ? MachineType.A7800NTSC : MachineType.A7800PAL,
@@ -67,7 +67,7 @@ namespace EMU7800.Services
             };
         }
 
-        public byte[] RemoveA78HeaderIfNecessary(byte[] bytes)
+        public static byte[] RemoveA78HeaderIfNecessary(byte[] bytes)
         {
             if (!IsA78Format(bytes))
                 return bytes;
@@ -77,14 +77,10 @@ namespace EMU7800.Services
             return romBytes;
         }
 
-        public string ToMD5Key(byte[] bytes)
-        {
-            var rawBytes = RemoveA78HeaderIfNecessary(bytes);
-            var stringifiedHash = _md5HashService.ComputeHash(rawBytes);
-            return stringifiedHash;
-        }
+        public static string ToMD5Key(byte[] bytes)
+            => Md5HashService.ComputeHash(RemoveA78HeaderIfNecessary(bytes));
 
-        public SpecialBinaryType ToSpecialBinaryType(string md5key)
+        public static SpecialBinaryType ToSpecialBinaryType(string md5key)
         {
             if (string.IsNullOrWhiteSpace(md5key))
                 return SpecialBinaryType.None;
@@ -99,7 +95,7 @@ namespace EMU7800.Services
             return SpecialBinaryType.None;
         }
 
-        public CartType InferCartTypeFromSize(MachineType machineType, int romByteCount)
+        public static CartType InferCartTypeFromSize(MachineType machineType, int romByteCount)
         {
             switch (machineType)
             {
@@ -132,8 +128,6 @@ namespace EMU7800.Services
 
         public RomBytesService()
         {
-            _atari7800Tag = Encoding.UTF8.GetBytes("ATARI7800");
-            _actualCartDataStartsHereTag = Encoding.UTF8.GetBytes("ACTUAL CART DATA STARTS HERE");
         }
 
         #endregion

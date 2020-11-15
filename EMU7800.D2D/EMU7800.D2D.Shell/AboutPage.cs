@@ -88,7 +88,7 @@ namespace EMU7800.D2D.Shell
 
         static async Task<string> GetTextAssetAsync(Asset textAsset)
         {
-            var (_, bytes) = await AssetService.GetAssetBytesAsync(textAsset);
+            var bytes = await AssetService.GetAssetBytesAsync(textAsset);
             return System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }
 

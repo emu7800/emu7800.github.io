@@ -10,13 +10,6 @@ namespace EMU7800.Services
 {
     public class MachineFactory
     {
-        #region Fields
-
-        readonly DatastoreService _datastoreService = new();
-        readonly RomBytesService _romBytesService = new();
-
-        #endregion
-
         public (Result, MachineStateInfo) Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
         {
             if (importedGameProgramInfo.StorageKeySet.Count == 0)
@@ -33,12 +26,12 @@ namespace EMU7800.Services
                 return (Fail("MachineService.Create: Unable to load ROM bytes"), new());
             }
 
-            romBytes = _romBytesService.RemoveA78HeaderIfNecessary(romBytes);
+            romBytes = RomBytesService.RemoveA78HeaderIfNecessary(romBytes);
 
             var gameProgramInfo = importedGameProgramInfo.GameProgramInfo;
 
             if (gameProgramInfo.CartType == CartType.Unknown)
-                gameProgramInfo.CartType = _romBytesService.InferCartTypeFromSize(gameProgramInfo.MachineType, romBytes.Length);
+                gameProgramInfo.CartType = RomBytesService.InferCartTypeFromSize(gameProgramInfo.MachineType, romBytes.Length);
 
             if (gameProgramInfo.MachineType != MachineType.A7800NTSC
             &&  gameProgramInfo.MachineType != MachineType.A7800PAL)
@@ -119,9 +112,9 @@ namespace EMU7800.Services
                 .Select(b => new HSC7800(b))
                 .FirstOrDefault() ?? HSC7800.Default;
 
-        IEnumerable<ImportedSpecialBinaryInfo> GetSpecialBinaryInfoSet()
+        static IEnumerable<ImportedSpecialBinaryInfo> GetSpecialBinaryInfoSet()
         {
-            var (_, lines) = _datastoreService.GetSpecialBinaryInfoFromImportRepository();
+            var (_, lines) = DatastoreService.GetSpecialBinaryInfoFromImportRepository();
             return RomPropertiesService.ToImportedSpecialBinaryInfo(lines);
         }
 

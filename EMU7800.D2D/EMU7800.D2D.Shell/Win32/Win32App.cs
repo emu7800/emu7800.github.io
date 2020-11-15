@@ -10,7 +10,7 @@ namespace EMU7800.D2D.Shell.Win32
 {
     public sealed class Win32App : IDisposable
     {
-        readonly TimerDevice _timerDevice = new TimerDevice();
+        readonly TimerDevice _timerDevice = new();
         readonly PageBackStackHost _pageBackStack;
         readonly Win32Window _win;
 
@@ -128,7 +128,6 @@ namespace EMU7800.D2D.Shell.Win32
 
         static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var datastore = new DatastoreService();
             DatastoreService.DumpCrashReport(e.ExceptionObject as Exception);
             if (Debugger.IsAttached)
                 Debugger.Break();

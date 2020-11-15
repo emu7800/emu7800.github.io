@@ -16,7 +16,7 @@ namespace EMU7800.Services
 
     public partial class AssetService
     {
-        public async Task<Result<BytesType>> GetAssetBytesAsync(Asset asset)
+        public async Task<byte[]> GetAssetBytesAsync(Asset asset)
         {
             lock (_locker)
             {
@@ -88,39 +88,25 @@ namespace EMU7800.Services
 
     public partial class AssetService
     {
-        public static async Task<(Result, byte[])> GetAssetBytesAsync(Asset asset)
+        public static async Task<byte[]> GetAssetBytesAsync(Asset asset)
         {
             lock (_locker)
             {
                 if (_resourceCache.ContainsKey(asset))
-                    return (Ok(), _resourceCache[asset]);
+                    return _resourceCache[asset];
             }
 
             var assetFilename = _assetToFilenameMapping[asset];
 
-            byte[] bytes;
-            try
-            {
 #if WIN32
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", assetFilename);
-                var bytes = await Task.Run(() => File.ReadAllBytes(path));
-                result = Ok(new BytesType(bytes));
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", assetFilename);
+            var bytes = await Task.Run(() => File.ReadAllBytes(path));
 #elif MONODROID
-                using (var input = MonoDroid.MainActivity.App.Assets.Open(assetFilename))
-                using (var ms = new MemoryStream())
-                {
-                    await input.CopyToAsync(ms);
-                    var bytes = ms.ToArray();
-                    result = Ok(new BytesType(bytes));
-                }
+                using var input = MonoDroid.MainActivity.App.Assets.Open(assetFilename);
+                using var ms = new MemoryStream();
+                await input.CopyToAsync(ms);
+                var bytes = ms.ToArray();
 #endif
-            }
-            catch (Exception ex)
-            {
-                if (IsCriticalException(ex))
-                    throw;
-                return (Fail("GetAssetBytesAsync: Failure loading asset: " + assetFilename, ex), Array.Empty<byte>());
-            }
 
             lock (_locker)
             {
@@ -128,25 +114,8 @@ namespace EMU7800.Services
                     _resourceCache.Add(asset, bytes);
             }
 
-            return (Ok(), bytes);
+            return bytes;
         }
-
-    #region Helpers
-
-        static Result Ok()
-            => new();
-
-        static Result Fail(string message, Exception ex)
-            => new(message + $": {ex.GetType().Name}: {ex.Message}");
-
-        static bool IsCriticalException(Exception ex)
-            => ex is OutOfMemoryException
-                  or StackOverflowException
-                  or System.Threading.ThreadAbortException
-                  or System.Threading.ThreadInterruptedException
-                  or TypeInitializationException;
-
-    #endregion
     }
 
 #else

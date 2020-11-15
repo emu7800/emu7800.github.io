@@ -10,7 +10,7 @@ namespace EMU7800.Services
 {
     public class GameProgramLibraryService
     {
-        public IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
+        public static IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
             => ToGameProgramInfoViewItemCollections(
                     ToDict(importedGameProgramInfoSet, igpi => To2600or7800Word(igpi)),
                     igpi => igpi.GameProgramInfo.Title,
@@ -44,7 +44,7 @@ namespace EMU7800.Services
                    });
 
         static GameProgramInfoViewItem ToGameProgramInfoViewItem(ImportedGameProgramInfo igpi, Func<ImportedGameProgramInfo, string> subTitleFunc)
-            => new GameProgramInfoViewItem
+            => new()
             {
                 Title = igpi.GameProgramInfo.Title,
                 SubTitle = subTitleFunc(igpi),

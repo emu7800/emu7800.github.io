@@ -26,11 +26,9 @@ namespace EMU7800.D2D.Shell.Win32
 
         public static void Start()
         {
-            using (var win = new Win32Window())
-            using (var app = new Win32App(win))
-            {
-                app.Run();
-            }
+            using var win = new Win32Window();
+            using var app = new Win32App(win);
+            app.Run();
         }
 
         public static void StartGameProgram(string romPath)
@@ -43,22 +41,17 @@ namespace EMU7800.D2D.Shell.Win32
 
         public static void StartGameProgram(GameProgramInfoViewItem gpivi)
         {
-            using (var win = new Win32Window())
-            using (var app = new Win32App(win, gpivi))
-            {
-                app.Run();
-            }
+            using var win = new Win32Window();
+            using var app = new Win32App(win, gpivi);
+            app.Run();
         }
 
         public static GameProgramInfoViewItem ToGameProgramInfoViewItem(string romPath)
         {
-            var datastoreService = new DatastoreService();
-            var romBytesService = new RomBytesService();
+            var (_, bytes) = DatastoreService.GetRomBytes(romPath);
+            var md5key = RomBytesService.ToMD5Key(bytes);
 
-            var (getBytesResult, bytes) = DatastoreService.GetRomBytes(romPath);
-            var md5key = romBytesService.ToMD5Key(bytes);
-
-            var (getContentResult, csvFileContent) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
+            var (_, csvFileContent) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
             var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContent);
 
             return gameProgramInfoSet
@@ -67,7 +60,7 @@ namespace EMU7800.D2D.Shell.Win32
                 {
                     Title    = gpi.Title,
                     SubTitle = $"{gpi.Manufacturer} {gpi.Year}",
-                    ImportedGameProgramInfo  = new ImportedGameProgramInfo
+                    ImportedGameProgramInfo  = new()
                     {
                         GameProgramInfo      = gpi,
                         PersistedStateExists = false,

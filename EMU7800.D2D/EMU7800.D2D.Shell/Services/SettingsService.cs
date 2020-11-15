@@ -8,18 +8,16 @@ namespace EMU7800.Services
     {
         #region Fields
 
-        static ApplicationSettings _applicationSettings = new ApplicationSettings();
+        static ApplicationSettings _applicationSettings = new();
         static bool _applicationSettingsLoaded;
-
-        readonly DatastoreService _datastoreService = new DatastoreService();
 
         #endregion
 
-        public ApplicationSettings GetSettings()
+        public static ApplicationSettings GetSettings()
         {
             if (!_applicationSettingsLoaded)
             {
-                var (result, settings) = _datastoreService.GetSettings();
+                var (result, settings) = DatastoreService.GetSettings();
                 if (result.IsOk)
                 {
                     _applicationSettings = settings;
@@ -29,14 +27,14 @@ namespace EMU7800.Services
             return _applicationSettings.ToDeepCopy();
         }
 
-        public void SaveSettings(ApplicationSettings settings)
+        public static void SaveSettings(ApplicationSettings settings)
         {
             // don't bother saving if nothing has changed
             if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls
                 && settings.TouchControlSeparation == _applicationSettings.TouchControlSeparation)
                 return;
             _applicationSettings = settings.ToDeepCopy();
-            _datastoreService.SaveSettings(settings);
+            DatastoreService.SaveSettings(settings);
         }
     }
 }
