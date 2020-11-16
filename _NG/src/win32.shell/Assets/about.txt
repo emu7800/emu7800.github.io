@@ -1,0 +1,21 @@
+﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
+
+WHATS NEW—Increased joystick deadzone to make Xbox 360 controllers usable under Win 8.1. Added ability to swap input jacks via the W key.
+
+BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; use the search icon on the title screen to import them from your Documents folder. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
+
+PERFORMANCE—EMU7800 will be able to run full speed on systems with the equivalent of a single 1.7 GHz CPU core. The frame rate will automatically adjust downward to maintain smoothness if necessary.
+
+GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
+
+- Use keys F1-F4 to direct the keyboard input to the respective player number
+- Use the W key to swap input jacks, the Q key to swap P1/P2 paddles, the E key to swap P3/P4 paddles
+- Only mouse input is mapped to the Lightgun controller
+- Number pad keys are mapped to the Atari Keypad controller
+- The H key toggles the Heads Up Display (HUD) during gameplay
+- Left and right fire buttons are mapped to the Z/X keys respectively
+- The PageDown/PageUp keys toggle power
+
+HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
+
+ABOUT—EMU7800 is fundamentally a Windows platform porting experiment, using an Atari emulator code base from a previous project. It is primarily authored in C# with some C++ to interoperate with Direct2D. Current platforms are Win32, Win8-8.1 PC, Win8-8.1 RT, and Windows Phone 8.1. Xbox One will become a new target should the requisite SDK become available in the future.
