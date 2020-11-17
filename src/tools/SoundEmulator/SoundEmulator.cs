@@ -9,7 +9,7 @@ namespace EMU7800.SoundEmulator
     {
         #region Fields
 
-        readonly Random _random = new Random();
+        readonly Random _random = new();
         readonly int _buffers;
 
         Thread _workerThread;
@@ -112,8 +112,7 @@ namespace EMU7800.SoundEmulator
 
             while (!_stopRequested)
             {
-                if (GetRegisterSettingsForNextFrame != null)
-                    GetRegisterSettingsForNextFrame(this);
+                GetRegisterSettingsForNextFrame?.Invoke(this);
 
                 if (_playNoise)
                     ComputeNoiseFrame(framebuffer);

@@ -107,8 +107,7 @@ Usage:
             var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
             if (startPos < 0)
                 return defaultValue;
-            int num;
-            return int.TryParse(curArg.Substring(startPos + 1), out num) ? num : defaultValue;
+            return int.TryParse(curArg[(startPos + 1)..], out var num) ? num : defaultValue;
         }
 
         static string GetStrArg(string curArg, string defaultValue)
@@ -116,7 +115,7 @@ Usage:
             var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
             if (startPos < 0)
                 return defaultValue;
-            return curArg.Substring(startPos + 1);
+            return curArg[(startPos + 1)..];
         }
 
         static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

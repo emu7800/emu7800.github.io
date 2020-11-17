@@ -7,7 +7,6 @@
  * 
  */
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security;
 using EMU7800.Core;
@@ -89,7 +88,6 @@ namespace EMU7800.Win
             return 0;
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static int SetVolume(int left, int right)
         {
             var uLeft = (uint)left;
@@ -98,7 +96,6 @@ namespace EMU7800.Win
             return waveOutSetVolume(Hwo, nVolume);
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal static int GetVolume()
         {
             uint nVolume;
@@ -153,14 +150,14 @@ namespace EMU7800.Win
             Storage = IntPtr.Zero;
         }
 
+#pragma warning disable IDE1006 // Naming Styles
+
         [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
         private static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
         private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
         private static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
 
@@ -178,5 +175,7 @@ namespace EMU7800.Win
 
         [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
         private static extern uint waveOutClose(IntPtr hwo);
+
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

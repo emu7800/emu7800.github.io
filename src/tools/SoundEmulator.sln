@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.64
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMU7800.SoundEmulator", "SoundEmulator\EMU7800.SoundEmulator.csproj", "{BF665A6E-1C0A-400E-A405-B9D761CB5DDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMU7800.Core", "..\core\EMU7800.Core.csproj", "{A3B2F767-FC92-40DD-AFAF-5ED34EBC99D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF665A6E-1C0A-400E-A405-B9D761CB5DDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF665A6E-1C0A-400E-A405-B9D761CB5DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF665A6E-1C0A-400E-A405-B9D761CB5DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF665A6E-1C0A-400E-A405-B9D761CB5DDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3B2F767-FC92-40DD-AFAF-5ED34EBC99D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3B2F767-FC92-40DD-AFAF-5ED34EBC99D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3B2F767-FC92-40DD-AFAF-5ED34EBC99D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3B2F767-FC92-40DD-AFAF-5ED34EBC99D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19379FF6-C707-4DAF-A64E-A59BE927AB2B}
+	EndGlobalSection
+EndGlobal
