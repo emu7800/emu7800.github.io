@@ -1,8 +1,7 @@
-- explore the AppData root issue where imports were made by an executable at another location previously
-  - filtering: should do a "file exists" on each and clear when not found
-- consider activating the importer
+x explore the AppData root issue where imports were made by an executable at another location previously
+- consider deactivating the importer or removing
 - check to see how to add emu icon to top left corner of window
-- Assets, roms, romproperties--needs some reconfigurating
+x Assets, roms, romproperties--needs some reconfigurating
 - update the about text
 x port the launcher
 x port the sound emulator
@@ -10,4 +9,4 @@ x port the sound emulator
 - build an installable package
 x move legacy content to OneDrive for posterity
 x create the NG repository
-
+- test to check whether the vcredistDependencies are actually needed
