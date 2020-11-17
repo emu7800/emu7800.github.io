@@ -158,11 +158,3 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
-
-/DROP
-/EMU7800.D2D/EMU7800.D2D.WinUWP.VC.opendb
-/EMU7800.D2D/EMU7800.D2D.WinUWP.VC.VC.opendb
-/EMU7800.D2D/EMU7800.D2D.WinUWP.VC.db
-/EMU7800.D2D/EMU7800.D2D.Shell/WinUWP/BundleArtifacts
-/EMU7800.D2D/EMU7800.D2D.Shell/WinUWP/_pkginfo.txt
-/EMU7800.D2D/EMU7800.D2D.Shell/WinUWP/_scale-200.appx
