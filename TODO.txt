@@ -4,10 +4,10 @@
 - check to see how to add emu icon to top left corner of window
 - Assets, roms, romproperties--needs some reconfigurating
 - update the about text
-- port the launcher
-- port the sound emulator
+x port the launcher
+x port the sound emulator
 - update README with information and build instructions (combined info from that old sourceforge README)
 - build an installable package
-- move legacy content to OneDrive for posterity
-- create the NG repository
+x move legacy content to OneDrive for posterity
+x create the NG repository
 
