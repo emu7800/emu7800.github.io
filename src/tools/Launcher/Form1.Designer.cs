@@ -63,7 +63,7 @@
             this.buttonBrowse.TabIndex = 0;
             this.buttonBrowse.Text = "Select ROM File";
             this.buttonBrowse.UseVisualStyleBackColor = true;
-            this.buttonBrowse.Click += new System.EventHandler(this.buttonBrowse_Click);
+            this.buttonBrowse.Click += new System.EventHandler(this.ButtonBrowse_Click);
             // 
             // buttonStart
             // 
@@ -73,7 +73,7 @@
             this.buttonStart.TabIndex = 6;
             this.buttonStart.Text = "Start";
             this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            this.buttonStart.Click += new System.EventHandler(this.ButtonStart_Click);
             // 
             // comboBoxMachineType
             // 
@@ -83,7 +83,7 @@
             this.comboBoxMachineType.Name = "comboBoxMachineType";
             this.comboBoxMachineType.Size = new System.Drawing.Size(89, 21);
             this.comboBoxMachineType.TabIndex = 2;
-            this.comboBoxMachineType.SelectedValueChanged += new System.EventHandler(this.comboBoxMachineType_SelectedValueChanged);
+            this.comboBoxMachineType.SelectedValueChanged += new System.EventHandler(this.ComboBoxMachineType_SelectedValueChanged);
             // 
             // comboBoxCartType
             // 
