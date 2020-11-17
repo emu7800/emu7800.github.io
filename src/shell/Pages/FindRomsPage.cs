@@ -1,10 +1,9 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Assets;
+using EMU7800.D2D.Interop;
 using System;
 using System.Threading.Tasks;
-using EMU7800.D2D.Interop;
-using EMU7800.Services;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.D2D.Shell
 {

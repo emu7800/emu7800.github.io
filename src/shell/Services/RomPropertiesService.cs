@@ -58,54 +58,6 @@ namespace EMU7800.Services
                 .ToList()
                 ;
 
-        public static IEnumerable<ImportedGameProgramInfo> ToImportedGameProgramInfo(
-                Dictionary<string, List<GameProgramInfo>> gameProgramInfoDict,
-                IEnumerable<string> importRepositoryCsv)
-            => importRepositoryCsv
-                .Select(line => Split(line, 2))
-                .Select(sl => new
-                {
-                    MD5key     = sl[0],
-                    StorageKey = sl[1]
-                })
-                .Where(r => IsMD5(r.MD5key) && !string.IsNullOrWhiteSpace(r.StorageKey))
-                .GroupBy(r => r.MD5key)
-                .Select(g => new
-                {
-                    g.Key,
-                    StorageKeySet = new HashSet<string>(g.Select(r => r.StorageKey)),
-                    GpiList = gameProgramInfoDict.TryGetValue(g.Key, out var list) ? (IEnumerable<GameProgramInfo>)list : Array.Empty<GameProgramInfo>()
-                })
-                .Where(r => r.GpiList.Any())
-                .SelectMany(r => r.GpiList
-                                  .Select(gpi => new ImportedGameProgramInfo
-                                                 {
-                                                     GameProgramInfo = gpi,
-                                                     StorageKeySet = r.StorageKeySet
-                                                 }))
-                .ToList()
-                ;
-
-        public static IEnumerable<ImportedSpecialBinaryInfo> ToImportedSpecialBinaryInfo(IEnumerable<string> importSpecialBinaryCsv)
-            => importSpecialBinaryCsv
-                .Select(csv => Split(csv, 2))
-                .Select(sl => new ImportedSpecialBinaryInfo
-                {
-                    Type = ToSpecialBinaryType(sl[0]),
-                    StorageKey = sl[1]
-                })
-                .Where(ipbi => ipbi.Type != SpecialBinaryType.None)
-                .ToList()
-                ;
-
-        public static IEnumerable<string> ToImportRepositoryCsvFileContent(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfo)
-            => importedGameProgramInfo
-                .SelectMany(igpi => igpi.StorageKeySet, (igpi, storageKey) => $"{igpi.GameProgramInfo.MD5},\"{storageKey}\"");
-
-        public static IEnumerable<string> ToImportSpecialBinaryCsvFileContent(IEnumerable<ImportedSpecialBinaryInfo> importedSpecialBinaries)
-            => importedSpecialBinaries
-                .Select(isbi => $"{isbi.Type},\"{isbi.StorageKey}\"");
-
         #region Helpers
 
         static IEnumerable<string> VerifyReferenceRepositoryCsvHeader(IEnumerable<string> refRepositoryCsv)
@@ -207,12 +159,6 @@ namespace EMU7800.Services
 
         static bool IsMD5(string s)
             => !string.IsNullOrWhiteSpace(s) && _regexMd5KeyType.IsMatch(s);
-
-        static SpecialBinaryType ToSpecialBinaryType(string s)
-            => !string.IsNullOrWhiteSpace(s)
-                && Enum.IsDefined(typeof(SpecialBinaryType), s)
-                && Enum.TryParse(s, true, out SpecialBinaryType result)
-                    ? result : SpecialBinaryType.None;
 
         static bool IsEquals(string s1, string s2)
             => (s1 != null) && s1.Equals(s2, StringComparison.OrdinalIgnoreCase);

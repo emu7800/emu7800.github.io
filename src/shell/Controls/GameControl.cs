@@ -336,8 +336,7 @@ namespace EMU7800.D2D.Shell
 
             if (machineStateInfo == MachineStateInfo.Default)
             {
-                var mSvc = new MachineFactory();
-                var (result, newMachineStateInfo) = mSvc.Create(importedGameProgramInfo);
+                var (result, newMachineStateInfo) = MachineFactory.Create(importedGameProgramInfo);
                 if (result.IsOk)
                 {
                     machineStateInfo = newMachineStateInfo;

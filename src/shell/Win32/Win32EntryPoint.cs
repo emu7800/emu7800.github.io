@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EMU7800.Assets;
 using EMU7800.D2D.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -51,8 +52,8 @@ namespace EMU7800.D2D.Shell.Win32
             var (_, bytes) = DatastoreService.GetRomBytes(romPath);
             var md5key = RomBytesService.ToMD5Key(bytes);
 
-            var (_, csvFileContent) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
-            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContent);
+            var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
+            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(romPropertiesCsv);
 
             return gameProgramInfoSet
                 .Where(gpi => gpi.MD5 == md5key)

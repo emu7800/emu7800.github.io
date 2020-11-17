@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EMU7800.Win32.Interop.v142"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMU7800.Core", "core\EMU7800.Core.csproj", "{1D33AB2D-FC36-4987-8628-CACD56A590C1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EMU7800.Assets", "assets\EMU7800.Assets.csproj", "{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,18 @@ Global
 		{1D33AB2D-FC36-4987-8628-CACD56A590C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D33AB2D-FC36-4987-8628-CACD56A590C1}.Release|x64.ActiveCfg = Release|Any CPU
 		{1D33AB2D-FC36-4987-8628-CACD56A590C1}.Release|x64.Build.0 = Release|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Profile|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Profile|Any CPU.Build.0 = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Profile|x64.ActiveCfg = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Profile|x64.Build.0 = Debug|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB4437D9-8F5A-4392-9D12-3F07FE43E0E2}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,7 +10,7 @@ namespace EMU7800.Services
 {
     public class MachineFactory
     {
-        public (Result, MachineStateInfo) Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
+        public static (Result, MachineStateInfo) Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
         {
             if (importedGameProgramInfo.StorageKeySet.Count == 0)
                 throw new ArgumentException("importedGameProgramInfo.StorageKeySet", nameof(importedGameProgramInfo));
@@ -80,11 +80,11 @@ namespace EMU7800.Services
 
         #region Helpers
 
-        Bios7800 GetBios7800(GameProgramInfo gameProgramInfo)
+        static Bios7800 GetBios7800(GameProgramInfo gameProgramInfo)
             => PickFirstBios7800(ToBiosCandidateList(gameProgramInfo));
 
-        IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
-            => GetSpecialBinaryInfoSet()
+        static IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
+            => DatastoreService.ImportedSpecialBinaryInfo
                 .Where(sbi => gameProgramInfo.MachineType == MachineType.A7800NTSC
                                 && (sbi.Type == SpecialBinaryType.Bios7800Ntsc || sbi.Type == SpecialBinaryType.Bios7800NtscAlternate)
                            || gameProgramInfo.MachineType == MachineType.A7800PAL
@@ -100,8 +100,9 @@ namespace EMU7800.Services
                 .Select(b => new Bios7800(b))
                 .FirstOrDefault() ?? Bios7800.Default;
 
-        HSC7800 GetHSC7800()
-            => PickFirstHSC7800(GetSpecialBinaryInfoSet().Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800));
+        static HSC7800 GetHSC7800()
+            => PickFirstHSC7800(DatastoreService.ImportedSpecialBinaryInfo
+                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800));
 
         static HSC7800 PickFirstHSC7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
             => specialBinaryInfoSet
@@ -111,12 +112,6 @@ namespace EMU7800.Services
                 .Where(b => b.Length > 0)
                 .Select(b => new HSC7800(b))
                 .FirstOrDefault() ?? HSC7800.Default;
-
-        static IEnumerable<ImportedSpecialBinaryInfo> GetSpecialBinaryInfoSet()
-        {
-            var (_, lines) = DatastoreService.GetSpecialBinaryInfoFromImportRepository();
-            return RomPropertiesService.ToImportedSpecialBinaryInfo(lines);
-        }
 
         static Result Ok()
             => new();

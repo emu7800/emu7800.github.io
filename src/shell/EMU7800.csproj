@@ -20,6 +20,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\assets\EMU7800.Assets.csproj" />
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
     <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.v142.vcxproj" />
   </ItemGroup>

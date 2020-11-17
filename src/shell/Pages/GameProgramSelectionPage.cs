@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EMU7800.Assets;
 using EMU7800.D2D.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -110,15 +111,7 @@ namespace EMU7800.D2D.Shell
 
         static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
         {
-            var (_, refRepoLines) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
-            var (_, importRepoLines) = DatastoreService.GetGameProgramInfoFromImportRepository();
-
-            var gameProgramInfoDict = RomPropertiesService.ToGameProgramInfo(refRepoLines)
-                .GroupBy(gpi => gpi.MD5).ToDictionary(g => g.Key, g => g.ToList());
-
-            var importedGameProgramInfoSet = RomPropertiesService.ToImportedGameProgramInfo(gameProgramInfoDict, importRepoLines);
-
-            var result = GameProgramLibraryService.GetGameProgramInfoViewItemCollections(importedGameProgramInfoSet);
+            var result = GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo);
             return result.ToArray();
         }
 

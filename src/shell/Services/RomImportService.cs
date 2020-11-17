@@ -1,9 +1,9 @@
 ﻿// © Mike Murphy
 
-using System;
+using EMU7800.Assets;
+using EMU7800.Services.Dto;
 using System.Collections.Generic;
 using System.Linq;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.Services
 {
@@ -17,30 +17,13 @@ namespace EMU7800.Services
 
         public static Result Import()
         {
-            var (_, lines) = DatastoreService.QueryLocalMyDocumentsForRomCandidates();
-            return ImportWithDefaults(lines.Take(32768));
+            var (queryResult, lines) = DatastoreService.QueryROMSFolder();
+            return queryResult.IsOk ? Import(lines) : Fail(queryResult.ErrorMessage);
         }
 
         public static Result ImportDefaultsIfNecessary()
-        {
-            var (result1, lines1) = DatastoreService.GetSpecialBinaryInfoFromImportRepository();
-            var (result2, lines2) = DatastoreService.GetGameProgramInfoFromImportRepository();
-
-             if (result1.IsOk && lines1.Any()
-                && result2.IsOk && lines2.Any())
-                    return Ok();
-
-            return ImportDefaults();
-        }
-
-        public static Result ImportDefaults()
-            => ImportWithDefaults(Array.Empty<string>());
-
-        public static Result ImportWithDefaults(IEnumerable<string> pathSet)
-        {
-            var (_, lines) = DatastoreService.QueryProgramFolderForRomCandidates();
-            return Import(pathSet.Take(32768).Concat(lines));
-        }
+            => DatastoreService.ImportedGameProgramInfo.Any()
+                && DatastoreService.ImportedSpecialBinaryInfo.Any() ? Ok() : Import();
 
         static Result Import(IEnumerable<string> pathSet)
         {
@@ -49,8 +32,8 @@ namespace EMU7800.Services
             FilesExamined = 0;
             FilesRecognized = 0;
 
-            var (_, csvFileContent) = DatastoreService.GetGameProgramInfoFromReferenceRepository();
-            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(csvFileContent);
+            var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
+            var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(romPropertiesCsv);
             var gameProgramInfoMd5Dict = gameProgramInfoSet.GroupBy(r => r.MD5).ToDictionary(g => g.Key, g => g.ToList());
             var importedGameProgramInfoMd5Dict = new Dictionary<string, ImportedGameProgramInfo>();
             var importedSpecialBinaryInfoSet = new List<ImportedSpecialBinaryInfo>();
@@ -98,27 +81,11 @@ namespace EMU7800.Services
             if (CancelRequested)
                 return Fail("RomImportService.Import: Cancel requested");
 
-            var importedGameProgramInfo = importedGameProgramInfoMd5Dict.Values
+            DatastoreService.ImportedGameProgramInfo = importedGameProgramInfoMd5Dict.Values
                 .Where(igpi => igpi.StorageKeySet.Count > 0)
                     .OrderBy(igpi => igpi.GameProgramInfo.Title);
 
-            var csvFileContent1 = RomPropertiesService.ToImportRepositoryCsvFileContent(importedGameProgramInfo);
-            var result1 = DatastoreService.SetGameProgramInfoToImportRepository(csvFileContent1);
-
-            if (result1.IsFail)
-            {
-                CancelRequested = true;
-                return Fail("RomImportService.Import: Unable to save ROM import data: " + result1.ErrorMessage);
-            }
-
-            var csvFileContent2 = RomPropertiesService.ToImportSpecialBinaryCsvFileContent(importedSpecialBinaryInfoSet);
-            var result2 = DatastoreService.SetSpecialBinaryInfoToImportRepository(csvFileContent2);
-
-            if (result2.IsFail)
-            {
-                CancelRequested = true;
-                return Fail("RomImportService.Import: Unable to save ROM import data (special binaries): " + result2.ErrorMessage);
-            }
+            DatastoreService.ImportedSpecialBinaryInfo = importedSpecialBinaryInfoSet;
 
             return Ok();
         }

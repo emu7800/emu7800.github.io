@@ -1,10 +1,10 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Assets;
+using EMU7800.D2D.Interop;
+using EMU7800.Services.Dto;
 using System;
 using System.Linq;
-using EMU7800.D2D.Interop;
-using EMU7800.Services;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.D2D.Shell
 {
