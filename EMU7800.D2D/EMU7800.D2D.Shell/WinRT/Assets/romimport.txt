@@ -1,5 +1,0 @@
-﻿ROM File Import
-
-Selecting Next will launch a file chooser filtered to .bin, .a26, and .a78 file types. Files then recognized as ROMs will be imported and available for use.
-
-Previously imported ROMs and those included with the distribution will still be available after the import.

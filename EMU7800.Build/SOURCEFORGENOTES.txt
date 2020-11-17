@@ -1,5 +1,0 @@
-mimurphy,emu7800@web.sourceforge.net, SFTP
-/home/project-web/emu7800/htdocs/
-
-mimurphy,emu7800@frs.sourceforge.net, SFTP
-
