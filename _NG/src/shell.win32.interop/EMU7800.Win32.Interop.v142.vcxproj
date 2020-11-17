@@ -20,8 +20,7 @@
     <RootNamespace>EMU7800D2D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>EMU7800.Win32.Interop.v142</ProjectName>
-    <TargetFramework>net5.0</TargetFramework>
-    <TargetFrameworkVersion>net5.0</TargetFrameworkVersion>
+    <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">

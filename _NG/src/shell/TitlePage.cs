@@ -162,6 +162,15 @@ namespace EMU7800.D2D.Shell
             SettingsService.GetSettings();
         }
 
+        static string GetVersionInfo()
+        {
+            var ea = System.Reflection.Assembly.GetExecutingAssembly();
+            var name = ea.GetName();
+            var version = name.Version;
+            var versionInfo = $"Version {version.Major}.{version.Minor} (Core 1.4) {GetBuildConfiguration()}";
+            return versionInfo;
+        }
+
         static string GetBuildConfiguration()
         {
 #if DEBUG

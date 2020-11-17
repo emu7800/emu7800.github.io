@@ -13,7 +13,6 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly SettingsService _settingsService = new SettingsService();
         readonly ApplicationSettings _settings;
         readonly GameProgramInfoViewItem _gameProgramInfoViewItem;
         readonly GameControl _gameControl;
@@ -34,7 +33,7 @@ namespace EMU7800.D2D.Shell
         readonly ButtonTouchControl _touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2;
         readonly ControlCollection _touchbuttonCollection;
 
-        GameControllersWrapperBase _gameControllers = new GameControllersWrapperBase();
+        GameControllersWrapperBase _gameControllers = new();
 
         float _infoTextVisibilityTimer, _fpsChangeTimer;
         int _fpsChangeDirection, _hudPlayerInputNo;
