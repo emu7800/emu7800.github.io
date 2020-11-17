@@ -1,0 +1,30 @@
+ All values are hexidecimal, separated by whitespace.
+ Lines starting with a non-hex digit are ignored (comment lines.)
+ First six (6) values are TIA registers, next nine (9) values are POKEY registers, final value is number of frames to repeat.
+ Unspecified values are interpreted as zeros.
+ The following are the specific register orderings:
+ tAUDC0 tAUDF0 tAUDV0  tAUDC1 tAUDF1 tAUDV1    pAUDCTL  pAUDC1 pAUDF1  pAUDC2 pAUDF2  pAUDC3 pAUDF3  pAUDC4 pAUDF4
+
+0 00 f  0 00 f     00  00 00  00 00  00 00  00 00  3c
+1 00 f  1 00 f     00  00 00  00 00  00 00  00 00  3c
+2 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+3 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+4 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+5 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+6 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+7 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+8 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+9 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+a 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+b 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+c 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+d 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+e 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+f 00 f  0 00 0     00  00 00  00 00  00 00  00 00  3c
+
+0 00 0  0 00 0     80  0f a0  00 00  00 00  00 00  3c
+0 00 0  0 00 0     80  00 00  0f 80  00 00  00 00  3c
+0 00 0  0 00 0     80  00 00  00 00  0f 40  00 00  3c
+0 00 0  0 00 0     80  00 00  00 00  00 00  0f 10  3c
+
+0 0 0  0 0 0  0  00 00 00 00 1
