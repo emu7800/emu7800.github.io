@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using System;
+using System.Threading.Tasks;
 using EMU7800.Services;
 
 namespace EMU7800.D2D.Shell
@@ -77,6 +78,29 @@ namespace EMU7800.D2D.Shell
         void ButtonCancel_Clicked(object sender, EventArgs eventArgs)
         {
             RomImportService.CancelRequested = true;
+        }
+
+        #endregion
+
+        #region Helpers
+
+        async void StartImport()
+        {
+            _buttonCancel.IsVisible = true;
+
+            var result = await Task.Run(() => RomImportService.Import());
+
+            if (RomImportService.CancelRequested)
+            {
+                _labelStep.Text = result.IsFail ? "Canceled via internal error." : "Canceled.";
+            }
+            else
+            {
+                _labelStep.Text = "Completed.";
+            }
+
+            _buttonOk.IsVisible = true;
+            _buttonCancel.IsVisible = false;
         }
 
         #endregion

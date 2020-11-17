@@ -17,6 +17,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'!='Debug|AnyCPU'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
     <ProjectReference Include="..\shell.win32.interop\EMU7800.Win32.Interop.v142.vcxproj" />
