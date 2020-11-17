@@ -36,7 +36,7 @@ namespace EMU7800.Core
 {
     public sealed class TIASound
     {
-        public static readonly TIASound Default = new TIASound(MachineBase.Default, 60);
+        public static readonly TIASound Default = new(MachineBase.Default, 60);
 
         #region Constants and Tables
 

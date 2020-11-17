@@ -207,7 +207,7 @@ namespace EMU7800.Core
         /// Create a <see cref="FrameBuffer"/> with compatible dimensions for this machine.
         /// </summary>
         public FrameBuffer CreateFrameBuffer()
-            => new FrameBuffer(_VisiblePitch, _Scanlines);
+            => new(_VisiblePitch, _Scanlines);
 
         /// <summary>
         /// Serialize the state of the machine to the specified stream.

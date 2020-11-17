@@ -14,7 +14,7 @@ namespace EMU7800.Core
 {
     public sealed class PokeySound
     {
-        public static readonly PokeySound Default = new PokeySound(MachineBase.Default);
+        public static readonly PokeySound Default = new(MachineBase.Default);
 
         #region Constants and Tables
 
@@ -62,7 +62,7 @@ namespace EMU7800.Core
         readonly byte[] _poly05 = { 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1 };
         readonly byte[] _poly17 = new byte[POLY9_SIZE]; // should be POLY17_SIZE, but instead wrapping around to conserve storage
 
-        readonly Random _random = new Random();
+        readonly Random _random = new();
 
         #endregion
 
