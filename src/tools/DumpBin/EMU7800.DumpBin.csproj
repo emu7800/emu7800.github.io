@@ -19,6 +19,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\EMU7800.Core.csproj" />
-    <ProjectReference Include="..\..\shell\EMU7800.Shell.csproj" />
+    <ProjectReference Include="..\..\shell\EMU7800.csproj" />
   </ItemGroup>
 </Project>

@@ -27,6 +27,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\shell\EMU7800.Shell.csproj" />
+    <ProjectReference Include="..\..\shell\EMU7800.csproj" />
   </ItemGroup>
 </Project>
