@@ -11,6 +11,6 @@ namespace EMU7800.D2D.Shell
         public TextLayout TitleTextLayout { get; set; } = ControlBase.TextLayoutDefault;
         public string SubTitle { get; set; } = string.Empty;
         public TextLayout SubTitleTextLayout { get; set; } = ControlBase.TextLayoutDefault;
-        public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; } = new ImportedGameProgramInfo();
+        public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; } = new();
     }
 }

@@ -9,10 +9,6 @@ namespace EMU7800.Services
     using System.Linq;
     using System.Text;
 
-    // used by PersistScreenshot
-    using System.Windows.Media;
-    using System.Windows.Media.Imaging;
-
     using Core;
     using Dto;
 
@@ -135,14 +131,12 @@ namespace EMU7800.Services
             var name = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
 
-            const int width = 320, height = 230;
+            // data is 320w x 230h, BGR32 pixel format, width should scale x4
+
             try
             {
                 using var fs = new FileStream(path, FileMode.OpenOrCreate);
-                var image = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgr32, BitmapPalettes.Halftone256, data, width * 4);
-                var encoder = new PngBitmapEncoder { Interlace = PngInterlaceOption.Off };
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fs);
+                fs.Write(data);
                 fs.Flush(true);
                 fs.Close();
             }
