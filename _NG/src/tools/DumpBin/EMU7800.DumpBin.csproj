@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Authors>Mike Murphy</Authors>
+    <Description>An Atari 2600/7800 .NET-based Emulator</Description>
+    <Copyright>Copyright © 2012 Mike Murphy</Copyright>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
+    <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
+    <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'!='Debug|AnyCPU'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\core\CartType.cs" Link="Core\CartType.cs" />
+    <Compile Include="..\..\core\Controller.cs" Link="Core\Controller.cs" />
+    <Compile Include="..\..\core\MachineType.cs" Link="Core\MachineType.cs" />
+    <Compile Include="..\..\shell\Services\Dto\GameProgramInfo.cs" Link="Shell\Services\Dto\GameProgramInfo.cs" />
+    <Compile Include="..\..\shell\Services\Dto\ImportedSpecialBinaryInfo.cs" Link="Shell\Services\Dto\ImportedSpecialBinaryInfo.cs" />
+    <Compile Include="..\..\shell\Services\Md5HashService.cs" Link="Shell\Services\Md5HashService.cs" />
+    <Compile Include="..\..\shell\Services\RomBytesService.cs" Link="Shell\Services\RomBytesService.cs" />
+  </ItemGroup>
+</Project>
