@@ -35,8 +35,8 @@ namespace EMU7800.Services
 
         #endregion
 
-        public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> refRepositoryCsv)
-            => VerifyReferenceRepositoryCsvHeader(refRepositoryCsv)
+        public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> romPropertiesCsv)
+            => VerifyReferenceRepositoryCsvHeader(romPropertiesCsv)
                 .Select(csv => Split(csv, 13))
                 .Select(sl => new GameProgramInfo
                 {
@@ -60,9 +60,9 @@ namespace EMU7800.Services
 
         #region Helpers
 
-        static IEnumerable<string> VerifyReferenceRepositoryCsvHeader(IEnumerable<string> refRepositoryCsv)
-            => refRepositoryCsv.Take(1).First() == ReferenceRepositoryCsvHeader
-                ? refRepositoryCsv
+        static IEnumerable<string> VerifyReferenceRepositoryCsvHeader(IEnumerable<string> romPropertiesCsv)
+            => romPropertiesCsv.Take(1).First() == ReferenceRepositoryCsvHeader
+                ? romPropertiesCsv
                 : Enumerable.Empty<string>();
 
         static string[] Split(string line, int columnLimit = 13)

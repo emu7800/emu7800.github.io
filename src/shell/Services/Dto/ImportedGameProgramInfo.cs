@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace EMU7800.Services.Dto
 {
-    public class ImportedGameProgramInfo
+    public record ImportedGameProgramInfo
     {
-        public GameProgramInfo GameProgramInfo { get; set; } = new GameProgramInfo();
-        public ISet<string> StorageKeySet { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public GameProgramInfo GameProgramInfo { get; init; } = new();
+        public ISet<string> StorageKeySet { get; init; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public bool PersistedStateExists { get; set; }
     }
 }

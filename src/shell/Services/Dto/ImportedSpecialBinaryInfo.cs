@@ -11,9 +11,9 @@ namespace EMU7800.Services.Dto
         Hsc7800,
     }
 
-    public class ImportedSpecialBinaryInfo
+    public record ImportedSpecialBinaryInfo
     {
-        public SpecialBinaryType Type { get; set; }
-        public string StorageKey { get; set; } = string.Empty;
+        public SpecialBinaryType Type { get; init; } = SpecialBinaryType.None;
+        public string StorageKey { get; init; } = string.Empty;
     }
 }

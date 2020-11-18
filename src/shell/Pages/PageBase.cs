@@ -88,8 +88,8 @@ namespace EMU7800.D2D.Shell
 
         #region Object Overrides
 
-        public override bool Equals(object them)
-            => _id == ((PageBase)them)._id;
+        public override bool Equals(object? them)
+            => them != null && _id == ((PageBase)them)._id;
 
         public override int GetHashCode()
             => _id;

@@ -31,7 +31,13 @@ namespace EMU7800.Services
             var gameProgramInfo = importedGameProgramInfo.GameProgramInfo;
 
             if (gameProgramInfo.CartType == CartType.Unknown)
-                gameProgramInfo.CartType = RomBytesService.InferCartTypeFromSize(gameProgramInfo.MachineType, romBytes.Length);
+            {
+                var inferredCartType = RomBytesService.InferCartTypeFromSize(gameProgramInfo.MachineType, romBytes.Length);
+                if (inferredCartType != gameProgramInfo.CartType)
+                {
+                    gameProgramInfo = gameProgramInfo with { CartType = inferredCartType };
+                }
+            }
 
             if (gameProgramInfo.MachineType != MachineType.A7800NTSC
             &&  gameProgramInfo.MachineType != MachineType.A7800PAL)
@@ -69,14 +75,6 @@ namespace EMU7800.Services
                 Machine         = machine
             });
         }
-
-        #region Constructors
-
-        public MachineFactory()
-        {
-        }
-
-        #endregion
 
         #region Helpers
 

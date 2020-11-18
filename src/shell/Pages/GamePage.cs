@@ -33,7 +33,7 @@ namespace EMU7800.D2D.Shell
         readonly ButtonTouchControl _touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2;
         readonly ControlCollection _touchbuttonCollection;
 
-        GameControllersWrapperBase _gameControllers = new();
+        IGameControllers _gameControllers = EmptyGameControllers.Default;
 
         float _infoTextVisibilityTimer, _fpsChangeTimer;
         int _fpsChangeDirection, _hudPlayerInputNo;
@@ -246,7 +246,7 @@ namespace EMU7800.D2D.Shell
 
             _gameControllers.Dispose();
 
-            _gameControllers = new GameControllersWrapper(_gameControl, this);
+            _gameControllers = new GameControllersWrapper(_gameControl);
         }
 
         public override void OnNavigatingAway()
@@ -515,7 +515,7 @@ namespace EMU7800.D2D.Shell
             if (disposing)
             {
                 _gameControllers.Dispose();
-                _gameControllers = new GameControllersWrapperBase();
+                _gameControllers = EmptyGameControllers.Default;
             }
             base.Dispose(disposing);
         }
@@ -524,7 +524,7 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void ButtonBack_Clicked(object sender, EventArgs e)
+        void ButtonBack_Clicked(object? sender, EventArgs e)
         {
             if (_isHudOn)
                 HideHud();
@@ -532,7 +532,7 @@ namespace EMU7800.D2D.Shell
                 PopPage();
         }
 
-        void ButtonSettings_Clicked(object sender, EventArgs e)
+        void ButtonSettings_Clicked(object? sender, EventArgs e)
         {
             if (_isHudOn)
                 HideHud();
@@ -540,17 +540,17 @@ namespace EMU7800.D2D.Shell
                 ShowHud();
         }
 
-        void Hud_buttonPower_Checked(object sender, EventArgs e)
+        void Hud_buttonPower_Checked(object? sender, EventArgs e)
         {
             PowerOn();
         }
 
-        void Hud_buttonPower_Unchecked(object sender, EventArgs e)
+        void Hud_buttonPower_Unchecked(object? sender, EventArgs e)
         {
             PowerOff();
         }
 
-        void Hud_buttonInput_Clicked(object sender, EventArgs e)
+        void Hud_buttonInput_Clicked(object? sender, EventArgs e)
         {
             var key = new[] { KeyboardKey.F1, KeyboardKey.F2, KeyboardKey.F3, KeyboardKey.F4 }[++_hudPlayerInputNo & 3];
             KeyboardKeyPressed(key, false);

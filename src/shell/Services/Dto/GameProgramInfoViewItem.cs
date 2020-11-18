@@ -2,10 +2,10 @@
 
 namespace EMU7800.Services.Dto
 {
-    public class GameProgramInfoViewItem
+    public record GameProgramInfoViewItem
     {
-        public string Title { get; set; } = string.Empty;
-        public string SubTitle { get; set; } = string.Empty;
-        public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; } = new ImportedGameProgramInfo();
+        public string Title { get; init; } = string.Empty;
+        public string SubTitle { get; init; } = string.Empty;
+        public ImportedGameProgramInfo ImportedGameProgramInfo { get; init; } = new();
     }
 }

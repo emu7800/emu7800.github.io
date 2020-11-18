@@ -32,7 +32,7 @@ namespace EMU7800.D2D.Shell
 
         public string TextFontFamilyName
         {
-            get { return _textFontFamilyName; }
+            get => _textFontFamilyName;
             set
             {
                 if (_textFontFamilyName == value)
@@ -44,7 +44,7 @@ namespace EMU7800.D2D.Shell
 
         public int TextFontSize
         {
-            get { return _textFontSize; }
+            get => _textFontSize;
             set
             {
                 if (_textFontSize == value)
@@ -56,7 +56,7 @@ namespace EMU7800.D2D.Shell
 
         public DWriteTextAlignment TextAlignment
         {
-            get { return _textAlignment; }
+            get => _textAlignment;
             set
             {
                 if (_textAlignment == value)
@@ -68,7 +68,7 @@ namespace EMU7800.D2D.Shell
 
         public DWriteParaAlignment ParagraphAlignment
         {
-            get { return _paraAlignment; }
+            get => _paraAlignment;
             set
             {
                 if (_paraAlignment == value)

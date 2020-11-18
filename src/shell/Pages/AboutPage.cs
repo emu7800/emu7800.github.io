@@ -70,7 +70,7 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        private void ButtonBack_Clicked(object sender, EventArgs eventArgs)
+        private void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
         {
             PopPage();
         }

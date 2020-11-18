@@ -127,14 +127,6 @@ namespace EMU7800.Services
             return CartType.Unknown;
         }
 
-        #region Constructors
-
-        public RomBytesService()
-        {
-        }
-
-        #endregion
-
         #region Helpers
 
         static CartType To78CartType(int cartSize, bool usesPokey, byte cartType1, byte cartType2)

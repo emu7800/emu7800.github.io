@@ -25,7 +25,9 @@ namespace EMU7800.Services
             => DatastoreService.ImportedGameProgramInfo.Any()
                 && DatastoreService.ImportedSpecialBinaryInfo.Any() ? Ok() : Import();
 
-        static Result Import(IEnumerable<string> pathSet)
+        #region Helpers
+
+        static Result Import(IEnumerable<string> paths)
         {
             DirectoryScanCompleted = false;
             CancelRequested = false;
@@ -40,7 +42,7 @@ namespace EMU7800.Services
 
             DirectoryScanCompleted = true;
 
-            foreach (var path in pathSet)
+            foreach (var path in paths)
             {
                 if (CancelRequested)
                     break;
@@ -89,16 +91,6 @@ namespace EMU7800.Services
 
             return Ok();
         }
-
-        #region Constructors
-
-        public RomImportService()
-        {
-        }
-
-        #endregion
-
-        #region Helpers
 
         static Result Ok()
             => new();

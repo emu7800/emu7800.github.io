@@ -13,21 +13,21 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameProgramSelectionPage : PageBase
     {
-        readonly ButtonBase _buttonBack;
+        readonly BackButton _buttonBack;
         readonly LabelControl _labelSelectGameProgram;
         readonly GameProgramSelectionControl _gameProgramSelectionControl;
 
-        GameControllersWrapperBase _gameControllers = new();
+        IGameControllers _gameControllers = EmptyGameControllers.Default;
 
         bool _isGetGameProgramInfoViewItemCollectionAsyncStarted;
 
         public GameProgramSelectionPage()
         {
-            _buttonBack = new BackButton
+            _buttonBack = new()
             {
                 Location = Struct.ToPointF(5, 5)
             };
-            _labelSelectGameProgram = new LabelControl
+            _labelSelectGameProgram = new()
             {
                 Text = "Select Game Program",
                 TextFontFamilyName = Styles.NormalFontFamily,
@@ -36,7 +36,7 @@ namespace EMU7800.D2D.Shell
                 Size = Struct.ToSizeF(400, 200),
                 IsVisible = true
             };
-            _gameProgramSelectionControl = new GameProgramSelectionControl
+            _gameProgramSelectionControl = new()
             {
                 Location = Struct.ToBottomOf(_buttonBack, -5, 5)
             };
@@ -53,7 +53,7 @@ namespace EMU7800.D2D.Shell
             base.OnNavigatingHere();
 
             EnsureGameControllersAreDisposed();
-            _gameControllers = new GameControllersWrapper(_gameProgramSelectionControl);
+            _gameControllers = EmptyGameControllers.Default;
 
             if (_isGetGameProgramInfoViewItemCollectionAsyncStarted)
                 return;
@@ -86,14 +86,14 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void GameProgramSelectionControl_Selected(object sender, GameProgramSelectedEventArgs e)
+        void GameProgramSelectionControl_Selected(object? sender, GameProgramSelectedEventArgs e)
         {
             var gameProgramInfoViewItem = e.GameProgramInfoViewItem;
             var gamePage = new GamePage(gameProgramInfoViewItem);
             PushPage(gamePage);
         }
 
-        void ButtonBack_Clicked(object sender, EventArgs eventArgs)
+        void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
         {
             PopPage();
         }
@@ -110,24 +110,21 @@ namespace EMU7800.D2D.Shell
         }
 
         static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
-        {
-            var result = GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo);
-            return result.ToArray();
-        }
+            => GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo).ToArray();
 
         static void CheckPersistedMachineStates(IEnumerable<GameProgramInfoViewItemCollection> gpivics)
         {
-            var datastoreService = new DatastoreService();
             foreach (var gpvi in gpivics.SelectMany(gpvi => gpvi.GameProgramInfoViewItemSet))
             {
-                gpvi.ImportedGameProgramInfo.PersistedStateExists = DatastoreService.PersistedMachineExists(gpvi.ImportedGameProgramInfo.GameProgramInfo);
+                var pse = DatastoreService.PersistedMachineExists(gpvi.ImportedGameProgramInfo.GameProgramInfo);
+                gpvi.ImportedGameProgramInfo.PersistedStateExists = pse;
             }
         }
 
         void EnsureGameControllersAreDisposed()
         {
             _gameControllers.Dispose();
-            _gameControllers = new GameControllersWrapperBase();
+            _gameControllers = EmptyGameControllers.Default;
         }
 
         #endregion

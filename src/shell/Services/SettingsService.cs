@@ -1,4 +1,4 @@
-﻿// � Mike Murphy
+﻿// © Mike Murphy
 
 using EMU7800.Services.Dto;
 
@@ -24,7 +24,7 @@ namespace EMU7800.Services
                     _applicationSettingsLoaded = true;
                 }
             }
-            return _applicationSettings.ToDeepCopy();
+            return _applicationSettings with { };
         }
 
         public static void SaveSettings(ApplicationSettings settings)
@@ -33,7 +33,7 @@ namespace EMU7800.Services
             if (settings.ShowTouchControls == _applicationSettings.ShowTouchControls
                 && settings.TouchControlSeparation == _applicationSettings.TouchControlSeparation)
                 return;
-            _applicationSettings = settings.ToDeepCopy();
+            _applicationSettings = settings with { };
             DatastoreService.SaveSettings(settings);
         }
     }

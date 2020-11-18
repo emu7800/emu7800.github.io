@@ -14,10 +14,8 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        public double AvgMillisecondsPerSample
-        {
-            get { return (_count > 0) ? (1000.0 * _accumulatedBeginEndTicks / _count) / Stopwatch.Frequency : 0.0; }
-        }
+        public double AvgMillisecondsPerSample => (_count > 0)
+            ? 1000.0 * _accumulatedBeginEndTicks / _count / Stopwatch.Frequency : 0.0;
 
         public void Reset()
         {

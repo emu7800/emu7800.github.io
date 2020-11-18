@@ -7,7 +7,7 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class ControlCollection : ControlBase
     {
-        public static new readonly ControlCollection Default = new ControlCollection(0);
+        public static new readonly ControlCollection Default = new(0);
 
         #region Fields
 

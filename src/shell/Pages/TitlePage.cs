@@ -117,17 +117,17 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void ButtonPlayAtariToday_Clicked(object sender, EventArgs eventArgs)
+        void ButtonPlayAtariToday_Clicked(object? sender, EventArgs eventArgs)
         {
             PushPage(new GameProgramSelectionPage());
         }
 
-        void ButtonAbout_Clicked(object sender, EventArgs eventArgs)
+        void ButtonAbout_Clicked(object? sender, EventArgs eventArgs)
         {
             PushPage(new AboutPage());
         }
 
-        void ButtonFindRoms_Clicked(object sender, EventArgs eventArgs)
+        void ButtonFindRoms_Clicked(object? sender, EventArgs eventArgs)
         {
             PushPage(new FindRomsPage());
         }
@@ -167,7 +167,7 @@ namespace EMU7800.D2D.Shell
             var ea = System.Reflection.Assembly.GetExecutingAssembly();
             var name = ea.GetName();
             var version = name.Version;
-            var versionInfo = $"Version {version.Major}.{version.Minor} (Core 1.4) {GetBuildConfiguration()}";
+            var versionInfo = $"Version {version?.Major ?? 0}.{version?.Minor ?? 0} (Core 1.4) {GetBuildConfiguration()}";
             return versionInfo;
         }
 

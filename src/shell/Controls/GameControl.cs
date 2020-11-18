@@ -317,8 +317,11 @@ namespace EMU7800.D2D.Shell
 
         #region Worker
 
-        void Run(object state)
+        void Run(object? state)
         {
+            if (state == null)
+                return;
+
             var args = (Tuple<ImportedGameProgramInfo, bool>)state;
             var importedGameProgramInfo = args.Item1;
             var startFresh = args.Item2;
@@ -499,10 +502,13 @@ namespace EMU7800.D2D.Shell
             if (audioDevice != AudioDeviceDefault)
                 audioDevice.Dispose();
 
-            machineStateInfo.CurrentPlayerNo = _currentKeyboardPlayerNo + 1;
-            machineStateInfo.FramesPerSecond = CurrentFrameRate;
-            machineStateInfo.InterpolationMode = (int)_dynamicBitmapInterpolationMode;
-            machineStateInfo.SoundOff = _soundOff;
+            machineStateInfo = machineStateInfo with
+            {
+                CurrentPlayerNo   = _currentKeyboardPlayerNo + 1,
+                FramesPerSecond   = CurrentFrameRate,
+                InterpolationMode = (int)_dynamicBitmapInterpolationMode,
+                SoundOff          = _soundOff
+            };
 
             DatastoreService.PersistMachine(machineStateInfo);
             DatastoreService.PersistScreenshot(machineStateInfo, _dynamicBitmapData);

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace EMU7800.Services.Dto
 {
-    public class GameProgramInfoViewItemCollection
+    public record GameProgramInfoViewItemCollection
     {
-        public string Name { get; set; } = string.Empty;
-        public IEnumerable<GameProgramInfoViewItem> GameProgramInfoViewItemSet { get; set; } = Array.Empty<GameProgramInfoViewItem>();
+        public string Name { get; init; } = string.Empty;
+        public IEnumerable<GameProgramInfoViewItem> GameProgramInfoViewItemSet { get; init; } = Array.Empty<GameProgramInfoViewItem>();
     }
 }

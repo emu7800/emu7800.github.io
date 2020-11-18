@@ -81,7 +81,7 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        private void OnClicked(object sender, EventArgs e)
+        private void OnClicked(object? sender, EventArgs e)
         {
             IsChecked = !IsChecked;
             if (IsChecked)

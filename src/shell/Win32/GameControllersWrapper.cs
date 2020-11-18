@@ -1,12 +1,11 @@
 ﻿// © Mike Murphy
 
-using System;
 using EMU7800.Core;
 using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
-    public sealed class GameControllersWrapper : GameControllersWrapperBase
+    public sealed class GameControllersWrapper : IGameControllers
     {
         #region Fields
 
@@ -30,12 +29,14 @@ namespace EMU7800.D2D.Shell
         readonly JoystickTypeEnum[] _joystickType;
 
         readonly string[] _productNames;
-
-        JoystickDeviceList _joystickDeviceList;
+        readonly JoystickDeviceList _joystickDeviceList = new();
 
         #endregion
 
-        public override void Poll()
+        public bool LeftJackHasAtariAdaptor { get; private set; }
+        public bool RightJackHasAtariAdaptor { get; private set; }
+
+        public void Poll()
         {
             if (_joystickDeviceList == null)
                 return;
@@ -43,10 +44,10 @@ namespace EMU7800.D2D.Shell
                 _joystickDeviceList.Joysticks[i].Poll();
         }
 
-        public override string GetControllerInfo(int controllerNo)
+        public string GetControllerInfo(int controllerNo)
         {
             if (controllerNo < 0 || controllerNo >= _productNames.Length)
-                return null;
+                return string.Empty;
 
             switch (_joystickType[controllerNo])
             {
@@ -66,42 +67,22 @@ namespace EMU7800.D2D.Shell
 
         #region IDisposable Members
 
-        public override void Dispose()
+        public void Dispose()
         {
-            if (_joystickDeviceList != null)
-            {
-                _joystickDeviceList.Dispose();
-                _joystickDeviceList = null;
-            }
-            base.Dispose();
+            _joystickDeviceList.Dispose();
         }
 
         #endregion
 
         #region Constructors
 
-        public GameControllersWrapper(GameProgramSelectionControl gameProgramSelectionControl)
+        public GameControllersWrapper(GameControl gameControl)
         {
-            if (gameProgramSelectionControl == null)
-                throw new ArgumentNullException("gameProgramSelectionControl");
-
-            LeftJackHasAtariAdaptor = false;
-            RightJackHasAtariAdaptor = false;
-        }
-
-        public GameControllersWrapper(GameControl gameControl, GamePage gamePage)
-        {
-            if (gameControl == null)
-                throw new ArgumentNullException("gameControl");
-            if (gamePage == null)
-                throw new ArgumentNullException("gamePage");
-
             LeftJackHasAtariAdaptor = false;
             RightJackHasAtariAdaptor = false;
 
             _gameControl = gameControl;
 
-            _joystickDeviceList = new JoystickDeviceList();
             _daptor2Mode = new int[_joystickDeviceList.Joysticks.Length];
             _productNames = new string[_joystickDeviceList.Joysticks.Length];
             _joystickType = new JoystickTypeEnum[_joystickDeviceList.Joysticks.Length];

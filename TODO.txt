@@ -10,3 +10,5 @@ x port the sound emulator
 x move legacy content to OneDrive for posterity
 x create the NG repository
 - test to check whether the vcredistDependencies are actually needed
+- test xbox360 controllers
+- test stelladaptor et al

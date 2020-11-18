@@ -7,7 +7,7 @@ namespace EMU7800.D2D.Shell
 {
     public abstract class ButtonBase : ControlBase
     {
-        static readonly EventArgs DefaultEventArgs = new EventArgs();
+        static readonly EventArgs DefaultEventArgs = new();
         static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
 
         #region Fields

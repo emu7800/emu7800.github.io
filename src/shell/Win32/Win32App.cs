@@ -128,7 +128,8 @@ namespace EMU7800.D2D.Shell.Win32
 
         static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            DatastoreService.DumpCrashReport(e.ExceptionObject as Exception);
+            if (e.ExceptionObject is Exception ex)
+                DatastoreService.DumpCrashReport(ex);
             if (Debugger.IsAttached)
                 Debugger.Break();
         }

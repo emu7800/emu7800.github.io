@@ -54,12 +54,12 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void BackButton_Clicked(object sender, EventArgs eventArgs)
+        void BackButton_Clicked(object? sender, EventArgs eventArgs)
         {
             PopPage();
         }
 
-        void NextButton_Clicked(object sender, EventArgs eventArgs)
+        void NextButton_Clicked(object? sender, EventArgs eventArgs)
         {
             ReplacePage(new FindRomsPage2());
         }

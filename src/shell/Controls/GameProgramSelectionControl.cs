@@ -580,29 +580,29 @@ namespace EMU7800.D2D.Shell
         }
 
         // return tuple: (collection index, collection item index, is inside icon rectangle?)
-        Tuple<int, int, bool> ToCollectionIndexes(PointF mousePointerLocation)
+        (int, int, bool) ToCollectionIndexes(PointF mousePointerLocation)
         {
             var pt = Struct.ToPointF(mousePointerLocation.X, mousePointerLocation.Y);
             Sub(ref pt, Struct.ToLocation(_gameProgramViewItemCollectionsRect));
             if (pt.X < 0)
-                return new Tuple<int, int, bool>(-1, -1, false);
+                return (-1, -1, false);
 
             var i = (int)(pt.X / (ITEM_WIDTH + GapBetweenCollections));
             if (i < 0 || i >= _scrollColumnInfoSet.Length)
-                return new Tuple<int, int, bool>(-1, -1, false);
+                return (-1, -1, false);
 
             var scrollColumnInfo = _scrollColumnInfoSet[i];
             var gpvic = scrollColumnInfo.GameProgramInfoViewItemCollection;
             Sub(ref pt, Struct.ToLocation(scrollColumnInfo.CollectionRect));
             var j = (int)(pt.Y / ITEM_HEIGHT);
             if (j < 0 || j >= gpvic.GameProgramInfoViewItemSet.Length)
-                return new Tuple<int, int, bool>(i, -1, false);
+                return (i, -1, false);
 
             Sub(ref pt, i * (ITEM_WIDTH + GapBetweenCollections), j * ITEM_HEIGHT);
             Sub(ref pt, Struct.ToPointF(ICON_DX, ICON_DY));
 
             var insideIconRect = pt.X < ICON_WIDTH && pt.Y < ICON_HEIGHT && pt.X >= 0 && pt.Y >= 0;
-            return new Tuple<int, int, bool>(i, j, insideIconRect);
+            return (i, j, insideIconRect);
         }
 
         static void Sub(ref PointF a, float x, float y)

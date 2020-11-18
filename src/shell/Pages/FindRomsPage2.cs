@@ -70,12 +70,12 @@ namespace EMU7800.D2D.Shell
 
         #region Event Handlers
 
-        void ButtonOk_Clicked(object sender, EventArgs eventArgs)
+        void ButtonOk_Clicked(object? sender, EventArgs eventArgs)
         {
             PopPage();
         }
 
-        void ButtonCancel_Clicked(object sender, EventArgs eventArgs)
+        void ButtonCancel_Clicked(object? sender, EventArgs eventArgs)
         {
             RomImportService.CancelRequested = true;
         }

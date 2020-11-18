@@ -47,7 +47,7 @@ namespace EMU7800.D2D.Shell.Win32
             app.Run();
         }
 
-        public static GameProgramInfoViewItem ToGameProgramInfoViewItem(string romPath)
+        public static GameProgramInfoViewItem? ToGameProgramInfoViewItem(string romPath)
         {
             var (_, bytes) = DatastoreService.GetRomBytes(romPath);
             var md5key = RomBytesService.ToMD5Key(bytes);
