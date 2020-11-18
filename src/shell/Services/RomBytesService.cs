@@ -1,6 +1,7 @@
 // © Mike Murphy
 
 using System;
+using System.Security.Cryptography;
 using System.Text;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
@@ -9,7 +10,9 @@ namespace EMU7800.Services
 {
     public class RomBytesService
     {
-        public const string
+        #region Fields
+
+        const string
             SPECIALBINARY_BIOS78_NTSC_MD5           = "0763f1ffb006ddbe32e52d497ee848ae",
             SPECIALBINARY_BIOS78_NTSC_ALTERNATE_MD5 = "b32526ea179dc9ab9b2e5f8a2662b298",
             SPECIALBINARY_BIOS78_PAL_MD5            = "397bb566584be7b9764e7a68974c4263",
@@ -17,10 +20,10 @@ namespace EMU7800.Services
 
         const int A78FILE_HEADER_SIZE = 0x80;
 
-        #region Fields
-
-        static readonly byte[] Atari7800Tag                = Encoding.UTF8.GetBytes("ATARI7800");
+        static readonly MD5CryptoServiceProvider MD5CryptoProvider = new();
+        static readonly byte[] Atari7800Tag = Encoding.UTF8.GetBytes("ATARI7800");
         static readonly byte[] ActualCartDataStartsHereTag = Encoding.UTF8.GetBytes("ACTUAL CART DATA STARTS HERE");
+        static readonly uint[] HexStringLookup = CreateHexStringLookupTable();
 
         #endregion
 
@@ -78,7 +81,7 @@ namespace EMU7800.Services
         }
 
         public static string ToMD5Key(byte[] bytes)
-            => Md5HashService.ComputeHash(RemoveA78HeaderIfNecessary(bytes));
+            => ToHex(MD5CryptoProvider.ComputeHash(RemoveA78HeaderIfNecessary(bytes ?? Array.Empty<byte>())));
 
         public static SpecialBinaryType ToSpecialBinaryType(string md5key)
         {
@@ -177,6 +180,29 @@ namespace EMU7800.Services
             if (size <= 0xC000)
                 return CartType.A7848;
             return CartType.Unknown;
+        }
+
+        static uint[] CreateHexStringLookupTable()
+        {
+            var result = new uint[0x100];
+            for (int i = 0; i < result.Length; i++)
+            {
+                var s = i.ToString("x2");
+                result[i] = s[0] + ((uint)s[1] << 0x10);
+            }
+            return result;
+        }
+
+        static string ToHex(byte[] bytes)
+        {
+            var result = new char[bytes.Length * 2];
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                var val = HexStringLookup[bytes[i]];
+                result[2 * i] = (char)val;
+                result[2 * i + 1] = (char)(val >> 0x10);
+            }
+            return new string(result, 0, result.Length);
         }
 
         #endregion
