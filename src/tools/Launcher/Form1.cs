@@ -13,7 +13,7 @@ namespace EMU7800.Launcher
     public partial class Form1 : Form
     {
         bool _isa78format;
-        GameProgramInfo _a78gameProgramInfo;
+        GameProgramInfo _a78gameProgramInfo = new();
 
         readonly DropDownItem<MachineType>[] _machineTypes =
         {
@@ -115,10 +115,11 @@ namespace EMU7800.Launcher
             var bytes = br.ReadBytes(1000000);
             textBoxMd5Key.Text = RomBytesService.ToMD5Key(bytes);
             labelSize.Text = $"Size {bytes.Length} / 0x{bytes.Length:X4} bytes";
+
             _isa78format = RomBytesService.IsA78Format(bytes);
-            _a78gameProgramInfo = _isa78format ? RomBytesService.ToGameProgramInfoFromA78Format(bytes) : null;
-            if (_a78gameProgramInfo != null)
+            if (_isa78format)
             {
+                _a78gameProgramInfo = RomBytesService.ToGameProgramInfoFromA78Format(bytes);
                 comboBoxMachineType.SelectedItem = _machineTypes.FirstOrDefault(mt => mt.Value == _a78gameProgramInfo.MachineType);
                 comboBoxCartType.SelectedItem = _cartTypes78.FirstOrDefault(ct => ct.Value == _a78gameProgramInfo.CartType);
                 comboBoxLeftController.SelectedItem = _controllers.FirstOrDefault(c => c.Value == _a78gameProgramInfo.LController);
@@ -126,7 +127,7 @@ namespace EMU7800.Launcher
             }
         }
 
-        void ComboBoxMachineType_SelectedValueChanged(object sender, EventArgs e)
+        void ComboBoxMachineType_SelectedValueChanged(object? sender, EventArgs e)
         {
             switch (((DropDownItem<MachineType>)comboBoxMachineType.SelectedItem).Value)
             {
@@ -141,7 +142,7 @@ namespace EMU7800.Launcher
             }
         }
 
-        async void ButtonStart_Click(object sender, EventArgs e)
+        async void ButtonStart_Click(object? sender, EventArgs e)
         {
             buttonBrowse.Enabled = false;
             buttonStart.Enabled = false;
