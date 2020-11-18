@@ -50,7 +50,7 @@ Usage:
             }
 
             var rawBytes = RomBytesService.RemoveA78HeaderIfNecessary(bytes);
-            var md5 = Md5HashService.ComputeHash(rawBytes);
+            var md5 = RomBytesService.ToMD5Key(rawBytes);
 
             Console.WriteLine("MD5 : {0}", md5);
             Console.WriteLine("Size: {0} {1}", rawBytes.Length, isA78Format ? "(excluding a78 header)" : string.Empty);
@@ -65,7 +65,7 @@ Usage:
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return null;
+                return Array.Empty<byte>();
             }
         }
 
