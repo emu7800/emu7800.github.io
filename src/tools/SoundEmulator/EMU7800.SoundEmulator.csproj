@@ -12,6 +12,7 @@
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <StartupObject>EMU7800.SoundEmulator.Program</StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>

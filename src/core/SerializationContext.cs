@@ -84,7 +84,7 @@ namespace EMU7800.Core
 
         public void Write(MachineBase m)
         {
-            _binaryWriter.Write(m.ToString());
+            _binaryWriter.Write(m.ToString() ?? string.Empty);
             m.GetObjectData(this);
         }
 
@@ -108,7 +108,7 @@ namespace EMU7800.Core
 
         public void Write(Cart cart)
         {
-            _binaryWriter.Write(cart.ToString());
+            _binaryWriter.Write(cart.ToString() ?? string.Empty);
             cart.GetObjectData(this);
         }
 

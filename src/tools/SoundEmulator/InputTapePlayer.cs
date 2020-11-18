@@ -7,12 +7,12 @@ namespace EMU7800.SoundEmulator
         #region Fields
 
         readonly InputTapeReader _inputTapeReader;
-        byte[] _currentRegisters;
+        byte[] _currentRegisters = Array.Empty<byte>();
         bool _endOfTapeReached;
 
         #endregion
 
-        public Action EndOfTapeReached;
+        public Action EndOfTapeReached = () => {};
 
         public void GetRegisterSettingsForNextFrame(SoundEmulator e)
         {
@@ -22,8 +22,7 @@ namespace EMU7800.SoundEmulator
             if (reg == null)
             {
                 _endOfTapeReached = true;
-                if (EndOfTapeReached != null)
-                    EndOfTapeReached();
+                EndOfTapeReached();
                 return;
             }
             _currentRegisters = reg;
@@ -49,17 +48,13 @@ namespace EMU7800.SoundEmulator
             e.PokePokey(Constants.POKEY_AUDF4, reg[14]);
 
             if (--reg[15] <= 0)
-                _currentRegisters = null;
+                _currentRegisters = Array.Empty<byte>();
         }
 
         #region Constructors
 
         public InputTapePlayer(InputTapeReader inputTapeReader)
-        {
-            if (inputTapeReader == null)
-                throw new ArgumentNullException("inputTapeReader");
-            _inputTapeReader = inputTapeReader;
-        }
+            => _inputTapeReader = inputTapeReader;
 
         #endregion
     }

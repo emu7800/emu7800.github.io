@@ -10,33 +10,34 @@ namespace EMU7800.SoundEmulator
         #region Fields
 
         readonly Random _random = new();
-        readonly int _buffers;
 
-        Thread _workerThread;
+        Thread _workerThread = new(() => {});
         bool _stopRequested, _playNoise;
-        MachineSoundEmulator _machine;
+        MachineSoundEmulator _machine = MachineSoundEmulator.Default;
 
         #endregion
 
-        public Action<SoundEmulator> GetRegisterSettingsForNextFrame;
+        public int Buffers { get; set; } = 8;
+
+        public Action<SoundEmulator> GetRegisterSettingsForNextFrame = (se) => {};
 
         public void PokeTia(byte tiaRegister, byte value)
         {
-            if (_machine == null)
+            if (_machine == MachineSoundEmulator.Default)
                 return;
             _machine.PokeTia(tiaRegister, value);
         }
 
         public void PokePokey(byte pokeyRegister, byte value)
         {
-            if (_machine == null)
+            if (_machine == MachineSoundEmulator.Default)
                 return;
             _machine.PokePokey(pokeyRegister, value);
         }
 
         public void StartNTSC()
         {
-            if (_workerThread != null)
+            if (_workerThread.IsAlive)
                 throw new InvalidOperationException("Already started.");
 
             _machine = MachineSoundEmulator.CreateForNTSC();
@@ -47,7 +48,7 @@ namespace EMU7800.SoundEmulator
 
         public void StartPAL()
         {
-            if (_workerThread != null)
+            if (_workerThread.IsAlive)
                 throw new InvalidOperationException("Already started.");
 
             _machine = MachineSoundEmulator.CreateForPAL();
@@ -58,7 +59,7 @@ namespace EMU7800.SoundEmulator
 
         public void StartNoise()
         {
-            if (_workerThread != null)
+            if (_workerThread.IsAlive)
                 throw new InvalidOperationException("Already started.");
 
             _machine = MachineSoundEmulator.CreateForNTSC();
@@ -70,45 +71,29 @@ namespace EMU7800.SoundEmulator
 
         public void Stop()
         {
-            if (_workerThread == null)
-                return;
-
-            _stopRequested = true;
-            _playNoise = false;
-
-            _workerThread.Join();
-            _workerThread = null;
-        }
+            if (_workerThread.IsAlive)
+            {
+                _stopRequested = true;
+                _playNoise = false;
+                _workerThread.Join();
+            }
+         }
 
         public void WaitUntilStopped()
         {
-            if (_workerThread == null)
-                return;
-
-            _workerThread.Join();
-            _workerThread = null;
+            if (_workerThread.IsAlive)
+            {
+                _workerThread.Join();
+            }
         }
-
-        #region Constructors
-
-        public SoundEmulator() : this(8)
-        {
-        }
-
-        public SoundEmulator(int buffers)
-        {
-            if (buffers < 1 || buffers > 64)
-                throw new ArgumentException("buffers must be between 1 and 64.");
-            _buffers = buffers;
-        }
-
-        #endregion
 
         void Run()
         {
             var framebuffer = _machine.CreateFrameBuffer();
 
-            WinmmNativeMethods.Open(_machine.SoundSampleFrequency, framebuffer.SoundBufferByteLength, _buffers);
+            var buffers = Buffers > 0 && Buffers < 65 ? Buffers : 8;
+
+            WinmmNativeMethods.Open(_machine.SoundSampleFrequency, framebuffer.SoundBufferByteLength, Buffers);
 
             while (!_stopRequested)
             {

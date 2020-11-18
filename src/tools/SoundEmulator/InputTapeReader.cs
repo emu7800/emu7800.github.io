@@ -6,7 +6,7 @@ namespace EMU7800.SoundEmulator
 {
     public class InputTapeReader
     {
-        readonly Queue<byte[]> _queue = new Queue<byte[]>();
+        readonly Queue<byte[]> _queue = new();
 
         public int Load(string fileName)
         {
@@ -34,13 +34,13 @@ namespace EMU7800.SoundEmulator
 
         public byte[] Dequeue()
         {
-            return _queue.Count > 0 ? _queue.Dequeue() : null;
+            return _queue.Count > 0 ? _queue.Dequeue() : Array.Empty<byte>();
         }
 
         byte[] ParseLine(string line)
         {
             const int byteCount = 16;
-            byte[] parsedLine = null;
+            var parsedLine = Array.Empty<byte>();
             var isDigitMode = false;
             var currentIndex = -1;
 
@@ -65,7 +65,7 @@ namespace EMU7800.SoundEmulator
                     isDigitMode = true;
                     currentIndex++;
                 }
-                if (!isDigitMode || parsedLine == null)
+                if (!isDigitMode || parsedLine.Length == 0)
                     continue;
 
                 byte val = 0;

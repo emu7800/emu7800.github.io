@@ -5,7 +5,7 @@ namespace EMU7800.SoundEmulator
 {
     static class Program
     {
-        static SoundEmulator _soundEmulator;
+        static readonly SoundEmulator SoundEmulator = new();
 
         [STAThread]
         static int Main(string[] args)
@@ -26,7 +26,7 @@ namespace EMU7800.SoundEmulator
                 }
                 else if (StartsWith(arg, "/f"))
                 {
-                    inputTapeFileName = GetStrArg(arg, null);
+                    inputTapeFileName = GetStrArg(arg, string.Empty);
                 }
                 else if (StartsWith(arg, "/r"))
                 {
@@ -85,14 +85,16 @@ Usage:
             Console.WriteLine("Starting playback; CTRL-C terminates.");
 
             var player = new InputTapePlayer(inputTapeReader) { EndOfTapeReached = () => Console.WriteLine("End of tape reached.") };
-            _soundEmulator = new SoundEmulator(buffers) { GetRegisterSettingsForNextFrame = player.GetRegisterSettingsForNextFrame };
+
+            SoundEmulator.Buffers = buffers;
+            SoundEmulator.GetRegisterSettingsForNextFrame = player.GetRegisterSettingsForNextFrame;
 
             if (palRegionRequested)
-                _soundEmulator.StartPAL();
+                SoundEmulator.StartPAL();
             else
-                _soundEmulator.StartNTSC();
+                SoundEmulator.StartNTSC();
 
-            _soundEmulator.WaitUntilStopped();
+            SoundEmulator.WaitUntilStopped();
 
             return 0;
         }
@@ -124,10 +126,10 @@ Usage:
             Environment.Exit(1);
         }
 
-        static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        static void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
         {
             Console.WriteLine("*** Ctrl-C Acknowledgement: Requesting Termination ***");
-            _soundEmulator.Stop();
+            SoundEmulator.Stop();
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using EMU7800.Core;
+using System;
 
 namespace EMU7800.SoundEmulator
 {
     internal sealed class MachineSoundEmulator : MachineBase
     {
+        public static readonly new MachineSoundEmulator Default = new(0, 0);
+
         const ushort
             TIA_BASE   = 0x0000,
             POKEY_BASE = 0x4000;
@@ -30,7 +33,7 @@ namespace EMU7800.SoundEmulator
             _pokeySoundDevice.EndFrame();
         }
 
-        MachineSoundEmulator(int freq, int scanlines) : base(null, scanlines, 0, 0, freq, null, 0)
+        MachineSoundEmulator(int freq, int scanlines) : base(NullLogger.Default, scanlines, 0, 0, freq, Array.Empty<int>(), 0)
         {
             _tiaSoundDevice = new TIASoundDeviceWrapper(this);
             _pokeySoundDevice = new PokeySoundDeviceWrapper(this);

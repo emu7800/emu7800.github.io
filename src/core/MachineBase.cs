@@ -160,7 +160,7 @@ namespace EMU7800.Core
             catch (TargetInvocationException ex)
             {
                 // TargetInvocationException wraps exceptions that unwind an Activator.CreateInstance() frame.
-                throw new Emu7800SerializationException("Serialization stream does not describe a valid machine.", ex.InnerException);
+                throw new Emu7800SerializationException("Serialization stream does not describe a valid machine.", ex.InnerException ?? ex);
             }
             catch (Exception ex)
             {
@@ -311,7 +311,7 @@ namespace EMU7800.Core
             public override string ToString()
                 => "EMU7800.Core.MachineUnknown";
 
-            public MachineUnknown() : base(new NullLogger(), 100, 1, 1, 1, Array.Empty<int>(), 1)
+            public MachineUnknown() : base(NullLogger.Default, 100, 1, 1, 1, Array.Empty<int>(), 1)
             {
             }
         }

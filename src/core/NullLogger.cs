@@ -11,5 +11,7 @@
         public void Write(string message)
         {
         }
+
+        private NullLogger() {}
     }
 }
