@@ -150,10 +150,10 @@ File: {path}");
                 var gpi = ToGameProgramInfoFromA78Format(bytes);
                 printLineFn(@$"
 A78 : Title           : {gpi.Title}
-      MachineType     : {gpi.MachineType}
-      CartType        : {gpi.CartType}
-      Left Controller : {gpi.LController}
-      Right Controller: {gpi.RController}");
+      MachineType     : {MachineTypeUtil.ToString(gpi.MachineType)}
+      CartType        : {CartTypeUtil.ToString(gpi.CartType)} ({CartTypeUtil.ToCartTypeWordString(gpi.CartType)})
+      Left Controller : {ControllerUtil.ToString(gpi.LController)}
+      Right Controller: {ControllerUtil.ToString(gpi.RController)}");
             }
 
             var rawBytes = RemoveA78HeaderIfNecessary(bytes);
@@ -161,7 +161,7 @@ A78 : Title           : {gpi.Title}
 
             printLineFn(@$"
 MD5 : {md5}
-Size: {rawBytes.Length} {(isA78Format ? "(excluding a78 header)" : string.Empty)}");
+Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)}");
         }
 
         #region Helpers

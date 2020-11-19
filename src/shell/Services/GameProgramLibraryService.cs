@@ -12,7 +12,7 @@ namespace EMU7800.Services
     {
         public static IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
             => ToGameProgramInfoViewItemCollections(
-                    ToDict(importedGameProgramInfoSet, igpi => To2600or7800Word(igpi)),
+                    ToDict(importedGameProgramInfoSet, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
                     igpi => igpi.GameProgramInfo.Title,
                     igpi => ToMachineTypeSubTitle(igpi))
                .Concat(
@@ -69,9 +69,9 @@ namespace EMU7800.Services
             => new List<string>
             {
                 igpi.GameProgramInfo.Manufacturer,
-                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
-                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
-                ToMachineTypeWord(igpi.GameProgramInfo.MachineType),
+                ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.RController),
+                MachineTypeUtil.ToMachineTypeWordString(igpi.GameProgramInfo.MachineType),
                 igpi.GameProgramInfo.Year
             };
 
@@ -79,9 +79,9 @@ namespace EMU7800.Services
             => new List<string>
             {
                 igpi.GameProgramInfo.Author,
-                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
-                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
-                ToMachineTypeWord(igpi.GameProgramInfo.MachineType),
+                ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.RController),
+                MachineTypeUtil.ToMachineTypeWordString(igpi.GameProgramInfo.MachineType),
                 igpi.GameProgramInfo.Year
             };
 
@@ -89,9 +89,9 @@ namespace EMU7800.Services
             => new List<string>
             {
                 igpi.GameProgramInfo.Manufacturer,
-                ToControllerWord(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
-                AreControllersSame(igpi) ? string.Empty : ToControllerWord(igpi.GameProgramInfo.RController),
-                ToTvTypeWord(igpi.GameProgramInfo.MachineType),
+                ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
+                AreControllersSame(igpi) ? string.Empty : ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.RController),
+                MachineTypeUtil.ToTvTypeWordString(igpi.GameProgramInfo.MachineType),
                 igpi.GameProgramInfo.Year
             };
 
@@ -100,48 +100,6 @@ namespace EMU7800.Services
 
         static bool AreControllersSame(ImportedGameProgramInfo igpi)
             => igpi.GameProgramInfo.LController == igpi.GameProgramInfo.RController;
-
-        static string ToControllerWord(Controller controller, bool plural)
-            => ToControllerWord(controller) + (plural ? "s" : string.Empty);
-
-        static string ToControllerWord(Controller controller)
-            => controller switch
-            {
-                Controller.ProLineJoystick => "Proline Joystick",
-                Controller.Joystick        => "Joystick",
-                Controller.Paddles         => "Paddle",
-                Controller.Keypad          => "Keypad",
-                Controller.Driving         => "Driving Paddle",
-                Controller.BoosterGrip     => "Booster Grip",
-                Controller.Lightgun        => "Lightgun",
-                _                          => string.Empty,
-            };
-
-        static string To2600or7800Word(ImportedGameProgramInfo igpi)
-            => igpi.GameProgramInfo.MachineType switch
-            {
-                MachineType.A2600NTSC or MachineType.A2600PAL => "2600",
-                MachineType.A7800NTSC or MachineType.A7800PAL => "7800",
-                _                                             => string.Empty,
-            };
-
-        static string ToMachineTypeWord(MachineType machineType)
-            => machineType switch
-            {
-                MachineType.A2600NTSC => "2600 NTSC",
-                MachineType.A2600PAL  => "2600 PAL",
-                MachineType.A7800NTSC => "7800 NTSC",
-                MachineType.A7800PAL  => "7800 PAL",
-                _                     => string.Empty,
-            };
-
-        static string ToTvTypeWord(MachineType machineType)
-            => machineType switch
-            {
-                MachineType.A2600NTSC or MachineType.A7800NTSC => "NTSC",
-                MachineType.A2600PAL  or MachineType.A7800PAL  => "PAL",
-                _                                              => string.Empty,
-            };
 
         #endregion
     }
