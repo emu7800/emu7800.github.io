@@ -11,7 +11,7 @@ namespace EMU7800.D2D.Shell
     {
         readonly TitleControl _titleControl;
         readonly Button _buttonPlayAtariToday;
-        readonly ButtonCircleImage _buttonAbout, _buttonFindRoms;
+        readonly ButtonCircleImage _buttonAbout;
         readonly LabelControl _labelCopyr, _labelVers, _labelBusyInit;
 
         bool _isImportCheckStarted;
@@ -36,7 +36,6 @@ namespace EMU7800.D2D.Shell
                 Size = Struct.ToSizeF(500, 100),
             };
             _buttonAbout = new QuestionMarkButton();
-            _buttonFindRoms = new SearchButton();
             _labelCopyr = new LabelControl
             {
                 Text = "© 2012-2020 Mike Murphy (mike@emu7800.net)",
@@ -56,11 +55,10 @@ namespace EMU7800.D2D.Shell
                 ParagraphAlignment = DWriteParaAlignment.Center,
                 Size = Struct.ToSizeF(500, 20)
             };
-            Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _buttonFindRoms, _labelCopyr, _labelVers);
+            Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _labelCopyr, _labelVers);
 
             _buttonPlayAtariToday.Clicked += ButtonPlayAtariToday_Clicked;
             _buttonAbout.Clicked += ButtonAbout_Clicked;
-            _buttonFindRoms.Clicked += ButtonFindRoms_Clicked;
         }
 
         #region PageBase Overrides
@@ -109,8 +107,6 @@ namespace EMU7800.D2D.Shell
                 size.Width / 2 - _buttonAbout.Size.Width / 2,
                 size.Height - _buttonAbout.Size.Height - 50
                 );
-            _buttonFindRoms.Location = Struct.ToRightOf(_buttonAbout, 48 + 5, 0);
-            _buttonFindRoms.IsVisible = _buttonFindRoms.IsEnabled;
         }
 
         #endregion
@@ -127,11 +123,6 @@ namespace EMU7800.D2D.Shell
             PushPage(new AboutPage());
         }
 
-        void ButtonFindRoms_Clicked(object? sender, EventArgs eventArgs)
-        {
-            PushPage(new FindRomsPage());
-        }
-
         #endregion
 
         #region Helpers
@@ -140,7 +131,6 @@ namespace EMU7800.D2D.Shell
         {
             _buttonPlayAtariToday.IsVisible = false;
             _buttonAbout.IsVisible = false;
-            _buttonFindRoms.IsVisible = false;
             _labelBusyInit.IsVisible = true;
 
             await Task.Run(() => ImportCheck());
@@ -148,7 +138,6 @@ namespace EMU7800.D2D.Shell
 
             _buttonPlayAtariToday.IsVisible = true;
             _buttonAbout.IsVisible = true;
-            _buttonFindRoms.IsVisible = true;
             _labelBusyInit.IsVisible = false;
         }
 
@@ -167,8 +156,7 @@ namespace EMU7800.D2D.Shell
             var ea = System.Reflection.Assembly.GetExecutingAssembly();
             var name = ea.GetName();
             var version = name.Version;
-            var versionInfo = $"Version {version?.Major ?? 0}.{version?.Minor ?? 0} (Core 1.4) {GetBuildConfiguration()}";
-            return versionInfo;
+            return $"Version {version?.Major ?? 0}.{version?.Minor ?? 0} {GetBuildConfiguration()}";
         }
 
         static string GetBuildConfiguration()

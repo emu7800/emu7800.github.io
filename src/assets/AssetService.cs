@@ -42,7 +42,6 @@ namespace EMU7800.Assets
             { Asset.appbar_minus_rest_inverted,                 "images.appbar.minus.rest_inverted.png" },
             { Asset.appicon_128x128,                            "images.appicon_128x128.png" },
             { Asset.about,                                      "about.txt" },
-            { Asset.romimport,                                  "romimport.txt" },
             { Asset.ROMProperties,                              "ROMProperties.csv" }
         };
 

@@ -18,6 +18,7 @@ namespace EMU7800.D2D.Shell.Win32
         {
             if (args.Length == 0)
             {
+                FreeConsole();
                 Start();
             }
             else
@@ -243,5 +244,8 @@ Options:
                 return Array.Empty<byte>();
             }
         }
+
+        [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
+        static extern int FreeConsole();
     }
 }

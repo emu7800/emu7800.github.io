@@ -36,7 +36,6 @@ namespace EMU7800.Assets
         appbar_minus_rest_inverted,
         appicon_128x128,
         about,
-        romimport,
         ROMProperties
     }
 }
