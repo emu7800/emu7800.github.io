@@ -127,6 +127,43 @@ namespace EMU7800.Services
             return CartType.Unknown;
         }
 
+        public static void DumpBin(string path, Action<string> printLineFn)
+        {
+            printLineFn(@$"
+File: {path}");
+
+            byte[] bytes;
+            try
+            {
+                bytes = System.IO.File.ReadAllBytes(path);
+            }
+            catch (Exception ex)
+            {
+                printLineFn($"Unable to read ROM: {ex.GetType().Name}: {ex.Message}");
+                return;
+            }
+
+            var isA78Format = IsA78Format(bytes);
+
+            if (isA78Format)
+            {
+                var gpi = ToGameProgramInfoFromA78Format(bytes);
+                printLineFn(@$"
+A78 : Title           : {gpi.Title}
+      MachineType     : {gpi.MachineType}
+      CartType        : {gpi.CartType}
+      Left Controller : {gpi.LController}
+      Right Controller: {gpi.RController}");
+            }
+
+            var rawBytes = RemoveA78HeaderIfNecessary(bytes);
+            var md5 = ToMD5Key(rawBytes);
+
+            printLineFn(@$"
+MD5 : {md5}
+Size: {rawBytes.Length} {(isA78Format ? "(excluding a78 header)" : string.Empty)}");
+        }
+
         #region Helpers
 
         static CartType To78CartType(int cartSize, bool usesPokey, byte cartType1, byte cartType2)
