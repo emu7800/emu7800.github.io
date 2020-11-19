@@ -60,10 +60,6 @@ No matching entries found in ROMProperties.csv database");
     HelpUri     : {gpi.HelpUri}");
                     }
                 }
-                else if (romPath.Length > 0 && new[] { "-s", "/s" }.Any(s => option.StartsWith(s)))
-                {
-                    Console.WriteLine("** not implemented yet **");
-                }
                 else
                 {
                     if (!new[] { "-?", "/?", "--?", "-h", "/h", "--help" }.Any(s => option.StartsWith(s)))
@@ -81,7 +77,6 @@ Usage:
 Options:
 -r <filename> : Try launching ROM
 -d <filename> : Dump ROM information
--s <inputtape>: Run POKEY sound emulator
 -?            : This help
               : Run shell (no option specified)");
                 }
