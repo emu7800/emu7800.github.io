@@ -155,10 +155,10 @@ namespace EMU7800.Core
                     dSB.Append($"{addrSpace[atAddr++]:x2} ");
                     if (i == 3)
                     {
-                        dSB.Append(" ");
+                        dSB.Append(' ');
                     }
                 }
-                dSB.Append("\n");
+                dSB.Append('\n');
             }
             if (dSB.Length > 0)
             {

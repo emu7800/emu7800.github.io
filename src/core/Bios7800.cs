@@ -12,7 +12,7 @@ namespace EMU7800.Core
 {
     public sealed class Bios7800 : IDevice
     {
-        public static readonly Bios7800 Default = new Bios7800();
+        public static readonly Bios7800 Default = new();
 
         readonly byte[] ROM;
         readonly ushort Mask;

@@ -14,7 +14,7 @@ namespace EMU7800.Core
 {
     public sealed class M6502
     {
-        public static readonly M6502 Default = new M6502(MachineBase.Default, 1);
+        public static readonly M6502 Default = new(MachineBase.Default, 1);
 
         delegate void OpcodeHandler();
 
