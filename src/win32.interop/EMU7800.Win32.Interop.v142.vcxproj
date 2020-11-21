@@ -95,7 +95,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="AudioDevice.cpp" />
     <ClCompile Include="DynamicBitmap.cpp" />
     <ClCompile Include="JoystickDevice.cpp" />
     <ClCompile Include="JoystickDeviceList.cpp" />
@@ -109,7 +108,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AudioDevice.h" />
     <ClInclude Include="D2DError.h" />
     <ClInclude Include="DynamicBitmap.h" />
     <ClInclude Include="D2DStructs.h" />

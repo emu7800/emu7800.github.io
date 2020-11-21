@@ -12,8 +12,6 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameControl : ControlBase
     {
-        static readonly AudioDevice AudioDeviceDefault = new(0, 0, 0);
-
         #region Fields
 
         readonly uint[] _normalPalette = new uint[0x100];
@@ -401,7 +399,6 @@ namespace EMU7800.D2D.Shell
             stopwatch.Start();
 
             long ticksPerFrame = 0;
-            var audioDevice = AudioDeviceDefault;
 
             while (!_stopRequested)
             {
@@ -439,24 +436,20 @@ namespace EMU7800.D2D.Shell
                 if (_frameRateChangeNeeded)
                 {
                     _frameRateChangeNeeded = false;
-                    if (audioDevice != AudioDeviceDefault)
-                    {
-                        audioDevice.Dispose();
-                        audioDevice = AudioDeviceDefault;
-                    }
+                    AudioDevice.Close();
                     if (_proposedFrameRate > CurrentFrameRate)
                         _calibrationNeeded = true;
                     CurrentFrameRate = _proposedFrameRate;
                     ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
                 }
 
-                if (!_soundOff && audioDevice == AudioDeviceDefault)
+                if (!_soundOff && AudioDevice.IsClosed)
                 {
                     var soundFrequency = frameBuffer.SoundBufferByteLength * CurrentFrameRate;
-                    audioDevice = new AudioDevice(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
+                    AudioDevice.Configure(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
                 }
 
-                var buffersQueued = (audioDevice != AudioDeviceDefault) ? audioDevice.BuffersQueued : -1;
+                var buffersQueued = AudioDevice.CountBuffersQueued();
                 long adjustment = 0;
                 if (buffersQueued < 0 || _soundOff || _paused)
                     adjustment = 0;
@@ -469,10 +462,10 @@ namespace EMU7800.D2D.Shell
                 if (!_paused)
                     machine.ComputeNextFrame(frameBuffer);
 
-                if (!_soundOff && !_paused && audioDevice != AudioDeviceDefault)
+                if (!_soundOff && !_paused)
                 {
                     UpdateAudioBytes(frameBuffer, audioBytes);
-                    audioDevice.SubmitBuffer(audioBytes);
+                    AudioDevice.SubmitBuffer(audioBytes);
                 }
 
                 lock (_dynamicBitmapLocker)
@@ -499,8 +492,7 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            if (audioDevice != AudioDeviceDefault)
-                audioDevice.Dispose();
+            AudioDevice.Close();
 
             machineStateInfo = machineStateInfo with
             {
@@ -522,7 +514,7 @@ namespace EMU7800.D2D.Shell
             const int soundBufferByteLength = 524;
             var soundFrequency = soundBufferByteLength * CurrentFrameRate;
             var ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
-            var audioDevice = _soundOff ? AudioDeviceDefault : new AudioDevice(soundFrequency, soundBufferByteLength, 8);
+            AudioDevice.Configure(soundFrequency, soundBufferByteLength, 8);
             var audioBytes = new byte[soundBufferByteLength];
 
             var stopwatch = new Stopwatch();
@@ -533,7 +525,7 @@ namespace EMU7800.D2D.Shell
                 var startTick = stopwatch.ElapsedTicks;
                 var endTick = startTick + ticksPerFrame;
 
-                var buffersQueued = (!_soundOff && audioDevice != AudioDeviceDefault) ? audioDevice.BuffersQueued : -1;
+                var buffersQueued = AudioDevice.CountBuffersQueued();
                 long adjustment = 0;
                 if (buffersQueued < 0)
                     adjustment = 0;
@@ -543,11 +535,11 @@ namespace EMU7800.D2D.Shell
                     adjustment = ticksPerFrame >> 1;
                 endTick += adjustment;
 
-                if (!_soundOff && audioDevice != AudioDeviceDefault)
+                if (!_soundOff)
                 {
                     for (var i = 0; i < audioBytes.Length; i++)
                         audioBytes[i] = (byte) (random.Next(2) | 0x80);
-                    audioDevice.SubmitBuffer(audioBytes);
+                    AudioDevice.SubmitBuffer(audioBytes);
                 }
 
                 lock (_dynamicBitmapLocker)
@@ -568,8 +560,7 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            if (audioDevice != AudioDeviceDefault)
-                audioDevice.Dispose();
+            AudioDevice.Close();
         }
 
         static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo, FrameBuffer frameBuffer)
