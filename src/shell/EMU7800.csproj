@@ -23,4 +23,9 @@
     <ProjectReference Include="..\win32.interop.managed\EMU7800.Win32.Interop.csproj" />
     <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.v142.vcxproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="msvcp120.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
