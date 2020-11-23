@@ -1,5 +1,7 @@
+; Inno Setup downloadable from https://jrsoftware.org/isinfo.php
+
 #define MyAppName "EMU7800"
-#define MyAppVersion "5.0.0.0"
+#define MyAppVersion "5.0.0"
 #define MyAppPublisher "Mike Murphy"
 #define MyAppURL "http://emu7800.net"
 #define MyAppExeName "EMU7800.exe"
@@ -15,13 +17,13 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={localappdata}\{#MyAppName}
+DefaultDirName={localappdata}\Programs\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
 OutputDir=..\..\..\artifacts
-OutputBaseFilename=EMU7800-Setup
+OutputBaseFilename=EMU7800Setup-x64-5.0.0
 SetupIconFile=..\..\shell\EMUIcon.ico
 Compression=lzma
 SolidCompression=yes
