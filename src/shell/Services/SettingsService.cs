@@ -17,12 +17,8 @@ namespace EMU7800.Services
         {
             if (!_applicationSettingsLoaded)
             {
-                var (result, settings) = DatastoreService.GetSettings();
-                if (result.IsOk)
-                {
-                    _applicationSettings = settings;
-                    _applicationSettingsLoaded = true;
-                }
+                _applicationSettings = DatastoreService.GetSettings();
+                _applicationSettingsLoaded = true;
             }
             return _applicationSettings with { };
         }

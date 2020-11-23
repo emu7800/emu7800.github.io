@@ -14,59 +14,58 @@ namespace EMU7800.Services
 
     public class DatastoreService
     {
-
         #region Fields
 
-        readonly static string _currentWorkingDir = AppDomain.CurrentDomain.BaseDirectory;
-
-        static string _userAppDataStoreRoot = string.Empty;
+        static string SaveGamesEmu7800Folder = string.Empty;
 
         #endregion
 
         #region ROM Files
 
-        public static (Result, IEnumerable<string>) QueryROMSFolder()
+        public static IEnumerable<string> QueryROMSFolder()
         {
-            var path = Path.Combine(_currentWorkingDir, "ROMS");
-            return (Ok(), QueryForRomCandidates(path));
+            EnsureSaveGamesEmu7800FolderExists();
+            var q1 = QueryForRomCandidates(SaveGamesEmu7800Folder);
+            var q2 = QueryForRomCandidates(AppDomain.CurrentDomain.BaseDirectory);
+            return q1.Concat(q2);
         }
 
-        public static (Result, byte[]) GetRomBytes(string path)
+        public static byte[] GetRomBytes(string path)
         {
             if (path.Contains('|'))
             {
                 var splitPath = path.Split('|');
                 if (splitPath.Length != 2 || !splitPath[0].EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
-                    return (Ok(), Array.Empty<byte>());
+                    return Array.Empty<byte>();
 
                 try
                 {
                     using var za = new ZipArchive(new FileStream(splitPath[0], FileMode.Open));
                     var entry = za.GetEntry(splitPath[1]);
                     if (entry == null)
-                        return (Ok(), Array.Empty<byte>());
+                        return Array.Empty<byte>();
                     using var br = new BinaryReader(entry.Open());
-                    var bytes = br.ReadBytes((int)entry.Length);
-                    return (Ok(), bytes);
+                    return br.ReadBytes((int)entry.Length);
                 }
                 catch (Exception ex)
                 {
                     if (IsCriticalException(ex))
                         throw;
-                    return (Fail("LoadRomBytes: Unable to load ROM bytes from zip archive", ex), Array.Empty<byte>());
+                    Error($"GetRomBytes: Unable to read ROM bytes from zip archive at {path}: " + ToString(ex));
+                    return Array.Empty<byte>();
                 }
             }
 
             try
             {
-                var bytes = File.ReadAllBytes(path);
-                return (Ok(), bytes);
+                return File.ReadAllBytes(path);
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                return (Fail("LoadRomBytes: Unable to load ROM bytes", ex), Array.Empty<byte>());
+                Error($"GetRomBytes: Unable to read ROM bytes from {path}: " + ToString(ex));
+                return Array.Empty<byte>();
             }
         }
 
@@ -91,13 +90,12 @@ namespace EMU7800.Services
             }
 
             var name = ToPersistedStateStorageName(gameProgramInfo);
-            var exists = _cachedPersistedDir.Contains(name);
-            return exists;
+            return _cachedPersistedDir.Contains(name);
         }
 
-        public static Result PersistMachine(MachineStateInfo machineStateInfo)
+        public static void PersistMachine(MachineStateInfo machineStateInfo)
         {
-            EnsurePersistedStateGameProgramsDir();
+            EnsurePersistedGameProgramsFolderExists();
 
             var name = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
@@ -118,17 +116,15 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                return Fail("PersistMachine: Unable to persist machine state", ex);
+                Error($"PersistMachine: Unable to persist machine state to {path}: " + ToString(ex));
             }
 
             _cachedPersistedDir.Add(name);
-
-            return Ok();
         }
 
-        public static Result PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
+        public static void PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
         {
-            EnsurePersistedStateGameProgramsDir();
+            EnsurePersistedGameProgramsFolderExists();
 
             var name = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
@@ -146,15 +142,13 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                return Fail("PersistScreenshot: Unable to persist screenshot: " + path, ex);
+                Error($"PersistScreenshot: Unable to persist screenshot to {path}: " + ToString(ex));
             }
-
-            return Ok();
         }
 
-        public static (Result, MachineStateInfo) RestoreMachine(GameProgramInfo gameProgramInfo)
+        public static MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)
         {
-            EnsurePersistedStateGameProgramsDir();
+            EnsurePersistedGameProgramsFolderExists();
 
             var name = ToPersistedStateStorageName(gameProgramInfo);
             var path = ToPersistedStateStoragePath(name);
@@ -177,13 +171,14 @@ namespace EMU7800.Services
                 {
                     machineStateInfo = machineStateInfo with { FramesPerSecond = machineStateInfo.Machine.FrameHZ };
                 }
-                return (Ok(), machineStateInfo);
+                return machineStateInfo;
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                return (Fail("RestoreMachine: Unable to obtain persisted machine state: " + path, ex), new MachineStateInfo());
+                Error($"RestoreMachine: Unable to read persisted machine state from {path}: " + ToString(ex));
+                return MachineStateInfo.Default;
             }
         }
 
@@ -198,35 +193,36 @@ namespace EMU7800.Services
 
         #region Global Settings
 
-        public static (Result, ApplicationSettings) GetSettings()
+        public static ApplicationSettings GetSettings()
         {
-            EnsureUserAppDataStoreRoot();
+            EnsureSaveGamesEmu7800FolderExists();
 
-            var path = ToLocalUserAppDataPath(ApplicationSettingsName);
+            var path = ToLocalUserDataStoragePath(ApplicationSettingsName);
             try
             {
                 using var stream = new FileStream(path, FileMode.Open);
                 using var br = new BinaryReader(stream);
                 var version = br.ReadInt32();
-                return (Ok(), new()
+                return new()
                 {
                     ShowTouchControls = br.ReadBoolean(),
                     TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
-                });
+                };
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                return (Fail("GetSettings: Unable to obtain persisted application settings: " + path, ex), new());
+                Error($"GetSettings: Unable to read persisted application settings from {path}: " + ToString(ex));
+                return new();
             }
         }
 
-        public static Result SaveSettings(ApplicationSettings settings)
+        public static void SaveSettings(ApplicationSettings settings)
         {
-            EnsureUserAppDataStoreRoot();
+            EnsureSaveGamesEmu7800FolderExists();
 
-            var path = ToLocalUserAppDataPath(ApplicationSettingsName);
+            var path = ToLocalUserDataStoragePath(ApplicationSettingsName);
             try
             {
                 using var stream = new FileStream(path, FileMode.Create);
@@ -240,9 +236,8 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                return Fail("SaveSettings: Unable to persist application settings", ex);
+                Error($"SaveSettings: Unable to persist application settings to {path}: " + ToString(ex));
             }
-            return Ok();
         }
 
         #endregion
@@ -251,11 +246,11 @@ namespace EMU7800.Services
 
         public static void DumpCrashReport(Exception ex)
         {
-            if (string.IsNullOrWhiteSpace(_userAppDataStoreRoot))
+            if (string.IsNullOrWhiteSpace(SaveGamesEmu7800Folder))
                 return;
 
             var filename = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
-            var path = ToLocalUserAppDataPath(filename);
+            var path = ToLocalUserDataStoragePath(filename);
             if (string.IsNullOrWhiteSpace(path))
                 return;
 
@@ -278,61 +273,44 @@ namespace EMU7800.Services
             PersistedGameProgramsName = "PersistedGamePrograms",
             ApplicationSettingsName = "Settings.emusettings";
 
-        static string ToLocalUserAppDataPath(string fileName)
-        {
-            var path = Path.Combine(_userAppDataStoreRoot, fileName);
-            return path;
-        }
+        static string ToLocalUserDataStoragePath(string fileName)
+            => Path.Combine(SaveGamesEmu7800Folder, fileName);
 
         static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{saveSlot}.emustate";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToScreenshotStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
         {
             var gpi = gameProgramInfo;
             var fileName = $"{gpi.Title}.{gpi.MachineType}.{gpi.LController}.{gpi.RController}.{saveSlot}.bgr32.320x230.scrdata";
-            var name = EscapeFileNameChars(fileName);
-            return name;
+            return EscapeFileNameChars(fileName);
         }
 
         static string ToPersistedStateStoragePath(string name)
+            => Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName, name);
+
+        static void EnsurePersistedGameProgramsFolderExists()
         {
-            var persistedGameProgramsDir = Path.Combine(_userAppDataStoreRoot, PersistedGameProgramsName);
-            var path = Path.Combine(persistedGameProgramsDir, name);
-            return path;
-        }
-
-        static Result EnsurePersistedStateGameProgramsDir()
-        {
-            EnsureUserAppDataStoreRoot();
-
-            var persistedGameProgramsDir = Path.Combine(_userAppDataStoreRoot, PersistedGameProgramsName);
-
-            if (!DirectoryExists(persistedGameProgramsDir))
+            EnsureSaveGamesEmu7800FolderExists();
+            var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
+            if (!DirectoryExists(folder))
             {
-                var result = DirectoryCreateDirectory(persistedGameProgramsDir);
-                if (result.IsFail)
-                {
-                    return Fail("Unable to create PersistedGamePrograms folder: " + persistedGameProgramsDir);
-                }
+                DirectoryCreateDirectory(folder);
             }
-
-            return Ok();
         }
 
         static IEnumerable<string> GetFilesFromPersistedGameProgramsDir()
         {
-            EnsurePersistedStateGameProgramsDir();
-            var persistedGameProgramsDir = Path.Combine(_userAppDataStoreRoot, PersistedGameProgramsName);
+            EnsurePersistedGameProgramsFolderExists();
+            var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
             string[] paths;
             try
             {
-                paths = Directory.GetFiles(persistedGameProgramsDir);
+                paths = Directory.GetFiles(folder);
             }
             catch (Exception ex)
             {
@@ -343,50 +321,16 @@ namespace EMU7800.Services
             return paths.Select(p => Path.GetFileName(p) ?? string.Empty).Where(s => !string.IsNullOrWhiteSpace(s));
         }
 
-        static void EnsureUserAppDataStoreRoot()
+        static void EnsureSaveGamesEmu7800FolderExists()
         {
-            if (_userAppDataStoreRoot.Length == 0)
-                _userAppDataStoreRoot = DiscoverOrCreateUserAppDataStoreRoot();
-        }
-
-        static string DiscoverOrCreateUserAppDataStoreRoot()
-        {
-            const string directoryPrefix = "EMU7800.";
-
-            var appDataRoot = EnvironmentGetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            if (string.IsNullOrWhiteSpace(appDataRoot))
-                throw new ApplicationException("Unable to probe SpecialFolder.LocalApplicationData.");
-
-            var selectedDirectoryPath = string.Empty;
-
-            var selectedDirectoryPathCreationTimeUtc = DateTime.MinValue;
-
-            var directories = EnumerateDirectories(appDataRoot);
-            foreach (var directory in directories)
+            if (SaveGamesEmu7800Folder.Length == 0)
             {
-                var fileName = Path.GetFileName(directory);
-                if (fileName == null)
-                    continue;
-                if (fileName.Length <= directoryPrefix.Length || !fileName.StartsWith(directoryPrefix, StringComparison.OrdinalIgnoreCase))
-                    continue;
-                if (!Guid.TryParse(fileName[directoryPrefix.Length..], out Guid guid))
-                    continue;
-                var directoryCreationTimeUtc = Directory.GetCreationTimeUtc(directory);
-                if (directoryCreationTimeUtc <= selectedDirectoryPathCreationTimeUtc)
-                    continue;
-                selectedDirectoryPath = directory;
-                selectedDirectoryPathCreationTimeUtc = directoryCreationTimeUtc;
+                SaveGamesEmu7800Folder = Path.Combine(EnvironmentGetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800");
             }
-
-            if (selectedDirectoryPath.Length == 0)
+            if (!DirectoryExists(SaveGamesEmu7800Folder))
             {
-                var directoryName = directoryPrefix + Guid.NewGuid();
-                selectedDirectoryPath = Path.Combine(appDataRoot, directoryName);
-                if (DirectoryCreateDirectory(selectedDirectoryPath).IsFail)
-                    throw new ApplicationException("Unable to create LocalApplicationData folder: " + directoryName);
+                DirectoryCreateDirectory(SaveGamesEmu7800Folder);
             }
-
-            return selectedDirectoryPath;
         }
 
         static string EscapeFileNameChars(string fileName)
@@ -550,15 +494,6 @@ namespace EMU7800.Services
             while (moveNextResult);
         }
 
-        static Result Ok()
-            => new();
-
-        static Result Fail(string message)
-            => new(message);
-
-        static Result Fail(string message, Exception ex)
-            => new(message + $": {ex.GetType().Name}: {ex.Message}");
-
         static bool DirectoryExists(string path)
         {
             try
@@ -573,7 +508,7 @@ namespace EMU7800.Services
             }
         }
 
-        static Result DirectoryCreateDirectory(string path)
+        static void DirectoryCreateDirectory(string path)
         {
             try
             {
@@ -583,9 +518,8 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                return Fail("Unable to create directory", ex);
+                Error("Unable to create directory: " + ToString(ex));
             }
-            return Ok();
         }
 
         static string EnvironmentGetFolderPath(Environment.SpecialFolder specialFolder)
@@ -601,6 +535,12 @@ namespace EMU7800.Services
                 return string.Empty;
             }
         }
+
+        static void Error(string message)
+            => Console.WriteLine("ERROR: " + message);
+
+        static string ToString(Exception ex)
+            => $"{ex.GetType().Name}: {ex.Message}";
 
         static bool IsCriticalException(Exception ex)
             => ex is OutOfMemoryException

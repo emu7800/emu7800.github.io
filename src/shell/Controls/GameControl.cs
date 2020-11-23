@@ -328,20 +328,12 @@ namespace EMU7800.D2D.Shell
 
             if (!startFresh)
             {
-                var (result, newNachineStateInfo) = DatastoreService.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
-                if (result.IsOk)
-                {
-                    machineStateInfo = newNachineStateInfo;
-                }
+                machineStateInfo = DatastoreService.RestoreMachine(importedGameProgramInfo.GameProgramInfo);
             }
 
             if (machineStateInfo == MachineStateInfo.Default)
             {
-                var (result, newMachineStateInfo) = MachineFactory.Create(importedGameProgramInfo);
-                if (result.IsOk)
-                {
-                    machineStateInfo = newMachineStateInfo;
-                }
+                machineStateInfo = MachineFactory.Create(importedGameProgramInfo);
                 _calibrationNeeded = true;
             }
 

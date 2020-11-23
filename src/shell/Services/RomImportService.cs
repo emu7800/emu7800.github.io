@@ -15,19 +15,19 @@ namespace EMU7800.Services
         public static int FilesExamined { get; private set; }
         public static int FilesRecognized { get; private set; }
 
-        public static Result Import()
-        {
-            var (queryResult, lines) = DatastoreService.QueryROMSFolder();
-            return queryResult.IsOk ? Import(lines) : Fail(queryResult.ErrorMessage);
-        }
+        public static void Import()
+            => Import(DatastoreService.QueryROMSFolder());
 
-        public static Result ImportDefaultsIfNecessary()
-            => DatastoreService.ImportedGameProgramInfo.Any()
-                && DatastoreService.ImportedSpecialBinaryInfo.Any() ? Ok() : Import();
+        public static void ImportDefaultsIfNecessary()
+        {
+            if (!DatastoreService.ImportedGameProgramInfo.Any()
+                  || !DatastoreService.ImportedSpecialBinaryInfo.Any())
+                Import();
+        }
 
         #region Helpers
 
-        static Result Import(IEnumerable<string> paths)
+        static void Import(IEnumerable<string> paths)
         {
             DirectoryScanCompleted = false;
             CancelRequested = false;
@@ -49,9 +49,9 @@ namespace EMU7800.Services
 
                 FilesExamined++;
 
-                var (getBytesResult, bytes) = DatastoreService.GetRomBytes(path);
+                var bytes = DatastoreService.GetRomBytes(path);
 
-                if (getBytesResult.IsFail || bytes.Length == 0)
+                if (bytes.Length == 0)
                     continue;
 
                 var md5key = RomBytesService.ToMD5Key(bytes);
@@ -81,22 +81,14 @@ namespace EMU7800.Services
             }
 
             if (CancelRequested)
-                return Fail("RomImportService.Import: Cancel requested");
+                return;
 
             DatastoreService.ImportedGameProgramInfo = importedGameProgramInfoMd5Dict.Values
                 .Where(igpi => igpi.StorageKeySet.Count > 0)
                     .OrderBy(igpi => igpi.GameProgramInfo.Title);
 
             DatastoreService.ImportedSpecialBinaryInfo = importedSpecialBinaryInfoSet;
-
-            return Ok();
         }
-
-        static Result Ok()
-            => new();
-
-        static Result Fail(string message)
-            => new (message);
 
         #endregion
     }

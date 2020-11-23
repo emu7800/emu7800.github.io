@@ -223,9 +223,7 @@ Options:
 
         static IList<GameProgramInfo> GetGameProgramInfos(string romPath)
         {
-            var (getBytesResult, bytes) = DatastoreService.GetRomBytes(romPath);
-            if (getBytesResult.IsFail)
-                return Array.Empty<GameProgramInfo>();
+            var bytes = DatastoreService.GetRomBytes(romPath);
             var md5key = RomBytesService.ToMD5Key(bytes);
             var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
             return RomPropertiesService.ToGameProgramInfo(romPropertiesCsv)

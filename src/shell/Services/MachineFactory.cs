@@ -10,20 +10,19 @@ namespace EMU7800.Services
 {
     public class MachineFactory
     {
-        public static (Result, MachineStateInfo) Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
+        public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
         {
             if (importedGameProgramInfo.StorageKeySet.Count == 0)
                 throw new ArgumentException("importedGameProgramInfo.StorageKeySet", nameof(importedGameProgramInfo));
 
             var romBytes = importedGameProgramInfo.StorageKeySet
                 .Select(sk => DatastoreService.GetRomBytes(sk))
-                .Where(r => r.Item1.IsOk)
-                .Select(r => r.Item2)
                 .FirstOrDefault(b => b.Length > 0) ?? Array.Empty<byte>();
 
             if (romBytes.Length == 0)
             {
-                return (Fail("MachineService.Create: Unable to load ROM bytes"), new());
+                Error("MachineFactory.Create: No ROM bytes");
+                return MachineStateInfo.Default;
             }
 
             romBytes = RomBytesService.RemoveA78HeaderIfNecessary(romBytes);
@@ -53,7 +52,8 @@ namespace EMU7800.Services
             }
             catch (Emu7800Exception ex)
             {
-                return (Fail("MachineService.Create: Unable to create Cart", ex), new());
+                Error("MachineFactory.Create: Unable to create Cart: " + ex.Message);
+                return MachineStateInfo.Default;
             }
 
             MachineBase machine;
@@ -64,16 +64,17 @@ namespace EMU7800.Services
             }
             catch (Emu7800Exception ex)
             {
-                return (Fail("MachineService.Create: Unable to create Machine", ex), new());
+                Error("MachineFactory.Create: Unable to create Machine: " + ex.Message);
+                return MachineStateInfo.Default;
             }
 
-            return (Ok(), new()
+            return new()
             {
                 FramesPerSecond = machine.FrameHZ,
                 CurrentPlayerNo = 1,
                 GameProgramInfo = gameProgramInfo,
                 Machine         = machine
-            });
+            };
         }
 
         #region Helpers
@@ -91,8 +92,6 @@ namespace EMU7800.Services
         static Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
             => specialBinaryInfoSet
                 .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
-                .Where(r => r.Item1.IsOk)
-                .Select(r => r.Item2)
                 .Where(b => b.Length == 4096 || b.Length == 16384)
                 .Take(1)
                 .Select(b => new Bios7800(b))
@@ -105,20 +104,12 @@ namespace EMU7800.Services
         static HSC7800 PickFirstHSC7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
             => specialBinaryInfoSet
                 .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
-                .Where(r => r.Item1.IsOk)
-                .Select(r => r.Item2)
                 .Where(b => b.Length > 0)
                 .Select(b => new HSC7800(b))
                 .FirstOrDefault() ?? HSC7800.Default;
 
-        static Result Ok()
-            => new();
-
-        static Result Fail(string message)
-            => new(message);
-
-        static Result Fail(string message, Exception ex)
-            => new(message + $": {ex.GetType().Name}: {ex.Message}");
+        static void Error(string message)
+            => Console.WriteLine("ERROR: " + message);
 
         #endregion
     }
