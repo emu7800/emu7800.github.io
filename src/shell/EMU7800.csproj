@@ -19,12 +19,16 @@
   <ItemGroup>
     <ProjectReference Include="..\assets\EMU7800.Assets.csproj" />
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
-    <ProjectReference Include="..\win32.interop.managed\EMU7800.Win32.Interop.csproj" />
-    <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.v142.vcxproj" />
+    <ProjectReference Include="..\win32.interop.unmanaged\EMU7800.Win32.Interop.Unmanaged.vcxproj" />
+    <ProjectReference Include="..\win32.interop.cppcli\EMU7800.Win32.Interop.CppCli.vcxproj" />
+    <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="msvcp120.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(ProjectDir)..\win32.interop.unmanaged\bin\x64\$(Configuration)\* $(TargetDir)" />
+  </Target>
 </Project>

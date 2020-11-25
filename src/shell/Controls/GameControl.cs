@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using EMU7800.Core;
 using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
 

@@ -81,11 +81,9 @@
     <None Include="GraphicsDevice.h">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="DeclareDPIAware.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="EMUIcon.ico" />
   </ItemGroup>
 </Project>

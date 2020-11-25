@@ -1,4 +1,4 @@
-namespace EMU7800.D2D.Interop
+namespace EMU7800.Win32.Interop
 {
     public static class AudioDevice
     {

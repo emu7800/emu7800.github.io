@@ -10,7 +10,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace EMU7800.D2D.Interop
+namespace EMU7800.Win32.Interop
 {
     internal unsafe static class WinmmNativeMethods
     {
@@ -177,29 +177,29 @@ namespace EMU7800.D2D.Interop
 
 #pragma warning disable IDE1006 // Naming Styles
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutReset(IntPtr hwo);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutReset(IntPtr hwo);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern uint waveOutClose(IntPtr hwo);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutClose(IntPtr hwo);
 
 #pragma warning restore IDE1006 // Naming Styles
     }
