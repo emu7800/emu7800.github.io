@@ -8,8 +8,6 @@
     <AssemblyVersion>5.0.0.0</AssemblyVersion>
     <FileVersion>5.0.0.0</FileVersion>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
-    <StartupObject>EMU7800.D2D.Shell.Win32.Win32EntryPoint</StartupObject>
-    <RootNamespace>EMU7800.D2D.Shell</RootNamespace>
     <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -17,8 +15,8 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\assets\EMU7800.Assets.csproj" />
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
+    <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
     <ProjectReference Include="..\win32.interop.unmanaged\EMU7800.Win32.Interop.Unmanaged.vcxproj" />
     <ProjectReference Include="..\win32.interop.cppcli\EMU7800.Win32.Interop.CppCli.vcxproj" />
     <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.csproj" />

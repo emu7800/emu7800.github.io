@@ -1,7 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -25,11 +25,7 @@ namespace EMU7800.D2D.Shell
         };
 
         readonly GameControl _gameControl;
-        readonly int[] _daptor2Mode;
-        readonly JoystickTypeEnum[] _joystickType;
-
-        readonly string[] _productNames;
-        readonly JoystickDeviceList _joystickDeviceList = new();
+        readonly int[] _daptor2Mode = new int[2];
 
         #endregion
 
@@ -38,20 +34,17 @@ namespace EMU7800.D2D.Shell
 
         public void Poll()
         {
-            if (_joystickDeviceList == null)
-                return;
-            for (var i = 0; i < _joystickDeviceList.Joysticks.Length; i++)
-                _joystickDeviceList.Joysticks[i].Poll();
+            JoystickDeviceList.Poll();
         }
 
         public string GetControllerInfo(int controllerNo)
         {
-            if (controllerNo < 0 || controllerNo >= _productNames.Length)
+            if (controllerNo < 0 || controllerNo >= JoystickDeviceList.Joysticks.Length)
                 return string.Empty;
 
-            switch (_joystickType[controllerNo])
+            switch (JoystickDeviceList.Joysticks[controllerNo].JoystickType)
             {
-                case JoystickTypeEnum.Daptor2:
+                case JoystickType.Daptor2:
                     var daptor2Mode = string.Empty;
                     switch (_daptor2Mode[controllerNo])
                     {
@@ -59,9 +52,9 @@ namespace EMU7800.D2D.Shell
                         case 1: daptor2Mode = " (7800 mode)";   break;
                         case 2: daptor2Mode = " (Keypad mode)"; break;
                     }
-                    return _productNames[controllerNo] + daptor2Mode;
+                    return JoystickDeviceList.Joysticks[controllerNo].ProductName + daptor2Mode;
                 default:
-                    return _productNames[controllerNo];
+                    return JoystickDeviceList.Joysticks[controllerNo].ProductName;
             }
         }
 
@@ -69,7 +62,7 @@ namespace EMU7800.D2D.Shell
 
         public void Dispose()
         {
-            _joystickDeviceList.Dispose();
+            JoystickDeviceList.Close();
         }
 
         #endregion
@@ -83,37 +76,28 @@ namespace EMU7800.D2D.Shell
 
             _gameControl = gameControl;
 
-            _daptor2Mode = new int[_joystickDeviceList.Joysticks.Length];
-            _productNames = new string[_joystickDeviceList.Joysticks.Length];
-            _joystickType = new JoystickTypeEnum[_joystickDeviceList.Joysticks.Length];
+            JoystickDeviceList.Initialize();
 
-            for (var i = 0; i < _joystickDeviceList.Joysticks.Length; i++)
+            for (var i = 0; i < JoystickDeviceList.Joysticks.Length; i++)
             {
                 var joystickNo = i;
-                var jd = _joystickDeviceList.Joysticks[joystickNo];
+                var jd = JoystickDeviceList.Joysticks[joystickNo];
 
-                _productNames[joystickNo] = jd.ProductName;
-                _joystickType[joystickNo] = jd.JoystickType;
-
-                if (jd.JoystickType == JoystickTypeEnum.Daptor2
-                    || jd.JoystickType == JoystickTypeEnum.Daptor
-                        || jd.JoystickType == JoystickTypeEnum.Stelladaptor)
+                if (jd.JoystickType == JoystickType.Daptor2
+                    || jd.JoystickType == JoystickType.Daptor
+                        || jd.JoystickType == JoystickType.Stelladaptor)
                 {
                     if (joystickNo == 0)
                         LeftJackHasAtariAdaptor = true;
                     if (joystickNo == 1)
                         RightJackHasAtariAdaptor = true;
-                    if (jd.JoystickType == JoystickTypeEnum.Daptor2)
-                        jd.Daptor2ModeChanged += mode => Daptor2ModeChanged(joystickNo, mode);
+               }
 
-                    jd.StelladaptorPaddlePositionChanged += (paddleno, position) => StelladaptorPaddlePositionChanged(joystickNo, paddleno, position);
-                    jd.StelladaptorDrivingPositionChanged += position => StelladaptorDrivingPositionChanged(joystickNo, position);
-                }
-
-                jd.JoystickButtonChanged += (buttonno, down) => JoystickButtonChanged(joystickNo, buttonno, down);
-                jd.JoystickDirectionalButtonChanged += (button, down) => JoystickDirectionalButtonChanged(joystickNo, button, down);
-
-                jd.Reset();
+                jd.Daptor2ModeChanged                 += mode                 => Daptor2ModeChanged(joystickNo, mode);
+                jd.StelladaptorPaddlePositionChanged  += (paddleno, position) => StelladaptorPaddlePositionChanged(joystickNo, paddleno, position);
+                jd.StelladaptorDrivingPositionChanged += position             => StelladaptorDrivingPositionChanged(joystickNo, position);
+                jd.JoystickButtonChanged              += (buttonno, down)     => JoystickButtonChanged(joystickNo, buttonno, down);
+                jd.JoystickDirectionalButtonChanged   += (button, down)       => JoystickDirectionalButtonChanged(joystickNo, button, down);
             }
         }
 
@@ -197,7 +181,8 @@ namespace EMU7800.D2D.Shell
 
         void StelladaptorPaddlePositionChanged(int joystickNo, int paddleno, int position)
         {
-            const int StelladaptorPaddleRange = (int)((JoystickDevice.AXISRANGE << 1) * 0.34);
+            const int AXISRANGE = 1000;
+            const int StelladaptorPaddleRange = (int)((AXISRANGE << 1) * 0.34);
             var paddlePlayerNo = ((joystickNo << 1) | (paddleno & 1) & 3);
             _gameControl.PaddleChanged(paddlePlayerNo, StelladaptorPaddleRange, position);
         }

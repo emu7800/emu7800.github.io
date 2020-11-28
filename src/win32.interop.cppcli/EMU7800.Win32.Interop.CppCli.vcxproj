@@ -96,8 +96,6 @@
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="DynamicBitmap.cpp" />
-    <ClCompile Include="JoystickDevice.cpp" />
-    <ClCompile Include="JoystickDeviceList.cpp" />
     <ClCompile Include="StaticBitmap.cpp" />
     <ClCompile Include="TextFormat.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
@@ -111,8 +109,6 @@
     <ClInclude Include="D2DError.h" />
     <ClInclude Include="DynamicBitmap.h" />
     <ClInclude Include="D2DStructs.h" />
-    <ClInclude Include="JoystickDevice.h" />
-    <ClInclude Include="JoystickDeviceList.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StaticBitmap.h" />
     <ClInclude Include="TextFormat.h" />

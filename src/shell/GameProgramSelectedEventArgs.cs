@@ -7,6 +7,9 @@ namespace EMU7800.D2D.Shell
 {
     public class GameProgramSelectedEventArgs : EventArgs
     {
-        public GameProgramInfoViewItem GameProgramInfoViewItem { get; set; } = new GameProgramInfoViewItem();
+        public GameProgramInfoViewItem GameProgramInfoViewItem { get; }
+
+        public GameProgramSelectedEventArgs(GameProgramInfoViewItem gpivi)
+            => GameProgramInfoViewItem = gpivi;
     }
 }

@@ -15,6 +15,9 @@ namespace EMU7800.Win32.Interop
 
     internal unsafe static class XInputNativeMethods
     {
+        static readonly XINPUT_STATE[,] State = new XINPUT_STATE[2,2];
+        static readonly int[] CurrStateIndex = new int[2];
+
         public const int
             XINPUT_FLAG_GAMEPAD             = 0x00000001,
 
@@ -68,12 +71,41 @@ namespace EMU7800.Win32.Interop
         {
             public uint dwPacketNumber;
             public XINPUT_GAMEPAD Gamepad;
+
+            public bool InterpretButtonDown(int buttonno)
+                => (Gamepad.wButtons & (0x1000 << buttonno)) != 0;
+
+            public bool InterpretJoyLeft()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0;
+            public bool InterpretJoyRight()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
+            public bool InterpretJoyUp()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0;
+            public bool InterpretJoyDown()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0;
+
+            public bool InterpretButtonBack()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
+            public bool InterpretButtonStart()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
+        }
+
+        public static int Initialize(int deviceno, out XINPUT_CAPABILITIES capabilities)
+            => XInputGetCapabilities(deviceno, XINPUT_FLAG_GAMEPAD, out capabilities);
+
+        public static int Poll(int deviceno, out XINPUT_STATE currState, out XINPUT_STATE prevState)
+        {
+            CurrStateIndex[deviceno] ^= 1;
+            var index = CurrStateIndex[deviceno];
+            currState = State[deviceno, index];
+            prevState = State[deviceno, index ^ 1];
+            return XInputGetState(deviceno, ref currState);
         }
 
         [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
-        public static extern int XInputGetState(int dwUserIndex, ref XINPUT_STATE state);
+        static extern int XInputGetState(int dwUserIndex, ref XINPUT_STATE state);
 
         [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
-        public static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, ref XINPUT_CAPABILITIES capabilities);
+        static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, out XINPUT_CAPABILITIES capabilities);
     }
 }

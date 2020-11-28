@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Assets;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
 using System;
@@ -27,6 +28,21 @@ namespace EMU7800.Services
                    igpi => ToAuthorSubTitle(igpi))
                ).ToList();
 
+        public static IList<GameProgramInfoViewItem> GetGameProgramInfoViewItems(string romPath)
+            => GetGameProgramInfos(romPath)
+                .Select(gpi => new GameProgramInfoViewItem(gpi, $"{gpi.Manufacturer} {gpi.Year}", romPath))
+                .ToList();
+
+        public static IList<GameProgramInfo> GetGameProgramInfos(string romPath)
+        {
+            var bytes = DatastoreService.GetRomBytes(romPath);
+            var md5key = RomBytesService.ToMD5Key(bytes);
+            var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
+            return RomPropertiesService.ToGameProgramInfo(romPropertiesCsv)
+                .Where(gpi => gpi.MD5 == md5key)
+                .ToList();
+        }
+
         #region Helpers
 
         static IEnumerable<GameProgramInfoViewItemCollection> ToGameProgramInfoViewItemCollections(
@@ -44,12 +60,7 @@ namespace EMU7800.Services
                    });
 
         static GameProgramInfoViewItem ToGameProgramInfoViewItem(ImportedGameProgramInfo igpi, Func<ImportedGameProgramInfo, string> subTitleFunc)
-            => new()
-            {
-                Title = igpi.GameProgramInfo.Title,
-                SubTitle = subTitleFunc(igpi),
-                ImportedGameProgramInfo = igpi
-            };
+            => new(igpi, subTitleFunc(igpi));
 
         static Dictionary<string, List<ImportedGameProgramInfo>> ToDict(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet, Func<ImportedGameProgramInfo, string> keySelector)
             => importedGameProgramInfoSet.GroupBy(keySelector)

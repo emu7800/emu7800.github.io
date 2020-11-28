@@ -1,13 +1,13 @@
 ﻿// © Mike Murphy
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 
 namespace EMU7800.Win32.Interop
 {
-    public enum JoystickType { Normal, Stelladaptor, Daptor, Daptor2 };
-
     internal unsafe class DirectInputNativeMethods
     {
         const int
@@ -81,22 +81,24 @@ namespace EMU7800.Win32.Interop
                 };
         }
 
-        public static int Initialize(IntPtr hWnd, out JoystickType[] joystickTypes)
+        public static int Initialize(IntPtr hWnd, out string[] joystickNames)
         {
-             var hr = DInput8_Initialize(hWnd, AXISRANGE, out var stelladaptorTypesPtr, out int joysticksFound);
-            joystickTypes = new JoystickType[joysticksFound % 3];
-            for (var i=0; i < joystickTypes.Length; i++)
-            {
-                joystickTypes[i] = (JoystickType)stelladaptorTypesPtr[i];
-            }
+            var hr = DInput8_Initialize(hWnd, AXISRANGE, out IntPtr productName1Ptr, out IntPtr productName2Ptr);
+            joystickNames = new List<string>
+                        {
+                            Marshal.PtrToStringUni(productName1Ptr) ?? string.Empty,
+                            Marshal.PtrToStringUni(productName2Ptr) ?? string.Empty
+                        }
+                        .Where(js => !string.IsNullOrWhiteSpace(js))
+                        .ToArray();
             return hr;
         }
 
-        public static int Poll(out DIJOYSTATE2 currState, out DIJOYSTATE2 prevState)
+        public static int Poll(int deviceno, out DIJOYSTATE2 currState, out DIJOYSTATE2 prevState)
         {
             var currStatePtr = IntPtr.Zero;
             var prevStatePtr = IntPtr.Zero;
-            var hr = DInput8_Poll(ref currStatePtr, ref prevStatePtr);
+            var hr = DInput8_Poll(deviceno, ref currStatePtr, ref prevStatePtr);
             currState = Marshal.PtrToStructure<DIJOYSTATE2>(currStatePtr);
             prevState = Marshal.PtrToStructure<DIJOYSTATE2>(prevStatePtr);
             return hr;
@@ -106,10 +108,10 @@ namespace EMU7800.Win32.Interop
             => DInput8_Shutdown();
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
-        static extern int DInput8_Initialize(IntPtr hWnd, int axisRange, out byte* stelladaptorTypesPtr, out int joysticksFound);
+        static extern int DInput8_Initialize(IntPtr hWnd, int axisRange, out IntPtr productName1Ptr, out IntPtr productName2Ptr);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int DInput8_Poll(ref IntPtr ppCurrState, ref IntPtr ppPrevState);
+        static extern int DInput8_Poll(int deviceno, ref IntPtr ppCurrState, ref IntPtr ppPrevState);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern int DInput8_Shutdown();

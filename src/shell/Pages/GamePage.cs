@@ -53,7 +53,7 @@ namespace EMU7800.D2D.Shell
             _gameProgramInfoViewItem = gameProgramInfoViewItem ?? throw new ArgumentNullException(nameof(gameProgramInfoViewItem));
             _startFreshReq = startFresh;
 
-            _settings = SettingsService.GetSettings();
+            _settings = DatastoreService.GetSettings();
 
             _gameControl = new GameControl();
             _buttonBack = new BackButton
@@ -258,7 +258,7 @@ namespace EMU7800.D2D.Shell
             _isAlreadyNavigatedAway = true;
             _isAlreadyNavigatedHere = false;
 
-            SettingsService.SaveSettings(_settings);
+            DatastoreService.SaveSettings(_settings);
             _gameControl.Stop();
 
             HideHud();

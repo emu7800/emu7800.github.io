@@ -209,6 +209,10 @@ namespace EMU7800.Services
                     TouchControlSeparation = version <= 1 ? 0 : br.ReadInt32()
                 };
             }
+            catch (FileNotFoundException)
+            {
+                return new();
+            }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))

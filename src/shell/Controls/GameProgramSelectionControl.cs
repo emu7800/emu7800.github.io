@@ -454,8 +454,7 @@ namespace EMU7800.D2D.Shell
             if (Selected == DefaultEventHandler || !IsFocusSet)
                 return;
             var gpivi = _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet[_focusedCollectionItemIndex];
-            var e = new GameProgramSelectedEventArgs { GameProgramInfoViewItem = ToGameProgramInfoViewItem(gpivi) };
-            Selected(this, e);
+            Selected(this, new(ToGameProgramInfoViewItem(gpivi)));
         }
 
         void ComputeClipRect()
@@ -634,42 +633,25 @@ namespace EMU7800.D2D.Shell
         }
 
         static ScrollColumnInfo ToScrollColumnInfo(GameProgramInfoViewItemCollection gpvic)
-        {
-            var sci = new ScrollColumnInfo { GameProgramInfoViewItemCollection = ToGameProgramInfoViewItemCollectionEx(gpvic) };
-            return sci;
-        }
+            =>new() { GameProgramInfoViewItemCollection = ToGameProgramInfoViewItemCollectionEx(gpvic) };
 
         static GameProgramInfoViewItemCollectionEx ToGameProgramInfoViewItemCollectionEx(GameProgramInfoViewItemCollection gpvic)
-        {
-            var gpvic2 = new GameProgramInfoViewItemCollectionEx
+            => new()
             {
                 Name = gpvic.Name,
                 GameProgramInfoViewItemSet = gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx).ToArray(),
             };
-            return gpvic2;
-        }
 
         static GameProgramInfoViewItemEx ToGameProgramInfoViewItemEx(GameProgramInfoViewItem gpvi)
-        {
-            var gpvi2 = new GameProgramInfoViewItemEx
+            => new()
             {
-                SubTitle = gpvi.SubTitle,
                 Title = gpvi.Title,
+                SubTitle = gpvi.SubTitle,
                 ImportedGameProgramInfo = gpvi.ImportedGameProgramInfo
             };
-            return gpvi2;
-        }
 
         static GameProgramInfoViewItem ToGameProgramInfoViewItem(GameProgramInfoViewItemEx gpivi)
-        {
-            var gpivi2 = new GameProgramInfoViewItem
-            {
-                Title = gpivi.Title,
-                SubTitle = gpivi.SubTitle,
-                ImportedGameProgramInfo = gpivi.ImportedGameProgramInfo
-            };
-            return gpivi2;
-        }
+            => new(gpivi.ImportedGameProgramInfo, gpivi.SubTitle);
 
         #endregion
     }

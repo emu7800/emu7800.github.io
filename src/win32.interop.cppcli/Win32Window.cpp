@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "Win32Window.h"
-#include "JoystickDevice.h"
 #include "GraphicsDevice.h"
 #include "resource.h"
 #include "D2DStructs.h"

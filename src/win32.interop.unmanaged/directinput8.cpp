@@ -4,11 +4,10 @@
 
 LPDIRECTINPUT8       pDI;
 LPDIRECTINPUTDEVICE8 pJoystick[2];
-BYTE                 StelladaptorType[2];
+WCHAR                ProductName[2][MAX_PATH];
 
-DIJOYSTATE2 JoystickState[4];
-
-int currStateIndex, prevStateIndex;
+DIJOYSTATE2          JoystickState[2][2];
+int                  CurrStateIndex[2];
 
 int axisRange = 1000;
 int enumJoystickNo = -1;
@@ -21,15 +20,11 @@ BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *
     int deviceno = (++enumJoystickNo) & 1;
 
     HRESULT hr = pDI->CreateDevice(pdidInstance->guidInstance, &pJoystick[deviceno], NULL);
-    if FAILED(hr)
-        return DIENUM_CONTINUE;
 
-    if (wcscmp(pdidInstance->tszProductName, L"Stelladaptor 2600-to-USB Interface") == 0)
-        StelladaptorType[deviceno] = 1;
-    else if (wcscmp(pdidInstance->tszProductName, L"2600-daptor") == 0)
-        StelladaptorType[deviceno] = 2;
-    else if (wcscmp(pdidInstance->tszProductName, L"2600-daptor II") == 0)
-        StelladaptorType[deviceno] = 3;
+    if SUCCEEDED(hr)
+    {
+        wcscpy_s(ProductName[deviceno], pdidInstance->tszProductName);
+    }
 
     return DIENUM_CONTINUE;
 }
@@ -56,7 +51,7 @@ BOOL CALLBACK EnumAxesCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pCont
 HRESULT CreateJoystick(int deviceno, HWND hWnd)
 {
     if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
-        return S_OK;
+        return E_FAIL;
 
     pJoystick[deviceno]->SetDataFormat(&c_dfDIJoystick2);
     pJoystick[deviceno]->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
@@ -65,7 +60,7 @@ HRESULT CreateJoystick(int deviceno, HWND hWnd)
     return S_OK;
 }
 
-HRESULT PollJoystick(int deviceno)
+HRESULT PollJoystick(int deviceno, LPVOID pJoystickState)
 {
     if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
         return E_FAIL;
@@ -80,7 +75,7 @@ HRESULT PollJoystick(int deviceno)
         }
     }
 
-    return pJoystick[deviceno]->GetDeviceState(sizeof(DIJOYSTATE2), &JoystickState[currStateIndex + deviceno]);
+    return pJoystick[deviceno]->GetDeviceState(sizeof(DIJOYSTATE2), pJoystickState);
 }
 
 void FreeJoystick(int deviceno)
@@ -92,22 +87,28 @@ void FreeJoystick(int deviceno)
     }
 }
 
-extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd, int axisRange, BYTE** ppStelladaptorType, int* pJoysticksFound)
+extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd, int axisRange, WCHAR** ppProductName1, WCHAR * *ppProductName2)
 {
     axisRange = axisRange;
 
     enumJoystickNo = -1;
 
-    currStateIndex = 0;
-    prevStateIndex = 2;
+    CurrStateIndex[0] = 0;
+    CurrStateIndex[1] = 0;
 
-    JoystickState[0] = { 0 };
-    JoystickState[1] = { 0 };
-    JoystickState[2] = { 0 };
-    JoystickState[3] = { 0 };
+    JoystickState[0][0] = { 0 };
+    JoystickState[0][1] = { 0 };
+    JoystickState[1][0] = { 0 };
+    JoystickState[1][1] = { 0 };
 
-    StelladaptorType[0] = 0;
-    StelladaptorType[1] = 0;
+    for (int i = 0; i < MAX_PATH; i++)
+    {
+        ProductName[0][i] = 0;
+        ProductName[1][i] = 0;
+    }
+
+    *ppProductName1 = ProductName[0];
+    *ppProductName2 = ProductName[1];
 
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
@@ -116,9 +117,6 @@ extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd,
         return hr;
 
     pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, (LPVOID)1, DIEDFL_ATTACHEDONLY);
-
-    *ppStelladaptorType = StelladaptorType;
-    *pJoysticksFound = enumJoystickNo + 1;
 
     if (enumJoystickNo >= 0)
     {
@@ -137,32 +135,19 @@ extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd,
     return S_OK;
 }
 
-extern "C" _declspec(dllexport) HRESULT __stdcall DInput8_Poll(DIJOYSTATE2** ppCurrState, DIJOYSTATE2** ppPrevState)
+extern "C" _declspec(dllexport) HRESULT __stdcall DInput8_Poll(int deviceno, DIJOYSTATE2** ppCurrState, DIJOYSTATE2** ppPrevState)
 {
-    currStateIndex += 2;
-    prevStateIndex += 2;
+    if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
+        return E_FAIL;
 
-    currStateIndex &= 3;
-    prevStateIndex &= 3;
+    CurrStateIndex[deviceno] ^= 1;
 
-    *ppCurrState = JoystickState + currStateIndex;
-    *ppPrevState = JoystickState + prevStateIndex;
+    int index = CurrStateIndex[deviceno];
 
-    if (enumJoystickNo >= 0)
-    {
-        HRESULT hr = PollJoystick(0);
-        if FAILED(hr)
-            return hr;
+    *ppCurrState = &JoystickState[deviceno][index];
+    *ppPrevState = &JoystickState[deviceno][index ^ 1];
 
-        if (enumJoystickNo >= 1)
-        {
-            hr = PollJoystick(1);
-            if FAILED(hr)
-                return hr;
-        }
-    }
-
-    return S_OK;
+    return PollJoystick(deviceno, *ppCurrState);
 }
 
 extern "C" _declspec(dllexport) void __stdcall DInput8_Shutdown()

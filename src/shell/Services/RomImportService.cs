@@ -73,7 +73,7 @@ namespace EMU7800.Services
                 {
                     if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out var igpi))
                     {
-                        igpi = new ImportedGameProgramInfo { GameProgramInfo = gpi };
+                        igpi = new(gpi);
                         importedGameProgramInfoMd5Dict.Add(md5key, igpi);
                     }
                     igpi.StorageKeySet.Add(path);

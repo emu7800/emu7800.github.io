@@ -23,12 +23,6 @@
     <ClCompile Include="Win32Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JoystickDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JoystickDeviceList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DynamicBitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,12 +41,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Win32Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JoystickDevice.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="JoystickDeviceList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D2DStructs.h">

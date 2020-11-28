@@ -148,7 +148,7 @@ namespace EMU7800.D2D.Shell
 
         static void SettingsCheck()
         {
-            SettingsService.GetSettings();
+            DatastoreService.GetSettings();
         }
 
         static string GetVersionInfo()
