@@ -12,8 +12,6 @@ using System.Security;
 
 namespace EMU7800.Win32.Interop
 {
-    // %ProgramFiles(x86)%\Windows Kits\10\Include\<version>\um\Xinput.h
-
     internal unsafe static class XInputNativeMethods
     {
         static readonly GCHandle[,] XInputStates = AllocateXInputStateStructures();
