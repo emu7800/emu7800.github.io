@@ -6,6 +6,7 @@
  * Copyright © 2020 Mike Murphy
  *
  */
+using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -15,8 +16,8 @@ namespace EMU7800.Win32.Interop
 
     internal unsafe static class XInputNativeMethods
     {
-        static readonly XINPUT_STATE[,] State = new XINPUT_STATE[2,2];
-        static readonly int[] CurrStateIndex = new int[2];
+        static readonly GCHandle[,] XInputStates = AllocateXInputStateStructures();
+        static readonly int[] CurrXInputStateIndices = new int[2];
 
         public const int
             XINPUT_FLAG_GAMEPAD             = 0x00000001,
@@ -95,15 +96,32 @@ namespace EMU7800.Win32.Interop
 
         public static int Poll(int deviceno, out XINPUT_STATE currState, out XINPUT_STATE prevState)
         {
-            CurrStateIndex[deviceno] ^= 1;
-            var index = CurrStateIndex[deviceno];
-            currState = State[deviceno, index];
-            prevState = State[deviceno, index ^ 1];
-            return XInputGetState(deviceno, ref currState);
+            CurrXInputStateIndices[deviceno] ^= 1;
+            var index = CurrXInputStateIndices[deviceno];
+            var currStateHandle = XInputStates[deviceno, index];
+            var hr = XInputGetState(deviceno, currStateHandle.AddrOfPinnedObject());
+#pragma warning disable CS8605 // Unboxing a possibly null value.
+            currState = (XINPUT_STATE)currStateHandle.Target;
+            prevState = (XINPUT_STATE)XInputStates[deviceno, index ^ 1].Target;
+#pragma warning restore CS8605 // Unboxing a possibly null value.
+            return hr;
         }
 
+        static GCHandle[,] AllocateXInputStateStructures()
+            => new[,]
+            {
+                {
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned),
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned)
+                },
+                {
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned),
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned)
+                }
+            };
+
         [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
-        static extern int XInputGetState(int dwUserIndex, ref XINPUT_STATE state);
+        static extern int XInputGetState(int dwUserIndex, IntPtr xinputState);
 
         [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
         static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, out XINPUT_CAPABILITIES capabilities);

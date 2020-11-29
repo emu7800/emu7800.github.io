@@ -5,7 +5,7 @@ using static EMU7800.Win32.Interop.XInputNativeMethods;
 
 namespace EMU7800.Win32.Interop
 {
-    public enum JoystickType { None, Xbox360, Usb, Stelladaptor, Daptor, Daptor2 };
+    public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 };
 
     public enum JoystickDirectionalButtonEnum { Left, Right, Up, Down, Back, Start };
 
@@ -169,14 +169,14 @@ namespace EMU7800.Win32.Interop
                 var currBack = currState.InterpretButtonBack();
                 if (prevBack != currBack)
                 {
-                    JoystickDirectionalButtonChanged(JoystickDirectionalButtonEnum.Back, currDown);
+                    JoystickDirectionalButtonChanged(JoystickDirectionalButtonEnum.Back, currBack);
                 }
 
                 var prevStart = prevState.InterpretButtonStart();
                 var currStart = currState.InterpretButtonStart();
                 if (prevStart != currStart)
                 {
-                    JoystickDirectionalButtonChanged(JoystickDirectionalButtonEnum.Start, currDown);
+                    JoystickDirectionalButtonChanged(JoystickDirectionalButtonEnum.Start, currStart);
                 }
             }
         }
@@ -197,9 +197,13 @@ namespace EMU7800.Win32.Interop
             {
                 JoystickType = JoystickType.Daptor2;
             }
-            else if (joystickName.StartsWith("xbox", System.StringComparison.OrdinalIgnoreCase))
+            else if (joystickName == "Controller (Xbox 360 Wireless Receiver for Windows)")
             {
-                JoystickType = JoystickType.Xbox360;
+                JoystickType = JoystickType.XInput;
+            }
+            else if (joystickName.Contains("xbox", System.StringComparison.OrdinalIgnoreCase))
+            {
+                JoystickType = JoystickType.XInput;
             }
             else if (joystickName.Length > 0)
             {

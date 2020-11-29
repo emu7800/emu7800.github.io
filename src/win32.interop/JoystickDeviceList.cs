@@ -53,7 +53,7 @@ namespace EMU7800.Win32.Interop
                     DirectInputNativeMethods.Poll(Joysticks[deviceno].InternalDeviceNumber, out var currDiState, out var prevDiState);
                     Joysticks[deviceno].RaiseEventsFromDirectInput(ref currDiState, ref prevDiState);
                     break;
-                case JoystickType.Xbox360:
+                case JoystickType.XInput:
                     XInputNativeMethods.Poll(Joysticks[deviceno].InternalDeviceNumber, out var currXiState, out var prevXiState);
                     Joysticks[deviceno].RaiseEventsFromXinput(ref currXiState, ref prevXiState);
                     break;
