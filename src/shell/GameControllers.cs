@@ -5,8 +5,10 @@ using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
-    public sealed class GameControllersWrapper : IGameControllers
+    public sealed class GameControllers
     {
+        public static readonly GameControllers Default = new GameControllers();
+
         #region Fields
 
         static readonly MachineInput[] _stelladaptorDrivingMachineInputMapping =
@@ -24,7 +26,6 @@ namespace EMU7800.D2D.Shell
             MachineInput.NumPad0
         };
 
-        readonly GameControl _gameControl;
         readonly int[] _daptor2Mode = new int[2];
 
         #endregion
@@ -69,12 +70,16 @@ namespace EMU7800.D2D.Shell
 
         #region Constructors
 
-        public GameControllersWrapper(GameControl gameControl)
+        private GameControllers()
         {
             LeftJackHasAtariAdaptor = false;
             RightJackHasAtariAdaptor = false;
+        }
 
-            _gameControl = gameControl;
+        public GameControllers(GameControl gameControl)
+        {
+            LeftJackHasAtariAdaptor = false;
+            RightJackHasAtariAdaptor = false;
 
             JoystickDeviceList.Initialize();
 
@@ -93,11 +98,11 @@ namespace EMU7800.D2D.Shell
                         RightJackHasAtariAdaptor = true;
                }
 
-                jd.Daptor2ModeChanged                 += mode                 => Daptor2ModeChanged(joystickNo, mode);
-                jd.StelladaptorPaddlePositionChanged  += (paddleno, position) => StelladaptorPaddlePositionChanged(joystickNo, paddleno, position);
-                jd.StelladaptorDrivingPositionChanged += position             => StelladaptorDrivingPositionChanged(joystickNo, position);
-                jd.JoystickButtonChanged              += (buttonno, down)     => JoystickButtonChanged(joystickNo, buttonno, down);
-                jd.JoystickDirectionalButtonChanged   += (button, down)       => JoystickDirectionalButtonChanged(joystickNo, button, down);
+                jd.Daptor2ModeChanged                 += mode                 => _daptor2Mode[joystickNo] = mode;
+                jd.StelladaptorPaddlePositionChanged  += (paddleno, position) => StelladaptorPaddlePositionChanged(gameControl, joystickNo, paddleno, position);
+                jd.StelladaptorDrivingPositionChanged += position             => StelladaptorDrivingPositionChanged(gameControl, joystickNo, position);
+                jd.JoystickButtonChanged              += (buttonno, down)     => JoystickButtonChanged(gameControl, _daptor2Mode, joystickNo, buttonno, down);
+                jd.JoystickDirectionalButtonChanged   += (button, down)       => JoystickDirectionalButtonChanged(gameControl, joystickNo, button, down);
             }
         }
 
@@ -105,96 +110,91 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        void Daptor2ModeChanged(int joystickNo, int mode)
-        {
-            _daptor2Mode[joystickNo] = mode;
-        }
-
-        void JoystickDirectionalButtonChanged(int joystickNo, JoystickDirectionalButtonEnum button, bool down)
+        static void JoystickDirectionalButtonChanged(GameControl gameControl, int joystickNo, JoystickDirectionalButtonEnum button, bool down)
         {
             switch (button)
             {
                 case JoystickDirectionalButtonEnum.Down:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Down, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Down, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Down, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Down, down);
                     break;
                 case JoystickDirectionalButtonEnum.Up:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Up, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Up, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Up, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Up, down);
                     break;
                 case JoystickDirectionalButtonEnum.Left:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Left, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Left, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Left, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Left, down);
                     break;
                 case JoystickDirectionalButtonEnum.Right:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Right, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Right, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Right, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Right, down);
                     break;
             }
         }
 
-        void JoystickButtonChanged(int joystickNo, int buttonno, bool down)
+        static void JoystickButtonChanged(GameControl gameControl, int[] daptor2Mode, int joystickNo, int buttonno, bool down)
         {
-            switch (_daptor2Mode[joystickNo])
+            switch (daptor2Mode[joystickNo % daptor2Mode.Length])
             {
                 case 1:
-                    Daptor2ButtonChangedFor7800Mode(joystickNo, buttonno, down);
+                    Daptor2ButtonChangedFor7800Mode(gameControl, joystickNo, buttonno, down);
                     break;
                 case 2:
-                    Daptor2ButtonChangedForKeypadMode(joystickNo, buttonno, down);
+                    Daptor2ButtonChangedForKeypadMode(gameControl, joystickNo, buttonno, down);
                     break;
                 default:
-                    RegularJoystickButtonChanged(joystickNo, buttonno, down);
+                    RegularJoystickButtonChanged(gameControl, joystickNo, buttonno, down);
                     break;
             }
         }
 
-        void RegularJoystickButtonChanged(int joystickNo, int buttonno, bool down)
+        static void RegularJoystickButtonChanged(GameControl gameControl, int joystickNo, int buttonno, bool down)
         {
             switch (buttonno)
             {
                 case 0:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
                     break;
                 case 1:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
                     break;
             }
         }
 
-        void Daptor2ButtonChangedFor7800Mode(int joystickNo, int buttonno, bool down)
+        static void Daptor2ButtonChangedFor7800Mode(GameControl gameControl, int joystickNo, int buttonno, bool down)
         {
             switch (buttonno)
             {
                 case 2:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
                     break;
                 case 3:
-                    _gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
-                    _gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
                     break;
             }
         }
 
-        void StelladaptorPaddlePositionChanged(int joystickNo, int paddleno, int position)
+        static void StelladaptorPaddlePositionChanged(GameControl gameControl, int joystickNo, int paddleno, int position)
         {
             const int AXISRANGE = 1000;
             const int StelladaptorPaddleRange = (int)((AXISRANGE << 1) * 0.34);
-            var paddlePlayerNo = ((joystickNo << 1) | (paddleno & 1) & 3);
-            _gameControl.PaddleChanged(paddlePlayerNo, StelladaptorPaddleRange, position);
+            var paddlePlayerNo = (joystickNo << 1) | paddleno & 1 & 3;
+            gameControl.PaddleChanged(paddlePlayerNo, StelladaptorPaddleRange, position);
         }
 
-        void StelladaptorDrivingPositionChanged(int joystickNo, int position)
+        static void StelladaptorDrivingPositionChanged(GameControl gameControl, int joystickNo, int position)
         {
-            _gameControl.DrivingPaddleChanged(joystickNo, _stelladaptorDrivingMachineInputMapping[position & 3]);
+            gameControl.DrivingPaddleChanged(joystickNo, _stelladaptorDrivingMachineInputMapping[position & 3]);
         }
 
-        void Daptor2ButtonChangedForKeypadMode(int joystickNo, int buttonno, bool down)
+        static void Daptor2ButtonChangedForKeypadMode(GameControl gameControl, int joystickNo, int buttonno, bool down)
         {
-            _gameControl.JoystickChanged(joystickNo, _daptor2KeypadToMachineInputMapping[buttonno & 0xf], down);
+            gameControl.JoystickChanged(joystickNo, _daptor2KeypadToMachineInputMapping[buttonno & 0xf], down);
         }
 
         #endregion

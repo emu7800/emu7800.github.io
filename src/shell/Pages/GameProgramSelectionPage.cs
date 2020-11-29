@@ -17,7 +17,7 @@ namespace EMU7800.D2D.Shell
         readonly LabelControl _labelSelectGameProgram;
         readonly GameProgramSelectionControl _gameProgramSelectionControl;
 
-        IGameControllers _gameControllers = EmptyGameControllers.Default;
+        GameControllers _gameControllers = GameControllers.Default;
 
         bool _isGetGameProgramInfoViewItemCollectionAsyncStarted;
 
@@ -53,7 +53,6 @@ namespace EMU7800.D2D.Shell
             base.OnNavigatingHere();
 
             EnsureGameControllersAreDisposed();
-            _gameControllers = EmptyGameControllers.Default;
 
             if (_isGetGameProgramInfoViewItemCollectionAsyncStarted)
                 return;
@@ -124,7 +123,7 @@ namespace EMU7800.D2D.Shell
         void EnsureGameControllersAreDisposed()
         {
             _gameControllers.Dispose();
-            _gameControllers = EmptyGameControllers.Default;
+            _gameControllers = GameControllers.Default;
         }
 
         #endregion

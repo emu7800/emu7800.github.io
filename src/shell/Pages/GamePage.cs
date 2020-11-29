@@ -33,7 +33,7 @@ namespace EMU7800.D2D.Shell
         readonly ButtonTouchControl _touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2;
         readonly ControlCollection _touchbuttonCollection;
 
-        IGameControllers _gameControllers = EmptyGameControllers.Default;
+        GameControllers _gameControllers = GameControllers.Default;
 
         float _infoTextVisibilityTimer, _fpsChangeTimer;
         int _fpsChangeDirection, _hudPlayerInputNo;
@@ -246,7 +246,7 @@ namespace EMU7800.D2D.Shell
 
             _gameControllers.Dispose();
 
-            _gameControllers = new GameControllersWrapper(_gameControl);
+            _gameControllers = new GameControllers(_gameControl);
         }
 
         public override void OnNavigatingAway()
@@ -515,7 +515,7 @@ namespace EMU7800.D2D.Shell
             if (disposing)
             {
                 _gameControllers.Dispose();
-                _gameControllers = EmptyGameControllers.Default;
+                _gameControllers = GameControllers.Default;
             }
             base.Dispose(disposing);
         }
