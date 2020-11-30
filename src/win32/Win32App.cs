@@ -1,10 +1,10 @@
 ﻿// © Mike Murphy
 
-using System;
-using System.Diagnostics;
-using EMU7800.D2D.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
+using EMU7800.Win32.Interop;
+using System;
+using System.Diagnostics;
 
 namespace EMU7800.D2D.Shell.Win32
 {
@@ -12,43 +12,27 @@ namespace EMU7800.D2D.Shell.Win32
     {
         readonly TimerDevice _timerDevice = new();
         readonly PageBackStackHost _pageBackStack;
-        readonly Win32Window _win;
 
         readonly bool[] _lastKeyInput = new bool[0x100];
 
-        public Win32App(Win32Window win)
+        public Win32App()
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-
             _pageBackStack = new PageBackStackHost(new TitlePage());
-
-            _win = win;
-            _win.LURCycle += LURCycle;
-            _win.VisibilityChanged += VisibilityChanged;
-            _win.Resized += Resized;
-            _win.KeyboardKeyPressed += KeyboardKeyPressed;
-            _win.MouseMoved += MouseMoved;
-            _win.MouseButtonChanged += MouseButtonChanged;
-            _win.MouseWheelChanged += MouseWheelChanged;
+            WireUpEvents();
         }
 
-        public Win32App(Win32Window win, GameProgramInfoViewItem gpivi)
+        public Win32App(GameProgramInfoViewItem gpivi)
         {
             _pageBackStack = new PageBackStackHost(new GamePage(gpivi, true));
-
-            _win = win;
-            _win.LURCycle += LURCycle;
-            _win.VisibilityChanged += VisibilityChanged;
-            _win.Resized += Resized;
-            _win.KeyboardKeyPressed += KeyboardKeyPressed;
-            _win.MouseMoved += MouseMoved;
-            _win.MouseButtonChanged += MouseButtonChanged;
-            _win.MouseWheelChanged += MouseWheelChanged;
+            WireUpEvents();
         }
 
         public void Run()
         {
-            _win.ProcessEvents();
+            Win32Window.Initialize();
+            Win32Window.ProcessEvents();
+            Win32Window.Quit();
         }
 
         #region IDisposable Members
@@ -69,9 +53,22 @@ namespace EMU7800.D2D.Shell.Win32
 
         #endregion
 
-        void LURCycle(GraphicsDevice gd)
+        void WireUpEvents()
+        {
+            Win32Window.LURCycle           += LURCycle;
+            Win32Window.VisibilityChanged  += VisibilityChanged;
+            Win32Window.Resized            += Resized;
+            Win32Window.KeyboardKeyPressed += KeyboardKeyPressed;
+            Win32Window.MouseMoved         += MouseMoved;
+            Win32Window.MouseButtonChanged += MouseButtonChanged;
+            Win32Window.MouseWheelChanged  += MouseWheelChanged;
+        }
+
+        void LURCycle()
         {
             _pageBackStack.StartOfCycle();
+
+            var gd = Win32Window.GraphicsDevice;
 
             if (gd.IsDeviceResourcesRefreshed)
             {
@@ -96,9 +93,9 @@ namespace EMU7800.D2D.Shell.Win32
                 _pageBackStack.OnNavigatingAway();
         }
 
-        void Resized(SizeU size)
+        void Resized(int width, int height)
         {
-            var sizef = Struct.ToSizeF(size.Width, size.Height);
+            var sizef = Struct.ToSizeF(width, height);
             _pageBackStack.Resized(sizef);
         }
 

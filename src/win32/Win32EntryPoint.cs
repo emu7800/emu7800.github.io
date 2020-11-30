@@ -168,15 +168,13 @@ static IEnumerable<string> GetControllers()
 
 static void StartGameProgram(GameProgramInfoViewItem gpivi)
 {
-    using var win = new Win32Window();
-    using var app = new Win32App(win, gpivi);
+    using var app = new Win32App(gpivi);
     app.Run();
 }
 
 static void Start()
 {
-    using var win = new Win32Window();
-    using var app = new Win32App(win);
+    using var app = new Win32App();
     app.Run();
 }
 

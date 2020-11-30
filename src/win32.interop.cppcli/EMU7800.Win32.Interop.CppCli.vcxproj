@@ -100,7 +100,6 @@
     <ClCompile Include="TextFormat.cpp" />
     <ClCompile Include="GraphicsDevice.cpp" />
     <ClCompile Include="TextLayout.cpp" />
-    <ClCompile Include="Win32Window.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -113,12 +112,8 @@
     <ClInclude Include="StaticBitmap.h" />
     <ClInclude Include="TextFormat.h" />
     <ClInclude Include="TextLayout.h" />
-    <ClInclude Include="Win32Window.h" />
     <ClInclude Include="stdafx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="GraphicsDevice.h" />
+    <ClInclude Include="GraphicsDevice.h" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="DeclareDPIAware.manifest" />

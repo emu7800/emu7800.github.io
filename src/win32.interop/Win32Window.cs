@@ -1,5 +1,6 @@
-﻿using EMU7800.D2D.Interop;
-using System;
+﻿// © Mike Murphy
+
+using static EMU7800.Win32.Interop.Win32NativeMethods;
 
 namespace EMU7800.Win32.Interop
 {
@@ -9,9 +10,9 @@ namespace EMU7800.Win32.Interop
     public delegate void MouseWheelChangedHandler(int x, int y, int delta);
     public delegate void LURCycleHandler();
     public delegate void VisibilityChangedHandler(bool isVisible);
-    public delegate void ResizeHandler(SizeU size);
+    public delegate void ResizedHandler(int w, int h);
 
-    public class Win32Window
+    public static class Win32Window
     {
         public static readonly KeyboardKeyPressedHandler KeyboardKeyPressedHandlerDefault = (vk, d) => {};
         public static readonly MouseMovedHandler MouseMovedHandlerDefault = (x, y, dx, dy) => {};
@@ -19,43 +20,61 @@ namespace EMU7800.Win32.Interop
         public static readonly MouseWheelChangedHandler MouseWheelChangedHandlerDefault = (x, y, delta) => {};
         public static readonly LURCycleHandler LURCycleHandlerDefault = () => {};
         public static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => {};
-        public static readonly ResizeHandler ResizeHandlerDefault = s => {};
+        public static readonly ResizedHandler ResizeHandlerDefault = (w, h) => {};
 
-        #region Fields
+        public static D2D.Interop.GraphicsDevice GraphicsDevice = new();
+        public static System.IntPtr hWnd;
 
-        readonly GraphicsDevice _graphicsDevice = new();
-        readonly IntPtr _hWnd;
+        public static KeyboardKeyPressedHandler KeyboardKeyPressed { get; set; } = KeyboardKeyPressedHandlerDefault;
+        public static MouseMovedHandler MouseMoved { get; set; } = MouseMovedHandlerDefault;
+        public static MouseButtonChangedHandler MouseButtonChanged { get; set; } = MouseButtonChangedHandlerDefault;
+        public static MouseWheelChangedHandler MouseWheelChanged { get; set; } = MouseWheelChangedHandlerDefault;
+        public static LURCycleHandler LURCycle { get; set; } = LURCycleHandlerDefault;
+        public static VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
+        public static ResizedHandler Resized { get; set; } = ResizeHandlerDefault;
 
-        #endregion
-
-        public KeyboardKeyPressedHandler KeyboardKeyPressed { get; set; } = KeyboardKeyPressedHandlerDefault;
-        public MouseMovedHandler MouseMoved { get; set; } = MouseMovedHandlerDefault;
-        public MouseButtonChangedHandler MouseButtonChanged { get; set; } = MouseButtonChangedHandlerDefault;
-        public MouseWheelChangedHandler MouseWheelChanged { get; set; } = MouseWheelChangedHandlerDefault;
-        public LURCycleHandler LURCycle { get; set; } = LURCycleHandlerDefault;
-        public VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
-        public ResizeHandler Resized { get; set; } = ResizeHandlerDefault;
-
-        public void ProcessEvents()
+        public static void Initialize()
         {
-            // call native.process
+            GraphicsDevice.Initialize();
+            Resized += (w, h) => GraphicsDevice.Resize(w, h);
+            hWnd = Win32_Initialize();
+            GraphicsDevice.AttachHwnd(hWnd);
         }
 
-        public void Quit()
+        public static void ProcessEvents()
+            => Win32_ProcessEvents(hWnd);
+
+        public static void Quit()
         {
-            // call native.quit
+            Win32_Quit();
+            KeyboardKeyPressed = KeyboardKeyPressedHandlerDefault;
+            MouseMoved         = MouseMovedHandlerDefault;
+            MouseButtonChanged = MouseButtonChangedHandlerDefault;
+            MouseWheelChanged  = MouseWheelChangedHandlerDefault;
+            LURCycle           = LURCycleHandlerDefault;
+            VisibilityChanged  = VisibilityChangedHandlerDefault;
+            Resized            = ResizeHandlerDefault;
         }
 
-        #region Constructors
+        internal static KeyboardKeyPressedHandler RaiseKeyboardKeyPressedDelegate = new(RaiseKeyboardKeyPressed);
+        internal static void RaiseKeyboardKeyPressed(ushort vKey, bool down) => KeyboardKeyPressed(vKey, down);
 
-        public Win32Window()
-        {
-            // call native.init(...)
-            // set hWnd
-            _graphicsDevice.Initialize();
-            //_graphicsDevice.AttachHwnd(_hWnd);
-        }
+        internal static MouseMovedHandler RaiseMouseMovedDelegate = new(RaiseMouseMoved);
+        internal static void RaiseMouseMoved(int x, int y, int dx, int dy) => MouseMoved(x, y, dx, dy);
 
-        #endregion
+        internal static MouseButtonChangedHandler RaiseMouseButtonChangedDelegate = new(RaiseMouseButtonChanged);
+        internal static void RaiseMouseButtonChanged(int x, int y, bool down) => MouseButtonChanged(x, y, down);
+
+        internal static MouseWheelChangedHandler RaiseMouseWheelChangedDelegate = new(RaiseMouseWheelChanged);
+        internal static void RaiseMouseWheelChanged(int x, int y, int delta) => MouseWheelChanged(x, y, delta);
+
+        internal static LURCycleHandler RaiseLURCycleDelegate = new(RaiseLURCycle);
+        internal static void RaiseLURCycle() => LURCycle();
+
+        internal static VisibilityChangedHandler RaiseVisibilityChangedDelegate = new(RaiseVisibilityChanged);
+        internal static void RaiseVisibilityChanged(bool isVisible) => VisibilityChanged(isVisible);
+
+        internal static ResizedHandler RaiseResizedDelegate = new(RaiseResized);
+        internal static void RaiseResized(int w, int h) => Resized(w, h);
     }
 }

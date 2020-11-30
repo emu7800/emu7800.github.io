@@ -1,12 +1,4 @@
-﻿/*
- * XInputNativeMethods.cs
- *
- * .NET interface to XInput
- *
- * Copyright © 2020 Mike Murphy
- *
- */
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -118,10 +110,10 @@ namespace EMU7800.Win32.Interop
                 }
             };
 
-        [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
+        [DllImport("xinput1_4.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
         static extern int XInputGetState(int dwUserIndex, IntPtr xinputState);
 
-        [DllImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
+        [DllImport("xinput1_4.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
         static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, out XINPUT_CAPABILITIES capabilities);
     }
 }

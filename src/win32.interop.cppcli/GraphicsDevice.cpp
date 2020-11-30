@@ -394,6 +394,17 @@ void GraphicsDevice::Resize(SizeU size)
     m_pRenderTarget->Resize(dsize);
 }
 
+void GraphicsDevice::Resize(int w, int h)
+{
+    if (!m_pRenderTarget)
+        return;
+
+    D2D1_SIZE_U dsize;
+    dsize.width  = w;
+    dsize.height = h;
+    m_pRenderTarget->Resize(dsize);
+}
+
 GraphicsDevice::GraphicsDevice() : m_hWnd(0),
                                    m_pD2D1Factory(0),
                                    m_pDWriteFactory(0),

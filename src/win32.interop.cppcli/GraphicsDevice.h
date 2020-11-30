@@ -57,7 +57,9 @@ public:
 
     HRESULT Initialize();
     void AttachHwnd(HWND hWnd);
+    void AttachHwnd(IntPtr hWnd) { AttachHwnd((HWND)(LPVOID)hWnd); };
     void Resize(SizeU size);
+    void Resize(int w, int h);
 
     GraphicsDevice();
     ~GraphicsDevice();
