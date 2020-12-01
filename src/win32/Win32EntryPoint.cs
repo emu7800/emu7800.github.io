@@ -1,5 +1,4 @@
 ﻿using EMU7800.Core;
-using EMU7800.D2D.Interop;
 using EMU7800.D2D.Shell.Win32;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -13,9 +12,17 @@ if (args.Length == 0)
 {
     FreeConsole();
     Start();
+    return 0;
 }
 
-var option         = args[0].ToLower();
+var option = args[0].ToLower();
+
+if (new[] { "-c", "/c" }.Any(s => option.StartsWith(s)))
+{
+    Start();
+    return 0;
+}
+
 var romPath        = args.Length > 1 ? args[1] : string.Empty;
 var machineTypeStr = args.Length > 2 ? args[2] : string.Empty;
 var cartTypeStr    = args.Length > 3 ? args[3] : string.Empty;
@@ -26,7 +33,6 @@ if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
 {
     if (machineTypeStr.Length > 0)
     {
-
         var machineType = MachineTypeUtil.From(machineTypeStr);
         var cartType = CartTypeUtil.From(cartTypeStr);
         var lController = ControllerUtil.From(lControllerStr);
@@ -151,7 +157,7 @@ Options:
 -d <filename>: Dump Game Program information
 -? enums     : List valid MachineTypes, CartTypes, and Controllers
 -?           : This help
-             : Run Game Program selection menu (no option specified)");
+             : Run Game Program selection menu (specify -c to keep console)");
     }
 }
 
@@ -179,4 +185,4 @@ static void Start()
 }
 
 [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
-static extern int FreeConsole();
+static extern void FreeConsole();

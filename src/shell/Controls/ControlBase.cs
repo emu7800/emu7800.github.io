@@ -1,28 +1,25 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Win32.Interop;
 using System;
-using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
     public abstract class ControlBase : IDisposable
     {
         public static readonly ControlBase Default = new ControlDefault();
-        public static readonly TextLayout TextLayoutDefault = new();
-        public static readonly StaticBitmap StaticBitmapDefault = new();
-        public static readonly DynamicBitmap DynamicBitmapDefault = new();
 
         #region Fields
 
         static int _nextIdToProvision;
         readonly int _id = _nextIdToProvision++;
 
-        PointF _location;
-        SizeF _size;
+        D2D_POINT_2F _location;
+        D2D_SIZE_F _size;
 
         #endregion
 
-        public PointF Location
+        public D2D_POINT_2F Location
         {
             get => _location;
             set
@@ -32,7 +29,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public SizeF Size
+        public D2D_SIZE_F Size
         {
             get => _size;
             set
@@ -49,6 +46,12 @@ namespace EMU7800.D2D.Shell
 
         public bool IsVisible { get; set; }
         public bool IsEnabled { get; set; }
+
+        public D2D_POINT_2F ToRightOf(int dx, int dy)
+            => new(Location.X + Size.Width + dx, Location.Y + dy);
+
+        public D2D_POINT_2F ToBottomOf(int dx, int dy)
+            => new(Location.X + dx, Location.Y + Size.Height + dy);
 
         protected ControlBase()
         {
@@ -82,21 +85,21 @@ namespace EMU7800.D2D.Shell
         {
         }
 
-        public virtual void LoadResources(GraphicsDevice gd)
+        public virtual void LoadResources()
         {
             DisposeResources();
-            CreateResources(gd);
+            CreateResources();
         }
 
         public virtual void Update(TimerDevice td)
         {
         }
 
-        public virtual void Render(GraphicsDevice gd)
+        public virtual void Render()
         {
         }
 
-        protected virtual void CreateResources(GraphicsDevice gd)
+        protected virtual void CreateResources()
         {
         }
 
@@ -141,29 +144,29 @@ namespace EMU7800.D2D.Shell
 
         protected static void SafeDispose(ref StaticBitmap bitmap)
         {
-            if (bitmap == StaticBitmapDefault)
+            if (bitmap == StaticBitmap.Default)
                 return;
             bitmap.Dispose();
-            bitmap = StaticBitmapDefault;
+            bitmap = StaticBitmap.Default;
         }
 
         protected static void SafeDispose(ref DynamicBitmap bitmap)
         {
-            if (bitmap == DynamicBitmapDefault)
+            if (bitmap == DynamicBitmap.Default)
                 return;
             bitmap.Dispose();
-            bitmap = DynamicBitmapDefault;
+            bitmap = DynamicBitmap.Default;
         }
 
         protected static void SafeDispose(ref TextLayout textLayout)
         {
-            if (textLayout == TextLayoutDefault)
+            if (textLayout == TextLayout.Default)
                 return;
             textLayout.Dispose();
-            textLayout = TextLayoutDefault;
+            textLayout = TextLayout.Default;
         }
 
-        protected static bool IsInBounds(int x, int y, RectF bounds)
+        protected static bool IsInBounds(int x, int y, D2D_RECT_F bounds)
         {
             var outOfBounds = x < bounds.Left
                 || x > bounds.Right

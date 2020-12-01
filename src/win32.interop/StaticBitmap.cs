@@ -6,6 +6,8 @@ namespace EMU7800.Win32.Interop
 {
     public class StaticBitmap : IDisposable
     {
+        public static readonly StaticBitmap Default = new();
+
         #region Fields
 
         readonly byte[] _data;
@@ -16,12 +18,12 @@ namespace EMU7800.Win32.Interop
 
         #endregion
 
-        public void Draw(D2D_RECT_F drect)
+        internal void Draw(D2D_RECT_F drect)
             => Direct2D_DrawStaticBitmap(BitmapPtr, drect);
 
         public void Initialize()
         {
-            if (BitmapPtr != IntPtr.Zero)
+            if (BitmapPtr != IntPtr.Zero || _data.Length == 0)
                 return;
             var ptr = BitmapPtr;
             unsafe
@@ -49,6 +51,8 @@ namespace EMU7800.Win32.Interop
         #endregion
 
         #region Constructors
+
+        StaticBitmap() : this(Array.Empty<byte>()) {}
 
         public StaticBitmap(byte[] data)
         {

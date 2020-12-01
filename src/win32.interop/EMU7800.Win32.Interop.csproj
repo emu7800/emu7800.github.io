@@ -16,9 +16,4 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="EMU7800.Win32.Interop.CppCli">
-      <HintPath>..\win32.interop.cppcli\bin.v142\x64\Debug\EMU7800.Win32.Interop.CppCli.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>

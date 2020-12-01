@@ -345,11 +345,11 @@ extern "C" _declspec(dllexport) void __stdcall Direct2D_SetParagraphAlignmentFor
     }
 }
 
-extern "C" _declspec(dllexport) void __stdcall Direct2D_GetMetrics(IDWriteTextLayout* pTextLayout, DWRITE_TEXT_METRICS** ppMetrics)
+extern "C" _declspec(dllexport) void __stdcall Direct2D_GetMetrics(IDWriteTextLayout* pTextLayout, DWRITE_TEXT_METRICS* pMetrics)
 {
-    if (pTextLayout && ppMetrics)
+    if (pTextLayout && pMetrics)
     {
-        pTextLayout->GetMetrics(*ppMetrics);
+        pTextLayout->GetMetrics(pMetrics);
     }
 }
 
@@ -470,9 +470,6 @@ extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateDynamicBitmap(D
 
 extern "C" _declspec(dllexport) void __stdcall Direct2D_LoadDynamicBitmapFromMemory(ID2D1Bitmap* pBitmap, byte* data, int expectedPitch)
 {
-    // expectedDataLength = (size.Width * size.Height) << 2;
-    // expectedPitch = size.Width << 2;
-
     if (pBitmap && data)
     {
         pBitmap->CopyFromMemory(NULL, data, expectedPitch);

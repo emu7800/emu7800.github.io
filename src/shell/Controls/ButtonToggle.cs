@@ -1,7 +1,7 @@
 // © Mike Murphy
 
+using EMU7800.Win32.Interop;
 using System;
-using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -9,7 +9,7 @@ namespace EMU7800.D2D.Shell
     {
         static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
 
-        TextLayout _textLayout = TextLayoutDefault;
+        TextLayout _textLayout = TextLayout.Default;
 
         public string Text { get; set; } = string.Empty;
         public string TextFontFamilyName { get; set; } = string.Empty;
@@ -29,30 +29,29 @@ namespace EMU7800.D2D.Shell
 
         #region ControlBase Overrides
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            var rect = Struct.ToRectF(Location, Size);
             if (IsPressed || IsChecked)
             {
-                gd.FillRectangle(rect, D2DSolidColorBrush.White);
-                gd.DrawText(_textLayout, Location, D2DSolidColorBrush.Black);
+                GraphicsDevice.FillRectangle(new(Location, Size), D2DSolidColorBrush.White);
+                GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.Black);
             }
             else if (IsMouseOver)
             {
-                gd.DrawRectangle(rect, 2.0f, D2DSolidColorBrush.White);
-                gd.DrawText(_textLayout, Location, D2DSolidColorBrush.White);
+                GraphicsDevice.DrawRectangle(new(Location, Size), 2.0f, D2DSolidColorBrush.White);
+                GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
             }
             else
             {
-                gd.DrawRectangle(rect, 1.0f, D2DSolidColorBrush.White);
-                gd.DrawText(_textLayout, Location, D2DSolidColorBrush.White);
+                GraphicsDevice.DrawRectangle(new(Location, Size), 1.0f, D2DSolidColorBrush.White);
+                GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
             }
         }
 
-        protected override void CreateResources(GraphicsDevice gd)
+        protected override void CreateResources()
         {
-            base.CreateResources(gd);
-            _textLayout = gd.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
+            base.CreateResources();
+            _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
             _textLayout.SetTextAlignment(DWriteTextAlignment.Center);
             _textLayout.SetParagraphAlignment(DWriteParaAlignment.Center);
         }

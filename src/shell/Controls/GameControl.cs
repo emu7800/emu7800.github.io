@@ -1,12 +1,12 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
+using EMU7800.Services;
+using EMU7800.Services.Dto;
+using EMU7800.Win32.Interop;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using EMU7800.Core;
-using EMU7800.D2D.Interop;
-using EMU7800.Services;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.D2D.Shell
 {
@@ -20,11 +20,11 @@ namespace EMU7800.D2D.Shell
 
         readonly static object _dynamicBitmapLocker = new();
         readonly static byte[] _dynamicBitmapData = new byte[4 * 320 * 230];
-        readonly static SizeU _dynamicBitmapDataSize = Struct.ToSizeU(320, 230);
+        readonly static D2D_SIZE_U _dynamicBitmapDataSize = new(320, 230);
         IFrameRenderer _frameRenderer = new FrameRendererDefault();
         D2DBitmapInterpolationMode _dynamicBitmapInterpolationMode = D2DBitmapInterpolationMode.NearestNeighbor;
-        DynamicBitmap _dynamicBitmap = DynamicBitmapDefault;
-        RectF _dynamicBitmapRect;
+        DynamicBitmap _dynamicBitmap = DynamicBitmap.Default;
+        D2D_RECT_F _dynamicBitmapRect;
         bool _dynamicBitmapDataUpdated;
 
         static readonly InputState _defaultInputState = new();
@@ -258,14 +258,14 @@ namespace EMU7800.D2D.Shell
 
         public override void LocationChanged()
         {
-            _dynamicBitmapRect = Struct.ToRectF(Location, Size);
+            _dynamicBitmapRect = new(Location, Size);
             _inputAdapters[0].ScreenResized(Location, Size);
             _inputAdapters[1].ScreenResized(Location, Size);
         }
 
         public override void SizeChanged()
         {
-            _dynamicBitmapRect = Struct.ToRectF(Location, Size);
+            _dynamicBitmapRect = new(Location, Size);
             _inputAdapters[0].ScreenResized(Location, Size);
             _inputAdapters[1].ScreenResized(Location, Size);
         }
@@ -276,24 +276,24 @@ namespace EMU7800.D2D.Shell
             _inputAdapters[1].Update(td);
         }
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
             lock (_dynamicBitmapLocker)
             {
-                if (_dynamicBitmap == DynamicBitmapDefault)
+                if (_dynamicBitmap == DynamicBitmap.Default)
                 {
-                    _dynamicBitmap = gd.CreateDynamicBitmap(_dynamicBitmapDataSize);
-                    _dynamicBitmap.CopyFromMemory(_dynamicBitmapData);
+                    _dynamicBitmap = new DynamicBitmap(_dynamicBitmapDataSize);
+                    _dynamicBitmap.Load(_dynamicBitmapData);
                 }
                 else if (_dynamicBitmapDataUpdated)
                 {
-                    _dynamicBitmap.CopyFromMemory(_dynamicBitmapData);
+                    _dynamicBitmap.Load(_dynamicBitmapData);
                 }
                 _dynamicBitmapDataUpdated = false;
                 _frameRenderer.OnDynamicBitmapDataDelivered();
             }
 
-            gd.DrawBitmap(_dynamicBitmap, _dynamicBitmapRect, _dynamicBitmapInterpolationMode);
+            GraphicsDevice.Draw(_dynamicBitmap, _dynamicBitmapRect, _dynamicBitmapInterpolationMode);
         }
 
         protected override void Dispose(bool disposing)

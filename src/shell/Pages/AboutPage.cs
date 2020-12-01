@@ -1,7 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using System;
 using System.Threading.Tasks;
 
@@ -16,13 +16,13 @@ namespace EMU7800.D2D.Shell
         {
             _buttonBack = new BackButton
             {
-                Location = Struct.ToPointF(60, 5)
+                Location = new(60, 5)
             };
             _textcontrolAbout = new TextControl
             {
                 TextFontFamilyName = Styles.NormalFontFamily,
                 TextFontSize = Styles.NormalFontSize,
-                Location = Struct.ToPointF(60, 60)
+                Location = new(60, 60)
             };
             Controls.Add(_buttonBack, _textcontrolAbout);
 
@@ -58,9 +58,9 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void Resized(SizeF size)
+        public override void Resized(D2D_SIZE_F size)
         {
-            _textcontrolAbout.Size = Struct.ToSizeF(
+            _textcontrolAbout.Size = new(
                 size.Width - _textcontrolAbout.Location.X * 2,
                 size.Height - _textcontrolAbout.Location.Y * 2
                 );

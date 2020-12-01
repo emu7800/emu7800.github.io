@@ -104,7 +104,7 @@ namespace EMU7800.Win32.Interop
         internal static int GetVolume()
         {
             uint nVolume;
-            waveOutGetVolume(Hwo, &nVolume);
+            _ = waveOutGetVolume(Hwo, &nVolume);
             return (int)nVolume;
         }
 
@@ -124,7 +124,7 @@ namespace EMU7800.Win32.Interop
                 {
                     if (queued)
                         continue;
-                    waveOutUnprepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    _ = waveOutUnprepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
                     waveHdr->dwBufferLength = (uint)SoundFrameSize;
                     waveHdr->dwFlags = 0;
                     waveHdr->lpData = ptr + sizeof(WAVEHDR);
@@ -133,8 +133,8 @@ namespace EMU7800.Win32.Interop
                         // convert to WAV format
                         waveHdr->lpData[j] = (byte)(buffer[j] | 0x80);
                     }
-                    waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
-                    waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    _ = waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    _ = waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
                     queued = true;
                     continue;
                 }
@@ -169,8 +169,8 @@ namespace EMU7800.Win32.Interop
             if (Storage.Equals(IntPtr.Zero))
                 return;
 
-            waveOutReset(Hwo);
-            waveOutClose(Hwo);
+            _ = waveOutReset(Hwo);
+            _ = waveOutClose(Hwo);
             Marshal.FreeHGlobal(Storage);
             Storage = IntPtr.Zero;
         }

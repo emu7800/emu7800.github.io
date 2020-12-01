@@ -24,7 +24,7 @@ namespace EMU7800.Win32.Interop
         public void SetParagraphAlignment(DWriteParaAlignment paragraphAlignment)
             => Direct2D_SetParagraphAlignmentForTextFormat(TextFormatPtr, paragraphAlignment);
 
-        public void Draw(string text, D2D_RECT_F drect, D2DSolidColorBrush brush)
+        internal void Draw(string text, D2D_RECT_F drect, D2DSolidColorBrush brush)
             => Direct2D_DrawTextFormat(TextFormatPtr, text, drect, brush);
 
         public void Initialize()

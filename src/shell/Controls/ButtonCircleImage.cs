@@ -1,7 +1,7 @@
 // © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using System.Threading.Tasks;
 
 namespace EMU7800.D2D.Shell
@@ -12,10 +12,10 @@ namespace EMU7800.D2D.Shell
 
         readonly Asset _image, _imageInverted;
         readonly D2DSolidColorBrush _mouseOverColor;
-        StaticBitmap _circleBitmap = StaticBitmapDefault;
-        StaticBitmap _circleInvertedBitmap = StaticBitmapDefault;
-        StaticBitmap _imageBitmap = StaticBitmapDefault;
-        StaticBitmap _imageInvertedBitmap = StaticBitmapDefault;
+        StaticBitmap _circleBitmap = StaticBitmap.Default;
+        StaticBitmap _circleInvertedBitmap = StaticBitmap.Default;
+        StaticBitmap _imageBitmap = StaticBitmap.Default;
+        StaticBitmap _imageInvertedBitmap = StaticBitmap.Default;
 
         #endregion
 
@@ -24,41 +24,41 @@ namespace EMU7800.D2D.Shell
             _image = image;
             _imageInverted = imageInverted;
             _mouseOverColor = mouseOverColor;
-            Size = Struct.ToSizeF(48f, 48f);
+            Size = new(48f, 48f);
         }
 
         #region ControlBase Overrides
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            var rect = Struct.ToRectF(Location, Size);
+            D2D_RECT_F rect = new(Location, Size);
 
             if (IsPressed)
             {
-                gd.FillEllipse(rect, D2DSolidColorBrush.White);
-                gd.DrawBitmap(_circleInvertedBitmap, rect);
-                gd.DrawBitmap(_imageInvertedBitmap, rect);
+                GraphicsDevice.FillEllipse(rect, D2DSolidColorBrush.White);
+                GraphicsDevice.Draw(_circleInvertedBitmap, rect);
+                GraphicsDevice.Draw(_imageInvertedBitmap, rect);
             }
             else if (IsMouseOver)
             {
-                gd.FillEllipse(rect, _mouseOverColor);
-                gd.DrawBitmap(_circleBitmap, rect);
-                gd.DrawBitmap(_imageBitmap, rect);
+                GraphicsDevice.FillEllipse(rect, _mouseOverColor);
+                GraphicsDevice.Draw(_circleBitmap, rect);
+                GraphicsDevice.Draw(_imageBitmap, rect);
             }
             else
             {
-                gd.DrawBitmap(_circleBitmap, rect);
-                gd.DrawBitmap(_imageBitmap, rect);
+                GraphicsDevice.Draw(_circleBitmap, rect);
+                GraphicsDevice.Draw(_imageBitmap, rect);
             }
         }
 
-        protected async override void CreateResources(GraphicsDevice gd)
+        protected async override void CreateResources()
         {
-            base.CreateResources(gd);
-            _circleBitmap = await CreateStaticBitmapAsync(gd, Asset.appbar_basecircle_rest);
-            _circleInvertedBitmap = await CreateStaticBitmapAsync(gd, Asset.appbar_basecircle_rest_inverted);
-            _imageBitmap = await CreateStaticBitmapAsync(gd, _image);
-            _imageInvertedBitmap = await CreateStaticBitmapAsync(gd, _imageInverted);
+            base.CreateResources();
+            _circleBitmap = await CreateStaticBitmapAsync(Asset.appbar_basecircle_rest);
+            _circleInvertedBitmap = await CreateStaticBitmapAsync(Asset.appbar_basecircle_rest_inverted);
+            _imageBitmap = await CreateStaticBitmapAsync(_image);
+            _imageInvertedBitmap = await CreateStaticBitmapAsync(_imageInverted);
         }
 
         protected override void DisposeResources()
@@ -74,8 +74,8 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        static async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
-            => gd.CreateStaticBitmap(await AssetService.GetAssetBytesAsync(asset));
+        static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
+            => new StaticBitmap(await AssetService.GetAssetBytesAsync(asset));
 
         #endregion
     }

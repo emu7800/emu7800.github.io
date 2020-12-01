@@ -1,6 +1,6 @@
 ﻿// © Mike Murphy
 
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -8,9 +8,9 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        TextLayout _textLayout = TextLayoutDefault;
+        TextLayout _textLayout = TextLayout.Default;
         int _isMouseDownByPointerId;
-        RectF _bounds;
+        D2D_RECT_F _bounds;
         int _startY, _maxStartY;
         float _scrollbarLength, _scrollbarY;
 
@@ -71,13 +71,13 @@ namespace EMU7800.D2D.Shell
         public override void LocationChanged()
         {
             base.LocationChanged();
-            _bounds = Struct.ToRectF(Location, Size);
+            _bounds = new(Location, Size);
         }
 
         public override void SizeChanged()
         {
             base.SizeChanged();
-            _bounds = Struct.ToRectF(Location, Size);
+            _bounds = new(Location, Size);
             SafeDispose(ref _textLayout);
         }
 
@@ -110,7 +110,7 @@ namespace EMU7800.D2D.Shell
 
         public override void Update(TimerDevice td)
         {
-            if (_textLayout == TextLayoutDefault)
+            if (_textLayout == TextLayout.Default)
                 return;
 
             if (_startY > 0)
@@ -124,24 +124,24 @@ namespace EMU7800.D2D.Shell
                 : -1;
         }
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            if (_textLayout == TextLayoutDefault)
+            if (_textLayout == TextLayout.Default)
             {
-                _textLayout = gd.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue);
+                _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue);
                 _maxStartY = (int)(Size.Height - _textLayout.Height);
                 if (_maxStartY >= 0)
                     _maxStartY = 0;
             }
 
-            gd.PushAxisAlignedClip(_bounds, D2DAntiAliasMode.PerPrimitive);
-            gd.DrawText(_textLayout, Struct.ToPointF(Location.X, Location.Y + _startY), D2DSolidColorBrush.White);
-            gd.PopAxisAlignedClip();
+            GraphicsDevice.PushAxisAlignedClip(_bounds, D2DAntiAliasMode.PerPrimitive);
+            GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY), D2DSolidColorBrush.White);
+            GraphicsDevice.PopAxisAlignedClip();
 
             if (_scrollbarY >= 0.0f)
-                gd.DrawLine(
-                    Struct.ToPointF(Location.X + Size.Width + 1, Location.Y + _scrollbarY),
-                    Struct.ToPointF(Location.X + Size.Width + 1, Location.Y + _scrollbarY + _scrollbarLength),
+                GraphicsDevice.DrawLine(
+                    new(Location.X + Size.Width + 1, Location.Y + _scrollbarY),
+                    new(Location.X + Size.Width + 1, Location.Y + _scrollbarY + _scrollbarLength),
                     1.0f,
                     D2DSolidColorBrush.White);
         }

@@ -1,6 +1,5 @@
 // © Mike Murphy
 
-using EMU7800.D2D.Interop;
 using System.Linq;
 
 namespace EMU7800.D2D.Shell
@@ -74,14 +73,14 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void LoadResources(GraphicsDevice gd)
+        public override void LoadResources()
         {
             for (var i = 0; i < _controls.Length; i++)
             {
                 var control = _controls[i];
                 if (control == ControlBase.Default)
                     break;
-                control.LoadResources(gd);
+                control.LoadResources();
             }
         }
 
@@ -99,7 +98,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
             if (!IsVisible)
                 return;
@@ -109,7 +108,7 @@ namespace EMU7800.D2D.Shell
                 if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
-                    control.Render(gd);
+                    control.Render();
             }
         }
 

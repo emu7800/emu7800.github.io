@@ -3,7 +3,7 @@
 using System;
 using System.Linq;
 using EMU7800.Core;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
 
@@ -44,7 +44,7 @@ namespace EMU7800.D2D.Shell
 
         int _backAndSettingsButtonVisibilityCounter;
 
-        SizeF _lastResize;
+        D2D_SIZE_F _lastResize;
 
         #endregion
 
@@ -58,11 +58,11 @@ namespace EMU7800.D2D.Shell
             _gameControl = new GameControl();
             _buttonBack = new BackButton
             {
-                Location = Struct.ToPointF(5, 5)
+                Location = new(5, 5)
             };
             _buttonSettings = new SettingsButton
             {
-                Location = Struct.ToRightOf(_buttonBack, 25, 0)
+                 Location = _buttonBack.ToRightOf(25, 0)
             };
             _labelInfoText = new LabelControl
             {
@@ -76,63 +76,63 @@ namespace EMU7800.D2D.Shell
             _hud_buttonPower = new ButtonToggle
             {
                 Text = "Power",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight),
+                Size = new(HudButtonWidth, HudButtonHeight),
                 IsChecked = true
             };
             _hud_buttonColor = new Button
             {
                 Text = "Color",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonLD = new ButtonToggle
             {
                 Text = "A/b",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonRD = new ButtonToggle
             {
                 Text = "A/b",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonSelect = new Button
             {
                 Text = "Select",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonReset = new Button
             {
                 Text = "Reset",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonSound = new ButtonToggle
             {
                 Text = "Sound",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonPaused = new ButtonToggle
             {
                 Text = "Paused",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonAntiAliasMode = new ButtonToggle
             {
                 Text = "Fuzzy",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonClose = new CheckButton();
-            _hud_numbercontrolFPS = new NumberControl
+            _hud_numbercontrolFPS = new()
             {
                 TextFontFamilyName = Styles.ExtraLargeFontFamily,
                 TextFontSize = Styles.ExtraLargeFontSize
             };
-            _hud_labelFPS = new LabelControl
+            _hud_labelFPS = new()
             {
                 TextFontFamilyName = Styles.ExtraLargeFontFamily,
                 TextFontSize = Styles.ExtraLargeFontSize,
                 Text = "FPS",
-                Size = Struct.ToSizeF(100, 50)
+                Size = new(100, 50)
             };
-            _hud_controllers = new LabelControl
+            _hud_controllers = new()
             {
                 TextFontFamilyName = Styles.SmallFontFamily,
                 TextFontSize = Styles.SmallFontSize,
@@ -144,12 +144,12 @@ namespace EMU7800.D2D.Shell
             _hud_buttonInput = new Button
             {
                 Text = "Input",
-                Size = Struct.ToSizeF(HudButtonWidth, HudButtonHeight)
+                Size = new(HudButtonWidth, HudButtonHeight)
             };
             _hud_buttonShowTouchControls = new ButtonToggle
              {
                  Text = "Touch Controllers",
-                 Size = Struct.ToSizeF(2 * HudButtonWidth + HudGapX, HudButtonHeight)
+                 Size = new(2 * HudButtonWidth + HudGapX, HudButtonHeight)
              };
 
             _hud_controlCollection = new ControlCollection();
@@ -267,7 +267,7 @@ namespace EMU7800.D2D.Shell
             _buttonSettings.IsVisible = !_isTooNarrowForHud;
         }
 
-        public override void Resized(SizeF size)
+        public override void Resized(D2D_SIZE_F size)
         {
             base.Resized(size);
 
@@ -280,41 +280,41 @@ namespace EMU7800.D2D.Shell
             var x = size.Width / 2 - screenWidth / 2;
             var y = size.Height / 2 - screenHeight / 2;
 
-            _gameControl.Location = Struct.ToPointF(x, y);
-            _gameControl.Size = Struct.ToSizeF(screenWidth, screenHeight);
+            _gameControl.Location = new(x, y);
+            _gameControl.Size = new(screenWidth, screenHeight);
 
-            _hud_buttonClose.Location = Struct.ToPointF(
+            _hud_buttonClose.Location = new(
                 size.Width / 2 - _hud_buttonClose.Size.Width / 2,
                 size.Height - 5 - _hud_buttonClose.Size.Height
                 );
 
-            _labelInfoText.Location = Struct.ToPointF(0, size.Height / 2);
-            _labelInfoText.Size = Struct.ToSizeF(size.Width, 200);
+            _labelInfoText.Location = new(0, size.Height / 2);
+            _labelInfoText.Size = new(size.Width, 200);
 
             var hudx = size.Width / 2 - (6 * HudButtonWidth + 5 * HudGapX + HudGapX) / 2;
 
-            _hud_buttonPower.Location = Struct.ToPointF(hudx, HudStartY);
-            _hud_buttonColor.Location = Struct.ToRightOf(_hud_buttonPower, HudGapX, 0);
-            _hud_buttonLD.Location = Struct.ToRightOf(_hud_buttonColor, HudGapX, 0);
-            _hud_buttonRD.Location = Struct.ToRightOf(_hud_buttonLD, 2 * HudGapX, 0);
-            _hud_buttonSelect.Location = Struct.ToRightOf(_hud_buttonRD, HudGapX, 0);
-            _hud_buttonReset.Location = Struct.ToRightOf(_hud_buttonSelect, HudGapX, 0);
+            _hud_buttonPower.Location = new(hudx, HudStartY);
+            _hud_buttonColor.Location = _hud_buttonPower.ToRightOf(HudGapX, 0);
+            _hud_buttonLD.Location = _hud_buttonColor.ToRightOf(HudGapX, 0);
+            _hud_buttonRD.Location = _hud_buttonLD.ToRightOf(2 * HudGapX, 0);
+            _hud_buttonSelect.Location = _hud_buttonRD.ToRightOf(HudGapX, 0);
+            _hud_buttonReset.Location = _hud_buttonSelect.ToRightOf(HudGapX, 0);
 
-            _hud_buttonSound.Location = Struct.ToPointF(hudx, 3 * HudStartY);
-            _hud_buttonPaused.Location = Struct.ToRightOf(_hud_buttonSound, HudGapX, 0);
-            _hud_buttonAntiAliasMode.Location = Struct.ToRightOf(_hud_buttonPaused, HudGapX, 0);
+            _hud_buttonSound.Location = new(hudx, 3 * HudStartY);
+            _hud_buttonPaused.Location = _hud_buttonSound.ToRightOf(HudGapX, 0);
+            _hud_buttonAntiAliasMode.Location = _hud_buttonPaused.ToRightOf(HudGapX, 0);
 
-            _hud_buttonShowTouchControls.Location = Struct.ToRightOf(_hud_buttonAntiAliasMode, 2 * HudGapX, 0);
-            _hud_buttonInput.Location = Struct.ToPointF(_hud_buttonReset.Location.X, 3 * HudStartY);
+            _hud_buttonShowTouchControls.Location = _hud_buttonAntiAliasMode.ToRightOf(2 * HudGapX, 0);
+            _hud_buttonInput.Location = new(_hud_buttonReset.Location.X, 3 * HudStartY);
 
             var fpsControlsWidth = 3*_hud_buttonFpsMinus.Size.Width + 3*_hud_buttonFpsPlus.Size.Width;
-            _hud_buttonFpsMinus.Location = Struct.ToPointF(size.Width/2 - fpsControlsWidth/2, 5 * HudStartY);
-            _hud_labelFPS.Location = Struct.ToRightOf(_hud_buttonFpsMinus, 50, 0);
-            _hud_numbercontrolFPS.Location = Struct.ToRightOf(_hud_labelFPS, -5, 0);
-            _hud_buttonFpsPlus.Location = Struct.ToPointF(size.Width / 2 - fpsControlsWidth / 2 + fpsControlsWidth - _hud_buttonFpsPlus.Size.Width, 5 * HudStartY);
+            _hud_buttonFpsMinus.Location = new(size.Width/2 - fpsControlsWidth/2, 5 * HudStartY);
+            _hud_labelFPS.Location = _hud_buttonFpsMinus.ToRightOf(50, 0);
+            _hud_numbercontrolFPS.Location = _hud_labelFPS.ToRightOf(-5, 0);
+            _hud_buttonFpsPlus.Location = new(size.Width / 2 - fpsControlsWidth / 2 + fpsControlsWidth - _hud_buttonFpsPlus.Size.Width, 5 * HudStartY);
 
-            _hud_controllers.Location = Struct.ToPointF(0, _hud_buttonClose.Location.Y - 50);
-            _hud_controllers.Size = Struct.ToSizeF(size.Width, 50);
+            _hud_controllers.Location = new(0, _hud_buttonClose.Location.Y - 50);
+            _hud_controllers.Size = new(size.Width, 50);
 
             var touchWidth = (int)_touchbuttonLeft.Size.Width;
             var touchY = (int)size.Height / 2 - 3 * touchWidth / 2;
@@ -325,12 +325,12 @@ namespace EMU7800.D2D.Shell
             // So, keep the touch buttons off of the left and right edge of the screen.
             const int LEFTG = 35, RIGHTG = 35;
 
-            _touchbuttonUp.Location    = Struct.ToPointF(LEFTG + touchWidth + separation, touchY - separation);
-            _touchbuttonLeft.Location  = Struct.ToPointF(LEFTG + 0, touchY + touchWidth);
-            _touchbuttonRight.Location = Struct.ToPointF(LEFTG + 2 * touchWidth + 2 * separation, touchY + touchWidth);
-            _touchbuttonDown.Location  = Struct.ToPointF(LEFTG + touchWidth + separation, touchY + 2 * touchWidth + separation);
-            _touchbuttonFire.Location  = Struct.ToPointF(size.Width - 2 * touchWidth - separation - RIGHTG, touchY + touchWidth + separation);
-            _touchbuttonFire2.Location = Struct.ToPointF(size.Width - touchWidth - RIGHTG, touchY);
+            _touchbuttonUp.Location    = new(LEFTG + touchWidth + separation, touchY - separation);
+            _touchbuttonLeft.Location  = new(LEFTG + 0, touchY + touchWidth);
+            _touchbuttonRight.Location = new(LEFTG + 2 * touchWidth + 2 * separation, touchY + touchWidth);
+            _touchbuttonDown.Location  = new(LEFTG + touchWidth + separation, touchY + 2 * touchWidth + separation);
+            _touchbuttonFire.Location  = new(size.Width - 2 * touchWidth - separation - RIGHTG, touchY + touchWidth + separation);
+            _touchbuttonFire2.Location = new(size.Width - touchWidth - RIGHTG, touchY);
 
             _isTooNarrowForHud = size.Width < 330f;
 
@@ -343,9 +343,9 @@ namespace EMU7800.D2D.Shell
             _buttonSettings.IsVisible = !_isTooNarrowForHud;
 
 #if PROFILE
-            _frameIdleRect = Struct.ToRectF(Struct.ToPointF(5, size.Height / 2 - 25), Struct.ToSizeF(25, size.Height / 2));
-            _buffersQueuedRect = Struct.ToRectF(Struct.ToPointF(35, size.Height - 50), Struct.ToSizeF(25, 25));
-            _numbercontrolRefreshRate.Location = Struct.ToPointF(size.Width, size.Height - 50);
+            _frameIdleRect = new(Struct.ToPointF(5, size.Height / 2 - 25), Struct.ToSizeF(25, size.Height / 2));
+            _buffersQueuedRect = new(Struct.ToPointF(35, size.Height - 50), Struct.ToSizeF(25, 25));
+            _numbercontrolRefreshRate.Location = new(size.Width, size.Height - 50);
 #endif
         }
 
@@ -484,26 +484,26 @@ namespace EMU7800.D2D.Shell
         }
 
 #if PROFILE
-        RectF _frameIdleRect;
-        RectF _buffersQueuedRect;
-        public override void Render(GraphicsDevice gd)
+        D2D_RECT_F _frameIdleRect;
+        D2D_RECT_F _buffersQueuedRect;
+        public override void Render()
         {
-            base.Render(gd);
+            base.Render();
 
             var frameIdleTime = _gameControl.FrameIdleTime;
             var buffersQueued = _gameControl.BuffersQueued;
 
-            gd.DrawRectangle(_frameIdleRect, 1.0f, D2DSolidColorBrush.White);
+            GraphicsDevice.DrawRectangle(_frameIdleRect, 1.0f, D2DSolidColorBrush.White);
             var rect = _frameIdleRect;
             rect.Top = rect.Bottom - (rect.Bottom - rect.Top) * frameIdleTime;
             rect.Left += 5;
             rect.Right -= 5;
-            gd.FillRectangle(rect, D2DSolidColorBrush.White);
+            GraphicsDevice.FillRectangle(rect, D2DSolidColorBrush.White);
 
             rect = _buffersQueuedRect;
             for (var i = 0; i < buffersQueued; i++)
             {
-                gd.FillRectangle(rect, D2DSolidColorBrush.White);
+                GraphicsDevice.FillRectangle(rect, D2DSolidColorBrush.White);
                 rect.Top -= 30;
                 rect.Bottom -= 30;
             }

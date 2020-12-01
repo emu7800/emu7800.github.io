@@ -15,6 +15,18 @@ namespace EMU7800.Win32.Interop
         public static int EndDraw()
             => Direct2D_EndDraw();
 
+        public static void Draw(TextLayout textLayout, D2D_POINT_2F location, D2DSolidColorBrush brush)
+            => textLayout.Draw(location, brush);
+
+        public static void Draw(TextFormat textFormat, string text, D2D_RECT_F drect, D2DSolidColorBrush brush)
+            => textFormat.Draw(text, drect, brush);
+
+        public static void Draw(StaticBitmap bitmap, D2D_RECT_F drect)
+            => bitmap.Draw(drect);
+
+        public static void Draw(DynamicBitmap bitmap, D2D_RECT_F drect, D2DBitmapInterpolationMode interpolationMode)
+            => bitmap.Draw(drect, interpolationMode);
+
         public static void DrawLine(D2D_POINT_2F dp0, D2D_POINT_2F dp1, float strokeWidth, D2DSolidColorBrush brush)
             => Direct2D_DrawLine(dp0, dp1, strokeWidth, brush);
 

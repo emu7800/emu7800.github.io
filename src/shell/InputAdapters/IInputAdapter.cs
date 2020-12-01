@@ -1,13 +1,13 @@
 // © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
     public interface IInputAdapter
     {
-        void ScreenResized(PointF location, SizeF size);
+        void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size);
         void JoystickChanged(int playerNo, MachineInput machineInput, bool down);
         void ProLineJoystickChanged(int playerNo, MachineInput machineInput, bool down);
         void PaddleChanged(int playerNo, int valMax, int val);

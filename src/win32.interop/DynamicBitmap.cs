@@ -6,6 +6,8 @@ namespace EMU7800.Win32.Interop
 {
     public class DynamicBitmap : IDisposable
     {
+        public static readonly DynamicBitmap Default = new();
+
         #region Fields
 
         readonly D2D_SIZE_U _bsize;
@@ -17,12 +19,12 @@ namespace EMU7800.Win32.Interop
 
         #endregion
 
-        public void Draw(D2D_RECT_F drect, D2DBitmapInterpolationMode interpolationMode)
+        internal void Draw(D2D_RECT_F drect, D2DBitmapInterpolationMode interpolationMode)
             => Direct2D_DrawDynamicBitmap(BitmapPtr, drect, interpolationMode);
 
         public void Load(byte[] data)
         {
-            if (data.Length < _expectedDataLength)
+            if (data.Length < _expectedDataLength || _expectedDataLength == 0)
                 return;
 
             unsafe
@@ -36,7 +38,7 @@ namespace EMU7800.Win32.Interop
 
         public void Initialize()
         {
-            if (BitmapPtr != IntPtr.Zero)
+            if (BitmapPtr != IntPtr.Zero || _expectedDataLength == 0)
                 return;
             var ptr = BitmapPtr;
             HR = Direct2D_CreateDynamicBitmap(_bsize, ref ptr);
@@ -58,6 +60,8 @@ namespace EMU7800.Win32.Interop
         #endregion
 
         #region Constructors
+
+        DynamicBitmap() : this(new D2D_SIZE_U()) {}
 
         public DynamicBitmap(D2D_SIZE_U bsize)
         {

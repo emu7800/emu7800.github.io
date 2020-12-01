@@ -1,6 +1,6 @@
 ﻿// © Mike Murphy
 
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -8,7 +8,7 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        TextLayout _textLayout = TextLayoutDefault;
+        TextLayout _textLayout = TextLayout.Default;
         string _text = string.Empty, _textFontFamilyName = Styles.NormalFontFamily;
         int _textFontSize = Styles.NormalFontSize;
         DWriteTextAlignment _textAlignment = DWriteTextAlignment.Leading;
@@ -88,17 +88,17 @@ namespace EMU7800.D2D.Shell
             SafeDispose(ref _textLayout);
         }
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            if (_textLayout == TextLayoutDefault)
-                CreateResources2(gd);
-            gd.DrawText(_textLayout, Location, D2DSolidColorBrush.White);
+            if (_textLayout == TextLayout.Default)
+                CreateResources2();
+            GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
         }
 
-        protected override void CreateResources(GraphicsDevice gd)
+        protected override void CreateResources()
         {
-            base.CreateResources(gd);
-            CreateResources2(gd);
+            base.CreateResources();
+            CreateResources2();
         }
 
         protected override void DisposeResources()
@@ -111,9 +111,9 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        void CreateResources2(GraphicsDevice gd)
+        void CreateResources2()
         {
-            _textLayout = gd.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
+            _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
             _textLayout.SetTextAlignment(TextAlignment);
             _textLayout.SetParagraphAlignment(ParagraphAlignment);
         }

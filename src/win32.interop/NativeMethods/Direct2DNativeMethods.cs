@@ -13,24 +13,50 @@ namespace EMU7800.Win32.Interop
     [StructLayout(LayoutKind.Sequential)]
     public struct D2D_RECT_F
     {
-        internal float Left;
-        internal float Top;
-        internal float Right;
-        internal float Bottom;
+        public float Left;
+        public float Top;
+        public float Right;
+        public float Bottom;
+
+        public D2D_POINT_2F ToLocation()
+            => new(this);
+        public D2D_SIZE_F ToSize()
+            => new(this);
+        public D2D_RECT_F(float left, float top, float right, float bottom)
+            => (Left, Top, Right, Bottom) = (left, top, right, bottom);
+        public D2D_RECT_F(D2D_POINT_2F point, D2D_SIZE_F size)
+            => (Left, Top, Right, Bottom) = (point.X, point.Y, point.X + size.Width, point.Y + size.Height);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct D2D_SIZE_F
+    {
+        public float Width;
+        public float Height;
+
+        public D2D_SIZE_F(float w, float h) => (Width, Height) = (w, h);
+        public D2D_SIZE_F(D2D_RECT_F drect) => (Width, Height) = (drect.Right - drect.Left, drect.Bottom - drect.Top);
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct D2D_SIZE_U
     {
-        internal uint Width;
-        internal uint Height;
+        public uint Width;
+        public uint Height;
+
+        public D2D_SIZE_U(uint w, uint h) => (Width, Height) = (w, h);
+        public D2D_SIZE_U(int w, int h) => (Width, Height) = ((uint)w, (uint)h);
     }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct D2D_POINT_2F
     {
-        internal float X;
-        internal float Y;
+        public float X;
+        public float Y;
+
+        public D2D_POINT_2F(float x, float y) => (X, Y) = (x, y);
+        public D2D_POINT_2F(D2D_RECT_F drect) => (X, Y) = (drect.Left, drect.Top);
+        public D2D_POINT_2F(D2D_POINT_2F dpt) => (X, Y) = (dpt.X, dpt.Y);
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -125,7 +151,7 @@ namespace EMU7800.Win32.Interop
         public static extern void Direct2D_SetParagraphAlignmentForTextLayout(IntPtr pTextLayout, DWriteParaAlignment paragraphAlignment);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        public static extern void Direct2D_GetMetrics(IntPtr pTextLayout, out DWRITE_TEXT_METRICS metrics);
+        public static extern void Direct2D_GetMetrics(IntPtr pTextLayout, ref DWRITE_TEXT_METRICS metrics);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Direct2D_ReleaseTextLayout(IntPtr pTextFormat, IntPtr pTextLayout);

@@ -1,17 +1,16 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
+using EMU7800.Services.Dto;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
+
 namespace EMU7800.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Text;
-
-    using Core;
-    using Dto;
-
     public class DatastoreService
     {
         #region Fields

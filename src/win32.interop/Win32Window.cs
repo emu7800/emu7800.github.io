@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using static EMU7800.Win32.Interop.Win32NativeMethods;
+using static System.Console;
 
 namespace EMU7800.Win32.Interop
 {
@@ -22,8 +23,7 @@ namespace EMU7800.Win32.Interop
         static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => { };
         static readonly ResizedHandler ResizeHandlerDefault = (w, h) => { };
 
-        public static D2D.Interop.GraphicsDevice GraphicsDevice = new();
-        public static System.IntPtr hWnd;
+        static System.IntPtr hWnd;
 
         public static KeyboardKeyPressedHandler KeyboardKeyPressed { get; set; } = KeyboardKeyPressedHandlerDefault;
         public static MouseMovedHandler MouseMoved { get; set; } = MouseMovedHandlerDefault;
@@ -44,18 +44,27 @@ namespace EMU7800.Win32.Interop
             Resized            = ResizeHandlerDefault;
         }
 
-        public static void Initialize()
+        public static void Run()
         {
-            GraphicsDevice.Initialize();
-            Resized += (w, h) => GraphicsDevice.Resize(w, h);
+            Resized += (w, h) => GraphicsDevice.Resize(new(w, h));
+
             hWnd = Win32_Initialize();
-            GraphicsDevice.AttachHwnd(hWnd);
+            WriteLine($"Win32 initialized: hWnd=0x{hWnd:x8}");
+
+            var hr = GraphicsDevice.Initialize(hWnd);
+            WriteLine($"D2D initialized: HR=0x{hr:x8}");
+
+            WriteLine("Win32 processing events...");
+            Win32_ProcessEvents(hWnd);
+            WriteLine("Win32 processing events completed");
+
+            WriteLine("Shutting down D2D...");
+            GraphicsDevice.Shutdown();
+
+            WriteLine("Shutting down Win32...");
+            Win32_Quit();
+
+            WriteLine("Done");
         }
-
-        public static void ProcessEvents()
-            => Win32_ProcessEvents(hWnd);
-
-        public static void Quit()
-            => Win32_Quit();
     }
 }

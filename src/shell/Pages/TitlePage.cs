@@ -1,9 +1,9 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Services;
+using EMU7800.Win32.Interop;
 using System;
 using System.Threading.Tasks;
-using EMU7800.D2D.Interop;
-using EMU7800.Services;
 
 namespace EMU7800.D2D.Shell
 {
@@ -24,7 +24,7 @@ namespace EMU7800.D2D.Shell
                 Text = "Play Atari Today!",
                 TextFontFamilyName = Styles.ExtraLargeFontFamily,
                 TextFontSize = Styles.ExtraLargeFontSize,
-                Size = Struct.ToSizeF(500, 100),
+                Size = new(500, 100),
             };
             _labelBusyInit = new LabelControl
             {
@@ -33,7 +33,7 @@ namespace EMU7800.D2D.Shell
                 TextFontSize = Styles.LargeFontSize,
                 TextAlignment = DWriteTextAlignment.Center,
                 ParagraphAlignment = DWriteParaAlignment.Center,
-                Size = Struct.ToSizeF(500, 100),
+                Size = new(500, 100),
             };
             _buttonAbout = new QuestionMarkButton();
             _labelCopyr = new LabelControl
@@ -43,7 +43,7 @@ namespace EMU7800.D2D.Shell
                 TextFontSize = Styles.SmallFontSize,
                 TextAlignment = DWriteTextAlignment.Center,
                 ParagraphAlignment = DWriteParaAlignment.Center,
-                Size = Struct.ToSizeF(500, 20)
+                Size = new(500, 20)
             };
 
             _labelVers = new LabelControl
@@ -53,7 +53,7 @@ namespace EMU7800.D2D.Shell
                 TextFontSize = Styles.SmallFontSize,
                 TextAlignment = DWriteTextAlignment.Center,
                 ParagraphAlignment = DWriteParaAlignment.Center,
-                Size = Struct.ToSizeF(500, 20)
+                Size = new(500, 20)
             };
             Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _labelCopyr, _labelVers);
 
@@ -74,36 +74,36 @@ namespace EMU7800.D2D.Shell
             ImportCheckAsync();
         }
 
-        public override void Resized(SizeF size)
+        public override void Resized(D2D_SIZE_F size)
         {
-            var centerPt = Struct.ToPointF(
+            D2D_POINT_2F centerPt = new(
                 size.Width / 2,
                 size.Height / 2
                 );
-            var centerPtPlayButton = Struct.ToPointF(
+            D2D_POINT_2F centerPtPlayButton = new(
                 _buttonPlayAtariToday.Size.Width / 2,
                 _buttonPlayAtariToday.Size.Height / 2
                 );
-            _titleControl.Location = Struct.ToPointF(
+            _titleControl.Location = new(
                 centerPt.X - (_titleControl.Size.Width / 2),
                 centerPt.Y / 5
                 );
-            _buttonPlayAtariToday.Location = Struct.ToPointF(
+            _buttonPlayAtariToday.Location = new(
                 centerPt.X - centerPtPlayButton.X,
                 centerPt.Y - centerPtPlayButton.Y
                 );
             _labelBusyInit.Location = _buttonPlayAtariToday.Location;
 
-            _labelCopyr.Location = Struct.ToPointF(
+            _labelCopyr.Location = new(
                 size.Width / 2 - _labelCopyr.Size.Width / 2,
                 _buttonPlayAtariToday.Location.Y + _buttonPlayAtariToday.Size.Height + 20
                 );
-            _labelVers.Location = Struct.ToPointF(
+            _labelVers.Location = new(
                 size.Width / 2 - _labelVers.Size.Width / 2,
                 _labelCopyr.Location.Y + _labelCopyr.Size.Height
                 );
 
-            _buttonAbout.Location  = Struct.ToPointF(
+            _buttonAbout.Location  = new(
                 size.Width / 2 - _buttonAbout.Size.Width / 2,
                 size.Height - _buttonAbout.Size.Height - 50
                 );

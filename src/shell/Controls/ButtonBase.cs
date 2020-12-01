@@ -1,7 +1,7 @@
 // © Mike Murphy
 
+using EMU7800.Win32.Interop;
 using System;
-using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -12,7 +12,7 @@ namespace EMU7800.D2D.Shell
 
         #region Fields
 
-        RectF _boundingRect;
+        D2D_RECT_F _boundingRect;
 
         #endregion
 
@@ -106,8 +106,8 @@ namespace EMU7800.D2D.Shell
 
         protected int IsPressedByPointerId { get; set; } = -1;
 
-        protected virtual RectF ComputeBoundingRectangle()
-            => Struct.ToRectF(Location, Size);
+        protected virtual D2D_RECT_F ComputeBoundingRectangle()
+            => new(Location, Size);
 
         #region Helpers
 

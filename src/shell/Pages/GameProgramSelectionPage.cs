@@ -1,13 +1,12 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Services;
+using EMU7800.Services.Dto;
+using EMU7800.Win32.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EMU7800.Assets;
-using EMU7800.D2D.Interop;
-using EMU7800.Services;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.D2D.Shell
 {
@@ -25,20 +24,20 @@ namespace EMU7800.D2D.Shell
         {
             _buttonBack = new()
             {
-                Location = Struct.ToPointF(5, 5)
+                Location = new(5, 5)
             };
             _labelSelectGameProgram = new()
             {
                 Text = "Select Game Program",
                 TextFontFamilyName = Styles.NormalFontFamily,
                 TextFontSize = Styles.NormalFontSize,
-                Location = Struct.ToRightOf(_buttonBack, 25, 12),
-                Size = Struct.ToSizeF(400, 200),
+                Location = _buttonBack.ToRightOf(25, 12),
+                Size = new(400, 200),
                 IsVisible = true
             };
             _gameProgramSelectionControl = new()
             {
-                Location = Struct.ToBottomOf(_buttonBack, -5, 5)
+                Location = _buttonBack.ToBottomOf(-5, 5)
             };
             Controls.Add(_buttonBack, _labelSelectGameProgram, _gameProgramSelectionControl);
 
@@ -61,9 +60,9 @@ namespace EMU7800.D2D.Shell
             GetGameProgramInfoViewItemCollectionsAsync();
         }
 
-        public override void Resized(SizeF size)
+        public override void Resized(D2D_SIZE_F size)
         {
-            _gameProgramSelectionControl.Size = Struct.ToSizeF(size.Width, size.Height - 100);
+            _gameProgramSelectionControl.Size = new(size.Width, size.Height - 100);
         }
 
         public override void Update(TimerDevice td)

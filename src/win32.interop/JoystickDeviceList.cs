@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using System;
+using static System.Console;
 
 namespace EMU7800.Win32.Interop
 {
@@ -15,17 +16,21 @@ namespace EMU7800.Win32.Interop
         {
             Close();
             DirectInputNativeMethods.Initialize(hWnd, out var joystickNames);
+
             var joysticks = new JoystickDevice[2];
             for (int i = 0, j = 0; i < joysticks.Length; i++)
             {
                 if (i < joystickNames.Length)
                 {
+                    WriteLine($"Found joystick({i}): {joystickNames[i]}");
                     joysticks[i] = new JoystickDevice(joystickNames[i], i);
                 }
                 else
                 {
-                    XInputNativeMethods.Initialize(j, out var capabilities);
-                    joysticks[i] = new JoystickDevice("XBox Default", j++);
+                    var xboxJoystickName = "XBox Default";
+                    WriteLine($"Using joystick({i}): {xboxJoystickName}");
+                    XInputNativeMethods.Initialize(j, out var _);
+                    joysticks[i] = new JoystickDevice(xboxJoystickName, j++);
                 }
             }
             Joysticks = joysticks;

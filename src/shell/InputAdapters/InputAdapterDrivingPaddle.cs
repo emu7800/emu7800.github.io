@@ -1,7 +1,7 @@
 // © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -16,7 +16,7 @@ namespace EMU7800.D2D.Shell
         int _direction, _rotCounter, _curGrayCode;
         bool _emulationOff;
 
-        public void ScreenResized(PointF location, SizeF size)
+        public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
         {
         }
 

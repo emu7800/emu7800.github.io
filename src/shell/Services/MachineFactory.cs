@@ -1,10 +1,10 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
+using EMU7800.Services.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EMU7800.Core;
-using EMU7800.Services.Dto;
 
 namespace EMU7800.Services
 {

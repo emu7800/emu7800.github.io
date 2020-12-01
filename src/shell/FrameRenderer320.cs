@@ -1,7 +1,7 @@
 ﻿// © Mike Murphy
 
-using System;
 using EMU7800.Core;
+using System;
 
 namespace EMU7800.D2D.Shell
 {

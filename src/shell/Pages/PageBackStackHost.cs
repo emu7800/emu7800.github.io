@@ -1,7 +1,7 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Win32.Interop;
 using System;
-using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -9,11 +9,11 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly PageBackStackStateService _pageStateService = new PageBackStackStateService();
+        readonly PageBackStackStateService _pageStateService = new();
 
         PageBase _currentPage = new Nullpage();
         bool _pageChanged;
-        SizeF _size;
+        D2D_SIZE_F _size;
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace EMU7800.D2D.Shell
             _currentPage.OnNavigatingHere();
         }
 
-        public void Resized(SizeF size)
+        public void Resized(D2D_SIZE_F size)
         {
             _size = size;
             _currentPage.Resized(size);
@@ -68,9 +68,9 @@ namespace EMU7800.D2D.Shell
             _currentPage.MouseWheelChanged(pointerId, x, y, delta);
         }
 
-        public void LoadResources(GraphicsDevice gd)
+        public void LoadResources()
         {
-            _currentPage.LoadResources(gd);
+            _currentPage.LoadResources();
         }
 
         public void Update(TimerDevice td)
@@ -78,21 +78,21 @@ namespace EMU7800.D2D.Shell
             _currentPage.Update(td);
         }
 
-        public void Render(GraphicsDevice gd)
+        public void Render()
         {
             if (_pageChanged)
             {
-                _currentPage.LoadResources(gd);
+                _currentPage.LoadResources();
                 _pageChanged = false;
             }
-            _currentPage.Render(gd);
+            _currentPage.Render();
         }
 
         #region Constructors
 
         public PageBackStackHost(PageBase startPage)
         {
-            _pageStateService.Push(startPage ?? throw new ArgumentNullException(nameof(startPage)));
+            _pageStateService.Push(startPage);
         }
 
         #endregion

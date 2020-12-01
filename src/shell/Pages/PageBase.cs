@@ -1,7 +1,7 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Win32.Interop;
 using System;
-using EMU7800.D2D.Interop;
 
 namespace EMU7800.D2D.Shell
 {
@@ -28,7 +28,7 @@ namespace EMU7800.D2D.Shell
         {
         }
 
-        public virtual void Resized(SizeF size)
+        public virtual void Resized(D2D_SIZE_F size)
         {
         }
 
@@ -52,9 +52,9 @@ namespace EMU7800.D2D.Shell
             Controls.MouseWheelChanged(pointerId, x, y, delta);
         }
 
-        public virtual void LoadResources(GraphicsDevice gd)
+        public virtual void LoadResources()
         {
-            Controls.LoadResources(gd);
+            Controls.LoadResources();
         }
 
         public virtual void Update(TimerDevice td)
@@ -62,9 +62,9 @@ namespace EMU7800.D2D.Shell
             Controls.Update(td);
         }
 
-        public virtual void Render(GraphicsDevice gd)
+        public virtual void Render()
         {
-            Controls.Render(gd);
+            Controls.Render();
         }
 
         #region PageStateService Accessors

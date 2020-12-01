@@ -17,8 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
-    <ProjectReference Include="..\win32.interop.unmanaged\EMU7800.Win32.Interop.Unmanaged.vcxproj" />
-    <ProjectReference Include="..\win32.interop.cppcli\EMU7800.Win32.Interop.CppCli.vcxproj" />
     <ProjectReference Include="..\win32.interop\EMU7800.Win32.Interop.csproj" />
   </ItemGroup>
   <ItemGroup>

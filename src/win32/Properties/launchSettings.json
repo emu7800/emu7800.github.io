@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EMU7800": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

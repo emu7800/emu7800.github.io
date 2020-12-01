@@ -1,8 +1,8 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.D2D.Interop;
 using EMU7800.Services.Dto;
+using EMU7800.Win32.Interop;
 using System;
 using System.Linq;
 
@@ -14,10 +14,10 @@ namespace EMU7800.D2D.Shell
 
         #region Fields
 
-        StaticBitmap _playRest          = StaticBitmapDefault;
-        StaticBitmap _playRestInverted  = StaticBitmapDefault;
-        StaticBitmap _pauseRest         = StaticBitmapDefault;
-        StaticBitmap _pauseRestInverted = StaticBitmapDefault;
+        StaticBitmap _playRest          = StaticBitmap.Default;
+        StaticBitmap _playRestInverted  = StaticBitmap.Default;
+        StaticBitmap _pauseRest         = StaticBitmap.Default;
+        StaticBitmap _pauseRestInverted = StaticBitmap.Default;
 
         const float
             EPILSON               = 1e-6f,
@@ -32,8 +32,8 @@ namespace EMU7800.D2D.Shell
             GapForCollectionTitle = 50f,
             GapBetweenCollections = 50f;
 
-        readonly SizeF _itemSize = Struct.ToSizeF(ITEM_WIDTH, ITEM_HEIGHT);
-        readonly SizeF _iconSize = Struct.ToSizeF(ICON_WIDTH, ICON_HEIGHT);
+        readonly D2D_SIZE_F _itemSize = new(ITEM_WIDTH, ITEM_HEIGHT);
+        readonly D2D_SIZE_F _iconSize = new(ICON_WIDTH, ICON_HEIGHT);
 
         float _scrollXLeftMostBoundary, _scrollXRightMostBoundary, _scrollXAcceleration;
 
@@ -46,8 +46,8 @@ namespace EMU7800.D2D.Shell
         int _focusCandidateCollectionIndex, _focusCandidateCollectionItemIndex;
 
         ScrollColumnInfo[] _scrollColumnInfoSet = Array.Empty<ScrollColumnInfo>();
-        RectF _gameProgramViewItemCollectionsRect;
-        RectF _clipRect;
+        D2D_RECT_F _gameProgramViewItemCollectionsRect;
+        D2D_RECT_F _clipRect;
 
         bool _reinitializeAtNextUpdate, _initializeAtNextUpdate = true;
 
@@ -234,13 +234,13 @@ namespace EMU7800.D2D.Shell
                 rect.Bottom += scrollYVelocity;
                 if (rect.Top < gpvic.ScrollYTopMostBoundary)
                 {
-                    var h = Struct.ToSize(rect).Height;
+                    var h = rect.ToSize().Height;
                     rect.Top = gpvic.ScrollYTopMostBoundary;
                     rect.Bottom = gpvic.ScrollYTopMostBoundary + h;
                 }
                 else if (rect.Top > gpvic.ScrollYBottomMostBoundary)
                 {
-                    var h = Struct.ToSize(rect).Height;
+                    var h = rect.ToSize().Height;
                     rect.Top = gpvic.ScrollYBottomMostBoundary;
                     rect.Bottom = gpvic.ScrollYBottomMostBoundary + h;
                 }
@@ -248,7 +248,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
 #if PROFILE
             var rect = new RectF { Left = _lastWheelX - 5, Right = _lastWheelX + 5, Bottom = _lastWheelY + 5, Top = _lastWheelY - 5 };
@@ -267,12 +267,13 @@ namespace EMU7800.D2D.Shell
 
                     if (j == 0)
                     {
-                        if (gpivic.NameTextLayout == TextLayoutDefault)
-                            gpivic.NameTextLayout = gd.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize,
+                        if (gpivic.NameTextLayout == TextLayout.Default)
+                            gpivic.NameTextLayout = new TextLayout(Styles.LargeFontFamily, Styles.LargeFontSize,
                                 gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT
                                 );
-                        gd.DrawText(gpivic.NameTextLayout,
-                            Struct.ToPointF(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - (float)gpivic.NameTextLayout.Height),
+                        GraphicsDevice.Draw(
+                            gpivic.NameTextLayout,
+                            new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - (float)gpivic.NameTextLayout.Height),
                             D2DSolidColorBrush.White
                             );
                     }
@@ -283,7 +284,7 @@ namespace EMU7800.D2D.Shell
                     if (itemRect.Bottom < Location.Y)
                         continue;
 
-                    gd.PushAxisAlignedClip(_clipRect, D2DAntiAliasMode.Aliased);
+                    GraphicsDevice.PushAxisAlignedClip(_clipRect, D2DAntiAliasMode.Aliased);
 
                     var iconRect = ToIconRect(i, j);
                     TranslateRect(ref iconRect, i);
@@ -302,67 +303,67 @@ namespace EMU7800.D2D.Shell
 
                     var gpivi = gpivic.GameProgramInfoViewItemSet[j];
 
-                    if (gpivi.TitleTextLayout == TextLayoutDefault)
-                        gpivi.TitleTextLayout = gd.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize,
+                    if (gpivi.TitleTextLayout == TextLayout.Default)
+                        gpivi.TitleTextLayout = new TextLayout(Styles.NormalFontFamily, Styles.NormalFontSize,
                             gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT
                             );
-                    if (gpivi.SubTitleTextLayout == TextLayoutDefault)
-                        gpivi.SubTitleTextLayout = gd.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize,
+                    if (gpivi.SubTitleTextLayout == TextLayout.Default)
+                        gpivi.SubTitleTextLayout = new TextLayout(Styles.SmallFontFamily, Styles.SmallFontSize,
                             gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT
                             );
 
                     var itemRectHeight = itemRect.Bottom - itemRect.Top;
                     var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
                     var textYStart = itemRect.Top + itemRectHeight / 2 - (float)totalTextHeight / 2;
-                    var textTitleLocation = Struct.ToPointF(itemRect.Left + 64, textYStart);
-                    var textSubTitleLocation = Struct.ToPointF(itemRect.Left + 64, textYStart + (float)gpivi.TitleTextLayout.Height);
+                    D2D_POINT_2F textTitleLocation = new(itemRect.Left + 64, textYStart);
+                    D2D_POINT_2F textSubTitleLocation = new(itemRect.Left + 64, textYStart + (float)gpivi.TitleTextLayout.Height);
 
                     if (i == _focusedCollectionIndex && j == _focusedCollectionItemIndex)
                     {
                         if (_itemDown)
                         {
                             var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRestInverted : _playRestInverted;
-                            gd.FillRectangle(iconRect, D2DSolidColorBrush.White);
-                            gd.DrawBitmap(bitmap, iconRect);
-                            gd.DrawText(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                            gd.DrawText(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
+                            GraphicsDevice.FillRectangle(iconRect, D2DSolidColorBrush.White);
+                            GraphicsDevice.Draw(bitmap, iconRect);
+                            GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
+                            GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
                         }
                         else
                         {
                             var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
-                            gd.DrawBitmap(bitmap, iconRect);
-                            gd.DrawText(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                            gd.DrawText(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
-                            gd.DrawRectangle(iconRect, 5.0f, D2DSolidColorBrush.White);
+                            GraphicsDevice.Draw(bitmap, iconRect);
+                            GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
+                            GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
+                            GraphicsDevice.DrawRectangle(iconRect, 5.0f, D2DSolidColorBrush.White);
                         }
                     }
                     else
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
-                        gd.DrawBitmap(bitmap, iconRect);
-                        gd.DrawText(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                        gd.DrawText(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
-                        gd.DrawRectangle(iconRect, 1.0f, D2DSolidColorBrush.White);
+                        GraphicsDevice.Draw(bitmap, iconRect);
+                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
+                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
+                        GraphicsDevice.DrawRectangle(iconRect, 1.0f, D2DSolidColorBrush.White);
                     }
 
-                    gd.PopAxisAlignedClip();
+                    GraphicsDevice.PopAxisAlignedClip();
                 }
             }
         }
 
-        protected async override void CreateResources(GraphicsDevice gd)
+        protected async override void CreateResources()
         {
-            base.CreateResources(gd);
+            base.CreateResources();
 
             var playRestBytes          = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
             var playRestInvertedBytes  = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
             var pauseRestBytes         = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
             var pauseRestInvertedBytes = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
-            _playRest = gd.CreateStaticBitmap(playRestBytes);
-            _playRestInverted = gd.CreateStaticBitmap(playRestInvertedBytes);
-            _pauseRest = gd.CreateStaticBitmap(pauseRestBytes);
-            _pauseRestInverted = gd.CreateStaticBitmap(pauseRestInvertedBytes);
+            _playRest = new StaticBitmap(playRestBytes);
+            _playRestInverted = new StaticBitmap(playRestInvertedBytes);
+            _pauseRest = new StaticBitmap(pauseRestBytes);
+            _pauseRestInverted = new StaticBitmap(pauseRestInvertedBytes);
         }
 
         protected override void DisposeResources()
@@ -375,20 +376,20 @@ namespace EMU7800.D2D.Shell
             foreach (var sci in _scrollColumnInfoSet)
             {
                 var ntl = sci.GameProgramInfoViewItemCollection.NameTextLayout;
-                if (ntl != TextLayoutDefault)
+                if (ntl != TextLayout.Default)
                     ntl.Dispose();
-                sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayoutDefault;
+                sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayout.Default;
 
                 foreach (var gpivi in sci.GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet)
                 {
                     var ttl = gpivi.TitleTextLayout;
                     var sttl = gpivi.SubTitleTextLayout;
-                    if (ttl != TextLayoutDefault)
+                    if (ttl != TextLayout.Default)
                         ttl.Dispose();
-                    if (sttl != TextLayoutDefault)
+                    if (sttl != TextLayout.Default)
                         sttl.Dispose();
-                    gpivi.TitleTextLayout = TextLayoutDefault;
-                    gpivi.SubTitleTextLayout = TextLayoutDefault;
+                    gpivi.TitleTextLayout = TextLayout.Default;
+                    gpivi.SubTitleTextLayout = TextLayout.Default;
                 }
             }
 
@@ -413,7 +414,7 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Left:
                     if (_focusedCollectionIndex > 0)
                     {
-                        var pt = Add(Struct.ToLocation(iconRect), Struct.ToPointF(ITEM_WIDTH / 2 - ITEM_WIDTH, ITEM_HEIGHT / 2));
+                        var pt = Add(iconRect.ToLocation(), new(ITEM_WIDTH / 2 - ITEM_WIDTH, ITEM_HEIGHT / 2));
                         var t = ToCollectionIndexes(pt);
                         _focusedCollectionIndex = t.Item1;
                         _focusedCollectionItemIndex = t.Item2;
@@ -422,7 +423,7 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Right:
                     if (_focusedCollectionIndex < _scrollColumnInfoSet.Length - 1)
                     {
-                        var pt = Add(Struct.ToLocation(iconRect), Struct.ToPointF(ITEM_WIDTH / 2 + ITEM_WIDTH, ITEM_HEIGHT / 2));
+                        var pt = Add(iconRect.ToLocation(), new(ITEM_WIDTH / 2 + ITEM_WIDTH, ITEM_HEIGHT / 2));
                         var t = ToCollectionIndexes(pt);
                         _focusedCollectionIndex = t.Item1;
                         _focusedCollectionItemIndex = t.Item2;
@@ -431,7 +432,7 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Up:
                     if (_focusedCollectionItemIndex > 0)
                     {
-                        var pt = Add(Struct.ToLocation(iconRect), Struct.ToPointF(ITEM_WIDTH / 2, ITEM_HEIGHT / 2 - ITEM_HEIGHT));
+                        var pt = Add(iconRect.ToLocation(), new(ITEM_WIDTH / 2, ITEM_HEIGHT / 2 - ITEM_HEIGHT));
                         var t = ToCollectionIndexes(pt);
                         _focusedCollectionIndex = t.Item1;
                         _focusedCollectionItemIndex = t.Item2;
@@ -440,7 +441,7 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Down:
                     if (_focusedCollectionItemIndex < _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet.Length - 1)
                     {
-                        var pt = Add(Struct.ToLocation(iconRect), Struct.ToPointF(ITEM_WIDTH / 2, ITEM_HEIGHT / 2 + ITEM_HEIGHT));
+                        var pt = Add(iconRect.ToLocation(), new(ITEM_WIDTH / 2, ITEM_HEIGHT / 2 + ITEM_HEIGHT));
                         var t = ToCollectionIndexes(pt);
                         _focusedCollectionIndex = t.Item1;
                         _focusedCollectionItemIndex = t.Item2;
@@ -459,9 +460,9 @@ namespace EMU7800.D2D.Shell
 
         void ComputeClipRect()
         {
-            var location = Struct.ToPointF(Location.X, Location.Y + GapForCollectionTitle);
-            var size     = Struct.ToSizeF(Size.Width, Size.Height - GapForCollectionTitle);
-            _clipRect = Struct.ToRectF(location, size);
+            D2D_POINT_2F location = new(Location.X, Location.Y + GapForCollectionTitle);
+            D2D_SIZE_F size = new(Size.Width, Size.Height - GapForCollectionTitle);
+            _clipRect = new(location, size);
         }
 
         void InitializeViewItemQuantities(bool includeCollectionRects)
@@ -476,59 +477,54 @@ namespace EMU7800.D2D.Shell
                 scrollColumnInfo.ScrollYBottomMostBoundary = 5f;
                 if (includeCollectionRects)
                 {
-                    scrollColumnInfo.CollectionRect = Struct.ToRectF(
-                        Struct.ToPointF(0, scrollColumnInfo.ScrollYBottomMostBoundary),
-                        Struct.ToSizeF(ITEM_WIDTH, clen * ITEM_HEIGHT)
+                    scrollColumnInfo.CollectionRect = new(
+                        new(0, scrollColumnInfo.ScrollYBottomMostBoundary),
+                        new(ITEM_WIDTH, clen * ITEM_HEIGHT)
                         );
                 }
-                scrollColumnInfo.ScrollYTopMostBoundary = (Struct.ToSize(scrollColumnInfo.CollectionRect).Height > (Size.Height - GapForCollectionTitle))
-                    ? Location.Y + Size.Height - 2 * GapForCollectionTitle - Struct.ToSize(scrollColumnInfo.CollectionRect).Height
+                scrollColumnInfo.ScrollYTopMostBoundary = (scrollColumnInfo.CollectionRect.ToSize().Height > (Size.Height - GapForCollectionTitle))
+                    ? Location.Y + Size.Height - 2 * GapForCollectionTitle - scrollColumnInfo.CollectionRect.ToSize().Height
                     : scrollColumnInfo.ScrollYBottomMostBoundary;
                 if (clen > maxLen)
                     maxLen = clen;
             }
             if (includeCollectionRects)
             {
-                var size = Struct.ToSizeF((ITEM_WIDTH + GapBetweenCollections) * _scrollColumnInfoSet.Length, maxLen * ITEM_HEIGHT);
-                _gameProgramViewItemCollectionsRect = Struct.ToRectF(Struct.ToPointF(Location.X + 10, Location.Y + GapForCollectionTitle), size);
+                _gameProgramViewItemCollectionsRect = new(
+                    new(Location.X + 10, Location.Y + GapForCollectionTitle),
+                    new((ITEM_WIDTH + GapBetweenCollections) * _scrollColumnInfoSet.Length, maxLen * ITEM_HEIGHT)
+                    );
             }
-            _scrollXLeftMostBoundary = -(Location.X + Struct.ToSize(_gameProgramViewItemCollectionsRect).Width - Size.Width);
+            _scrollXLeftMostBoundary = -(Location.X + _gameProgramViewItemCollectionsRect.ToSize().Width - Size.Width);
             _scrollXRightMostBoundary = 10;
         }
 
-        RectF ToItemRect(int i, int j)
+        D2D_RECT_F ToItemRect(int i, int j)
         {
             var x = i * (ITEM_WIDTH + GapBetweenCollections);
             var y = j * ITEM_HEIGHT;
-            var location = Struct.ToPointF(x, y);
-            var rect = Struct.ToRectF(location, _itemSize);
-            return rect;
+            return new(new(x, y), _itemSize);
         }
 
-        RectF ToIconRect(int i, int j)
+        D2D_RECT_F ToIconRect(int i, int j)
         {
             var x = i * (ITEM_WIDTH + GapBetweenCollections);
             var y = j * ITEM_HEIGHT;
-            var location = Struct.ToPointF(x + ICON_DX, y + ICON_DY);
-            var rect = Struct.ToRectF(location, _iconSize);
-            return rect;
+            return new(new(x + ICON_DX, y + ICON_DY), _iconSize);
         }
 
-        void TranslateRect(ref RectF sourceRect, int collectionIndex)
+        void TranslateRect(ref D2D_RECT_F sourceRect, int collectionIndex)
         {
             var gpvic = _scrollColumnInfoSet[collectionIndex];
-            var translationVector = Add(Struct.ToLocation(_gameProgramViewItemCollectionsRect), Struct.ToLocation(gpvic.CollectionRect));
+            var translationVector = Add(_gameProgramViewItemCollectionsRect.ToLocation(), gpvic.CollectionRect.ToLocation());
             sourceRect.Left   += translationVector.X;
             sourceRect.Top    += translationVector.Y;
             sourceRect.Right  += translationVector.X;
             sourceRect.Bottom += translationVector.Y;
         }
 
-        static PointF Add(PointF a, PointF b)
-        {
-            var pt = Struct.ToPointF(a.X + b.X, a.Y + b.Y);
-            return pt;
-        }
+        static D2D_POINT_2F Add(D2D_POINT_2F a, D2D_POINT_2F b)
+            => new(a.X + b.X, a.Y + b.Y);
 
         float ExtractHorizontalKineticEnergyFromCollections(float timeDeltaInSeconds)
         {
@@ -572,17 +568,17 @@ namespace EMU7800.D2D.Shell
 
         void RefreshMouseCollectionIndexes(int x, int y)
         {
-            var t = ToCollectionIndexes(Struct.ToPointF(x, y));
+            var t = ToCollectionIndexes(new(x, y));
             _mouseCollectionIndex = t.Item1;
             _mouseCollectionItemIndex = t.Item2;
             _mouseCollectionInIcon = t.Item3;
         }
 
         // return tuple: (collection index, collection item index, is inside icon rectangle?)
-        (int, int, bool) ToCollectionIndexes(PointF mousePointerLocation)
+        (int, int, bool) ToCollectionIndexes(D2D_POINT_2F mousePointerLocation)
         {
-            var pt = Struct.ToPointF(mousePointerLocation.X, mousePointerLocation.Y);
-            Sub(ref pt, Struct.ToLocation(_gameProgramViewItemCollectionsRect));
+            D2D_POINT_2F pt = new(mousePointerLocation);
+            Sub(ref pt, new(_gameProgramViewItemCollectionsRect));
             if (pt.X < 0)
                 return (-1, -1, false);
 
@@ -592,25 +588,25 @@ namespace EMU7800.D2D.Shell
 
             var scrollColumnInfo = _scrollColumnInfoSet[i];
             var gpvic = scrollColumnInfo.GameProgramInfoViewItemCollection;
-            Sub(ref pt, Struct.ToLocation(scrollColumnInfo.CollectionRect));
+            Sub(ref pt, scrollColumnInfo.CollectionRect.ToLocation());
             var j = (int)(pt.Y / ITEM_HEIGHT);
             if (j < 0 || j >= gpvic.GameProgramInfoViewItemSet.Length)
                 return (i, -1, false);
 
             Sub(ref pt, i * (ITEM_WIDTH + GapBetweenCollections), j * ITEM_HEIGHT);
-            Sub(ref pt, Struct.ToPointF(ICON_DX, ICON_DY));
+            Sub(ref pt, new(ICON_DX, ICON_DY));
 
             var insideIconRect = pt.X < ICON_WIDTH && pt.Y < ICON_HEIGHT && pt.X >= 0 && pt.Y >= 0;
             return (i, j, insideIconRect);
         }
 
-        static void Sub(ref PointF a, float x, float y)
+        static void Sub(ref D2D_POINT_2F a, float x, float y)
         {
             a.X -= x;
             a.Y -= y;
         }
 
-        static void Sub(ref PointF a, PointF b)
+        static void Sub(ref D2D_POINT_2F a, D2D_POINT_2F b)
         {
             a.X -= b.X;
             a.Y -= b.Y;

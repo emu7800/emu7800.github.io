@@ -12,8 +12,9 @@ namespace EMU7800.D2D.Shell.Win32
     {
         readonly TimerDevice _timerDevice = new();
         readonly PageBackStackHost _pageBackStack;
-
         readonly bool[] _lastKeyInput = new bool[0x100];
+
+        bool _resourcesLoaded;
 
         public Win32App()
         {
@@ -28,12 +29,10 @@ namespace EMU7800.D2D.Shell.Win32
             WireUpEvents();
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public void Run()
-        {
-            Win32Window.Initialize();
-            Win32Window.ProcessEvents();
-            Win32Window.Quit();
-        }
+            => Win32Window.Run();
+#pragma warning restore CA1822 // Mark members as static
 
         #region IDisposable Members
 
@@ -68,19 +67,17 @@ namespace EMU7800.D2D.Shell.Win32
         {
             _pageBackStack.StartOfCycle();
 
-            var gd = Win32Window.GraphicsDevice;
-
-            if (gd.IsDeviceResourcesRefreshed)
+            if (!_resourcesLoaded)
             {
-                gd.IsDeviceResourcesRefreshed = false;
-                _pageBackStack.LoadResources(gd);
+                _pageBackStack.LoadResources();
+                _resourcesLoaded = true;
             }
 
             _pageBackStack.Update(_timerDevice);
 
-            gd.BeginDraw();
-            _pageBackStack.Render(gd);
-            gd.EndDraw();
+            GraphicsDevice.BeginDraw();
+            _pageBackStack.Render();
+            GraphicsDevice.EndDraw();
 
             _timerDevice.Update();
         }
@@ -95,8 +92,7 @@ namespace EMU7800.D2D.Shell.Win32
 
         void Resized(int width, int height)
         {
-            var sizef = Struct.ToSizeF(width, height);
-            _pageBackStack.Resized(sizef);
+            _pageBackStack.Resized(new(width,height));
         }
 
         void KeyboardKeyPressed(ushort vkey, bool down)

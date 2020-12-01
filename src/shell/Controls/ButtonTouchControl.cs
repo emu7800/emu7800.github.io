@@ -1,7 +1,7 @@
 // © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using System.Threading.Tasks;
 
 namespace EMU7800.D2D.Shell
@@ -12,8 +12,8 @@ namespace EMU7800.D2D.Shell
 
         readonly Asset _image;
         readonly D2DSolidColorBrush _mouseOverColor;
-        StaticBitmap _circleBitmap = StaticBitmapDefault;
-        StaticBitmap _imageBitmap = StaticBitmapDefault;
+        StaticBitmap _circleBitmap = StaticBitmap.Default;
+        StaticBitmap _imageBitmap = StaticBitmap.Default;
 
         #endregion
 
@@ -24,27 +24,27 @@ namespace EMU7800.D2D.Shell
         {
             _image = image;
             _mouseOverColor = mouseOverColor;
-            Size = Struct.ToSizeF(48f, 48f);
+            Size = new(48f, 48f);
         }
 
         #region ControlBase Overrides
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            var rect = Struct.ToRectF(Location, Size);
+            D2D_RECT_F rect = new(Location, Size);
             if (IsPressed)
             {
-                gd.FillEllipse(rect, _mouseOverColor);
+                GraphicsDevice.FillEllipse(rect, _mouseOverColor);
             }
-            gd.DrawBitmap(_circleBitmap, rect);
-            gd.DrawBitmap(_imageBitmap, rect);
+            GraphicsDevice.Draw(_circleBitmap, rect);
+            GraphicsDevice.Draw(_imageBitmap, rect);
         }
 
-        protected async override void CreateResources(GraphicsDevice gd)
+        protected async override void CreateResources()
         {
-            base.CreateResources(gd);
-            _circleBitmap = await CreateStaticBitmapAsync(gd, Asset.appbar_basecircle_rest);
-            _imageBitmap = await CreateStaticBitmapAsync(gd, _image);
+            base.CreateResources();
+            _circleBitmap = await CreateStaticBitmapAsync(Asset.appbar_basecircle_rest);
+            _imageBitmap = await CreateStaticBitmapAsync(_image);
         }
 
         protected override void DisposeResources()
@@ -56,9 +56,9 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        protected override RectF ComputeBoundingRectangle()
+        protected override D2D_RECT_F ComputeBoundingRectangle()
         {
-            var rect = Struct.ToRectF(Location, Size);
+            D2D_RECT_F rect = new(Location, Size);
             if (ExpandBoundingRectangleHorizontally)
             {
                 rect.Left -= Size.Width;
@@ -74,10 +74,10 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        static async Task<StaticBitmap> CreateStaticBitmapAsync(GraphicsDevice gd, Asset asset)
+        static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
         {
             var bytes = await AssetService.GetAssetBytesAsync(asset);
-            return gd.CreateStaticBitmap(bytes);
+            return new StaticBitmap(bytes);
         }
 
         #endregion

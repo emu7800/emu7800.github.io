@@ -1,6 +1,6 @@
 // © Mike Murphy
 
-using EMU7800.D2D.Interop;
+using EMU7800.Win32.Interop;
 using System.Linq;
 
 namespace EMU7800.D2D.Shell
@@ -8,8 +8,8 @@ namespace EMU7800.D2D.Shell
     public sealed class NumberControl : ControlBase
     {
         readonly TextLayout[] _textlayoutDigits;
-        TextLayout _textlayoutRadix = TextLayoutDefault;
-        TextLayout _textlayoutComma = TextLayoutDefault;
+        TextLayout _textlayoutRadix = TextLayout.Default;
+        TextLayout _textlayoutComma = TextLayout.Default;
 
         float _maxDigitWidth;
 
@@ -23,7 +23,7 @@ namespace EMU7800.D2D.Shell
 
         public NumberControl()
         {
-            _textlayoutDigits = Enumerable.Range(0, 10).Select(i => TextLayoutDefault).ToArray();
+            _textlayoutDigits = Enumerable.Range(0, 10).Select(i => TextLayout.Default).ToArray();
             TextFontFamilyName = Styles.NormalFontFamily;
             TextFontSize = Styles.NormalFontSize;
             Color = D2DSolidColorBrush.White;
@@ -32,11 +32,11 @@ namespace EMU7800.D2D.Shell
 
         #region ControlBase Overrides
 
-        public override void Render(GraphicsDevice gd)
+        public override void Render()
         {
-            base.Render(gd);
+            base.Render();
 
-            var location = Struct.ToPointF(Location.X + Size.Width, Location.Y);
+            D2D_POINT_2F location = new(Location.X + Size.Width, Location.Y);
 
             var val = Value;
             var rad = Radix;
@@ -47,18 +47,18 @@ namespace EMU7800.D2D.Shell
                 if (rad == 0 && rad != Radix)
                 {
                     location.X -= (float)_textlayoutRadix.Width;
-                    gd.DrawText(_textlayoutRadix, location, Color);
+                    GraphicsDevice.Draw(_textlayoutRadix, location, Color);
                 }
                 else if (UseComma && cma++ == 3)
                 {
                     location.X -= (float)_textlayoutComma.Width;
-                    gd.DrawText(_textlayoutComma, location, Color);
+                    GraphicsDevice.Draw(_textlayoutComma, location, Color);
                     cma = 0;
                 }
                 else
                 {
                     location.X -= _maxDigitWidth;
-                    gd.DrawText(_textlayoutDigits[val % 10], location, Color);
+                    GraphicsDevice.Draw(_textlayoutDigits[val % 10], location, Color);
                     val /= 10;
                     if (val == 0)
                         break;
@@ -67,21 +67,21 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        protected override void CreateResources(GraphicsDevice gd)
+        protected override void CreateResources()
         {
             for (var i = 0; i < _textlayoutDigits.Length; i++)
             {
-                CreateDigitTextLayout(gd, i);
+                CreateDigitTextLayout(i);
                 if (_textlayoutDigits[i].Width > _maxDigitWidth)
                     _maxDigitWidth = (float)_textlayoutDigits[i].Width;
             }
-            _textlayoutRadix = gd.CreateTextLayout(
+            _textlayoutRadix = new TextLayout(
                 TextFontFamilyName,
                 TextFontSize,
                 ".",
                 100, 100
                 );
-            _textlayoutComma = gd.CreateTextLayout(
+            _textlayoutComma = new TextLayout(
                 TextFontFamilyName,
                 TextFontSize,
                 ",",
@@ -104,9 +104,9 @@ namespace EMU7800.D2D.Shell
 
         #region Helpers
 
-        void CreateDigitTextLayout(GraphicsDevice gd, int i)
+        void CreateDigitTextLayout(int i)
         {
-            _textlayoutDigits[i] = gd.CreateTextLayout(
+            _textlayoutDigits[i] = new TextLayout(
                 TextFontFamilyName,
                 TextFontSize,
                 i.ToString(System.Globalization.CultureInfo.InvariantCulture),
