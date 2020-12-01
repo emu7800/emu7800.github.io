@@ -24,7 +24,7 @@ PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
 OutputDir=..\..\..\artifacts
 OutputBaseFilename=EMU7800Setup-x64-5.0.0
-SetupIconFile=..\..\shell\EMUIcon.ico
+SetupIconFile=..\..\win32\EMUIcon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -36,9 +36,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\..\artifacts\EMU7800.bin\*.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\artifacts\EMU7800.bin\*.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\artifacts\EMU7800.bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\artifacts\EMU7800.bin\*.*"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\..\artifacts\EMU7800.bin\ROMS\*.zip"; DestDir: "{app}\ROMS"; Flags: ignoreversion
 
 [Icons]
