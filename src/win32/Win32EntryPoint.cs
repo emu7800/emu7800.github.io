@@ -8,17 +8,14 @@ using System.Linq;
 
 using static System.Console;
 
-if (args.Length == 0)
-{
-    FreeConsole();
-    Start();
-    return 0;
-}
+var option = args.Length > 0 ? args[0].ToLower() : string.Empty;
 
-var option = args[0].ToLower();
-
-if (new[] { "-c", "/c" }.Any(s => option.StartsWith(s)))
+if (option.Length == 0 || new[] { "-c", "/c" }.Any(s => option.StartsWith(s)))
 {
+    if (option.Length == 0)
+    {
+        FreeConsole();
+    }
     Start();
     return 0;
 }
