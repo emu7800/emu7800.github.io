@@ -221,7 +221,7 @@ void GraphicsDevice::DrawEllipse(RectF rect, float strokeWidth, D2DSolidColorBru
     if (!m_pRenderTarget)
         return;
 
-    D2D1_ELLIPSE ellipse;
+    D2D1_ELLIPSE ellipse = { 0 };
     ellipse.radiusX = (rect.Right - rect.Left) / 2;
     ellipse.radiusY = (rect.Bottom - rect.Top) / 2;
     ellipse.point.x = rect.Left + ellipse.radiusX;
@@ -239,7 +239,7 @@ void GraphicsDevice::FillEllipse(RectF rect, D2DSolidColorBrush brush)
     if (!m_pRenderTarget)
         return;
 
-    D2D1_ELLIPSE ellipse;
+    D2D1_ELLIPSE ellipse = { 0 };
     ellipse.radiusX = (rect.Right - rect.Left) / 2;
     ellipse.radiusY = (rect.Bottom - rect.Top) / 2;
     ellipse.point.x = rect.Left + ellipse.radiusX;

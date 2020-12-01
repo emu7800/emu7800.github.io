@@ -24,6 +24,10 @@
 #include <math.h>
 
 #include <d2d1.h>
+#include <d2derr.h>
+#include <d2d1helper.h>
+#include <dwrite.h>
+#include <wincodec.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>

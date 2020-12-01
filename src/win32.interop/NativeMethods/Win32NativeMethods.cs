@@ -21,7 +21,7 @@ namespace EMU7800.Win32.Interop
         static IntPtr GetIntPtr<TDelegate>(TDelegate d) where TDelegate : notnull
             => Marshal.GetFunctionPointerForDelegate(d);
 
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
+        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern IntPtr Win32_Initialize(
             IntPtr keyboardkeypressedcb,
             IntPtr mousemovedcb,
@@ -31,10 +31,10 @@ namespace EMU7800.Win32.Interop
             IntPtr visibilitychangedcb,
             IntPtr resizedcb);
 
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
+        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Win32_ProcessEvents(IntPtr hWnd);
 
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
+        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Win32_Quit();
     }
 }

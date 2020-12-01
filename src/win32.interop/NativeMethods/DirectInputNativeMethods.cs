@@ -107,7 +107,7 @@ namespace EMU7800.Win32.Interop
         public static int Shutdown()
             => DInput8_Shutdown();
 
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling=true), SuppressUnmanagedCodeSecurity]
+        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern int DInput8_Initialize(IntPtr hWnd, int axisRange, out IntPtr productName1Ptr, out IntPtr productName2Ptr);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
