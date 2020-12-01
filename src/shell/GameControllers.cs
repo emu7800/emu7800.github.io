@@ -7,7 +7,7 @@ namespace EMU7800.D2D.Shell
 {
     public sealed class GameControllers
     {
-        public static readonly GameControllers Default = new GameControllers();
+        public static readonly GameControllers Default = new();
 
         #region Fields
 
@@ -33,10 +33,12 @@ namespace EMU7800.D2D.Shell
         public bool LeftJackHasAtariAdaptor { get; private set; }
         public bool RightJackHasAtariAdaptor { get; private set; }
 
+#pragma warning disable CA1822 // Mark members as static
         public void Poll()
         {
             JoystickDeviceList.Poll();
         }
+#pragma warning restore CA1822 // Mark members as static
 
         public string GetControllerInfo(int controllerNo)
         {
@@ -61,10 +63,12 @@ namespace EMU7800.D2D.Shell
 
         #region IDisposable Members
 
+#pragma warning disable CA1822 // Mark members as static
         public void Dispose()
         {
             JoystickDeviceList.Close();
         }
+#pragma warning restore CA1822 // Mark members as static
 
         #endregion
 

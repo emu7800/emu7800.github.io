@@ -5,28 +5,27 @@ using System.Linq;
 
 namespace EMU7800.D2D.Shell
 {
-    public sealed class PageBackStackStateService
+    public static class PageBackStackStateService
     {
         #region Fields
 
-        static readonly Stack<PageBase> _pageStack = new Stack<PageBase>();
-        static readonly HashSet<PageBase> _disposingPages = new HashSet<PageBase>();
+        static readonly Stack<PageBase> _pageStack = new();
+        static readonly HashSet<PageBase> _disposingPages = new();
         static PageBase _pendingPage = PageBase.Default;
-        static bool _isPagePending, _isDisposablePages;
 
         #endregion
 
-        public bool IsPagePending     { get { return _isPagePending; }     set { _isPagePending = value; } }      // cached _pendingPage != null for perf
-        public bool IsDisposablePages { get { return _isDisposablePages; } set { _isDisposablePages = value; } }  // cached _disposingPages.Count > 0 for perf
+        public static bool IsPagePending     { get; set; }  // cached _pendingPage != null for perf
+        public static bool IsDisposablePages { get; set; }  // cached _disposingPages.Count > 0 for perf
 
-        public void Push(PageBase newPage)
+        public static void Push(PageBase newPage)
         {
             _pageStack.Push(newPage);
             _pendingPage = newPage;
             IsPagePending = _pendingPage != PageBase.Default;
         }
 
-        public void Replace(PageBase newPage)
+        public static void Replace(PageBase newPage)
         {
             var replacedPage = _pageStack.Pop();
             _pageStack.Push(newPage);
@@ -36,7 +35,7 @@ namespace EMU7800.D2D.Shell
             IsDisposablePages = true;
         }
 
-        public bool Pop()
+        public static bool Pop()
         {
             if (_pageStack.Count <= 1)
                 return false;
@@ -49,7 +48,7 @@ namespace EMU7800.D2D.Shell
             return true;
         }
 
-        public PageBase GetPendingPage()
+        public static PageBase GetPendingPage()
         {
             var pendingPage = _pendingPage;
             _pendingPage = PageBase.Default;
@@ -57,7 +56,7 @@ namespace EMU7800.D2D.Shell
             return pendingPage;
         }
 
-        public PageBase GetNextDisposablePage()
+        public static PageBase GetNextDisposablePage()
         {
             IsDisposablePages = _disposingPages.Count > 0;
             if (!IsDisposablePages)

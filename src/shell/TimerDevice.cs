@@ -9,7 +9,7 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly Stopwatch _stopwatch = new Stopwatch();
+        readonly Stopwatch _stopwatch = new();
         long _lastEndOfRenderingTick, _endOfRenderingTick;
 
         #endregion

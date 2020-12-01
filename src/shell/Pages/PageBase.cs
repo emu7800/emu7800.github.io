@@ -11,8 +11,6 @@ namespace EMU7800.D2D.Shell
 
         #region Fields
 
-        readonly PageBackStackStateService _pageStateService = new();
-
         static int _nextIdToProvision;
         readonly int _id = _nextIdToProvision++;
 
@@ -69,20 +67,22 @@ namespace EMU7800.D2D.Shell
 
         #region PageStateService Accessors
 
+#pragma warning disable CA1822 // Mark members as static
         protected void PushPage(PageBase pageToPush)
         {
-            _pageStateService.Push(pageToPush);
+            PageBackStackStateService.Push(pageToPush);
         }
 
         protected void ReplacePage(PageBase replacePage)
         {
-            _pageStateService.Replace(replacePage);
+            PageBackStackStateService.Replace(replacePage);
         }
 
         protected bool PopPage()
         {
-            return _pageStateService.Pop();
+            return PageBackStackStateService.Pop();
         }
+#pragma warning restore CA1822 // Mark members as static
 
         #endregion
 

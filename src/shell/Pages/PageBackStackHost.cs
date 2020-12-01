@@ -9,8 +9,6 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly PageBackStackStateService _pageStateService = new();
-
         PageBase _currentPage = new Nullpage();
         bool _pageChanged;
         D2D_SIZE_F _size;
@@ -19,16 +17,16 @@ namespace EMU7800.D2D.Shell
 
         public void StartOfCycle()
         {
-            if (_pageStateService.IsPagePending)
+            if (PageBackStackStateService.IsPagePending)
             {
                 _currentPage.OnNavigatingAway();
-                _currentPage = _pageStateService.GetPendingPage();
+                _currentPage = PageBackStackStateService.GetPendingPage();
                 _currentPage.OnNavigatingHere();
                 _currentPage.Resized(_size);
                 _pageChanged = true;
             }
 
-            if (_pageStateService.IsDisposablePages)
+            if (PageBackStackStateService.IsDisposablePages)
                 DisposeAllDisposings();
         }
 
@@ -92,7 +90,7 @@ namespace EMU7800.D2D.Shell
 
         public PageBackStackHost(PageBase startPage)
         {
-            _pageStateService.Push(startPage);
+            PageBackStackStateService.Push(startPage);
         }
 
         #endregion
@@ -108,7 +106,7 @@ namespace EMU7800.D2D.Shell
         {
             if (disposing)
             {
-                while (_pageStateService.Pop())
+                while (PageBackStackStateService.Pop())
                 {
                 }
                 DisposeAllDisposings();
@@ -116,11 +114,11 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        void DisposeAllDisposings()
+        static void DisposeAllDisposings()
         {
-            while (_pageStateService.IsDisposablePages)
+            while (PageBackStackStateService.IsDisposablePages)
             {
-                var disposingPage = _pageStateService.GetNextDisposablePage();
+                var disposingPage = PageBackStackStateService.GetNextDisposablePage();
                 disposingPage.Dispose();
             }
         }
