@@ -11,30 +11,30 @@ namespace EMU7800.Win32.Interop
     public enum DWriteParaAlignment { Near, Far, Center };
 
     [StructLayout(LayoutKind.Sequential)]
-    struct D2D_RECT_F
+    public struct D2D_RECT_F
     {
-        internal float left;
-        internal float top;
-        internal float right;
-        internal float bottom;
+        internal float Left;
+        internal float Top;
+        internal float Right;
+        internal float Bottom;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct D2D_SIZE_U
+    public struct D2D_SIZE_U
     {
-        internal uint width;
-        internal uint height;
+        internal uint Width;
+        internal uint Height;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct D2D_POINT_2F
+    public struct D2D_POINT_2F
     {
-        internal float x;
-        internal float y;
+        internal float X;
+        internal float Y;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct DWRITE_TEXT_METRICS
+    public struct DWRITE_TEXT_METRICS
     {
         internal float left;
         internal float top;
@@ -49,8 +49,14 @@ namespace EMU7800.Win32.Interop
 
     internal unsafe class Direct2DNativeMethods
     {
+        public const int
+            DWRITE_FONT_WEIGHT_NORMAL  = 400,
+            DWRITE_FONT_STYLE_NORMAL   = 0,
+            DWRITE_FONT_STRETCH_NORMAL = 5
+            ;
+
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        public static extern void Direct2D_Initialize(IntPtr hWnd);
+        public static extern int Direct2D_Initialize(IntPtr hWnd);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Direct2D_BeginDraw();
@@ -88,10 +94,7 @@ namespace EMU7800.Win32.Interop
         #region TextFormat Methods
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        public static extern int Direct2D_CreateTextFormatEx(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize, ref IntPtr ppTextFormat);
-
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        public static extern int Direct2D_CreateTextFormat(string fontFamilyName, float fontSize, ref IntPtr ppTextFormat);
+        public static extern int Direct2D_CreateTextFormat(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize, ref IntPtr ppTextFormat);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         public static extern void Direct2D_DrawTextFormat(IntPtr pTextFormat, string text, D2D_RECT_F drect, D2DSolidColorBrush brush);
@@ -110,10 +113,7 @@ namespace EMU7800.Win32.Interop
         #region TextLayout Methods
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        public static extern int Direct2D_CreateTextLayoutEx(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize, float width, float height, ref IntPtr ppTextFormat, ref IntPtr ppTextLayout);
-
-        [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        public static extern int Direct2D_CreateTextLayout(string fontFamilyName, float fontSize, float width, float height, ref IntPtr ppTextFormat, ref IntPtr ppTextLayout);
+        public static extern int Direct2D_CreateTextLayout(string fontFamilyName, int fontWeight, int fontStyle, int fontStretch, float fontSize, string text, float width, float height, ref IntPtr ppTextFormat, ref IntPtr ppTextLayout);
 
         [DllImport("EMU7800.Win32.Interop.Unmanaged.dll", ExactSpelling = true, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         public static extern void Direct2D_DrawTextLayout(IntPtr pTextLayout, D2D_POINT_2F location, D2DSolidColorBrush brush);

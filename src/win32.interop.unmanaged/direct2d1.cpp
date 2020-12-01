@@ -223,7 +223,7 @@ extern "C" _declspec(dllexport) void __stdcall Direct2D_FillEllipse(D2D_RECT_F d
     }
 }
 
-extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextFormatEx(WCHAR* fontFamilyName, int fontWeight, int fontStyle, int fontStretch, FLOAT fontSize, IDWriteTextFormat** ppTextFormat)
+extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextFormat(WCHAR* fontFamilyName, int fontWeight, int fontStyle, int fontStretch, FLOAT fontSize, IDWriteTextFormat** ppTextFormat)
 {
     if (g_pDWriteFactory)
     {
@@ -243,22 +243,11 @@ extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextFormatEx(WC
     }
 }
 
-extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextFormat(WCHAR* fontFamilyName, FLOAT fontSize, IDWriteTextFormat** ppTextFormat)
-{
-    return Direct2D_CreateTextFormatEx(
-        fontFamilyName,
-        DWRITE_FONT_WEIGHT_NORMAL,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        fontSize,
-        ppTextFormat);
-}
-
 extern "C" _declspec(dllexport) void __stdcall Direct2D_DrawTextFormat(IDWriteTextFormat* pTextFormat, WCHAR* text, D2D_RECT_F drect, D2DSolidColorBrush brush)
 {
-    D2D1_DRAW_TEXT_OPTIONS options = D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP;
     if (g_pRenderTarget && pTextFormat)
     {
+        D2D1_DRAW_TEXT_OPTIONS options = D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP;
         g_pRenderTarget->DrawText(text, (UINT32)wcslen(text), pTextFormat, drect, g_pSolidColorBrushes[(int)brush], options);
     }
 }
@@ -287,7 +276,7 @@ extern "C" _declspec(dllexport) void __stdcall Direct2D_ReleaseTextFormat(IDWrit
     }
 }
 
-extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextLayoutEx(WCHAR* fontFamilyName, int fontWeight, int fontStyle, int fontStretch, FLOAT fontSize, FLOAT width, FLOAT height, IDWriteTextFormat** ppTextFormat, IDWriteTextLayout** ppTextLayout)
+extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextLayout(WCHAR* fontFamilyName, int fontWeight, int fontStyle, int fontStretch, FLOAT fontSize, WCHAR* text, FLOAT width, FLOAT height, IDWriteTextFormat** ppTextFormat, IDWriteTextLayout** ppTextLayout)
 {
     if (g_pDWriteFactory)
     {
@@ -304,8 +293,8 @@ extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextLayoutEx(WC
         if SUCCEEDED(hr)
         {
             hr = g_pDWriteFactory->CreateTextLayout(
-                fontFamilyName,
-                (UINT32)wcslen(fontFamilyName),
+                text,
+                (UINT32)wcslen(text),
                 *ppTextFormat,
                 width,
                 height,
@@ -331,25 +320,11 @@ extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextLayoutEx(WC
     }
 }
 
-extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateTextLayout(WCHAR* fontFamilyName, FLOAT fontSize, FLOAT width, FLOAT height, IDWriteTextFormat** ppTextFormat, IDWriteTextLayout** ppTextLayout)
-{
-    return Direct2D_CreateTextLayoutEx(
-        fontFamilyName,
-        DWRITE_FONT_WEIGHT_NORMAL,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        fontSize,
-        width,
-        height,
-        ppTextFormat,
-        ppTextLayout);
-}
-
 extern "C" _declspec(dllexport) void __stdcall Direct2D_DrawTextLayout(IDWriteTextLayout* pTextLayout, D2D_POINT_2F location, D2DSolidColorBrush brush)
 {
-    D2D1_DRAW_TEXT_OPTIONS options = D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP;
     if (g_pRenderTarget && pTextLayout)
     {
+        D2D1_DRAW_TEXT_OPTIONS options = D2D1_DRAW_TEXT_OPTIONS::D2D1_DRAW_TEXT_OPTIONS_CLIP;
         g_pRenderTarget->DrawTextLayout(location, pTextLayout, g_pSolidColorBrushes[(int)brush], options);
     }
 }
@@ -481,11 +456,10 @@ extern "C" _declspec(dllexport) void __stdcall Direct2D_ReleaseStaticBitmap(ID2D
 
 extern "C" _declspec(dllexport) HRESULT __stdcall Direct2D_CreateDynamicBitmap(D2D_SIZE_U bsize, ID2D1Bitmap** ppBitmap)
 {
-    D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE);
-    D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(pixelFormat);
-
     if (g_pRenderTarget)
     {
+        D2D1_PIXEL_FORMAT pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE);
+        D2D1_BITMAP_PROPERTIES props = D2D1::BitmapProperties(pixelFormat);
         return g_pRenderTarget->CreateBitmap(bsize, props, ppBitmap);
     }
     else

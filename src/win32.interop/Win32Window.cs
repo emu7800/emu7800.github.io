@@ -14,13 +14,13 @@ namespace EMU7800.Win32.Interop
 
     public static class Win32Window
     {
-        public static readonly KeyboardKeyPressedHandler KeyboardKeyPressedHandlerDefault = (vk, d) => {};
-        public static readonly MouseMovedHandler MouseMovedHandlerDefault = (x, y, dx, dy) => {};
-        public static readonly MouseButtonChangedHandler MouseButtonChangedHandlerDefault = (x, y, down) => {};
-        public static readonly MouseWheelChangedHandler MouseWheelChangedHandlerDefault = (x, y, delta) => {};
-        public static readonly LURCycleHandler LURCycleHandlerDefault = () => {};
-        public static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => {};
-        public static readonly ResizedHandler ResizeHandlerDefault = (w, h) => {};
+        static readonly KeyboardKeyPressedHandler KeyboardKeyPressedHandlerDefault = (vk, d) => { };
+        static readonly MouseMovedHandler MouseMovedHandlerDefault = (x, y, dx, dy) => { };
+        static readonly MouseButtonChangedHandler MouseButtonChangedHandlerDefault = (x, y, down) => { };
+        static readonly MouseWheelChangedHandler MouseWheelChangedHandlerDefault = (x, y, delta) => { };
+        static readonly LURCycleHandler LURCycleHandlerDefault = () => { };
+        static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => { };
+        static readonly ResizedHandler ResizeHandlerDefault = (w, h) => { };
 
         public static D2D.Interop.GraphicsDevice GraphicsDevice = new();
         public static System.IntPtr hWnd;
@@ -32,6 +32,17 @@ namespace EMU7800.Win32.Interop
         public static LURCycleHandler LURCycle { get; set; } = LURCycleHandlerDefault;
         public static VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
         public static ResizedHandler Resized { get; set; } = ResizeHandlerDefault;
+
+        public static void ClearEventHandlers()
+        {
+            KeyboardKeyPressed = KeyboardKeyPressedHandlerDefault;
+            MouseMoved         = MouseMovedHandlerDefault;
+            MouseButtonChanged = MouseButtonChangedHandlerDefault;
+            MouseWheelChanged  = MouseWheelChangedHandlerDefault;
+            LURCycle           = LURCycleHandlerDefault;
+            VisibilityChanged  = VisibilityChangedHandlerDefault;
+            Resized            = ResizeHandlerDefault;
+        }
 
         public static void Initialize()
         {
@@ -45,36 +56,6 @@ namespace EMU7800.Win32.Interop
             => Win32_ProcessEvents(hWnd);
 
         public static void Quit()
-        {
-            Win32_Quit();
-            KeyboardKeyPressed = KeyboardKeyPressedHandlerDefault;
-            MouseMoved         = MouseMovedHandlerDefault;
-            MouseButtonChanged = MouseButtonChangedHandlerDefault;
-            MouseWheelChanged  = MouseWheelChangedHandlerDefault;
-            LURCycle           = LURCycleHandlerDefault;
-            VisibilityChanged  = VisibilityChangedHandlerDefault;
-            Resized            = ResizeHandlerDefault;
-        }
-
-        internal static KeyboardKeyPressedHandler RaiseKeyboardKeyPressedDelegate = new(RaiseKeyboardKeyPressed);
-        internal static void RaiseKeyboardKeyPressed(ushort vKey, bool down) => KeyboardKeyPressed(vKey, down);
-
-        internal static MouseMovedHandler RaiseMouseMovedDelegate = new(RaiseMouseMoved);
-        internal static void RaiseMouseMoved(int x, int y, int dx, int dy) => MouseMoved(x, y, dx, dy);
-
-        internal static MouseButtonChangedHandler RaiseMouseButtonChangedDelegate = new(RaiseMouseButtonChanged);
-        internal static void RaiseMouseButtonChanged(int x, int y, bool down) => MouseButtonChanged(x, y, down);
-
-        internal static MouseWheelChangedHandler RaiseMouseWheelChangedDelegate = new(RaiseMouseWheelChanged);
-        internal static void RaiseMouseWheelChanged(int x, int y, int delta) => MouseWheelChanged(x, y, delta);
-
-        internal static LURCycleHandler RaiseLURCycleDelegate = new(RaiseLURCycle);
-        internal static void RaiseLURCycle() => LURCycle();
-
-        internal static VisibilityChangedHandler RaiseVisibilityChangedDelegate = new(RaiseVisibilityChanged);
-        internal static void RaiseVisibilityChanged(bool isVisible) => VisibilityChanged(isVisible);
-
-        internal static ResizedHandler RaiseResizedDelegate = new(RaiseResized);
-        internal static void RaiseResized(int w, int h) => Resized(w, h);
+            => Win32_Quit();
     }
 }

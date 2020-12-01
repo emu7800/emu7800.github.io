@@ -22,7 +22,7 @@ TextLayout::TextLayout(IDWriteFactory* pDWriteFactory, String^ fontFamilyName, i
 
     IDWriteTextFormat* pTextFormat = NULL;
     m_hr = pDWriteFactory->CreateTextFormat(
-        pMarshaledText,
+        pMarshaledFontFamilyName,
         NULL,
         (DWRITE_FONT_WEIGHT)fontWeight,
         (DWRITE_FONT_STYLE)fontStyle,
