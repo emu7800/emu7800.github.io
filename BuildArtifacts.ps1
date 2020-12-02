@@ -10,8 +10,10 @@ Pop-Location
 Remove-Item -Recurse -Force .\artifacts
 
 # copy source artifacts
-robocopy.exe .\src\                                      .\artifacts\EMU7800.src\src\ *.cs *.csproj *.cpp *.h *.manifest *.sln  *.filters *.rc *.vcxproj *.ico *.txt *.png *.json /S /XD obj bin /NFL
+robocopy.exe .\src\                                      .\artifacts\EMU7800.src\src\ *.cs *.csproj *.cpp *.h *.manifest *.sln  *.filters *.rc *.vcxproj *.ico *.txt *.png *.json *.ps1 *.iss *.xml *.pubxml /S /XD obj bin /NFL
+robocopy.exe .                                           .\artifacts\EMU7800.src\ .editorconfig *.ps1 *.md *.TXT /NFL
 robocopy.exe .\docs\                                     .\artifacts\EMU7800.src\docs\ /S /NFL
+robocopy.exe .\lib\                                      .\artifacts\EMU7800.src\lib\ /S /NFL
 Compress-Archive .\artifacts\EMU7800.src\                .\artifacts\EMU7800.src.zip -CompressionLevel Optimal -Force
 
 # copy executable artifacts
@@ -22,3 +24,5 @@ Compress-Archive .\lib\roms\HomeBrews26\                 .\artifacts\EMU7800.bin
 Compress-Archive .\lib\roms\HomeBrews78\                 .\artifacts\EMU7800.bin\ROMS\HomeBrews78.zip -CompressionLevel Optimal -Force
 
 Pop-Location
+
+pwsh.exe .\src\tools\Installer\Build.ps1

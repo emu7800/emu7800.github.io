@@ -1,11 +1,12 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Replatformed to .NET 5 + Win32, dropping support for all prior defunct platforms (UWP 8, 8.1, 10, Windows Phone 7, 8, 10, Silverlight.)
+WHATS NEW—Replatformed to .NET5 + Win32, dropping support for all prior defunct platforms (UWP 8, 8.1, 10, Windows Phone 7, 8, 10, Silverlight.)
 
-BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. . Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
+BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
 GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
 
+- Xbox 360 controllers (for Windows) can be used to navigate game selection (dpad, back and start buttons)
 - Use keys F1-F4 to direct the keyboard input to the respective player number
 - Use the W key to swap input jacks, the Q key to swap P1/P2 paddles, the E key to swap P3/P4 paddles
 - Only mouse input is mapped to the Lightgun controller
@@ -16,7 +17,7 @@ GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, includi
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
 
-ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise, being ported forward to the litany of subsequent .NET platforms that all went defunct. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback and enjoy!
+ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise, being ported forward to the litany of subsequent .NET platforms. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback and enjoy!
 
 Mike Murphy
 mike@emu7800.net
