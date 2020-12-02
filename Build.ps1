@@ -24,6 +24,8 @@ Compress-Archive .\lib\roms\HomeBrews26\                 .\artifacts\EMU7800.bin
 Compress-Archive .\lib\roms\Imagic26\                    .\artifacts\EMU7800.bin\ROMS\Imagic26.zip    -CompressionLevel Optimal -Force
 Compress-Archive .\lib\roms\HomeBrews78\                 .\artifacts\EMU7800.bin\ROMS\HomeBrews78.zip -CompressionLevel Optimal -Force
 Compress-Archive .\lib\roms\Imagic26\                    .\artifacts\EMU7800.bin\ROMS\Imagic26.zip    -CompressionLevel Optimal -Force
+Compress-Archive .\artifacts\EMU7800.bin\                .\artifacts\EMU7800.bin-x64-5.0.0.zip        -CompressionLevel Optimal -Force
+
 
 Pop-Location
 
