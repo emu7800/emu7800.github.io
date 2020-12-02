@@ -197,14 +197,6 @@ namespace EMU7800.Win32.Interop
             {
                 JoystickType = JoystickType.Daptor2;
             }
-            else if (joystickName == "Controller (Xbox 360 Wireless Receiver for Windows)")
-            {
-                JoystickType = JoystickType.XInput;
-            }
-            else if (joystickName.Contains("xbox", System.StringComparison.OrdinalIgnoreCase))
-            {
-                JoystickType = JoystickType.XInput;
-            }
             else if (joystickName.Length > 0)
             {
                 JoystickType = JoystickType.Usb;
@@ -215,6 +207,14 @@ namespace EMU7800.Win32.Interop
             }
         }
 
+        public JoystickDevice(int internalDeviceNumber)
+        {
+            ProductName = "XBox Default";
+            InternalDeviceNumber = internalDeviceNumber;
+            JoystickType = JoystickType.XInput;
+            XInputNativeMethods.Initialize(InternalDeviceNumber, out var _);
+        }
+
         public void ClearEventHandlers()
         {
             JoystickButtonChanged = JoystickButtonChangedHandlerDefault;
@@ -222,6 +222,26 @@ namespace EMU7800.Win32.Interop
             StelladaptorDrivingPositionChanged = StelladaptorDrivingPositionChangedHandlerDefault;
             StelladaptorPaddlePositionChanged = StelladaptorPaddlePositionChangedHandlerDefault;
             Daptor2ModeChanged = Daptor2ModeChangedHandlerDefault;
+        }
+
+        public void Poll()
+        {
+            switch (JoystickType)
+            {
+                case JoystickType.Usb:
+                case JoystickType.Stelladaptor:
+                case JoystickType.Daptor:
+                case JoystickType.Daptor2:
+                    DirectInputNativeMethods.Poll(InternalDeviceNumber, out var currDiState, out var prevDiState);
+                    RaiseEventsFromDirectInput(ref currDiState, ref prevDiState);
+                    break;
+                case JoystickType.XInput:
+                    XInputNativeMethods.Poll(InternalDeviceNumber, out var currXiState, out var prevXiState);
+                    RaiseEventsFromXinput(ref currXiState, ref prevXiState);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ namespace EMU7800.D2D.Shell
         readonly LabelControl _labelSelectGameProgram;
         readonly GameProgramSelectionControl _gameProgramSelectionControl;
 
+        readonly JoystickDevice _backStartController = new(0);
         GameControllers _gameControllers = GameControllers.Default;
 
         bool _isGetGameProgramInfoViewItemCollectionAsyncStarted;
@@ -43,6 +44,13 @@ namespace EMU7800.D2D.Shell
 
             _buttonBack.Clicked += ButtonBack_Clicked;
             _gameProgramSelectionControl.Selected += GameProgramSelectionControl_Selected;
+
+            _backStartController.JoystickDirectionalButtonChanged += (b, down) => {
+                if (b == JoystickDirectionalButtonEnum.Back && down)
+                    ButtonBack_Clicked(this, new());
+                else if (b == JoystickDirectionalButtonEnum.Start)
+                    _gameProgramSelectionControl.KeyboardKeyPressed(KeyboardKey.Enter, down);
+            };
         }
 
         #region PageBase Overrides
@@ -123,6 +131,7 @@ namespace EMU7800.D2D.Shell
         {
             _gameControllers.Dispose();
             _gameControllers = GameControllers.Default;
+            _backStartController.ClearEventHandlers();
         }
 
         #endregion

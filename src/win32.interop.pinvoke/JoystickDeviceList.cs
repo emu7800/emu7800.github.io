@@ -14,7 +14,7 @@ namespace EMU7800.Win32.Interop
 
         public static void Initialize(IntPtr hWnd)
         {
-            Close();
+            Shutdown();
             DirectInputNativeMethods.Initialize(hWnd, out var joystickNames);
 
             var joysticks = new JoystickDevice[2];
@@ -22,16 +22,13 @@ namespace EMU7800.Win32.Interop
             {
                 if (i < joystickNames.Length)
                 {
-                    WriteLine($"Found joystick({i}): {joystickNames[i]}");
                     joysticks[i] = new JoystickDevice(joystickNames[i], i);
                 }
                 else
                 {
-                    var xboxJoystickName = "XBox Default";
-                    WriteLine($"Using joystick({i}): {xboxJoystickName}");
-                    XInputNativeMethods.Initialize(j, out var _);
-                    joysticks[i] = new JoystickDevice(xboxJoystickName, j++);
+                    joysticks[i] = new JoystickDevice(j++);
                 }
+                WriteLine($"Using joystick({i}): {joysticks[i].ProductName}");
             }
             Joysticks = joysticks;
         }
@@ -40,40 +37,18 @@ namespace EMU7800.Win32.Interop
         {
             for (var i = 0; i < Joysticks.Length; i++)
             {
-                Poll(i);
+                Joysticks[i].Poll();
             }
         }
 
-        public static void Poll(int deviceno)
+        public static void Shutdown()
         {
-            if (Joysticks.Length == 0)
-                return;
-
-            switch (Joysticks[deviceno].JoystickType)
-            {
-                case JoystickType.Usb:
-                case JoystickType.Stelladaptor:
-                case JoystickType.Daptor:
-                case JoystickType.Daptor2:
-                    DirectInputNativeMethods.Poll(Joysticks[deviceno].InternalDeviceNumber, out var currDiState, out var prevDiState);
-                    Joysticks[deviceno].RaiseEventsFromDirectInput(ref currDiState, ref prevDiState);
-                    break;
-                case JoystickType.XInput:
-                    XInputNativeMethods.Poll(Joysticks[deviceno].InternalDeviceNumber, out var currXiState, out var prevXiState);
-                    Joysticks[deviceno].RaiseEventsFromXinput(ref currXiState, ref prevXiState);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public static void Close()
-        {
+            DirectInputNativeMethods.Shutdown();
             for (var i = 0; i < Joysticks.Length; i++)
             {
                 Joysticks[i].ClearEventHandlers();
+                WriteLine($"Freed joystick({i}): {Joysticks[i].ProductName}");
             }
-            DirectInputNativeMethods.Shutdown();
             Joysticks = Array.Empty<JoystickDevice>();
         }
     }
