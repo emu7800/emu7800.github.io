@@ -20,12 +20,12 @@ Compress-Archive .\artifacts\EMU7800.src\                .\artifacts\EMU7800.src
 robocopy.exe     .\src\win32\bin\Release\net5.0\publish\ .\artifacts\EMU7800.bin\ /XD ref /XF *.runtimeconfig.dev.json *.exp *.ilk *.lib *.pdb *.iobj *.ipdb  /S /NFL
 New-Item -Name                                           .\artifacts\EMU7800.bin\ROMS\ -ItemType directory
 Compress-Archive .\lib\roms\Bios78\                      .\artifacts\EMU7800.bin\ROMS\Bios78.zip      -CompressionLevel Optimal -Force
-Compress-Archive .\lib\roms\HomeBrews26\                 .\artifacts\EMU7800.bin\ROMS\HomeBrews26.zip -CompressionLevel Optimal -Force
-Compress-Archive .\lib\roms\Imagic26\                    .\artifacts\EMU7800.bin\ROMS\Imagic26.zip    -CompressionLevel Optimal -Force
-Compress-Archive .\lib\roms\HomeBrews78\                 .\artifacts\EMU7800.bin\ROMS\HomeBrews78.zip -CompressionLevel Optimal -Force
-Compress-Archive .\lib\roms\Imagic26\                    .\artifacts\EMU7800.bin\ROMS\Imagic26.zip    -CompressionLevel Optimal -Force
+Compress-Archive .\lib\roms\Atari\                       .\artifacts\EMU7800.bin\ROMS\Atari.zip       -CompressionLevel Optimal -Force
+Compress-Archive .\lib\roms\Activision\                  .\artifacts\EMU7800.bin\ROMS\Activision.zip  -CompressionLevel Optimal -Force
+Compress-Archive .\lib\roms\HomeBrews\                   .\artifacts\EMU7800.bin\ROMS\HomeBrews.zip   -CompressionLevel Optimal -Force
+Compress-Archive .\lib\roms\Imagic\                      .\artifacts\EMU7800.bin\ROMS\Imagic.zip      -CompressionLevel Optimal -Force
+Compress-Archive .\lib\roms\Other\                       .\artifacts\EMU7800.bin\ROMS\Other.zip       -CompressionLevel Optimal -Force
 Compress-Archive .\artifacts\EMU7800.bin\                .\artifacts\EMU7800.bin-x64-5.0.0.zip        -CompressionLevel Optimal -Force
-
 
 Pop-Location
 
