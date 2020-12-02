@@ -428,20 +428,20 @@ namespace EMU7800.D2D.Shell
                 if (_frameRateChangeNeeded)
                 {
                     _frameRateChangeNeeded = false;
-                    Win32.Interop.AudioDevice.Close();
+                    AudioDevice.Close();
                     if (_proposedFrameRate > CurrentFrameRate)
                         _calibrationNeeded = true;
                     CurrentFrameRate = _proposedFrameRate;
                     ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
                 }
 
-                if (!_soundOff && Win32.Interop.AudioDevice.IsClosed)
+                if (!_soundOff && AudioDevice.IsClosed)
                 {
                     var soundFrequency = frameBuffer.SoundBufferByteLength * CurrentFrameRate;
-                    Win32.Interop.AudioDevice.Configure(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
+                    AudioDevice.Configure(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
                 }
 
-                var buffersQueued = Win32.Interop.AudioDevice.CountBuffersQueued();
+                var buffersQueued = AudioDevice.CountBuffersQueued();
                 long adjustment = 0;
                 if (buffersQueued < 0 || _soundOff || _paused)
                     adjustment = 0;
@@ -457,7 +457,7 @@ namespace EMU7800.D2D.Shell
                 if (!_soundOff && !_paused)
                 {
                     UpdateAudioBytes(frameBuffer, audioBytes);
-                    Win32.Interop.AudioDevice.SubmitBuffer(audioBytes);
+                    AudioDevice.SubmitBuffer(audioBytes);
                 }
 
                 lock (_dynamicBitmapLocker)
@@ -484,7 +484,7 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            Win32.Interop.AudioDevice.Close();
+            AudioDevice.Close();
 
             machineStateInfo = machineStateInfo with
             {
@@ -506,7 +506,7 @@ namespace EMU7800.D2D.Shell
             const int soundBufferByteLength = 524;
             var soundFrequency = soundBufferByteLength * CurrentFrameRate;
             var ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
-            Win32.Interop.AudioDevice.Configure(soundFrequency, soundBufferByteLength, 8);
+            AudioDevice.Configure(soundFrequency, soundBufferByteLength, 8);
             var audioBytes = new byte[soundBufferByteLength];
 
             var stopwatch = new Stopwatch();
@@ -517,7 +517,7 @@ namespace EMU7800.D2D.Shell
                 var startTick = stopwatch.ElapsedTicks;
                 var endTick = startTick + ticksPerFrame;
 
-                var buffersQueued = Win32.Interop.AudioDevice.CountBuffersQueued();
+                var buffersQueued = AudioDevice.CountBuffersQueued();
                 long adjustment = 0;
                 if (buffersQueued < 0)
                     adjustment = 0;
@@ -531,7 +531,7 @@ namespace EMU7800.D2D.Shell
                 {
                     for (var i = 0; i < audioBytes.Length; i++)
                         audioBytes[i] = (byte) (random.Next(2) | 0x80);
-                    Win32.Interop.AudioDevice.SubmitBuffer(audioBytes);
+                    AudioDevice.SubmitBuffer(audioBytes);
                 }
 
                 lock (_dynamicBitmapLocker)
@@ -552,7 +552,7 @@ namespace EMU7800.D2D.Shell
                 }
             }
 
-            Win32.Interop.AudioDevice.Close();
+            AudioDevice.Close();
         }
 
         static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo, FrameBuffer frameBuffer)
