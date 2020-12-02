@@ -9,7 +9,7 @@ namespace EMU7800.D2D.Shell
         #region Fields
 
         TextLayout _textLayout = TextLayout.Default;
-        int _isMouseDownByPointerId;
+        int _isMouseDownByPointerId = -1;
         D2D_RECT_F _bounds;
         int _startY, _maxStartY;
         float _scrollbarLength, _scrollbarY;
