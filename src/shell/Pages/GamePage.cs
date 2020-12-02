@@ -245,7 +245,6 @@ namespace EMU7800.D2D.Shell
             _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
 
             _gameControllers.Dispose();
-
             _gameControllers = new GameControllers(_gameControl);
         }
 

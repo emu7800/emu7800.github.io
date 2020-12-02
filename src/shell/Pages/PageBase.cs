@@ -3,6 +3,8 @@
 using EMU7800.Win32.Interop;
 using System;
 
+#pragma warning disable CA1822 // Mark members as static
+
 namespace EMU7800.D2D.Shell
 {
     public abstract class PageBase : IDisposable
@@ -67,7 +69,6 @@ namespace EMU7800.D2D.Shell
 
         #region PageStateService Accessors
 
-#pragma warning disable CA1822 // Mark members as static
         protected void PushPage(PageBase pageToPush)
         {
             PageBackStackStateService.Push(pageToPush);
@@ -82,7 +83,6 @@ namespace EMU7800.D2D.Shell
         {
             return PageBackStackStateService.Pop();
         }
-#pragma warning restore CA1822 // Mark members as static
 
         #endregion
 
