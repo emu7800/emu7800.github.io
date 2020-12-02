@@ -2,7 +2,7 @@
 
 WHATS NEW—Replatformed to .NET5 + Win32, dropping support for all prior defunct platforms (UWP 8, 8.1, 10, Windows Phone 7, 8, 10, Silverlight.)
 
-BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved by default. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
+BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
 GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
 
