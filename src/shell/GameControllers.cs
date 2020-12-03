@@ -151,21 +151,6 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        static void RegularJoystickButtonChanged(GameControl gameControl, int joystickNo, int buttonno, bool down)
-        {
-            switch (buttonno)
-            {
-                case 0:
-                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
-                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
-                    break;
-                case 1:
-                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
-                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
-                    break;
-            }
-        }
-
         static void Daptor2ButtonChangedFor7800Mode(GameControl gameControl, int joystickNo, int buttonno, bool down)
         {
             switch (buttonno)
@@ -175,6 +160,26 @@ namespace EMU7800.D2D.Shell
                     gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
                     break;
                 case 3:
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
+                    break;
+            }
+        }
+
+        static void Daptor2ButtonChangedForKeypadMode(GameControl gameControl, int joystickNo, int buttonno, bool down)
+        {
+            gameControl.JoystickChanged(joystickNo, _daptor2KeypadToMachineInputMapping[buttonno & 0xf], down);
+        }
+
+        static void RegularJoystickButtonChanged(GameControl gameControl, int joystickNo, int buttonno, bool down)
+        {
+            switch (buttonno)
+            {
+                case 0:
+                    gameControl.JoystickChanged(joystickNo, MachineInput.Fire, down);
+                    gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire2, down);
+                    break;
+                case 1:
                     gameControl.JoystickChanged(joystickNo, MachineInput.Fire2, down);
                     gameControl.ProLineJoystickChanged(joystickNo, MachineInput.Fire, down);
                     break;
@@ -192,11 +197,6 @@ namespace EMU7800.D2D.Shell
         static void StelladaptorDrivingPositionChanged(GameControl gameControl, int joystickNo, int position)
         {
             gameControl.DrivingPaddleChanged(joystickNo, _stelladaptorDrivingMachineInputMapping[position & 3]);
-        }
-
-        static void Daptor2ButtonChangedForKeypadMode(GameControl gameControl, int joystickNo, int buttonno, bool down)
-        {
-            gameControl.JoystickChanged(joystickNo, _daptor2KeypadToMachineInputMapping[buttonno & 0xf], down);
         }
 
         #endregion

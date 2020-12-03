@@ -37,7 +37,7 @@ namespace EMU7800.Win32.Interop
         {
             if (JoystickButtonChanged != JoystickButtonChangedHandlerDefault)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 16; i++)
                 {
                     var prevDown = prevState.InterpretJoyButtonDown(i);
                     var currDown = currState.InterpretJoyButtonDown(i);

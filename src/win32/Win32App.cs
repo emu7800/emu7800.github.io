@@ -6,6 +6,8 @@ using EMU7800.Win32.Interop;
 using System;
 using System.Diagnostics;
 
+#pragma warning disable CA1822 // Mark members as static
+
 namespace EMU7800.D2D.Shell.Win32
 {
     public sealed class Win32App : IDisposable
@@ -29,10 +31,9 @@ namespace EMU7800.D2D.Shell.Win32
             WireUpEvents();
         }
 
-#pragma warning disable CA1822 // Mark members as static
+
         public void Run()
             => Win32Window.Run();
-#pragma warning restore CA1822 // Mark members as static
 
         #region IDisposable Members
 
@@ -56,11 +57,11 @@ namespace EMU7800.D2D.Shell.Win32
         {
             Win32Window.LURCycle           += LURCycle;
             Win32Window.VisibilityChanged  += VisibilityChanged;
-            Win32Window.Resized            += Resized;
+            Win32Window.Resized            += (w, h)         => _pageBackStack.Resized(new(w, h));
             Win32Window.KeyboardKeyPressed += KeyboardKeyPressed;
-            Win32Window.MouseMoved         += MouseMoved;
-            Win32Window.MouseButtonChanged += MouseButtonChanged;
-            Win32Window.MouseWheelChanged  += MouseWheelChanged;
+            Win32Window.MouseMoved         += (x, y, dx, dy) => _pageBackStack.MouseMoved(0, x, y, dx, dy);
+            Win32Window.MouseButtonChanged += (x, y, down)   => _pageBackStack.MouseButtonChanged(0, x, y, down);
+            Win32Window.MouseWheelChanged  += (x, y, delta)  => _pageBackStack.MouseWheelChanged(0, x, y, delta);
         }
 
         void LURCycle()
@@ -90,11 +91,6 @@ namespace EMU7800.D2D.Shell.Win32
                 _pageBackStack.OnNavigatingAway();
         }
 
-        void Resized(int width, int height)
-        {
-            _pageBackStack.Resized(new(width,height));
-        }
-
         void KeyboardKeyPressed(ushort vkey, bool down)
         {
             var lastDown = _lastKeyInput[vkey & 0xff];
@@ -102,21 +98,6 @@ namespace EMU7800.D2D.Shell.Win32
                 return;
             _lastKeyInput[vkey & 0xff] = down;
             _pageBackStack.KeyboardKeyPressed((KeyboardKey)vkey, down);
-        }
-
-        void MouseMoved(int x, int y, int dx, int dy)
-        {
-            _pageBackStack.MouseMoved(0, x, y, dx, dy);
-        }
-
-        void MouseButtonChanged(int x, int y, bool down)
-        {
-            _pageBackStack.MouseButtonChanged(0, x, y, down);
-        }
-
-        void MouseWheelChanged(int x, int y, int delta)
-        {
-            _pageBackStack.MouseWheelChanged(0, x, y, delta);
         }
 
         static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
