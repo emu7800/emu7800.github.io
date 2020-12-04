@@ -1,5 +1,6 @@
 // © Mike Murphy
 
+using EMU7800.Core;
 using System.Linq;
 
 namespace EMU7800.D2D.Shell
@@ -70,6 +71,48 @@ namespace EMU7800.D2D.Shell
                     break;
                 if (control.IsVisible && control.IsEnabled)
                     control.MouseWheelChanged(pointerId, x, y, delta);
+            }
+        }
+
+        public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
+        {
+            if (!IsVisible)
+                return;
+            for (var i = 0; i < _controls.Length; i++)
+            {
+                var control = _controls[i];
+                if (control == ControlBase.Default)
+                    break;
+                if (control.IsVisible && control.IsEnabled)
+                    control.ControllerButtonChanged(controllerNo, input, down);
+            }
+        }
+
+        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        {
+            if (!IsVisible)
+                return;
+            for (var i = 0; i < _controls.Length; i++)
+            {
+                var control = _controls[i];
+                if (control == ControlBase.Default)
+                    break;
+                if (control.IsVisible && control.IsEnabled)
+                    control.PaddlePositionChanged(controllerNo, paddleNo, valMax, val);
+            }
+        }
+
+        public override void DrivingPositionChanged(int controllerNo, MachineInput input)
+        {
+            if (!IsVisible)
+                return;
+            for (var i = 0; i < _controls.Length; i++)
+            {
+                var control = _controls[i];
+                if (control == ControlBase.Default)
+                    break;
+                if (control.IsVisible && control.IsEnabled)
+                    control.DrivingPositionChanged(controllerNo, input);
             }
         }
 

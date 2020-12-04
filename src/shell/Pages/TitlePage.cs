@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
 using EMU7800.Services;
 using EMU7800.Win32.Interop;
 using System;
@@ -107,6 +108,21 @@ namespace EMU7800.D2D.Shell
                 size.Width / 2 - _buttonAbout.Size.Width / 2,
                 size.Height - _buttonAbout.Size.Height - 50
                 );
+        }
+
+        public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
+        {
+            base.ControllerButtonChanged(controllerNo, input, down);
+            if (down)
+                return;
+            switch (input)
+            {
+                case MachineInput.Start:
+                case MachineInput.Fire:
+                case MachineInput.Fire2:
+                    ButtonPlayAtariToday_Clicked(this, new());
+                    break;
+            }
         }
 
         #endregion

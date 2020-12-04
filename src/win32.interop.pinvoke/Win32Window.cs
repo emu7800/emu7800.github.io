@@ -33,18 +33,7 @@ namespace EMU7800.Win32.Interop
         public static VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
         public static ResizedHandler Resized { get; set; } = ResizeHandlerDefault;
 
-        public static void ClearEventHandlers()
-        {
-            KeyboardKeyPressed = KeyboardKeyPressedHandlerDefault;
-            MouseMoved         = MouseMovedHandlerDefault;
-            MouseButtonChanged = MouseButtonChangedHandlerDefault;
-            MouseWheelChanged  = MouseWheelChangedHandlerDefault;
-            LURCycle           = LURCycleHandlerDefault;
-            VisibilityChanged  = VisibilityChangedHandlerDefault;
-            Resized            = ResizeHandlerDefault;
-        }
-
-        public static void Run()
+        public static void Run(bool startMaximized = true)
         {
             Resized += (w, h) => GraphicsDevice.Resize(new(w, h));
 
@@ -54,14 +43,16 @@ namespace EMU7800.Win32.Interop
             var hr = GraphicsDevice.Initialize(hWnd);
             WriteLine($"D2D initialized: HR=0x{hr:x8}");
 
+            GameControllers.Initialize(hWnd);
+
             WriteLine("Win32 processing events...");
-            Win32_ProcessEvents(hWnd);
+            Win32_ProcessEvents(hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
             WriteLine("Win32 processing events completed");
 
-            WriteLine("Shutting down D2D...");
-            GraphicsDevice.Shutdown();
+            WriteLine("Shutting down game controllers, D2D, Win32...");
 
-            WriteLine("Shutting down Win32...");
+            GameControllers.Shutdown();
+            GraphicsDevice.Shutdown();
             Win32_Quit();
 
             WriteLine("Done");

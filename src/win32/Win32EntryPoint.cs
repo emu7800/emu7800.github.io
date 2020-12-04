@@ -16,7 +16,7 @@ if (option.Length == 0 || new[] { "-c", "/c" }.Any(s => option.StartsWith(s)))
     {
         FreeConsole();
     }
-    Start();
+    Start(option.Length == 0);
     return 0;
 }
 
@@ -175,10 +175,10 @@ static void StartGameProgram(GameProgramInfoViewItem gpivi)
     app.Run();
 }
 
-static void Start()
+static void Start(bool startMaximized = true)
 {
     using var app = new Win32App();
-    app.Run();
+    app.Run(startMaximized);
 }
 
 [System.Runtime.InteropServices.DllImport("Kernel32.dll")]

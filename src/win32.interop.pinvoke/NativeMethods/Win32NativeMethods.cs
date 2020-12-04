@@ -53,7 +53,7 @@ namespace EMU7800.Win32.Interop
             IntPtr resizedcb);
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        public static extern void Win32_ProcessEvents(IntPtr hWnd);
+        public static extern void Win32_ProcessEvents(IntPtr hWnd, int nCmdShow);
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Win32_Quit();

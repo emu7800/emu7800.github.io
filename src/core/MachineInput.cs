@@ -1,8 +1,8 @@
 ﻿/*
  * HostInput.cs
- * 
+ *
  * Copyright © 2009 Mike Murphy
- * 
+ *
  */
 namespace EMU7800.Core
 {
@@ -38,5 +38,6 @@ namespace EMU7800.Core
         GameControllerSwap,
         RightPaddleSwap,
         ShowFrameStats,
+        Start
     }
 }

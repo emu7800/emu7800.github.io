@@ -7,7 +7,7 @@ namespace EMU7800.Win32.Interop
     internal unsafe static class XInputNativeMethods
     {
         static readonly GCHandle[,] XInputStates = AllocateXInputStateStructures();
-        static readonly int[] CurrXInputStateIndices = new int[2];
+        static readonly int[] CurrXInputStateIndices = new int[4];
 
         public const int
             XINPUT_FLAG_GAMEPAD             = 0x00000001,
@@ -100,6 +100,14 @@ namespace EMU7800.Win32.Interop
         static GCHandle[,] AllocateXInputStateStructures()
             => new[,]
             {
+                {
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned),
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned)
+                },
+                {
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned),
+                    GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned)
+                },
                 {
                     GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned),
                     GCHandle.Alloc(new XINPUT_STATE(), GCHandleType.Pinned)

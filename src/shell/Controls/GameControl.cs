@@ -212,31 +212,10 @@ namespace EMU7800.D2D.Shell
             _inputState.RaiseInput(_currentKeyboardPlayerNo, machineInput, down);
         }
 
-        public void JoystickChanged(int playerNo, MachineInput machineInput, bool down)
-        {
-            _inputAdapters[_playerJackMapping[playerNo & 3]].JoystickChanged(playerNo, machineInput, down);
-        }
-
-        public void ProLineJoystickChanged(int playerNo, MachineInput machineInput, bool down)
-        {
-            _inputAdapters[_playerJackMapping[playerNo & 3]].ProLineJoystickChanged(playerNo, machineInput, down);
-        }
-
-        public void PaddleChanged(int playerNo, int valMax, int val)
-        {
-            var swappedPlayerNo = _paddleSwaps[playerNo & 3];
-            _inputAdapters[_playerJackMapping[swappedPlayerNo]].PaddleChanged(swappedPlayerNo, valMax, val);
-        }
-
         public void PaddleButtonChanged(int playerNo, bool down)
         {
             var swappedPlayerNo = _paddleSwaps[playerNo & 3];
             _inputAdapters[_playerJackMapping[swappedPlayerNo]].JoystickChanged(swappedPlayerNo, MachineInput.Fire, down);
-        }
-
-        public void DrivingPaddleChanged(int playerNo, MachineInput machineInput)
-        {
-            _inputAdapters[_playerJackMapping[playerNo & 3]].DrivingPaddleChanged(playerNo, machineInput);
         }
 
         #region ControlBase Overrides
@@ -254,6 +233,26 @@ namespace EMU7800.D2D.Shell
         public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
         {
             _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].MouseButtonChanged(_currentKeyboardPlayerNo, x, y, down, IsInTouchMode);
+        }
+
+        public override void ControllerButtonChanged(int controllerNo, MachineInput machineInput, bool down)
+        {
+            var playerNo = controllerNo;
+            _inputAdapters[_playerJackMapping[playerNo & 3]].JoystickChanged(playerNo, machineInput, down);
+            _inputAdapters[_playerJackMapping[playerNo & 3]].ProLineJoystickChanged(playerNo, machineInput, down);
+        }
+
+        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        {
+            var playerNo = (1 << controllerNo) + paddleNo;
+            var swappedPlayerNo = _paddleSwaps[playerNo & 3];
+            _inputAdapters[_playerJackMapping[swappedPlayerNo]].PaddleChanged(swappedPlayerNo, valMax, val);
+        }
+
+        public override void DrivingPositionChanged(int controllerNo, MachineInput machineInput)
+        {
+            var playerNo = controllerNo;
+            _inputAdapters[_playerJackMapping[playerNo & 3]].DrivingPaddleChanged(playerNo, machineInput);
         }
 
         public override void LocationChanged()

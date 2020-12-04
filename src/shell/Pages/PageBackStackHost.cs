@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
 using EMU7800.Win32.Interop;
 using System;
 
@@ -64,6 +65,21 @@ namespace EMU7800.D2D.Shell
         public void MouseWheelChanged(int pointerId, int x, int y, int delta)
         {
             _currentPage.MouseWheelChanged(pointerId, x, y, delta);
+        }
+
+        public void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
+        {
+            _currentPage.ControllerButtonChanged(controllerNo, input, down);
+        }
+
+        public void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        {
+            _currentPage.PaddlePositionChanged(controllerNo, paddleNo, valMax, val);
+        }
+
+        public void DrivingPositionChanged(int controllerNo, MachineInput input)
+        {
+            _currentPage.DrivingPositionChanged(controllerNo, input);
         }
 
         public void LoadResources()

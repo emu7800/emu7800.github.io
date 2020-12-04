@@ -26,9 +26,13 @@ namespace EMU7800.D2D.Shell
                 case MachineInput.Right:
                 case MachineInput.Up:
                 case MachineInput.Down:
-                case MachineInput.Fire:
-                case MachineInput.Fire2:
                     _inputState.RaiseInput(_jackNo, machineInput, down);
+                    break;
+                case MachineInput.Fire:
+                    _inputState.RaiseInput(_jackNo, MachineInput.Fire2, down);
+                    break;
+                case MachineInput.Fire2:
+                    _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
                     break;
             }
         }

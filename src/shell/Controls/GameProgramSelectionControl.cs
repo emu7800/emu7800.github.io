@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Assets;
+using EMU7800.Core;
 using EMU7800.Services.Dto;
 using EMU7800.Win32.Interop;
 using System;
@@ -170,6 +171,31 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Up:
                 case KeyboardKey.Down:
                     HandleKeyPressed(key);
+                    break;
+            }
+        }
+
+        public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
+        {
+            base.ControllerButtonChanged(controllerNo, input, down);
+            if (down)
+                return;
+            switch (input)
+            {
+                case MachineInput.Start:
+                    RaiseSelected();
+                    break;
+                case MachineInput.Left:
+                    HandleKeyPressed(KeyboardKey.Left);
+                    break;
+                case MachineInput.Right:
+                    HandleKeyPressed(KeyboardKey.Right);
+                    break;
+                case MachineInput.Up:
+                    HandleKeyPressed(KeyboardKey.Up);
+                    break;
+                case MachineInput.Down:
+                    HandleKeyPressed(KeyboardKey.Down);
                     break;
             }
         }

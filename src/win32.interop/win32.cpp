@@ -216,9 +216,9 @@ extern "C" __declspec(dllexport) HWND __stdcall Win32_Initialize(
         NULL, NULL, NULL, NULL);
 }
 
-extern "C" __declspec(dllexport) void __stdcall Win32_ProcessEvents(HWND hWnd)
+extern "C" __declspec(dllexport) void __stdcall Win32_ProcessEvents(HWND hWnd, int nCmdShow)
 {
-    ShowWindow(hWnd, SW_SHOWNORMAL);
+    ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
 
     bool isVisible = true;

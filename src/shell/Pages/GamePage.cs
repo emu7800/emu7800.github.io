@@ -33,8 +33,6 @@ namespace EMU7800.D2D.Shell
         readonly ButtonTouchControl _touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2;
         readonly ControlCollection _touchbuttonCollection;
 
-        GameControllers _gameControllers = GameControllers.Default;
-
         float _infoTextVisibilityTimer, _fpsChangeTimer;
         int _fpsChangeDirection, _hudPlayerInputNo;
 
@@ -243,9 +241,6 @@ namespace EMU7800.D2D.Shell
 
             _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _startFreshReq);
             _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
-
-            _gameControllers.Dispose();
-            _gameControllers = new GameControllers(_gameControl);
         }
 
         public override void OnNavigatingAway()
@@ -398,7 +393,7 @@ namespace EMU7800.D2D.Shell
                     ChangeCurrentKeyboardPlayerNo(4);
                     break;
                 case KeyboardKey.Q:
-                    if (down || !_gameControllers.LeftJackHasAtariAdaptor)
+                    if (down || !GameControllers.Controllers[0].IsAtariAdaptor)
                         return;
                     PostInfoText("P1/P2 paddles swapped");
                     _gameControl.SwapLeftControllerPaddles();
@@ -410,7 +405,7 @@ namespace EMU7800.D2D.Shell
                     _gameControl.SwapJacks();
                     break;
                 case KeyboardKey.E:
-                    if (down || !_gameControllers.RightJackHasAtariAdaptor)
+                    if (down || !GameControllers.Controllers[1].IsAtariAdaptor)
                         return;
                     PostInfoText("P3/P4 paddles swapped");
                     _gameControl.SwapRightControllerPaddles();
@@ -437,6 +432,15 @@ namespace EMU7800.D2D.Shell
             base.MouseButtonChanged(pointerId, x, y, down);
         }
 
+        public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
+        {
+            base.ControllerButtonChanged(controllerNo, input, down);
+            if (input == MachineInput.End)
+            {
+                KeyboardKeyPressed(KeyboardKey.Escape, down);
+            }
+        }
+
         public override void Update(TimerDevice td)
         {
             base.Update(td);
@@ -449,8 +453,6 @@ namespace EMU7800.D2D.Shell
                 _buttonBack.IsVisible = false;
                 _buttonSettings.IsVisible = false;
             }
-
-            _gameControllers.Poll();
 
             _labelInfoText.IsVisible = _infoTextVisibilityTimer > 0;
             if (_infoTextVisibilityTimer > 0)
@@ -511,11 +513,6 @@ namespace EMU7800.D2D.Shell
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                _gameControllers.Dispose();
-                _gameControllers = GameControllers.Default;
-            }
             base.Dispose(disposing);
         }
 
@@ -634,12 +631,12 @@ namespace EMU7800.D2D.Shell
             _infoTextVisibilityTimer = 2.0f;
         }
 
-        string BuildControllersTextForHud()
-            => string.Join("; ", Enumerable.Range(0, 4)
+        static string BuildControllersTextForHud()
+            => string.Join("; ", Enumerable.Range(0, GameControllers.Controllers.Length)
                 .Select(i => new
                 {
                     P = i + 1,
-                    C = _gameControllers.GetControllerInfo(i)
+                    C = GameControllers.Controllers[i].Info
                 })
                 .Where(r => !string.IsNullOrWhiteSpace(r.C))
                 .Select(r => $"P{r.P}: {r.C}"));
