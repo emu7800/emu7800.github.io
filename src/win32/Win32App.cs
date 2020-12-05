@@ -62,12 +62,11 @@ namespace EMU7800.D2D.Shell.Win32
             Win32Window.MouseButtonChanged += (x, y, down)   => _pageBackStack.MouseButtonChanged(0, x, y, down);
             Win32Window.MouseWheelChanged  += (x, y, delta)  => _pageBackStack.MouseWheelChanged(0, x, y, delta);
 
-            for (var cn = 0; cn < GameControllers.Controllers.Length; cn++)
+            foreach (var gc in GameControllers.Controllers)
             {
-                var gc = GameControllers.Controllers[cn];
-                gc.ButtonChanged          += (mi, down)  => _pageBackStack.ControllerButtonChanged(cn, mi, down);
-                gc.PaddlePositionChanged  += (pn, vm, v) => _pageBackStack.PaddlePositionChanged(pn, pn, vm, v);
-                gc.DrivingPositionChanged += mi          => _pageBackStack.DrivingPositionChanged(cn, mi);
+                gc.ButtonChanged          += (cn, mi, down)  => _pageBackStack.ControllerButtonChanged(cn, mi, down);
+                gc.PaddlePositionChanged  += (cn, pn, vm, v) => _pageBackStack.PaddlePositionChanged(cn, pn, vm, v);
+                gc.DrivingPositionChanged += (cn, mi)        => _pageBackStack.DrivingPositionChanged(cn, mi);
             }
         }
 

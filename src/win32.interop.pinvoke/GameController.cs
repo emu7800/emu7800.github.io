@@ -1,14 +1,15 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using static System.Console;
 
 namespace EMU7800.Win32.Interop
 {
     public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 };
 
-    public delegate void ButtonChangedHandler(MachineInput input, bool down);
-    public delegate void PaddlePositionChangedHandler(int paddleno, int valMax, int val);
-    public delegate void DrivingPositionChangedHandler(MachineInput machineInput);
+    public delegate void ButtonChangedHandler(int controllerNo, MachineInput input, bool down);
+    public delegate void PaddlePositionChangedHandler(int controllerNo, int paddleno, int valMax, int val);
+    public delegate void DrivingPositionChangedHandler(int controllerNo, MachineInput machineInput);
 
     public class GameController
     {
@@ -27,27 +28,26 @@ namespace EMU7800.Win32.Interop
             MachineInput.NumPad0
         };
 
-        public static readonly ButtonChangedHandler ButtonChangedHandlerDefault = (b, d) => {};
-        public static readonly PaddlePositionChangedHandler PaddlePositionChangedHandlerDefault = (pn, vm, v) => {};
-        public static readonly DrivingPositionChangedHandler DrivingPositionChangedHandlerDefault = mi => { };
+        public static readonly ButtonChangedHandler ButtonChangedHandlerDefault = (cn, mi, d) => {};
+        public static readonly PaddlePositionChangedHandler PaddlePositionChangedHandlerDefault = (cn, pn, vm, v) => {};
+        public static readonly DrivingPositionChangedHandler DrivingPositionChangedHandlerDefault = (cn, mi) => {};
 
+        readonly int _controllerNo;
         int _daptorMode;
 
         public string ProductName { get; internal set; } = string.Empty;
         public int InternalDeviceNumber { get; internal set; }
         public JoystickType JoystickType { get; internal set; } = JoystickType.None;
 
-        public string Info => _daptorMode switch
-        {
-            0 => ProductName + " (2600 mode)",
-            1 => ProductName + " (7800 mode)",
-            2 => ProductName + " (Keypad mode)",
-            _ => ProductName
-        };
+        public string Info => ProductName + (IsDaptor ? $" ({ToDaptorModeStr(_daptorMode)} mode)" : string.Empty);
 
         public bool IsAtariAdaptor
             => JoystickType == JoystickType.Stelladaptor
             || JoystickType == JoystickType.Daptor
+            || JoystickType == JoystickType.Daptor2;
+
+        public bool IsDaptor
+            => JoystickType == JoystickType.Daptor
             || JoystickType == JoystickType.Daptor2;
 
         public ButtonChangedHandler ButtonChanged { get; set; } = ButtonChangedHandlerDefault;
@@ -58,7 +58,12 @@ namespace EMU7800.Win32.Interop
         {
             DirectInputNativeMethods.Poll(InternalDeviceNumber, out var currState, out var prevState);
 
-            _daptorMode = currState.InterpretDaptor2Mode();
+            var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
+            if (maybeNewDaptorMode != _daptorMode)
+            {
+                WriteLine($"P{_controllerNo + 1} DaptorMode changed from {ToDaptorModeStr(_daptorMode)}:{_daptorMode} mode to {ToDaptorModeStr(maybeNewDaptorMode)}:{maybeNewDaptorMode} mode");
+                _daptorMode = maybeNewDaptorMode;
+            }
 
             if (ButtonChanged != ButtonChangedHandlerDefault)
             {
@@ -72,26 +77,26 @@ namespace EMU7800.Win32.Interop
                         {
                             if (i == 2)
                             {
-                                ButtonChanged(MachineInput.Fire, currButtonDown);
+                                ButtonChanged(_controllerNo, MachineInput.Fire, currButtonDown);
                             }
                             else if (i == 3)
                             {
-                                ButtonChanged(MachineInput.Fire2, currButtonDown);
+                                ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
                             }
                         }
                         else if (_daptorMode == 2) // keypad mode
                         {
-                            ButtonChanged(Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
+                            ButtonChanged(_controllerNo, Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
                         }
                         else // 2600/regular mode
                         {
                             if (i == 0)
                             {
-                                ButtonChanged(MachineInput.Fire, currButtonDown);
+                                ButtonChanged(_controllerNo, MachineInput.Fire, currButtonDown);
                             }
                             else if (i == 1)
                             {
-                                ButtonChanged(MachineInput.Fire2, currButtonDown);
+                                ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
                             }
                         }
                     }
@@ -101,28 +106,28 @@ namespace EMU7800.Win32.Interop
                 var currLeft = currState.InterpretJoyLeft();
                 if (prevLeft != currLeft)
                 {
-                    ButtonChanged(MachineInput.Left, currLeft);
+                    ButtonChanged(_controllerNo, MachineInput.Left, currLeft);
                 }
 
                 var prevRight = prevState.InterpretJoyRight();
                 var currRight = currState.InterpretJoyRight();
                 if (prevRight != currRight)
                 {
-                    ButtonChanged(MachineInput.Right, currRight);
+                    ButtonChanged(_controllerNo, MachineInput.Right, currRight);
                 }
 
                 var prevUp = prevState.InterpretJoyUp();
                 var currUp = currState.InterpretJoyUp();
                 if (prevUp != currUp)
                 {
-                    ButtonChanged(MachineInput.Up, currUp);
+                    ButtonChanged(_controllerNo, MachineInput.Up, currUp);
                 }
 
                 var prevDown = prevState.InterpretJoyDown();
                 var currDown = currState.InterpretJoyDown();
                 if (prevDown != currDown)
                 {
-                    ButtonChanged(MachineInput.Down, currDown);
+                    ButtonChanged(_controllerNo, MachineInput.Down, currDown);
                 }
             }
 
@@ -134,7 +139,7 @@ namespace EMU7800.Win32.Interop
                     var currPos = currState.InterpretStelladaptorDrivingPosition();
                     if (prevPos != currPos)
                     {
-                        DrivingPositionChanged(StelladaptorDrivingMachineInputMapping[currPos & 3]);
+                        DrivingPositionChanged(_controllerNo, StelladaptorDrivingMachineInputMapping[currPos & 3]);
                     }
                 }
 
@@ -147,14 +152,14 @@ namespace EMU7800.Win32.Interop
                     var currPos = currState.InterpretStelladaptorPaddlePosition(0);
                     if (prevPos != currPos)
                     {
-                        PaddlePositionChanged(0, StelladaptorPaddleRange, currPos);
+                        PaddlePositionChanged(_controllerNo, 0, StelladaptorPaddleRange, currPos);
                     }
 
                     prevPos = prevState.InterpretStelladaptorPaddlePosition(1);
                     currPos = currState.InterpretStelladaptorPaddlePosition(1);
                     if (prevPos != currPos)
                     {
-                        PaddlePositionChanged(1, StelladaptorPaddleRange, currPos);
+                        PaddlePositionChanged(_controllerNo, 1, StelladaptorPaddleRange, currPos);
                     }
                 }
             }
@@ -174,11 +179,11 @@ namespace EMU7800.Win32.Interop
                     {
                         if (i == 0)
                         {
-                            ButtonChanged(MachineInput.Fire, currButton);
+                            ButtonChanged(_controllerNo, MachineInput.Fire, currButton);
                         }
                         else if (i == 1)
                         {
-                            ButtonChanged(MachineInput.Fire2, currButton);
+                            ButtonChanged(_controllerNo, MachineInput.Fire2, currButton);
                         }
                     }
                 }
@@ -187,46 +192,56 @@ namespace EMU7800.Win32.Interop
                 var currLeft = currState.InterpretJoyLeft();
                 if (prevLeft != currLeft)
                 {
-                    ButtonChanged(MachineInput.Left, currLeft);
+                    ButtonChanged(_controllerNo, MachineInput.Left, currLeft);
                 }
 
                 var prevRight = prevState.InterpretJoyRight();
                 var currRight = currState.InterpretJoyRight();
                 if (prevRight != currRight)
                 {
-                    ButtonChanged(MachineInput.Right, currRight);
+                    ButtonChanged(_controllerNo, MachineInput.Right, currRight);
                 }
 
                 var prevUp = prevState.InterpretJoyUp();
                 var currUp = currState.InterpretJoyUp();
                 if (prevUp != currUp)
                 {
-                    ButtonChanged(MachineInput.Up, currUp);
+                    ButtonChanged(_controllerNo, MachineInput.Up, currUp);
                 }
 
                 var prevDown = prevState.InterpretJoyDown();
                 var currDown = currState.InterpretJoyDown();
                 if (prevDown != currDown)
                 {
-                    ButtonChanged(MachineInput.Down, currDown);
+                    ButtonChanged(_controllerNo, MachineInput.Down, currDown);
                 }
 
                 var prevBack = prevState.InterpretButtonBack();
                 var currBack = currState.InterpretButtonBack();
                 if (prevBack != currBack)
                 {
-                    ButtonChanged(MachineInput.End, currBack);
+                    ButtonChanged(_controllerNo, MachineInput.End, currBack);
                 }
 
                 var prevStart = prevState.InterpretButtonStart();
                 var currStart = currState.InterpretButtonStart();
                 if (prevStart != currStart)
                 {
-                    ButtonChanged(MachineInput.Start, currStart);
+                    ButtonChanged(_controllerNo, MachineInput.Start, currStart);
                 }
             }
         }
 
-        internal GameController() {}
+        internal GameController(int controllerNo)
+            => _controllerNo = controllerNo;
+
+        static string ToDaptorModeStr(int daptorMode)
+            => daptorMode switch
+            {
+                0 => "2600",
+                1 => "7800",
+                2 => "keypad",
+                _ => "unknown"
+            };
     }
 }

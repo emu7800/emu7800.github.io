@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using System;
+using static EMU7800.Win32.Interop.XInputNativeMethods;
 using static System.Console;
 
 namespace EMU7800.Win32.Interop
@@ -9,7 +10,7 @@ namespace EMU7800.Win32.Interop
     {
         static IntPtr HWnd;
 
-        public static readonly GameController[] Controllers = new GameController[] { new(), new() };
+        public static readonly GameController[] Controllers = new GameController[] { new(0), new(1) };
 
         public static void Initialize()
             => Initialize(HWnd);
@@ -18,10 +19,12 @@ namespace EMU7800.Win32.Interop
         {
             WriteLine("Initializing game controllers...");
             HWnd = hWnd;
+
             Shutdown();
+
             DirectInputNativeMethods.Initialize(hWnd, out var joystickNames);
 
-            for (int i = 0, j = 0; i < Controllers.Length; i++)
+            for (var i = 0; i < Controllers.Length; i++)
             {
                 if (i < joystickNames.Length)
                 {
@@ -31,18 +34,26 @@ namespace EMU7800.Win32.Interop
                 }
                 else
                 {
-                    Controllers[i].ProductName = "XInput Default";
-                    Controllers[i].JoystickType = JoystickType.XInput;
-                    Controllers[i].InternalDeviceNumber = j++;
+                    Controllers[i].ProductName = "(None)";
+                    Controllers[i].JoystickType = JoystickType.None;
                 }
-                WriteLine($"Using GameController for P{i+1}: {Controllers[i].ProductName}");
+                WriteLine($"Using {Controllers[i].ProductName} for P{i + 1}");
             }
-            for(var i = 0; i < Controllers.Length; i++)
+            for (int i = 0, j = 0; i < Controllers.Length; i++)
             {
                 if (Controllers[i].JoystickType == JoystickType.XInput)
                 {
-                    //if (i == 0) Controllers[i].InternalDeviceNumber++; // FIXME: short-term hack
-                    XInputNativeMethods.Initialize(Controllers[i].InternalDeviceNumber, out _);
+                    var caps = new XINPUT_CAPABILITIES();
+                    do
+                    {
+                        XInputNativeMethods.Initialize(j++, ref caps);
+                    }
+                    while (caps.Type == 0 && j < 4);
+                    if (j < 4)
+                    {
+                        Controllers[i].InternalDeviceNumber = j - 1;
+                        WriteLine($"Using XBox controller {Controllers[i].InternalDeviceNumber} for P{i + 1}");
+                    }
                 }
             }
         }

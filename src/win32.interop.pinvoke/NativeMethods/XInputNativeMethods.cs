@@ -81,8 +81,8 @@ namespace EMU7800.Win32.Interop
                 => (Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
         }
 
-        public static int Initialize(int deviceno, out XINPUT_CAPABILITIES capabilities)
-            => XInputGetCapabilities(deviceno, XINPUT_FLAG_GAMEPAD, out capabilities);
+        public static int Initialize(int deviceno, ref XINPUT_CAPABILITIES capabilities)
+            => XInputGetCapabilities(deviceno, XINPUT_FLAG_GAMEPAD, ref capabilities);
 
         public static int Poll(int deviceno, out XINPUT_STATE currState, out XINPUT_STATE prevState)
         {
@@ -122,6 +122,6 @@ namespace EMU7800.Win32.Interop
         static extern int XInputGetState(int dwUserIndex, IntPtr xinputState);
 
         [DllImport("xinput1_4.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, out XINPUT_CAPABILITIES capabilities);
+        static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, ref XINPUT_CAPABILITIES capabilities);
     }
 }
