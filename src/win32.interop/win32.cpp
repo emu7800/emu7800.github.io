@@ -18,6 +18,7 @@ void (*g_MouseWheelChangedCallback)(int, int, int)   = NULL;
 void (*g_LURCycleCallback)()                         = NULL;
 void (*g_VisibilityChangedCallback)(bool)            = NULL;
 void (*g_ResizedCallback)(int, int)                  = NULL;
+void (*g_DeviceChangedCallback)()                    = NULL;
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 HINSTANCE GetThisInstance()
@@ -163,6 +164,18 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             return 0;
         }
 
+        case WM_DEVICECHANGE:
+        {
+            if (wParam == DBT_DEVNODES_CHANGED)
+            {
+                if (g_DeviceChangedCallback)
+                {
+                    g_DeviceChangedCallback();
+                }
+            }
+            return 0;
+        }
+
         case WM_DESTROY:
         {
             PostQuitMessage(0);
@@ -179,7 +192,9 @@ extern "C" __declspec(dllexport) HWND __stdcall Win32_Initialize(
     void (*mouseWheelChangedCallback)(int, int, int),
     void (*lurCycleCallback)(),
     void (*visibilityChangedCallback)(bool),
-    void (*resizedCallback)(int, int))
+    void (*resizedCallback)(int, int),
+    void (*deviceChangedCallback)()
+    )
 {
     g_KeyboardKeyPressedCallback = keyboardKeyPressedCallback;
     g_MouseMovedCallback         = mouseMovedCallback;
@@ -188,6 +203,7 @@ extern "C" __declspec(dllexport) HWND __stdcall Win32_Initialize(
     g_LURCycleCallback           = lurCycleCallback;
     g_VisibilityChangedCallback  = visibilityChangedCallback;
     g_ResizedCallback            = resizedCallback;
+    g_DeviceChangedCallback      = deviceChangedCallback;
 
     WNDCLASSEX wcex    = { sizeof(wcex) };
     wcex.style         = CS_HREDRAW | CS_VREDRAW;

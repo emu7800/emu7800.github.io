@@ -12,6 +12,7 @@ namespace EMU7800.Win32.Interop
     public delegate void LURCycleHandler();
     public delegate void VisibilityChangedHandler(bool isVisible);
     public delegate void ResizedHandler(int w, int h);
+    public delegate void DeviceChangedHandler();
 
     public static class Win32Window
     {
@@ -22,6 +23,7 @@ namespace EMU7800.Win32.Interop
         static readonly LURCycleHandler LURCycleHandlerDefault = () => { };
         static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => { };
         static readonly ResizedHandler ResizeHandlerDefault = (w, h) => { };
+        static readonly DeviceChangedHandler DeviceChangedHandlerDefault = () => { };
 
         static System.IntPtr hWnd;
 
@@ -32,6 +34,7 @@ namespace EMU7800.Win32.Interop
         public static LURCycleHandler LURCycle { get; set; } = LURCycleHandlerDefault;
         public static VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
         public static ResizedHandler Resized { get; set; } = ResizeHandlerDefault;
+        public static DeviceChangedHandler DeviceChanged { get; set; } = DeviceChangedHandlerDefault;
 
         public static void Run(bool startMaximized = true)
         {

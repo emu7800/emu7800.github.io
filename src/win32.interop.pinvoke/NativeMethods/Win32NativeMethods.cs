@@ -29,6 +29,9 @@ namespace EMU7800.Win32.Interop
         static readonly ResizedHandler RaiseResizedDelegate = new(RaiseResized);
         static void RaiseResized(int w, int h) => Win32Window.Resized(w, h);
 
+        static readonly DeviceChangedHandler RaiseDeviceChangedDelegate = new(RaiseDeviceChanged);
+        static void RaiseDeviceChanged() => Win32Window.DeviceChanged();
+
         static IntPtr GetIntPtr<TDelegate>(TDelegate d) where TDelegate : notnull
             => Marshal.GetFunctionPointerForDelegate(d);
 
@@ -40,7 +43,8 @@ namespace EMU7800.Win32.Interop
                 GetIntPtr(RaiseMouseWheelChangedDelegate),
                 GetIntPtr(RaiseLURCycleDelegate),
                 GetIntPtr(RaiseVisibilityChangedDelegate),
-                GetIntPtr(RaiseResizedDelegate));
+                GetIntPtr(RaiseResizedDelegate),
+                GetIntPtr(RaiseDeviceChangedDelegate));
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern IntPtr Win32_Initialize(
@@ -50,7 +54,8 @@ namespace EMU7800.Win32.Interop
             IntPtr mousewheelchangedcb,
             IntPtr lurcyclecb,
             IntPtr visibilitychangedcb,
-            IntPtr resizedcb);
+            IntPtr resizedcb,
+            IntPtr devicechangedcb);
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Win32_ProcessEvents(IntPtr hWnd, int nCmdShow);

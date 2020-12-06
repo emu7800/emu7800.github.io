@@ -61,6 +61,7 @@ namespace EMU7800.D2D.Shell.Win32
             Win32Window.MouseMoved         += (x, y, dx, dy) => _pageBackStack.MouseMoved(0, x, y, dx, dy);
             Win32Window.MouseButtonChanged += (x, y, down)   => _pageBackStack.MouseButtonChanged(0, x, y, down);
             Win32Window.MouseWheelChanged  += (x, y, delta)  => _pageBackStack.MouseWheelChanged(0, x, y, delta);
+            Win32Window.DeviceChanged      += () => GameControllers.Initialize();
 
             foreach (var gc in GameControllers.Controllers)
             {

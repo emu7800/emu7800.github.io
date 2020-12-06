@@ -19,6 +19,7 @@
 #include <windows.h>
 #include <WindowsX.h>
 #include <WinUser.h>
+#include <Dbt.h>
 
 #include <string.h>
 #include <math.h>
