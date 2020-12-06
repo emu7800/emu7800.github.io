@@ -19,11 +19,6 @@
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
     <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="msvcp120.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(ProjectDir)..\win32.interop\bin\x64\$(Configuration)\* $(TargetDir)" />
   </Target>
