@@ -185,26 +185,29 @@ namespace EMU7800.D2D.Shell
             _currentKeyboardPlayerNo = newPlayerNo;
         }
 
-        public void SwapJacks()
+        public bool SwapJacks()
         {
             for (var pi = 0; pi < 4; pi++)
             {
                 _playerJackMapping[pi] ^= 1;
             }
+            return _playerJackMapping[0] == 1;
         }
 
-        public void SwapLeftControllerPaddles()
+        public bool SwapLeftControllerPaddles()
         {
             var tmp0 = _paddleSwaps[0];
             _paddleSwaps[0] = _paddleSwaps[1];
             _paddleSwaps[1] = tmp0;
+            return _paddleSwaps[0] == 1;
         }
 
-        public void SwapRightControllerPaddles()
+        public bool SwapRightControllerPaddles()
         {
             var tmp2 = _paddleSwaps[2];
             _paddleSwaps[2] = _paddleSwaps[3];
             _paddleSwaps[3] = tmp2;
+            return _paddleSwaps[2] == 3;
         }
 
         public void RaiseMachineInput(MachineInput machineInput, bool down)
@@ -242,11 +245,11 @@ namespace EMU7800.D2D.Shell
             _inputAdapters[_playerJackMapping[playerNo & 3]].ProLineJoystickChanged(playerNo, machineInput, down);
         }
 
-        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
         {
-            var playerNo = (1 << controllerNo) + paddleNo;
+            var playerNo = (controllerNo << 1) + paddleNo;
             var swappedPlayerNo = _paddleSwaps[playerNo & 3];
-            _inputAdapters[_playerJackMapping[swappedPlayerNo]].PaddleChanged(swappedPlayerNo, valMax, val);
+            _inputAdapters[_playerJackMapping[swappedPlayerNo]].PaddleChanged(swappedPlayerNo, ohms);
         }
 
         public override void DrivingPositionChanged(int controllerNo, MachineInput machineInput)

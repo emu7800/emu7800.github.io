@@ -82,7 +82,7 @@ namespace EMU7800.D2D.Shell
         {
         }
 
-        public virtual void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        public virtual void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
         {
         }
 

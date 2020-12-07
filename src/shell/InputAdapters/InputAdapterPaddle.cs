@@ -2,6 +2,7 @@
 
 using EMU7800.Core;
 using EMU7800.Win32.Interop;
+using static System.Console;
 
 namespace EMU7800.D2D.Shell
 {
@@ -47,10 +48,14 @@ namespace EMU7800.D2D.Shell
         {
         }
 
-        public void PaddleChanged(int playerNo, int valMax, int val)
+        public void PaddleChanged(int playerNo, int ohms)
         {
-            _emulationOff[playerNo & 1] = true;
-            _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), valMax, val);
+            if (!_emulationOff[playerNo & 1])
+            {
+                _emulationOff[playerNo & 1] = true;
+                WriteLine("Real paddle input detected, turning off emulated paddle input from mouse movement");
+            }
+            _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), ohms);
         }
 
         public void DrivingPaddleChanged(int playerNo, MachineInput machineInput)
@@ -89,7 +94,10 @@ namespace EMU7800.D2D.Shell
                 tx = _currentXWidth;
 
             _currentXPosition[playerNo & 1] = tx;
-            _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), _currentXWidth, _currentXPosition[playerNo & 1]);
+
+            var ohms = 1000000 * (_currentXWidth - _currentXPosition[playerNo & 1]) / _currentXWidth;
+
+            _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), ohms);
         }
 
         public void MouseButtonChanged(int playerNo, int x, int y, bool down, bool touchMode)
@@ -102,20 +110,6 @@ namespace EMU7800.D2D.Shell
 
         public void Update(TimerDevice td)
         {
-            for (var i = 0; i < 2; i++)
-            {
-                if (_emulationOff[i] || _emulationDirection[i] == 0)
-                    continue;
-
-                _currentXPosition[i] += (int)(td.DeltaInSeconds * EmulationRotationalVelocity * _currentXWidth * _emulationDirection[i]);
-
-                if (_currentXPosition[i] < 0)
-                    _currentXPosition[i] = 0;
-                else if (_currentXPosition[i] > _currentXWidth)
-                    _currentXPosition[i] = _currentXWidth;
-
-                _inputState.RaisePaddleInput(ToPaddlePlayerNo(i), _currentXWidth, _currentXPosition[i]);
-            }
         }
 
         public InputAdapterPaddle(InputState inputState, int jackNo)
@@ -125,9 +119,6 @@ namespace EMU7800.D2D.Shell
         }
 
         int ToPaddlePlayerNo(int playerNo)
-        {
-            var paddlePlayerNo = (_jackNo << 1) | (playerNo & 1);
-            return paddlePlayerNo;
-        }
+            => (_jackNo << 1) | (playerNo & 1);
     }
 }

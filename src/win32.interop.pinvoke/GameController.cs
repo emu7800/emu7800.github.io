@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using static EMU7800.Win32.Interop.DirectInputNativeMethods;
 using static System.Console;
 
 namespace EMU7800.Win32.Interop
@@ -8,7 +9,7 @@ namespace EMU7800.Win32.Interop
     public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 };
 
     public delegate void ButtonChangedHandler(int controllerNo, MachineInput input, bool down);
-    public delegate void PaddlePositionChangedHandler(int controllerNo, int paddleno, int valMax, int val);
+    public delegate void PaddlePositionChangedHandler(int controllerNo, int paddleno, int ohms);
     public delegate void DrivingPositionChangedHandler(int controllerNo, MachineInput machineInput);
 
     public class GameController
@@ -29,7 +30,7 @@ namespace EMU7800.Win32.Interop
         };
 
         public static readonly ButtonChangedHandler ButtonChangedHandlerDefault = (cn, mi, d) => {};
-        public static readonly PaddlePositionChangedHandler PaddlePositionChangedHandlerDefault = (cn, pn, vm, v) => {};
+        public static readonly PaddlePositionChangedHandler PaddlePositionChangedHandlerDefault = (cn, pn, o) => {};
         public static readonly DrivingPositionChangedHandler DrivingPositionChangedHandlerDefault = (cn, mi) => {};
 
         readonly int _controllerNo;
@@ -145,21 +146,22 @@ namespace EMU7800.Win32.Interop
 
                 if (PaddlePositionChanged != PaddlePositionChangedHandlerDefault)
                 {
-                    const int AXISRANGE = 1000;
-                    const int StelladaptorPaddleRange = (int)((AXISRANGE << 1) * 0.34);
-
                     var prevPos = prevState.InterpretStelladaptorPaddlePosition(0);
                     var currPos = currState.InterpretStelladaptorPaddlePosition(0);
                     if (prevPos != currPos)
                     {
-                        PaddlePositionChanged(_controllerNo, 0, StelladaptorPaddleRange, currPos);
+                        // 1 MOhm resistance range
+                        var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
+                        PaddlePositionChanged(_controllerNo, 0, ohms);
                     }
 
                     prevPos = prevState.InterpretStelladaptorPaddlePosition(1);
                     currPos = currState.InterpretStelladaptorPaddlePosition(1);
                     if (prevPos != currPos)
                     {
-                        PaddlePositionChanged(_controllerNo, 1, StelladaptorPaddleRange, currPos);
+                        // 1 MOhm resistance range
+                        var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
+                        PaddlePositionChanged(_controllerNo, 1, ohms);
                     }
                 }
             }

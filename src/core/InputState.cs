@@ -16,10 +16,6 @@ namespace EMU7800.Core
         #region Fields
 
         const int
-            PaddleOhmMin                = 100000,
-            PaddleOhmMax                = 800000;
-
-        const int
             LeftControllerJackIndex     = 0,
             RightControllerJackIndex    = 1,
             ConsoleSwitchIndex          = 2,
@@ -60,30 +56,24 @@ namespace EMU7800.Core
 
         public Controller LeftControllerJack
         {
-            get { return (Controller)_nextInputState[LeftControllerJackIndex]; }
-            set { _nextInputState[LeftControllerJackIndex] = (int)value; }
+            get => (Controller)_nextInputState[LeftControllerJackIndex];
+            set => _nextInputState[LeftControllerJackIndex] = (int)value;
         }
 
         public Controller RightControllerJack
         {
-            get { return (Controller)_nextInputState[RightControllerJackIndex]; }
-            set { _nextInputState[RightControllerJackIndex] = (int)value; }
+            get => (Controller)_nextInputState[RightControllerJackIndex];
+            set => _nextInputState[RightControllerJackIndex] = (int)value;
         }
 
         public bool IsGameBWConsoleSwitchSet
-        {
-            get { return (_nextInputState[ConsoleSwitchIndex] & (1 << (int) ConsoleSwitch.GameBW)) != 0; }
-        }
+            => (_nextInputState[ConsoleSwitchIndex] & (1 << (int)ConsoleSwitch.GameBW)) != 0;
 
         public bool IsLeftDifficultyAConsoleSwitchSet
-        {
-            get { return (_nextInputState[ConsoleSwitchIndex] & (1 << (int)ConsoleSwitch.LeftDifficultyA)) != 0; }
-        }
+            => (_nextInputState[ConsoleSwitchIndex] & (1 << (int)ConsoleSwitch.LeftDifficultyA)) != 0;
 
         public bool IsRightDifficultyAConsoleSwitchSet
-        {
-            get { return (_nextInputState[ConsoleSwitchIndex] & (1 << (int)ConsoleSwitch.RightDifficultyA)) != 0; }
-        }
+            => (_nextInputState[ConsoleSwitchIndex] & (1 << (int)ConsoleSwitch.RightDifficultyA)) != 0;
 
         public void RaiseInput(int playerNo, MachineInput input, bool down)
         {
@@ -189,10 +179,12 @@ namespace EMU7800.Core
             }
         }
 
-        public void RaisePaddleInput(int playerNo, int valMax, int val)
+        public void RaisePaddleInput(int playerNo, int ohms)
         {
-            var ohms = PaddleOhmMax - (PaddleOhmMax - PaddleOhmMin) / valMax * val;
-            _nextInputState[OhmsIndex + (playerNo & 3)] = ohms;
+            if (ohms >= 0 && ohms < 1000000)
+            {
+                _nextInputState[OhmsIndex + (playerNo & 3)] = ohms;
+            }
         }
 
         public void RaiseLightgunPos(int playerNo, int scanline, int hpos)
@@ -278,19 +270,13 @@ namespace EMU7800.Core
         #region Internal Members
 
         internal bool SampleCapturedConsoleSwitchState(ConsoleSwitch consoleSwitch)
-        {
-            return (_inputState[ConsoleSwitchIndex] & (1 << (int)consoleSwitch)) != 0;
-        }
+            => (_inputState[ConsoleSwitchIndex] & (1 << (int)consoleSwitch)) != 0;
 
         internal bool SampleCapturedControllerActionState(int playerno, ControllerAction action)
-        {
-            return (_inputState[ControllerActionStateIndex + (playerno & 3)] & (1 << (int)action)) != 0;
-        }
+            => (_inputState[ControllerActionStateIndex + (playerno & 3)] & (1 << (int)action)) != 0;
 
         internal int SampleCapturedOhmState(int playerNo)
-        {
-            return _inputState[OhmsIndex + (playerNo & 3)];
-        }
+            => _inputState[OhmsIndex + (playerNo & 3)];
 
         internal void SampleCapturedLightGunPosition(int playerNo, out int scanline, out int hpos)
         {
@@ -301,7 +287,7 @@ namespace EMU7800.Core
 
         internal byte SampleCapturedDrivingState(int playerNo)
         {
-            if (SampleCapturedControllerActionState(playerNo, ControllerAction.Driving0))
+            if      (SampleCapturedControllerActionState(playerNo, ControllerAction.Driving0))
                 _rotState[playerNo] = 0;
             else if (SampleCapturedControllerActionState(playerNo, ControllerAction.Driving1))
                 _rotState[playerNo] = 1;

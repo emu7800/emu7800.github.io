@@ -58,9 +58,9 @@ namespace EMU7800.D2D.Shell
             Controls.ControllerButtonChanged(controllerNo, input, down);
         }
 
-        public virtual void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        public virtual void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
         {
-            Controls.PaddlePositionChanged(controllerNo, paddleNo, valMax, val);
+            Controls.PaddlePositionChanged(controllerNo, paddleNo, ohms);
         }
 
         public virtual void DrivingPositionChanged(int controllerNo, MachineInput input)

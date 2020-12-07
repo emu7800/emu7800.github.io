@@ -37,7 +37,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public void PaddleChanged(int playerNo, int valMax, int val)
+        public void PaddleChanged(int playerNo, int ohms)
         {
         }
 

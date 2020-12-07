@@ -88,7 +88,7 @@ namespace EMU7800.D2D.Shell
             }
         }
 
-        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int valMax, int val)
+        public override void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
         {
             if (!IsVisible)
                 return;
@@ -98,7 +98,7 @@ namespace EMU7800.D2D.Shell
                 if (control == ControlBase.Default)
                     break;
                 if (control.IsVisible && control.IsEnabled)
-                    control.PaddlePositionChanged(controllerNo, paddleNo, valMax, val);
+                    control.PaddlePositionChanged(controllerNo, paddleNo, ohms);
             }
         }
 

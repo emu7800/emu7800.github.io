@@ -10,7 +10,7 @@ namespace EMU7800.Win32.Interop
 {
     internal unsafe class DirectInputNativeMethods
     {
-        const int
+        public const int
             AXISRANGE = 1000,
             DEADZONE  = 500
             ;
@@ -69,7 +69,7 @@ namespace EMU7800.Win32.Interop
             }
 
             public int InterpretStelladaptorPaddlePosition(int paddleno)
-                => (((paddleno & 1) == 0) ? lX : lY) + AXISRANGE;
+                => (((paddleno & 1) == 0) ? lX : lY);
 
             public int InterpretDaptor2Mode()
                 => lZ switch
@@ -77,7 +77,7 @@ namespace EMU7800.Win32.Interop
                     -1000 =>  0,  // 2600 mode
                      -875 =>  1,  // 7800 mode
                      -750 =>  2,  // keypad mode
-                        _ => -1, // unknown mode
+                        _ => -1,  // unknown mode
                 };
         }
 

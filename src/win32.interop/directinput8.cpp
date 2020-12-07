@@ -9,15 +9,15 @@ WCHAR                ProductName[2][MAX_PATH];
 DIJOYSTATE2          JoystickState[2][2];
 int                  CurrStateIndex[2];
 
-int axisRange = 1000;
-int enumJoystickNo = -1;
+int AxisRange = 1000;
+int EnumJoystickNo = -1;
 
 BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
-    if (enumJoystickNo > 1 || pContext != (VOID*)1)
+    if (EnumJoystickNo > 1 || pContext != (VOID*)1)
         return DIENUM_STOP;
 
-    int deviceno = (++enumJoystickNo) & 1;
+    int deviceno = (++EnumJoystickNo) & 1;
 
     HRESULT hr = pDI->CreateDevice(pdidInstance->guidInstance, &pJoystick[deviceno], NULL);
 
@@ -40,8 +40,8 @@ BOOL CALLBACK EnumAxesCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pCont
         diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
         diprg.diph.dwHow        = DIPH_BYID;
         diprg.diph.dwObj        = pdidoi->dwType;
-        diprg.lMin              = -axisRange;
-        diprg.lMax              = axisRange;
+        diprg.lMin              = -AxisRange;
+        diprg.lMax              = AxisRange;
         pJoystick[deviceno]->SetProperty(DIPROP_RANGE, &diprg.diph);
     }
 
@@ -50,7 +50,7 @@ BOOL CALLBACK EnumAxesCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pCont
 
 HRESULT CreateJoystick(int deviceno, HWND hWnd)
 {
-    if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
+    if (deviceno < 0 || deviceno > EnumJoystickNo || !pJoystick[deviceno])
         return E_FAIL;
 
     pJoystick[deviceno]->SetDataFormat(&c_dfDIJoystick2);
@@ -62,7 +62,7 @@ HRESULT CreateJoystick(int deviceno, HWND hWnd)
 
 HRESULT PollJoystick(int deviceno, LPVOID pJoystickState)
 {
-    if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
+    if (deviceno < 0 || deviceno > EnumJoystickNo || !pJoystick[deviceno])
         return E_FAIL;
 
     HRESULT hr = pJoystick[deviceno]->Poll();
@@ -89,9 +89,9 @@ void FreeJoystick(int deviceno)
 
 extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd, int axisRange, WCHAR** ppProductName1, WCHAR * *ppProductName2)
 {
-    axisRange = axisRange;
+    AxisRange = axisRange;
 
-    enumJoystickNo = -1;
+    EnumJoystickNo = -1;
 
     CurrStateIndex[0] = 0;
     CurrStateIndex[1] = 0;
@@ -118,13 +118,13 @@ extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd,
 
     pDI->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, (LPVOID)1, DIEDFL_ATTACHEDONLY);
 
-    if (enumJoystickNo >= 0)
+    if (EnumJoystickNo >= 0)
     {
         hr = CreateJoystick(0, hWnd);
         if FAILED(hr)
             return hr;
 
-        if (enumJoystickNo >= 1)
+        if (EnumJoystickNo >= 1)
         {
             hr = CreateJoystick(1, hWnd);
             if FAILED(hr)
@@ -137,7 +137,7 @@ extern "C" __declspec(dllexport) HRESULT __stdcall DInput8_Initialize(HWND hWnd,
 
 extern "C" _declspec(dllexport) HRESULT __stdcall DInput8_Poll(int deviceno, DIJOYSTATE2** ppCurrState, DIJOYSTATE2** ppPrevState)
 {
-    if (deviceno < 0 || deviceno > enumJoystickNo || !pJoystick[deviceno])
+    if (deviceno < 0 || deviceno > EnumJoystickNo || !pJoystick[deviceno])
         return E_FAIL;
 
     CurrStateIndex[deviceno] ^= 1;

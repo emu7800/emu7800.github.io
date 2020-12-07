@@ -66,7 +66,7 @@ namespace EMU7800.D2D.Shell.Win32
             foreach (var gc in GameControllers.Controllers)
             {
                 gc.ButtonChanged          += (cn, mi, down)  => _pageBackStack.ControllerButtonChanged(cn, mi, down);
-                gc.PaddlePositionChanged  += (cn, pn, vm, v) => _pageBackStack.PaddlePositionChanged(cn, pn, vm, v);
+                gc.PaddlePositionChanged  += (cn, pn, o)     => _pageBackStack.PaddlePositionChanged(cn, pn, o);
                 gc.DrivingPositionChanged += (cn, mi)        => _pageBackStack.DrivingPositionChanged(cn, mi);
             }
         }

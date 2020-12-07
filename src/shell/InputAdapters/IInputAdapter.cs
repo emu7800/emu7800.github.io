@@ -10,7 +10,7 @@ namespace EMU7800.D2D.Shell
         void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size);
         void JoystickChanged(int playerNo, MachineInput machineInput, bool down);
         void ProLineJoystickChanged(int playerNo, MachineInput machineInput, bool down);
-        void PaddleChanged(int playerNo, int valMax, int val);
+        void PaddleChanged(int playerNo, int ohms);
         void DrivingPaddleChanged(int playerNo, MachineInput machineInput);
         void KeyboardKeyPressed(int playerNo, KeyboardKey key, bool down);
         void MouseMoved(int playerNo, int x, int y, int dx, int dy);

@@ -395,20 +395,20 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.Q:
                     if (down || !GameControllers.Controllers[0].IsAtariAdaptor)
                         return;
-                    PostInfoText("P1/P2 paddles swapped");
-                    _gameControl.SwapLeftControllerPaddles();
+                    var swapped = _gameControl.SwapLeftControllerPaddles();
+                    PostInfoText($"P1/P2 paddles {(swapped ? "" : "un")}swapped");
                     break;
                 case KeyboardKey.W:
                     if (down)
                         return;
-                    PostInfoText("Input jacks swapped");
-                    _gameControl.SwapJacks();
+                    swapped = _gameControl.SwapJacks();
+                    PostInfoText($"Input jacks {(swapped ? "" : "un")}swapped");
                     break;
                 case KeyboardKey.E:
                     if (down || !GameControllers.Controllers[1].IsAtariAdaptor)
                         return;
-                    PostInfoText("P3/P4 paddles swapped");
-                    _gameControl.SwapRightControllerPaddles();
+                    swapped = _gameControl.SwapRightControllerPaddles();
+                    PostInfoText($"P3/P4 paddles {(swapped ? "" : "un")}swapped");
                     break;
                 case KeyboardKey.PageUp:
                     if (!_hud_buttonPower.IsChecked)

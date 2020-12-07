@@ -24,7 +24,7 @@ namespace EMU7800.D2D.Shell
             _inputState.RaiseInput(_jackNo, machineInput, down);
         }
 
-        public void PaddleChanged(int playerNo, int valMax, int val)
+        public void PaddleChanged(int playerNo, int ohms)
         {
         }
 
