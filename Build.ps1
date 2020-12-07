@@ -2,7 +2,7 @@ Push-Location $PSScriptRoot
 
 Push-Location .\src\win32\
 
-dotnet.exe publish -p:PublishProfile=FolderProfile
+dotnet.exe publish -p:PublishProfile=FolderProfile -c Release
 
 Pop-Location
 
