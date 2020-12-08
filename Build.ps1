@@ -25,8 +25,9 @@ Compress-Archive .\lib\roms\Activision\                  .\artifacts\EMU7800.bin
 Compress-Archive .\lib\roms\HomeBrews\                   .\artifacts\EMU7800.bin\ROMS\HomeBrews.zip   -CompressionLevel Optimal -Force
 Compress-Archive .\lib\roms\Imagic\                      .\artifacts\EMU7800.bin\ROMS\Imagic.zip      -CompressionLevel Optimal -Force
 Compress-Archive .\lib\roms\Other\                       .\artifacts\EMU7800.bin\ROMS\Other.zip       -CompressionLevel Optimal -Force
-Compress-Archive .\artifacts\EMU7800.bin\                .\artifacts\EMU7800.bin-x64-5.0.0.zip        -CompressionLevel Optimal -Force
 
 Pop-Location
 
 pwsh.exe .\src\tools\Installer\Build.ps1
+
+Compress-Archive .\artifacts\EMU7800Setup-x64-5.0.0.exe .\artifacts\EMU7800.bin-x64-5.0.0.zip -CompressionLevel Optimal -Force
