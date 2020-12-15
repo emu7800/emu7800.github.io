@@ -28,7 +28,7 @@ namespace EMU7800.D2D.Shell
             ICON_HEIGHT           = 48f,
             ICON_DX               = 0,
             ICON_DY               = ITEM_HEIGHT / 2 - ICON_HEIGHT / 2,
-            AccelerationUnit      = 200f,  // in pixels/sec/sec
+            AccelerationUnit      = 500f,  // in pixels/sec/sec
             DragCoefficient       = 5f,
             GapForCollectionTitle = 50f,
             GapBetweenCollections = 50f;
