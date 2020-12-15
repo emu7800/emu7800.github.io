@@ -5,8 +5,8 @@
     <Authors>Mike Murphy</Authors>
     <Description>An Atari 2600/7800 .NET-based Emulator</Description>
     <Copyright>Copyright © 2012-2020 Mike Murphy</Copyright>
-    <AssemblyVersion>5.0.0.0</AssemblyVersion>
-    <FileVersion>5.0.0.0</FileVersion>
+    <AssemblyVersion>5.0.0.1</AssemblyVersion>
+    <FileVersion>5.0.0.1</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="*.txt;*.csv" />

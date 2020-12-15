@@ -172,7 +172,7 @@ namespace EMU7800.D2D.Shell
             var ea = System.Reflection.Assembly.GetExecutingAssembly();
             var name = ea.GetName();
             var version = name.Version;
-            return $"Version {version?.Major ?? 0}.{version?.Minor ?? 0} {GetBuildConfiguration()}";
+            return $"Version {version?.Major ?? 0}.{version?.Minor ?? 0}.{version?.MajorRevision ?? 0}.{version?.MinorRevision} {GetBuildConfiguration()}";
         }
 
         static string GetBuildConfiguration()
