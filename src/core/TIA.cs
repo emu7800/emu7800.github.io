@@ -795,6 +795,12 @@ namespace EMU7800.Core
 
         void opCTRLPF(ushort addr, byte data)
         {
+            // Emulation cheat for Warlords, ignore clearing playfield reflect during the top and bottom edges of the screen
+            if (ScanLine <= 49 || ScanLine >= 259)
+            {
+                data |= (byte)(RegW[CTRLPF] & 1);
+            }
+
             RegW[CTRLPF] = data;
 
             BLsize = (data & 0x30) >> 4;
