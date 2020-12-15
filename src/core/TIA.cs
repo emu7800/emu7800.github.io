@@ -143,21 +143,15 @@ namespace EMU7800.Core
         // other movable object counters can be reset out-of-phase with HSync, hence %228 and not %57
         int HSync
         {
-            get { return _HSync; }
-            set { _HSync = value % 228; }
+            get => _HSync;
+            set => _HSync = value % 228;
         }
 
         // determines the difference between HSync and PokeOpHSync
-        int PokeOpHSyncDelta
-        {
-            get { return (int)(Clock - LastEndClock); }
-        }
+        int PokeOpHSyncDelta => (int)(Clock - LastEndClock);
 
         // this represents the current HSync
-        int PokeOpHSync
-        {
-            get { return (HSync + PokeOpHSyncDelta) % 228; }
-        }
+        int PokeOpHSync => (HSync + PokeOpHSyncDelta) % 228;
 
         // scanline last rendered to
         int ScanLine;
@@ -174,8 +168,8 @@ namespace EMU7800.Core
         // indicates where in the HMOVE operation it is
         int HMoveCounter
         {
-            get { return _HMoveCounter; }
-            set { _HMoveCounter = value < 0 ? -1 : value & 0xf; }
+            get => _HMoveCounter;
+            set => _HMoveCounter = value < 0 ? -1 : value & 0xf;
         }
 
         // true when there is an HMOVE executing on the current scanline
@@ -183,19 +177,13 @@ namespace EMU7800.Core
 
         // represents the TIA color clock (CLK)
         // computed off of the CPU clock, but in real life, the CPU is driven by the color CLK signal
-        ulong Clock
-        {
-            get { return 3 * M.CPU.Clock; }
-        }
+        ulong Clock => 3 * M.CPU.Clock;
 
         // represents the first CLK of the unrendered scanline segment
         ulong StartClock;
 
         // represents the last CLK of the previously rendered scanline segment
-        ulong LastEndClock
-        {
-            get { return StartClock - 1; }
-        }
+        ulong LastEndClock => StartClock - 1;
 
         #endregion
 
@@ -207,8 +195,8 @@ namespace EMU7800.Core
         // can be reset out-of-phase with HSync, hence %160 and not %40
         int P0
         {
-            get { return _P0; }
-            set { _P0 = value % 160; }
+            get => _P0;
+            set => _P0 = value % 160;
         }
 
         // HMOVE "more motion required" latch
@@ -230,8 +218,8 @@ namespace EMU7800.Core
         // Player 1 Horizontal Position Counter (identical to P0)
         int P1
         {
-            get { return _P1; }
-            set { _P1 = value % 160; }
+            get => _P1;
+            set => _P1 = value % 160;
         }
 
         // HMOVE "more motion required" latch
@@ -254,8 +242,8 @@ namespace EMU7800.Core
         // similar to player position counters
         int M0
         {
-            get { return _M0; }
-            set { _M0 = value % 160; }
+            get => _M0;
+            set => _M0 = value % 160;
         }
 
         // HMOVE "more motion required" latch
@@ -272,8 +260,8 @@ namespace EMU7800.Core
         // Missile 1 Horizontal Position Counter (identical to M0)
         int M1
         {
-            get { return _M1; }
-            set { _M1 = value % 160; }
+            get => _M1;
+            set => _M1 = value % 160;
         }
 
         // HMOVE "more motion required" latch
@@ -291,8 +279,8 @@ namespace EMU7800.Core
         // similar to player position counters
         int BL
         {
-            get { return _BL; }
-            set { _BL = value % 160; }
+            get => _BL;
+            set => _BL = value % 160;
         }
 
         // HMOVE "more motion required" latch
