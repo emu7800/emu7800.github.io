@@ -1,8 +1,8 @@
 /*
  * HSC7800.cs
- * 
+ *
  * The 7800 High Score cartridge--courtesy of Matthias <matthias@atari8bit.de>.
- * 
+ *
  */
 using System;
 
