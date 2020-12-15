@@ -67,16 +67,16 @@ namespace EMU7800.Win32.Interop
                 => (Gamepad.wButtons & (0x1000 << buttonno)) != 0;
 
             public bool InterpretJoyLeft()
-                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) != 0;
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)  != 0 || Gamepad.sThumbLX < -8000 || Gamepad.sThumbRX < -8000;
             public bool InterpretJoyRight()
-                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0;
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) != 0 || Gamepad.sThumbLX >  8000 || Gamepad.sThumbRX >  8000;
             public bool InterpretJoyUp()
-                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) != 0;
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP)    != 0 || Gamepad.sThumbLY >  8000 || Gamepad.sThumbRY >  8000;
             public bool InterpretJoyDown()
-                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) != 0;
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN)  != 0 || Gamepad.sThumbLY < -8000 || Gamepad.sThumbRY < -8000;
 
             public bool InterpretButtonBack()
-                => (Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_BACK)  != 0;
             public bool InterpretButtonStart()
                 => (Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
         }
