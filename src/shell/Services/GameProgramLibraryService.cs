@@ -13,10 +13,15 @@ namespace EMU7800.Services
     {
         public static IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
             => ToGameProgramInfoViewItemCollections(
+                    ToDict(importedGameProgramInfoSet.Where(igpi => igpi.PersistedStateExists), igpi => "Recents"),
+                    igpi => igpi.GameProgramInfo.Title,
+                    igpi => ToMachineTypeSubTitle(igpi))
+                .Concat(
+               ToGameProgramInfoViewItemCollections(
                     ToDict(importedGameProgramInfoSet, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
                     igpi => igpi.GameProgramInfo.Title,
                     igpi => ToMachineTypeSubTitle(igpi))
-               .Concat(
+               ).Concat(
                ToGameProgramInfoViewItemCollections(
                    ToDict(importedGameProgramInfoSet, igpi => igpi.GameProgramInfo.Manufacturer),
                    igpi => igpi.GameProgramInfo.Title,

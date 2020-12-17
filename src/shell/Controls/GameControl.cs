@@ -496,8 +496,7 @@ namespace EMU7800.D2D.Shell
                 SoundOff          = _soundOff
             };
 
-            DatastoreService.PersistMachine(machineStateInfo);
-            DatastoreService.PersistScreenshot(machineStateInfo, _dynamicBitmapData);
+            DatastoreService.PersistMachine(machineStateInfo, _dynamicBitmapData);
         }
 
         void RunSnow()

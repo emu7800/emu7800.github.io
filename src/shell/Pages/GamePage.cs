@@ -571,6 +571,7 @@ namespace EMU7800.D2D.Shell
             _gameControl.StartSnow();
             _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = false;
             _hud_buttonPower.IsChecked = false;
+            DatastoreService.PurgePersistedMachine(_gameProgramInfoViewItem.ImportedGameProgramInfo.GameProgramInfo);
         }
 
         void ShowHud()

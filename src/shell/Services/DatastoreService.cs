@@ -77,9 +77,6 @@ namespace EMU7800.Services
 
         public static bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
         {
-            if (gameProgramInfo == null)
-                return false;
-
             if (!HasPersistedDirBeenScanned)
             {
                 var files = GetFilesFromPersistedGameProgramsDir();
@@ -92,17 +89,17 @@ namespace EMU7800.Services
             return _cachedPersistedDir.Contains(name);
         }
 
-        public static void PersistMachine(MachineStateInfo machineStateInfo)
+        public static void PersistMachine(MachineStateInfo machineStateInfo, byte[] screenshotData)
         {
             EnsurePersistedGameProgramsFolderExists();
 
-            var name = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
-            var path = ToPersistedStateStoragePath(name);
+            var pssName = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
+            var pssPath = ToPersistedStateStoragePath(pssName);
 
             try
             {
-                using var stream = new FileStream(path, FileMode.Create);
-                using var bw = new BinaryWriter(stream);
+                using var fs = new FileStream(pssPath, FileMode.Create);
+                using var bw = new BinaryWriter(fs);
                 bw.Write(2); // version
                 bw.Write(machineStateInfo.FramesPerSecond);
                 bw.Write(machineStateInfo.SoundOff);
@@ -110,30 +107,24 @@ namespace EMU7800.Services
                 bw.Write(machineStateInfo.InterpolationMode);
                 machineStateInfo.Machine.Serialize(bw);
                 bw.Flush();
+                bw.Close();
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                Error($"PersistMachine: Unable to persist machine state to {path}: " + ToString(ex));
+                Error($"PersistMachine: Unable to persist machine state to {pssPath}: " + ToString(ex));
             }
 
-            _cachedPersistedDir.Add(name);
-        }
-
-        public static void PersistScreenshot(MachineStateInfo machineStateInfo, byte[] data)
-        {
-            EnsurePersistedGameProgramsFolderExists();
-
-            var name = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
-            var path = ToPersistedStateStoragePath(name);
+            var sssName = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
+            var sssPath = ToPersistedStateStoragePath(sssName);
 
             // data is 320w x 230h, BGR32 pixel format, width should scale x4
 
             try
             {
-                using var fs = new FileStream(path, FileMode.OpenOrCreate);
-                fs.Write(data);
+                using var fs = new FileStream(sssPath, FileMode.OpenOrCreate);
+                fs.Write(screenshotData);
                 fs.Flush(true);
                 fs.Close();
             }
@@ -141,8 +132,24 @@ namespace EMU7800.Services
             {
                 if (IsCriticalException(ex))
                     throw;
-                Error($"PersistScreenshot: Unable to persist screenshot to {path}: " + ToString(ex));
+                Error($"PersistScreenshot: Unable to persist screenshot to {pssPath}: " + ToString(ex));
             }
+
+            _cachedPersistedDir.Add(pssName);
+        }
+
+        public static void PurgePersistedMachine(GameProgramInfo gameProgramInfo)
+        {
+            var pssName = ToPersistedStateStorageName(gameProgramInfo);
+            var pssPath = ToPersistedStateStoragePath(pssName);
+
+            var sssName = ToScreenshotStorageName(gameProgramInfo);
+            var sssPath = ToPersistedStateStoragePath(sssName);
+
+            try { File.Delete(pssPath); } catch (Exception ex) { Error($"PurgePersistedMachine: Unable to delete: {pssPath}: " + ToString(ex)); }
+            try { File.Delete(sssPath); } catch (Exception ex) { Error($"PurgePersistedMachine: Unable to delete: {sssPath}: " + ToString(ex)); }
+
+            _cachedPersistedDir.Remove(pssName);
         }
 
         public static MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)

@@ -4,7 +4,6 @@ using EMU7800.Services;
 using EMU7800.Services.Dto;
 using EMU7800.Win32.Interop;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -85,20 +84,11 @@ namespace EMU7800.D2D.Shell
         {
             var gpivics = await Task.Run(() => GetGameProgramInfoViewItemCollection());
             _gameProgramSelectionControl.BindTo(gpivics);
-            await Task.Run(() => CheckPersistedMachineStates(gpivics));
         }
 
         static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
-            => GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo).ToArray();
-
-        static void CheckPersistedMachineStates(IEnumerable<GameProgramInfoViewItemCollection> gpivics)
-        {
-            foreach (var gpvi in gpivics.SelectMany(gpvi => gpvi.GameProgramInfoViewItemSet))
-            {
-                var pse = DatastoreService.PersistedMachineExists(gpvi.ImportedGameProgramInfo.GameProgramInfo);
-                gpvi.ImportedGameProgramInfo.PersistedStateExists = pse;
-            }
-        }
+            => GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo)
+                .ToArray();
 
         #endregion
     }
