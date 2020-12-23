@@ -436,8 +436,6 @@ namespace EMU7800.Core
                 }
             }
 
-            if (HSync == 68 + 76) PFReflectionState = RegW[CTRLPF] & 0x01;
-
             var fbyte = (byte)0;
             var fbyte_colupf = colupf;
             TIACxFlags cxflags = 0;
@@ -736,7 +734,7 @@ namespace EMU7800.Core
 
         void opRSYNC(ushort addr, byte data)
         {
-            LogDebug($"TIA RSYNC: frame={M.FrameNumber} scanline={ScanLine} hsync={PokeOpHSync}");
+            Log($"TIA RSYNC: frame={M.FrameNumber} scanline={ScanLine} hsync={PokeOpHSync}");
         }
 
         void opNUSIZ0(ushort addr, byte data)
@@ -783,13 +781,16 @@ namespace EMU7800.Core
 
         void opCTRLPF(ushort addr, byte data)
         {
-            // Emulation cheat for Warlords, ignore clearing playfield reflect during the top and bottom edges of the screen
-            if (ScanLine <= 49 || ScanLine >= 259)
-            {
-                data |= (byte)(RegW[CTRLPF] & 1);
-            }
-
             RegW[CTRLPF] = data;
+
+            if (ScanLine == 49 && PokeOpHSync == 111 && data == 0 || ScanLine == 260 && PokeOpHSync == 42 && data == 0)
+            {
+                // Emulation cheat for Warlords, seems PF always needs to be in reflected state
+            }
+            else
+            {
+                PFReflectionState = data & 0x01;
+            }
 
             BLsize = (data & 0x30) >> 4;
             scoreon = (data & 0x02) != 0;
@@ -1328,11 +1329,7 @@ namespace EMU7800.Core
         #region Helpers
 
         void Log(string message)
-            => M?.Logger?.WriteLine(message);
-
-        [System.Diagnostics.Conditional("DEBUG")]
-        void LogDebug(string message)
-            => M?.Logger?.WriteLine(message);
+            => M.Logger.WriteLine(message);
 
         #endregion
     }
