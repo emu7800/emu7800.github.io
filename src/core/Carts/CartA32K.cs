@@ -58,7 +58,7 @@
 
         void UpdateBank(ushort addr)
         {
-            if (addr < 0x0ffc && addr >= 0x0ff4)
+            if (addr >= 0x0ff4 && addr < 0x0ffc)
             {
                 Bank = addr - 0x0ff4;
             }

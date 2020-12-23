@@ -1045,7 +1045,7 @@ namespace EMU7800.Core
         #region Helpers
 
         void Log(string message)
-            => M?.Logger?.WriteLine(message);
+            => M.Logger.WriteLine(message);
 
         #endregion
     }
