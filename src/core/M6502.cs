@@ -962,6 +962,10 @@ namespace EMU7800.Core
             Opcodes[0x98] = delegate {    /*aIMP*/   clk(2); iTYA(); };
 
             // Illegal opcodes
+
+            // DOP (SKB) - no operation, double NOP, skip byte - required for Medieval Mayhem
+            Opcodes[0x04] = delegate { clk(3); PC++; iNOP(); };
+
             foreach (var opCode in new ushort[] { 0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72, 0x92, 0xb2, 0xd2, 0xf2 })
             {
                 Opcodes[opCode] = delegate { clk(2); iKIL(); };
