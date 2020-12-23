@@ -682,7 +682,7 @@ namespace EMU7800.Core
             // Centipede turns off VSYNC several times, in addition to normal usage.
             // One of the Atari Bowling ROMs turns it off, but never turns it on.
             // So, we always end the frame if VSYNC is turned on and then off.
-            // We also end the frame if VSYNC is turned off after scanline 258 to accomodate Bowling.
+            // To accommodate Bowling, we end the frame when not-turned-on VSYNC is turned off after scanline 258.
             if ((data & 0x02) == 0)
             {
                 if ((RegW[VSYNC] & 0x02) != 0 || ScanLine > 258)
