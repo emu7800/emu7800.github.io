@@ -17,7 +17,7 @@ GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, includi
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
 
-ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise, being ported forward to the litany of subsequent .NET platforms. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback and enjoy!
+ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise, being ported to the litany of subsequent .NET platforms. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback. Enjoy!
 
 Mike Murphy
 mike@emu7800.net

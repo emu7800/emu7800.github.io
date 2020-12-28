@@ -1,23 +1,25 @@
-# EMU7800 Source Code README
-> Mike Murphy (mike@emu7800.net) - 12/1/2020 
+# EMU7800
+> Mike Murphy (mike@emu7800.net) - 12/1/2020
 
-## Tooling Required
+EMU7800 was originally completed in 2003 as a .NET programming exercise,
+being ported to the litany of subsequent now defunct .NET platforms (Windows Phone, Silverlight, UWP, etc.)
 
-To build everything, the following tools are needed:
+EMU7800 continues to be maintained to the present day as a non-commercial endeavor.
+Feel free to email feedback. Enjoy!
 
-- Visual Studio 2019 16.9.0 Preview 1.0 (https://visualstudio.microsoft.com/vs/community/)
+## Build Tooling
 
-- .NET 5.0 SDK x64 Windows (https://dotnet.microsoft.com/download)
+To build, the following tools are needed:
+
+- Visual Studio 2019 16.9.0 Preview 2.0 (https://visualstudio.microsoft.com/vs/community/)
+
+- .NET 5.0.101 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
 - Powershell 7.1.0 (``dotnet tool install powershell -g``)
 
 - Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
 
 - MSI Wrapper 9.0.42.0 (https://www.exemsi.com/)
-
-
-There isn't a command-line tool that can build `.vcxproj` (that I know of.)
-
 
 ## Build Steps
 
