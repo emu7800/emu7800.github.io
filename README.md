@@ -5,13 +5,14 @@ EMU7800 was originally completed in 2003 as a .NET programming exercise,
 being ported to the litany of subsequent now defunct .NET platforms (Windows Phone, Silverlight, UWP, etc.)
 
 EMU7800 continues to be maintained to the present day as a non-commercial endeavor.
-Feel free to email feedback. Enjoy!
+Feel free to email feedback.
+Enjoy!
 
 ## Build Tooling
 
 To build, the following tools are needed:
 
-- Visual Studio 2019 16.9.0 Preview 2.0 (https://visualstudio.microsoft.com/vs/community/)
+- Visual Studio 2019 (https://visualstudio.microsoft.com/vs/community/)
 
 - .NET 5.0.101 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
@@ -37,4 +38,4 @@ To build, the following tools are needed:
 
 2. Run ``pwsh.exe .\BuildArtifacts.ps1``
 
-    This will build everying other than the C++ component and drop the artifacts to a new `.\artifacts` folder.
+    This will compile everything other than the C++ component, build the deployment packages, and drop the artifacts to a `.\artifacts` folder.
