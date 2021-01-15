@@ -144,7 +144,7 @@ Controller:
     {
         WriteLine(@"
 ** EMU7800 **
-Copyright (c) 2012-2020 Mike Murphy
+Copyright (c) 2012-2021 Mike Murphy
 
 Usage:
     EMU7800.exe [<option> <filename> [MachineType [CartType [LController [RController]]]]]
