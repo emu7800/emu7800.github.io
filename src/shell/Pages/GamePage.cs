@@ -435,9 +435,17 @@ namespace EMU7800.D2D.Shell
         public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
         {
             base.ControllerButtonChanged(controllerNo, input, down);
-            if (input == MachineInput.End)
+            switch (input)
             {
-                KeyboardKeyPressed(KeyboardKey.Escape, down);
+                case MachineInput.Select:
+                    KeyboardKeyPressed(KeyboardKey.S, down);
+                    break;
+                case MachineInput.Reset:
+                    KeyboardKeyPressed(KeyboardKey.R, down);
+                    break;
+                case MachineInput.End:
+                    KeyboardKeyPressed(KeyboardKey.Escape, down);
+                    break;
             }
         }
 

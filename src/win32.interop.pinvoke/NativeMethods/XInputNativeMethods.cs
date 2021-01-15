@@ -79,6 +79,10 @@ namespace EMU7800.Win32.Interop
                 => (Gamepad.wButtons & XINPUT_GAMEPAD_BACK)  != 0;
             public bool InterpretButtonStart()
                 => (Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
+            public bool InterpretLeftShoulderButton()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER)  != 0;
+            public bool InterpretRightShoulderButton()
+                => (Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) != 0;
         }
 
         public static int Initialize(int deviceno, ref XINPUT_CAPABILITIES capabilities)

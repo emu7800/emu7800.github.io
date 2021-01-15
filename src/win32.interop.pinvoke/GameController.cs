@@ -231,6 +231,20 @@ namespace EMU7800.Win32.Interop
                 {
                     ButtonChanged(_controllerNo, MachineInput.Start, currStart);
                 }
+
+                var prevSelect = prevState.InterpretLeftShoulderButton();
+                var currSelect = currState.InterpretLeftShoulderButton();
+                if (prevSelect != currSelect)
+                {
+                    ButtonChanged(_controllerNo, MachineInput.Select, currSelect);
+                }
+
+                var prevReset = prevState.InterpretRightShoulderButton();
+                var currReset = currState.InterpretRightShoulderButton();
+                if (prevReset != currReset)
+                {
+                    ButtonChanged(_controllerNo, MachineInput.Reset, currReset);
+                }
             }
         }
 
