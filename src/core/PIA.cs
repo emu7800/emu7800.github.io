@@ -13,7 +13,7 @@ namespace EMU7800.Core
 {
     public sealed class PIA : IDevice
     {
-        public static readonly PIA Default = new PIA(MachineBase.Default);
+        public static readonly PIA Default = new(MachineBase.Default);
 
         readonly MachineBase M;
 

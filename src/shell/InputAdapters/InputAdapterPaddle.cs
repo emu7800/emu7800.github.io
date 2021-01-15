@@ -11,7 +11,6 @@ namespace EMU7800.D2D.Shell
         readonly InputState _inputState;
         readonly int _jackNo;
 
-        const float EmulationRotationalVelocity= 1f; // factor of _currentXWidth per second
         readonly int[] _emulationDirection = new int[2];
         readonly bool[] _emulationOff = new bool[2];
 
