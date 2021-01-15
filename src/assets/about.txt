@@ -6,7 +6,7 @@ BASIC OPERATION—Several classic games are included to jump-start your experien
 
 GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
 
-- Xbox 360 controllers (for Windows) can be used to navigate game selection (dpad, back and start buttons)
+- Xbox 360 controllers for Windows can be used to navigate game selection (dpad, back, start, and left/right shoulder buttons for select/reset)
 - Use keys F1-F4 to direct the keyboard input to the respective player number
 - Use the W key to swap input jacks, the Q key to swap P1/P2 paddles, the E key to swap P3/P4 paddles
 - Only mouse input is mapped to the Lightgun controller
