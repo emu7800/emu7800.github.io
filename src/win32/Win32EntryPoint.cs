@@ -84,8 +84,17 @@ if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
         }
         else
         {
-            WriteLine("No information in ROMProperties.csv database for: " + romPath);
-            Environment.Exit(-8);
+            var bytes = DatastoreService.GetRomBytes(romPath);
+            if (RomBytesService.IsA78Format(bytes))
+            {
+                var gpi = RomBytesService.ToGameProgramInfoFromA78Format(bytes);
+                StartGameProgram(new(gpi, string.Empty, romPath));
+            }
+            else
+            {
+                WriteLine("No information in ROMProperties.csv database for: " + romPath);
+                Environment.Exit(-8);
+            }
         }
     }
 }
@@ -150,7 +159,7 @@ Usage:
     EMU7800.exe [<option> <filename> [MachineType [CartType [LController [RController]]]]]
 
 Options:
--r <filename>: Try launching Game Program (uses machine configuration if specified)
+-r <filename>: Try launching Game Program (uses specified machine configuration or .a78 header info)
 -d <filename>: Dump Game Program information
 -? enums     : List valid MachineTypes, CartTypes, and Controllers
 -?           : This help
