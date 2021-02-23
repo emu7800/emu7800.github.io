@@ -9,7 +9,8 @@ namespace EMU7800.Services.Dto
     {
         public GameProgramInfo GameProgramInfo { get; }
         public ISet<string> StorageKeySet { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        public bool PersistedStateExists { get; set; }
+        public bool PersistedStateExists => PersistedStateAt > DateTime.MinValue;
+        public DateTime PersistedStateAt { get; set; } = DateTime.MinValue;
 
         public ImportedGameProgramInfo(GameProgramInfo gpi)
         {

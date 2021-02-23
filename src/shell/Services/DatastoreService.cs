@@ -73,20 +73,19 @@ namespace EMU7800.Services
         #region Machine Persistence
 
         static bool HasPersistedDirBeenScanned = false;
-        static readonly HashSet<string> _cachedPersistedDir = new();
+        static Dictionary<string, DateTime> _cachedPersistedDir = new();
 
-        public static bool PersistedMachineExists(GameProgramInfo gameProgramInfo)
+        public static DateTime PersistedMachineAt(GameProgramInfo gameProgramInfo)
         {
             if (!HasPersistedDirBeenScanned)
             {
-                var files = GetFilesFromPersistedGameProgramsDir();
-                foreach (var file in files)
-                    _cachedPersistedDir.Add(file);
+                _cachedPersistedDir = GetFilesFromPersistedGameProgramsDir();
                 HasPersistedDirBeenScanned = true;
             }
 
             var name = ToPersistedStateStorageName(gameProgramInfo);
-            return _cachedPersistedDir.Contains(name);
+
+            return _cachedPersistedDir.TryGetValue(name, out var lastUpdated) ? lastUpdated : DateTime.MinValue;
         }
 
         public static void PersistMachine(MachineStateInfo machineStateInfo, byte[] screenshotData)
@@ -135,7 +134,8 @@ namespace EMU7800.Services
                 Error($"PersistScreenshot: Unable to persist screenshot to {pssPath}: " + ToString(ex));
             }
 
-            _cachedPersistedDir.Add(pssName);
+            _cachedPersistedDir.Remove(pssName);
+            _cachedPersistedDir.Add(pssName, DateTime.UtcNow);
         }
 
         public static void PurgePersistedMachine(GameProgramInfo gameProgramInfo)
@@ -313,22 +313,24 @@ namespace EMU7800.Services
             }
         }
 
-        static IEnumerable<string> GetFilesFromPersistedGameProgramsDir()
+        static Dictionary<string, DateTime> GetFilesFromPersistedGameProgramsDir()
         {
             EnsurePersistedGameProgramsFolderExists();
             var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
-            string[] paths;
+            FileInfo[] files;
             try
             {
-                paths = Directory.GetFiles(folder);
+                var di = new DirectoryInfo(folder);
+                files = di.GetFiles();
             }
             catch (Exception ex)
             {
                 if (IsCriticalException(ex))
                     throw;
-                paths = Array.Empty<string>();
+                files = Array.Empty<FileInfo>();
             }
-            return paths.Select(p => Path.GetFileName(p) ?? string.Empty).Where(s => !string.IsNullOrWhiteSpace(s));
+            return files.Select(f => (f.Name, f.LastWriteTimeUtc))
+                        .ToDictionary(kvp => kvp.Name, kvp => kvp.LastWriteTimeUtc);
         }
 
         static void EnsureSaveGamesEmu7800FolderExists()

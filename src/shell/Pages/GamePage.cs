@@ -240,7 +240,8 @@ namespace EMU7800.D2D.Shell
             }
 
             _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _startFreshReq);
-            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
+
+            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateAt = DateTime.UtcNow;
         }
 
         public override void OnNavigatingAway()
@@ -569,7 +570,7 @@ namespace EMU7800.D2D.Shell
             _gameControl.Stop();
             _hud_buttonPaused.IsChecked = _gameControl.IsPaused = false;
             _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, true);
-            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = true;
+            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateAt = DateTime.UtcNow;
             _hud_buttonPower.IsChecked = true;
         }
 
@@ -577,7 +578,7 @@ namespace EMU7800.D2D.Shell
         {
             _gameControl.Stop();
             _gameControl.StartSnow();
-            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateExists = false;
+            _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateAt = DateTime.MinValue;
             _hud_buttonPower.IsChecked = false;
             DatastoreService.PurgePersistedMachine(_gameProgramInfoViewItem.ImportedGameProgramInfo.GameProgramInfo);
         }

@@ -12,11 +12,9 @@ namespace EMU7800.Services
     public class GameProgramLibraryService
     {
         public static IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
-            => ToGameProgramInfoViewItemCollections(
-                    ToDict(importedGameProgramInfoSet.Where(igpi => igpi.PersistedStateExists), igpi => "Recents"),
-                    igpi => igpi.GameProgramInfo.Title,
-                    igpi => ToMachineTypeSubTitle(igpi))
-                .Concat(
+            => ToGameProgramInfoViewItemRecentsCollection(
+                    ToDict(importedGameProgramInfoSet.Where(igpi => igpi.PersistedStateExists), igpi => "Recents")
+                ).Concat(
                ToGameProgramInfoViewItemCollections(
                     ToDict(importedGameProgramInfoSet, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
                     igpi => igpi.GameProgramInfo.Title,
@@ -61,6 +59,18 @@ namespace EMU7800.Services
                        GameProgramInfoViewItemSet = kvp.Value
                            .OrderBy(igpi => orderByFunc(igpi))
                            .Select(igpi => ToGameProgramInfoViewItem(igpi, igpi => subTitleFunc(igpi)))
+                           .ToList(),
+                   });
+
+        static IEnumerable<GameProgramInfoViewItemCollection> ToGameProgramInfoViewItemRecentsCollection(
+                Dictionary<string, List<ImportedGameProgramInfo>> dict)
+            => dict.Select(kvp => new GameProgramInfoViewItemCollection
+                   {
+                       Name = kvp.Key,
+                       GameProgramInfoViewItemSet = kvp.Value
+                           .OrderByDescending(igpi => igpi.PersistedStateAt)
+                           .ThenBy(igpi => igpi.GameProgramInfo.Title)
+                           .Select(igpi => ToGameProgramInfoViewItem(igpi, igpi => ToMachineTypeSubTitle(igpi)))
                            .ToList(),
                    });
 
