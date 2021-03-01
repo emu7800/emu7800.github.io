@@ -14,9 +14,9 @@ To build, the following tools are needed:
 
 - Visual Studio 2019 (https://visualstudio.microsoft.com/vs/community/)
 
-- .NET 5.0.101 SDK x64 Windows (https://dotnet.microsoft.com/download)
+- .NET 5.0.103 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
-- Powershell 7.1.0 (``dotnet tool install powershell -g``)
+- Powershell 7.1.2 (``dotnet tool install powershell -g``)
 
 - Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
 
