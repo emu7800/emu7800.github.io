@@ -130,7 +130,7 @@ namespace EMU7800.Core
             {
                 // If the 2 least significant bits of SKCTL are 0, the random number generator is disabled (return all 1s.)
                 // Ballblazer music relies on this.
-                RANDOM => (_skctl & SKCTL_RESET) == 0 ? 0xff : (byte)_random.Next(0xff),
+                RANDOM => (_skctl & SKCTL_RESET) == 0 ? (byte)0xff : (byte)_random.Next(0xff),
                 _      => 0,
             };
         }
