@@ -14,7 +14,7 @@ To build, the following tools are needed:
 
 - Visual Studio 2019 (https://visualstudio.microsoft.com/vs/community/)
 
-- .NET 5.0.103 SDK x64 Windows (https://dotnet.microsoft.com/download)
+- .NET 5.0.200 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
 - Powershell 7.1.2 (``dotnet tool install powershell -g``)
 
