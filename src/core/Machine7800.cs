@@ -6,6 +6,8 @@
  * Copyright © 2003-2005 Mike Murphy
  *
  */
+using System;
+
 namespace EMU7800.Core
 {
     public class Machine7800 : MachineBase
@@ -125,7 +127,7 @@ namespace EMU7800.Core
             Maria.EndFrame();
         }
 
-        public Machine7800(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger, int scanlines, int startl, int fHZ, int sRate, int[] p)
+        public Machine7800(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger, int scanlines, int startl, int fHZ, int sRate, ReadOnlyMemory<uint> p)
             : base(logger, scanlines, startl, fHZ, sRate, p, 320)
         {
             Mem = new AddressSpace(this, 16, 6);  // 7800: 16bit, 64byte pages
@@ -170,7 +172,7 @@ namespace EMU7800.Core
 
         #region Serialization Members
 
-        public Machine7800(DeserializationContext input, int[] palette, int scanlines) : base(input, palette)
+        public Machine7800(DeserializationContext input, ReadOnlyMemory<uint> palette, int scanlines) : base(input, palette)
         {
             input.CheckVersion(1);
 
@@ -234,7 +236,7 @@ namespace EMU7800.Core
         #region Helpers
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void AssertDebug(bool cond)
+        static void AssertDebug(bool cond)
         {
             if (!cond)
                 System.Diagnostics.Debugger.Break();

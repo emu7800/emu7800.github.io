@@ -38,12 +38,6 @@ namespace EMU7800.Core
         public void Write(double value)
             => _binaryWriter.Write(value);
 
-        public void Write(BufferElement bufferElement)
-        {
-            for (var i = 0; i < BufferElement.SIZE; i++)
-                Write(bufferElement[i]);
-        }
-
         public void Write(byte[] bytes)
         {
             _binaryWriter.Write(bytes.Length);

@@ -71,7 +71,7 @@ namespace EMU7800.Core
         /// <param name="fore"></param>
         /// <param name="back"></param>
         /// <exception cref="ArgumentNullException">text must be non-null.</exception>
-        public void DrawText(FrameBuffer frameBuffer, string text, int xoffset, int yoffset, byte fore, byte back)
+        public static void DrawText(FrameBuffer frameBuffer, string text, int xoffset, int yoffset, byte fore, byte back)
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
@@ -85,15 +85,15 @@ namespace EMU7800.Core
                     var pos = (j + yoffset) * frameBuffer.VisiblePitch + i * 5;
                     for (var k = 0; k < 5; k++)
                     {
-                        while (pos >= frameBuffer.VideoBufferByteLength)
+                        while (pos >= frameBuffer.VideoBuffer.Length)
                         {
-                            pos -= frameBuffer.VideoBufferByteLength;
+                            pos -= frameBuffer.VideoBuffer.Length;
                         }
                         while (pos < 0)
                         {
-                            pos += frameBuffer.VideoBufferByteLength;
+                            pos += frameBuffer.VideoBuffer.Length;
                         }
-                        frameBuffer.VideoBuffer[pos >> BufferElement.SHIFT][pos++] = back;
+                        frameBuffer.VideoBuffer.Span[pos++] = back;
                     }
                 }
             }
@@ -150,17 +150,17 @@ namespace EMU7800.Core
                     }
 
                     var pos = (ypos + yoffset) * frameBuffer.VisiblePitch + (4 - xpos) + xoffset;
-                    while (pos >= frameBuffer.VideoBufferByteLength)
+                    while (pos >= frameBuffer.VideoBuffer.Length)
                     {
-                        pos -= frameBuffer.VideoBufferByteLength;
+                        pos -= frameBuffer.VideoBuffer.Length;
                     }
                     while (pos < 0)
                     {
-                        pos += frameBuffer.VideoBufferByteLength;
+                        pos += frameBuffer.VideoBuffer.Length;
                     }
                     if (((fdata >> j) & 1) != 0)
                     {
-                        frameBuffer.VideoBuffer[pos >> BufferElement.SHIFT][pos] = fore;
+                        frameBuffer.VideoBuffer.Span[pos] = fore;
                     }
                 }
                 xoffset += 5;

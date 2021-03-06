@@ -721,24 +721,18 @@ namespace EMU7800.Core
 
         void OutputLineRAM()
         {
-            var bufferElement = new BufferElement();
-            var fbi = ((Scanline + 1) * M.FrameBuffer.VideoBufferElementVisiblePitch) % M.FrameBuffer.VideoBufferElementLength;
+            var fbi = (Scanline + 1) * M.FrameBuffer.VisiblePitch % M.FrameBuffer.VideoBuffer.Length;
 
-            for (int i = 0, s = 0; i < M.FrameBuffer.VideoBufferElementVisiblePitch; i++)
+            for (var i = 0; i < M.FrameBuffer.VisiblePitch; i++)
             {
-                for (var j = 0; j < BufferElement.SIZE; j++, s++)
-                {
-                    var colorIndex = LineRAM[s];
-                    bufferElement[j] = Registers[BACKGRND + ((colorIndex & 3) == 0 ? 0 : colorIndex)];
-                }
-                M.FrameBuffer.VideoBuffer[fbi] = bufferElement;
-                if (++fbi == M.FrameBuffer.VideoBufferElementLength)
-                    fbi = 0;
-            }
+                var colorIndex = LineRAM[i];
 
-            for (var i = 0; i < LineRAM.Length; i++)
-            {
+                M.FrameBuffer.VideoBuffer.Span[fbi++] = Registers[BACKGRND + ((colorIndex & 3) == 0 ? 0 : colorIndex)];
+
                 LineRAM[i] = 0;
+
+                if (fbi == M.FrameBuffer.VideoBuffer.Length)
+                    fbi = 0;
             }
         }
 
@@ -1086,7 +1080,7 @@ namespace EMU7800.Core
                     _isPal = true;
                     break;
                 default:
-                    throw new ArgumentException("scanlines must be 262 or 312.");
+                    throw new ArgumentException("scanlines must be 262 or 312", nameof(scanlines));
             }
         }
 
@@ -1124,7 +1118,7 @@ namespace EMU7800.Core
             => M.Logger.WriteLine(message);
 
         [System.Diagnostics.Conditional("DEBUG")]
-        void AssertDebug(bool cond)
+        static void AssertDebug(bool cond)
         {
             if (!cond)
                 System.Diagnostics.Debugger.Break();

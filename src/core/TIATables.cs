@@ -7,18 +7,33 @@
  * Copyright © 2003, 2004 Mike Murphy
  *
  */
+using System;
+
 namespace EMU7800.Core
 {
     public static class TIATables
     {
-        public static readonly TIACxPairFlags[] CollisionMask = BuildCollisionMaskTable();
-        public static readonly uint[][] PFMask = BuildPFMaskTable();
-        public static readonly bool[][] BLMask = BuildBLMaskTable();
-        public static readonly bool[][][] MxMask = BuildMxMaskTable();
-        public static readonly byte[][][] PxMask = BuildPxMaskTable();
-        public static readonly byte[] GRPReflect = BuildGRPReflectTable();
+        public static readonly ReadOnlyMemory<TIACxPairFlags> CollisionMask = new(BuildCollisionMaskTable());
 
-        public static readonly int[] NTSCPalette =
+        static readonly ReadOnlyMemory<uint> PFMask = new(BuildPFMaskTable());
+        static int PFMaskIndex(int i, int j) => i * 160 + j;
+        public static uint PFMaskFetch(int i, int j) => PFMask.Span[PFMaskIndex(i, j)];
+
+        static readonly ReadOnlyMemory<bool> BLMask = new(BuildBLMaskTable());
+        static int BLMaskIndex(int i, int j) => i * 160 + j;
+        public static bool BLMaskFetch(int i, int j) => BLMask.Span[BLMaskIndex(i, j)];
+
+        static readonly ReadOnlyMemory<bool> MxMask = new(BuildMxMaskTable());
+        static int MxMaskIndex(int i, int j, int k) => i * 8 * 160 + j * 160 + k;
+        public static bool MxMaskFetch(int i, int j, int k) => MxMask.Span[MxMaskIndex(i, j, k)];
+
+        static readonly ReadOnlyMemory<byte> PxMask = new(BuildPxMaskTable());
+        static int PxMaskIndex(int i, int j, int k) => i * 8 * 160 + j * 160 + k;
+        public static byte PxMaskFetch(int i, int j, int k) => PxMask.Span[PxMaskIndex(i, j, k)];
+
+        public static readonly ReadOnlyMemory<byte> GRPReflect = new(BuildGRPReflectTable());
+
+        public static readonly ReadOnlyMemory<uint> NTSCPalette = new(new uint[]
         {
             0x000000, 0x000000, 0x4a4a4a, 0x4a4a4a,
             0x6f6f6f, 0x6f6f6f, 0x8e8e8e, 0x8e8e8e,
@@ -99,9 +114,9 @@ namespace EMU7800.Core
             0x866a26, 0x866a26, 0xa28638, 0xa28638,
             0xbb9f47, 0xbb9f47, 0xd2b656, 0xd2b656,
             0xe8cc63, 0xe8cc63, 0xfce070, 0xfce070
-        };
+        });
 
-        public static readonly int[] PALPalette =
+        public static readonly ReadOnlyMemory<uint> PALPalette = new(new uint[]
         {
             0x000000, 0x000000, 0x2b2b2b, 0x2b2b2b,
             0x525252, 0x525252, 0x767676, 0x767676,
@@ -182,14 +197,11 @@ namespace EMU7800.Core
             0x525252, 0x525252, 0x767676, 0x767676,
             0x979797, 0x979797, 0xb6b6b6, 0xb6b6b6,
             0xd2d2d2, 0xd2d2d2, 0xececec, 0xececec
-        };
+        });
 
-        static uint[][] BuildPFMaskTable()
+        static uint[] BuildPFMaskTable()
         {
-            var tabl = new uint[2][];
-            tabl[0] = new uint[160];
-            tabl[1] = new uint[160];
-
+            var tabl = new uint[2 * 160];
             for (var i = 0; i < 20; i++)
             {
                 uint mask = 0;
@@ -208,96 +220,83 @@ namespace EMU7800.Core
                 for (var j = 0; j < 4; j++)
                 {
                     // for non-reflected mode
-                    tabl[0][4 * i + j] = mask;
-                    tabl[0][80 + 4 * i + j] = mask;
+                    tabl[PFMaskIndex(0, 4 * i + j)] = mask;
+                    tabl[PFMaskIndex(0, 80 + 4 * i + j)] = mask;
 
                     // for reflected mode
-                    tabl[1][4 * i + j] = mask;
-                    tabl[1][159 - 4 * i - j] = mask;
+                    tabl[PFMaskIndex(1, 4 * i + j)] = mask;
+                    tabl[PFMaskIndex(1, 159 - 4 * i - j)] = mask;
                 }
             }
             return tabl;
         }
 
-        static bool[][] BuildBLMaskTable()
+        static bool[] BuildBLMaskTable()
         {
-            var tabl = new bool[4][];
+            var tabl = new bool[4 * 160];
             for (var size = 0; size < 4; size++)
             {
-                tabl[size] = new bool[160];
                 for (var i = 0; i < 160; i++)
                 {
-                    tabl[size][i] = false;
+                    tabl[BLMaskIndex(size, i)] = false;
                 }
                 for (var i = 0; i < (1 << size); i++)
                 {
-                    tabl[size][i] = true;
+                    tabl[BLMaskIndex(size, i)] = true;
                 }
             }
             return tabl;
         }
 
-        static bool[][][] BuildMxMaskTable()
+        static bool[] BuildMxMaskTable()
         {
-            var tabl = new bool[4][][];
-            for (var i = 0; i < 4; i++)
-            {
-                tabl[i] = new bool[8][];
-                for (var j = 0; j < 8; j++)
-                {
-                    tabl[i][j] = new bool[160];
-                    for (var k = 0; k < 160; k++)
-                    {
-                        tabl[i][j][k] = false;
-                    }
-                }
-            }
+            var tabl = new bool[4 * 8 * 160];
 
             for (var size = 0; size < 4; size++)
             {
                 for (var i = 0; i < (1 << size); i++)
                 {
-                    tabl[size][0][i] = true;
+                    tabl[MxMaskIndex(size, 0, i)] = true;
 
-                    tabl[size][1][i] = true;
-                    tabl[size][1][i + 16] = true;
+                    tabl[MxMaskIndex(size, 1, i)] = true;
+                    tabl[MxMaskIndex(size, 1, i + 16)] = true;
 
-                    tabl[size][2][i] = true;
-                    tabl[size][2][i + 32] = true;
+                    tabl[MxMaskIndex(size, 2, i)] = true;
+                    tabl[MxMaskIndex(size, 2, i + 32)] = true;
 
-                    tabl[size][3][i] = true;
-                    tabl[size][3][i + 16] = true;
-                    tabl[size][3][i + 32] = true;
+                    tabl[MxMaskIndex(size, 3, i)] = true;
+                    tabl[MxMaskIndex(size, 3, i + 16)] = true;
+                    tabl[MxMaskIndex(size, 3, i + 32)] = true;
 
-                    tabl[size][4][i] = true;
-                    tabl[size][4][i + 64] = true;
+                    tabl[MxMaskIndex(size, 4, i)] = true;
+                    tabl[MxMaskIndex(size, 4, i + 64)] = true;
 
-                    tabl[size][5][i] = true;
+                    tabl[MxMaskIndex(size, 5, i)] = true;
 
-                    tabl[size][6][i] = true;
-                    tabl[size][6][i + 32] = true;
-                    tabl[size][6][i + 64] = true;
+                    tabl[MxMaskIndex(size, 6, i)] = true;
+                    tabl[MxMaskIndex(size, 6, i + 32)] = true;
+                    tabl[MxMaskIndex(size, 6, i + 64)] = true;
 
-                    tabl[size][7][i] = true;
+                    tabl[MxMaskIndex(size, 7, i)] = true;
                 }
             }
+
             return tabl;
         }
 
-        static byte[][][] BuildPxMaskTable()
+        static byte[] BuildPxMaskTable()
         {
             // [suppress mode, nusiz, pixel]
             // suppress=1: suppress on
             // suppress=0: suppress off
-            var tabl = new byte[2][][]; //2 8 160
-            tabl[0] = new byte[8][];
-            tabl[1] = new byte[8][];
+            var tabl = new byte[2 * 8 * 160];
             for (var nusiz = 0; nusiz < 8; nusiz++)
             {
-                tabl[0][nusiz] = new byte[160];
-                tabl[1][nusiz] = new byte[160];
                 for (var hpos = 0; hpos < 160; hpos++)
                 {
+                    var ti1 = PxMaskIndex(0, nusiz, hpos);
+                    var ti2 = PxMaskIndex(1, nusiz, hpos);
+
                     // nusiz:
                     // 0: one copy
                     // 1: two copies-close
@@ -307,50 +306,50 @@ namespace EMU7800.Core
                     // 5: double size player
                     // 6: 3 copies medium
                     // 7: quad sized player
-                    tabl[0][nusiz][hpos] = tabl[1][nusiz][hpos] = 0;
+
                     if (nusiz >= 0 && nusiz <= 4 || nusiz == 6)
                     {
                         if (hpos >= 0 && hpos < 8)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << (7 - hpos));
+                            tabl[ti1] = (byte)(1 << (7 - hpos));
                         }
                     }
                     if (nusiz == 1 || nusiz == 3)
                     {
                         if (hpos >= 16 && hpos < 24)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << (23 - hpos));
-                            tabl[1][nusiz][hpos] = (byte)(1 << (23 - hpos));
+                            tabl[ti1] = (byte)(1 << (23 - hpos));
+                            tabl[ti2] = (byte)(1 << (23 - hpos));
                         }
                     }
                     if (nusiz == 2 || nusiz == 3 || nusiz == 6)
                     {
                         if (hpos >= 32 && hpos < 40)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << (39 - hpos));
-                            tabl[1][nusiz][hpos] = (byte)(1 << (39 - hpos));
+                            tabl[ti1] = (byte)(1 << (39 - hpos));
+                            tabl[ti2] = (byte)(1 << (39 - hpos));
                         }
                     }
                     if (nusiz == 4 || nusiz == 6)
                     {
                         if (hpos >= 64 && hpos < 72)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << (71 - hpos));
-                            tabl[1][nusiz][hpos] = (byte)(1 << (71 - hpos));
+                            tabl[ti1] = (byte)(1 << (71 - hpos));
+                            tabl[ti2] = (byte)(1 << (71 - hpos));
                         }
                     }
                     if (nusiz == 5)
                     {
                         if (hpos >= 0 && hpos < 16)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << ((15 - hpos) >> 1));
+                            tabl[ti1] = (byte)(1 << ((15 - hpos) >> 1));
                         }
                     }
                     if (nusiz == 7)
                     {
                         if (hpos >= 0 && hpos < 32)
                         {
-                            tabl[0][nusiz][hpos] = (byte)(1 << ((31 - hpos) >> 2));
+                            tabl[ti1] = (byte)(1 << ((31 - hpos) >> 2));
                         }
                     }
                 }
@@ -358,12 +357,14 @@ namespace EMU7800.Core
                 var shift = nusiz == 5 || nusiz == 7 ? 2 : 1;
                 while (shift-- > 0)
                 {
+                    var ti1 = PxMaskIndex(0, nusiz, 0);
+                    var ti2 = PxMaskIndex(1, nusiz, 0);
                     for (var i = 159; i > 0; i--)
                     {
-                        tabl[0][nusiz][i] = tabl[0][nusiz][i - 1];
-                        tabl[1][nusiz][i] = tabl[1][nusiz][i - 1];
+                        tabl[ti1 + i] = tabl[ti1 + i - 1];
+                        tabl[ti2 + i] = tabl[ti2 + i - 1];
                     }
-                    tabl[0][nusiz][0] = tabl[1][nusiz][0] = 0;
+                    tabl[ti1] = tabl[ti2] = 0;
                 }
             }
             return tabl;
@@ -388,12 +389,8 @@ namespace EMU7800.Core
             return tabl;
         }
 
-        static bool tstCx(int i, TIACxFlags cxf1, TIACxFlags cxf2)
-        {
-            var f1 = (int)cxf1;
-            var f2 = (int)cxf2;
-            return ((i & f1) != 0) && ((i & f2) != 0);
-        }
+        static bool TstCx(int i, TIACxFlags cxf1, TIACxFlags cxf2)
+            => ((i & ((int)cxf1)) != 0) && ((i & ((int)cxf2)) != 0);
 
         static TIACxPairFlags[] BuildCollisionMaskTable()
         {
@@ -402,22 +399,23 @@ namespace EMU7800.Core
             for (var i = 0; i < 64; i++)
             {
                 tabl[i] = 0;
-                if (tstCx(i, TIACxFlags.M0, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.M0P1; }
-                if (tstCx(i, TIACxFlags.M0, TIACxFlags.P0)) { tabl[i] |= TIACxPairFlags.M0P0; }
-                if (tstCx(i, TIACxFlags.M1, TIACxFlags.P0)) { tabl[i] |= TIACxPairFlags.M1P0; }
-                if (tstCx(i, TIACxFlags.M1, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.M1P1; }
-                if (tstCx(i, TIACxFlags.P0, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.P0PF; }
-                if (tstCx(i, TIACxFlags.P0, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.P0BL; }
-                if (tstCx(i, TIACxFlags.P1, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.P1PF; }
-                if (tstCx(i, TIACxFlags.P1, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.P1BL; }
-                if (tstCx(i, TIACxFlags.M0, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.M0PF; }
-                if (tstCx(i, TIACxFlags.M0, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.M0BL; }
-                if (tstCx(i, TIACxFlags.M1, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.M1PF; }
-                if (tstCx(i, TIACxFlags.M1, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.M1BL; }
-                if (tstCx(i, TIACxFlags.BL, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.BLPF; }
-                if (tstCx(i, TIACxFlags.P0, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.P0P1; }
-                if (tstCx(i, TIACxFlags.M0, TIACxFlags.M1)) { tabl[i] |= TIACxPairFlags.M0M1; }
+                if (TstCx(i, TIACxFlags.M0, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.M0P1; }
+                if (TstCx(i, TIACxFlags.M0, TIACxFlags.P0)) { tabl[i] |= TIACxPairFlags.M0P0; }
+                if (TstCx(i, TIACxFlags.M1, TIACxFlags.P0)) { tabl[i] |= TIACxPairFlags.M1P0; }
+                if (TstCx(i, TIACxFlags.M1, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.M1P1; }
+                if (TstCx(i, TIACxFlags.P0, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.P0PF; }
+                if (TstCx(i, TIACxFlags.P0, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.P0BL; }
+                if (TstCx(i, TIACxFlags.P1, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.P1PF; }
+                if (TstCx(i, TIACxFlags.P1, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.P1BL; }
+                if (TstCx(i, TIACxFlags.M0, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.M0PF; }
+                if (TstCx(i, TIACxFlags.M0, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.M0BL; }
+                if (TstCx(i, TIACxFlags.M1, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.M1PF; }
+                if (TstCx(i, TIACxFlags.M1, TIACxFlags.BL)) { tabl[i] |= TIACxPairFlags.M1BL; }
+                if (TstCx(i, TIACxFlags.BL, TIACxFlags.PF)) { tabl[i] |= TIACxPairFlags.BLPF; }
+                if (TstCx(i, TIACxFlags.P0, TIACxFlags.P1)) { tabl[i] |= TIACxPairFlags.P0P1; }
+                if (TstCx(i, TIACxFlags.M0, TIACxFlags.M1)) { tabl[i] |= TIACxPairFlags.M0M1; }
             }
+
             return tabl;
         }
     }

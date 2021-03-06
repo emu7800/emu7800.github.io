@@ -22,14 +22,14 @@ namespace EMU7800.Win32.Interop
         internal void Draw(D2D_RECT_F drect, D2DBitmapInterpolationMode interpolationMode)
             => Direct2D_DrawDynamicBitmap(BitmapPtr, drect, interpolationMode);
 
-        public void Load(byte[] data)
+        public void Load(Memory<byte> data)
         {
             if (data.Length < _expectedDataLength || _expectedDataLength == 0)
                 return;
 
             unsafe
             {
-                fixed (byte* bytes = data)
+                fixed (byte* bytes = data.Span)
                 {
                     Direct2D_LoadDynamicBitmapFromMemory(BitmapPtr, bytes, _expectedPitch);
                 }

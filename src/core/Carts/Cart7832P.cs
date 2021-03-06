@@ -72,7 +72,7 @@
         public override void GetObjectData(SerializationContext output)
         {
             if (_pokeySound == null)
-                throw new Emu7800SerializationException("Cart7832P must be attached before serialization.");
+                throw new Emu7800SerializationException("Cart7832P must be attached before serialization");
 
             base.GetObjectData(output);
 

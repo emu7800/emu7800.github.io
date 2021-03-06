@@ -49,7 +49,7 @@ namespace EMU7800.Core
 
     public sealed class TIA : IDevice
     {
-        public static readonly TIA Default = new TIA(MachineBase.Default);
+        public static readonly TIA Default = new(MachineBase.Default);
 
         #region Constants
 
@@ -158,9 +158,6 @@ namespace EMU7800.Core
 
         // current position in the frame buffer
         int FrameBufferIndex;
-
-        // bytes are batched here for writing to the FrameBuffer
-        BufferElement FrameBufferElement;
 
         // signals when to start an HMOVE
         ulong StartHMOVEClock;
@@ -445,13 +442,13 @@ namespace EMU7800.Core
             fbyte = colubk;
 
             var colupfon = false;
-            if ((PF210 & TIATables.PFMask[PFReflectionState][HSync - 68]) != 0)
+            if ((PF210 & TIATables.PFMaskFetch(PFReflectionState, HSync - 68)) != 0)
             {
                 if (scoreon) fbyte_colupf = (HSync - 68) < 80 ? colup0 : colup1;
                 colupfon = true;
                 cxflags |= TIACxFlags.PF;
             }
-            if (blon && BL >= 0 && TIATables.BLMask[BLsize][BL])
+            if (blon && BL >= 0 && TIATables.BLMaskFetch(BLsize, BL))
             {
                 colupfon = true;
                 cxflags |= TIACxFlags.BL;
@@ -460,22 +457,22 @@ namespace EMU7800.Core
             {
                 fbyte = fbyte_colupf;
             }
-            if (m1on && M1 >= 0 && TIATables.MxMask[M1size][M1type][M1])
+            if (m1on && M1 >= 0 && TIATables.MxMaskFetch(M1size, M1type, M1))
             {
                 fbyte = colup1;
                 cxflags |= TIACxFlags.M1;
             }
-            if (P1 >= 0 && (TIATables.PxMask[P1suppress][P1type][P1] & EffGRP1) != 0)
+            if (P1 >= 0 && (TIATables.PxMaskFetch(P1suppress, P1type, P1) & EffGRP1) != 0)
             {
                 fbyte = colup1;
                 cxflags |= TIACxFlags.P1;
             }
-            if (m0on && M0 >= 0 && TIATables.MxMask[M0size][M0type][M0])
+            if (m0on && M0 >= 0 && TIATables.MxMaskFetch(M0size, M0type, M0))
             {
                 fbyte = colup0;
                 cxflags |= TIACxFlags.M0;
             }
-            if (P0 >= 0 && (TIATables.PxMask[P0suppress][P0type][P0] & EffGRP0) != 0)
+            if (P0 >= 0 && (TIATables.PxMaskFetch(P0suppress, P0type, P0) & EffGRP0) != 0)
             {
                 fbyte = colup0;
                 cxflags |= TIACxFlags.P0;
@@ -486,18 +483,15 @@ namespace EMU7800.Core
             }
 
         WritePixel:
-            Collisions |= TIATables.CollisionMask[(int)cxflags];
+            Collisions |= TIATables.CollisionMask.Span[(int)cxflags];
 
             if (HSync >= 68)
             {
-                var i = FrameBufferIndex++;
-                FrameBufferElement[i] = fbyte;
-                if ((i & BufferElement.MASK) == BufferElement.MASK)
-                {
-                    M.FrameBuffer.VideoBuffer[i >> BufferElement.SHIFT] = FrameBufferElement;
-                    if (FrameBufferIndex == M.FrameBuffer.VideoBufferByteLength)
-                        FrameBufferIndex = 0;
-                }
+                M.FrameBuffer.VideoBuffer.Span[FrameBufferIndex++] = fbyte;
+
+                if (FrameBufferIndex == M.FrameBuffer.VideoBuffer.Length)
+                    FrameBufferIndex = 0;
+
                 if (HSync == 227)
                     ScanLine++;
             }
@@ -800,13 +794,13 @@ namespace EMU7800.Core
         void SetEffGRP0()
         {
             var grp0 = RegW[VDELP0] != 0 ? OldGRP0 : RegW[GRP0];
-            EffGRP0 = RegW[REFP0] != 0 ? TIATables.GRPReflect[grp0] : grp0;
+            EffGRP0 = RegW[REFP0] != 0 ? TIATables.GRPReflect.Span[grp0] : grp0;
         }
 
         void SetEffGRP1()
         {
             var grp1 = RegW[VDELP1] != 0 ? OldGRP1 : RegW[GRP1];
-            EffGRP1 = RegW[REFP1] != 0 ? TIATables.GRPReflect[grp1] : grp1;
+            EffGRP1 = RegW[REFP1] != 0 ? TIATables.GRPReflect.Span[grp1] : grp1;
         }
 
         void Setblon()
@@ -1217,7 +1211,7 @@ namespace EMU7800.Core
             HMoveCounter = input.ReadInt32();
             ScanLine = input.ReadInt32();
             FrameBufferIndex = input.ReadInt32();
-            FrameBufferElement = input.ReadBufferElement();
+            _ = input.ReadInt32();
             StartHMOVEClock = input.ReadUInt64();
             HMoveLatch = input.ReadBoolean();
             StartClock = input.ReadUInt64();
@@ -1277,7 +1271,7 @@ namespace EMU7800.Core
             output.Write(HMoveCounter);
             output.Write(ScanLine);
             output.Write(FrameBufferIndex);
-            output.Write(FrameBufferElement);
+            output.Write(0);
             output.Write(StartHMOVEClock);
             output.Write(HMoveLatch);
             output.Write(StartClock);

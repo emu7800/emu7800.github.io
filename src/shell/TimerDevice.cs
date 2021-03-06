@@ -35,7 +35,7 @@ namespace EMU7800.D2D.Shell
         public TimerDevice()
         {
             if (!Stopwatch.IsHighResolution || Stopwatch.Frequency == 0)
-                throw new NotSupportedException("High resolution timer not available.");
+                throw new NotSupportedException("High resolution timer not available");
 
             Frequency = Stopwatch.Frequency;
             SecondsPerTick = 1.0f / Frequency;

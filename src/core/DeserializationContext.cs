@@ -39,21 +39,13 @@ namespace EMU7800.Core
         public double ReadDouble()
             => _binaryReader.ReadDouble();
 
-        public BufferElement ReadBufferElement()
-        {
-            var be = new BufferElement();
-            for (var i = 0; i < BufferElement.SIZE; i++)
-                be[i] = ReadByte();
-            return be;
-        }
-
         public byte[] ReadBytes()
         {
             var count = _binaryReader.ReadInt32();
             if (count <= 0)
-                return new byte[0];
+                return Array.Empty<byte>();
             if (count > 0x40000)
-                throw new Emu7800SerializationException("Byte array length too large.");
+                throw new Emu7800SerializationException("Byte array length too large");
             return _binaryReader.ReadBytes(count);
         }
 
@@ -61,7 +53,7 @@ namespace EMU7800.Core
         {
             var count = _binaryReader.ReadInt32();
             if (!expectedSizes.Any(t => t == count))
-                throw new Emu7800SerializationException("Byte array length incorrect.");
+                throw new Emu7800SerializationException("Byte array length incorrect");
             return _binaryReader.ReadBytes(count);
         }
 
@@ -105,10 +97,10 @@ namespace EMU7800.Core
         {
             var magicNumber = _binaryReader.ReadInt32();
             if (magicNumber != 0x78000087)
-                throw new Emu7800SerializationException("Magic number not found.");
+                throw new Emu7800SerializationException("Magic number not found");
             var version = _binaryReader.ReadInt32();
             if (!validVersions.Any(t => t == version))
-                throw new Emu7800SerializationException("Invalid version number found.");
+                throw new Emu7800SerializationException("Invalid version number found");
             return version;
         }
 
@@ -116,7 +108,7 @@ namespace EMU7800.Core
         {
             var typeName = _binaryReader.ReadString();
             if (string.IsNullOrWhiteSpace(typeName))
-                throw new Emu7800SerializationException("Invalid type name.");
+                throw new Emu7800SerializationException("Invalid type name");
 
             return typeName switch
             {
@@ -129,28 +121,28 @@ namespace EMU7800.Core
         }
 
         public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
-            => new AddressSpace(this, m, addrSpaceShift, pageShift);
+            => new(this, m, addrSpaceShift, pageShift);
 
         public M6502 ReadM6502(MachineBase m, int runClocksMultiple)
-            => new M6502(this, m, runClocksMultiple);
+            => new(this, m, runClocksMultiple);
 
         public Maria ReadMaria(Machine7800 m, int scanlines)
-            => new Maria(this, m, scanlines);
+            => new(this, m, scanlines);
 
         public PIA ReadPIA(MachineBase m)
-            => new PIA(this, m);
+            => new(this, m);
 
         public TIA ReadTIA(MachineBase m)
-            => new TIA(this, m);
+            => new(this, m);
 
         public TIASound ReadTIASound(MachineBase m, int cpuClocksPerSample)
-            => new TIASound(this, m, cpuClocksPerSample);
+            => new(this, m, cpuClocksPerSample);
 
         public RAM6116 ReadRAM6116()
-            => new RAM6116(this);
+            => new(this);
 
         public InputState ReadInputState()
-            => new InputState(this);
+            => new(this);
 
         public HSC7800 ReadOptionalHSC7800()
             => ReadBoolean() ? new HSC7800(this) : HSC7800.Default;
@@ -165,7 +157,7 @@ namespace EMU7800.Core
         {
             var typeName = _binaryReader.ReadString();
             if (string.IsNullOrWhiteSpace(typeName))
-                throw new Emu7800SerializationException("Invalid type name.");
+                throw new Emu7800SerializationException("Invalid type name");
 
             return typeName switch
             {

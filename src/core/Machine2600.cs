@@ -6,6 +6,8 @@
  * Copyright © 2003, 2004 Mike Murphy
  *
  */
+using System;
+
 namespace EMU7800.Core
 {
     public class Machine2600 : MachineBase
@@ -46,7 +48,7 @@ namespace EMU7800.Core
             TIA.EndFrame();
         }
 
-        public Machine2600(Cart cart, ILogger logger, int slines, int startl, int fHZ, int sRate, int[] p)
+        public Machine2600(Cart cart, ILogger logger, int slines, int startl, int fHZ, int sRate, ReadOnlyMemory<uint> p)
              : base(logger, slines, startl, fHZ, sRate, p, 160)
         {
             Mem = new AddressSpace(this, 13, 6);  // 2600: 13bit, 64byte pages
@@ -71,7 +73,7 @@ namespace EMU7800.Core
 
         #region Serialization Members
 
-        public Machine2600(DeserializationContext input, int[] palette) : base(input, palette)
+        public Machine2600(DeserializationContext input, ReadOnlyMemory<uint> palette) : base(input, palette)
         {
             input.CheckVersion(1);
 

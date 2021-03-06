@@ -119,7 +119,7 @@ namespace EMU7800.Core
 
         public void EndFrame()
         {
-            RenderSamples(M.FrameBuffer.SoundBufferByteLength - _bufferIndex);
+            RenderSamples(M.FrameBuffer.SoundBuffer.Length - _bufferIndex);
         }
 
         public byte Read(ushort addr)
@@ -281,7 +281,7 @@ namespace EMU7800.Core
             const int POKEY_SAMPLE = 4;
             var poly17Length = (_poly17Size > _poly17.Length ? _poly17.Length : _poly17Size);
 
-            while (count > 0 && _bufferIndex < M.FrameBuffer.SoundBufferByteLength)
+            while (count > 0 && _bufferIndex < M.FrameBuffer.SoundBuffer.Length)
             {
                 var nextEvent = POKEY_SAMPLE;
                 var wholeTicksToConsume = (_pokeyTicks >> 8);
@@ -308,7 +308,7 @@ namespace EMU7800.Core
                     for (var ch = 0; ch < 4; ch++)
                         sample += _outvol[ch];
 
-                    M.FrameBuffer.SoundBuffer[_bufferIndex >> BufferElement.SHIFT][_bufferIndex++] += sample;
+                    M.FrameBuffer.SoundBuffer.Span[_bufferIndex++] += sample;
                     count--;
 
                     continue;

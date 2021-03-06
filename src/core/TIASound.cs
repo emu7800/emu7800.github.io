@@ -136,7 +136,7 @@ namespace EMU7800.Core
 
         public void EndFrame()
         {
-            RenderSamples(M.FrameBuffer.SoundBufferByteLength - BufferIndex);
+            RenderSamples(M.FrameBuffer.SoundBuffer.Length - BufferIndex);
         }
 
         public void Update(ushort addr, byte data)
@@ -232,7 +232,7 @@ namespace EMU7800.Core
         public TIASound(MachineBase m, int cpuClocksPerSample) : this()
         {
             if (cpuClocksPerSample <= 0)
-                throw new ArgumentException("cpuClocksPerSample must be positive.");
+                throw new ArgumentException("must be positive", nameof(cpuClocksPerSample));
 
             M = m;
             _cpuClocksPerSample = cpuClocksPerSample;
@@ -288,7 +288,7 @@ namespace EMU7800.Core
 
         void RenderSamples(int count)
         {
-            for (; BufferIndex < M.FrameBuffer.SoundBufferByteLength && count-- > 0; BufferIndex++)
+            for (; BufferIndex < M.FrameBuffer.SoundBuffer.Length && count-- > 0; BufferIndex++)
             {
                 if (DivByNCounter[0] > 1)
                 {
@@ -309,7 +309,7 @@ namespace EMU7800.Core
                     ProcessChannel(1);
                 }
 
-                M.FrameBuffer.SoundBuffer[BufferIndex >> BufferElement.SHIFT][BufferIndex] += (byte)(OutputVol[0] + OutputVol[1]);
+                M.FrameBuffer.SoundBuffer.Span[BufferIndex] += (byte)(OutputVol[0] + OutputVol[1]);
             }
         }
 

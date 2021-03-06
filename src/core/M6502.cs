@@ -115,7 +115,7 @@ namespace EMU7800.Core
         public M6502(MachineBase m, int runClocksMultiple) : this()
         {
             if (runClocksMultiple <= 0)
-                throw new ArgumentException("runClocksMultiple must be greater than zero.");
+                throw new ArgumentException("must be greater than zero", nameof(runClocksMultiple));
 
             M = m;
             RunClocksMultiple = runClocksMultiple;

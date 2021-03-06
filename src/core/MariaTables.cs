@@ -7,11 +7,13 @@
  * Copyright © 2004 Mike Murphy
  *
  */
+using System;
+
 namespace EMU7800.Core
 {
     public static class MariaTables
     {
-        public static readonly int[] NTSCPalette =
+        public static readonly ReadOnlyMemory<uint> NTSCPalette = new(new uint[]
         {
             0x000000, 0x1c1c1c, 0x393939, 0x595959,  // Grey
             0x797979, 0x929292, 0xababab, 0xbcbcbc,
@@ -92,9 +94,9 @@ namespace EMU7800.Core
             0xab511f, 0xb56427, 0xbf7730, 0xd0853a,
             0xe19344, 0xeda04e, 0xf9ad58, 0xfcb75c,
             0xffc160, 0xffc671, 0xffcb83, 0xffcb83
-        };
+        });
 
-        public static readonly int[] PALPalette =
+        public static readonly ReadOnlyMemory<uint> PALPalette = new(new uint[]
         {
             0x000000, 0x1c1c1c, 0x393939, 0x595959,  // Grey
             0x797979, 0x929292, 0xababab, 0xbcbcbc,
@@ -175,6 +177,6 @@ namespace EMU7800.Core
             0x4f7420, 0x598324, 0x649228, 0x82a12e,
             0xa1b034, 0xa9c13a, 0xb2d241, 0xc4d945,
             0xd6e149, 0xe4f04e, 0xf2ff53, 0xf2ff53
-        };
+        });
     }
 }

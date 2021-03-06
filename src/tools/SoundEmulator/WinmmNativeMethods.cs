@@ -1,15 +1,14 @@
 /*
  * WinmmNativeMethods.cs
- * 
+ *
  * .NET interface to the Windows Multimedia Library
- * 
- * Copyright © 2006-2008 Mike Murphy
- * 
+ *
+ * Copyright Â© 2006-2008 Mike Murphy
+ *
  */
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using EMU7800.Core;
 
 namespace EMU7800.Win
 {
@@ -51,8 +50,9 @@ namespace EMU7800.Win
         internal static int Open(int freq, int soundFrameSize, int queueLen)
         {
             QueueLen = queueLen & 0x3f;
-            if (QueueLen < 2) QueueLen = 2;
-            
+            if (QueueLen < 2)
+                QueueLen = 2;
+
             WAVEFORMATEX wfx;
             wfx.wFormatTag = 1; // WAVE_FORMAT_PCM
             wfx.nChannels = 1;
@@ -96,16 +96,21 @@ namespace EMU7800.Win
             return waveOutSetVolume(Hwo, nVolume);
         }
 
+        internal static int SetVolume(uint nVolume)
+        {
+            return waveOutSetVolume(Hwo, nVolume);
+        }
+
         internal static int GetVolume()
         {
             uint nVolume;
-            waveOutGetVolume(Hwo, &nVolume);
+            _ = waveOutGetVolume(Hwo, &nVolume);
             return (int)nVolume;
         }
 
-        internal static int Enqueue(FrameBuffer frameBuffer)
+        internal static int Enqueue(ReadOnlyMemory<byte> buffer)
         {
-            if (frameBuffer.SoundBufferByteLength < SoundFrameSize)
+            if (buffer.Length < SoundFrameSize)
                 throw new ApplicationException("Bad enqueue request: buffer length is not at least " + SoundFrameSize);
 
             var queued = false;
@@ -117,20 +122,19 @@ namespace EMU7800.Win
                 var waveHdr = (WAVEHDR*)ptr;
                 if ((waveHdr->dwFlags & WHDR_DONE) == WHDR_DONE)
                 {
-                    if (queued) continue;
-                    waveOutUnprepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    if (queued)
+                        continue;
+                    _ = waveOutUnprepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
                     waveHdr->dwBufferLength = (uint)SoundFrameSize;
                     waveHdr->dwFlags = 0;
                     waveHdr->lpData = ptr + sizeof(WAVEHDR);
-                    for (int j = 0, s = 0; j < frameBuffer.SoundBufferElementLength; j++)
+                    for (var j = 0; j < buffer.Length; j++)
                     {
-                        var v = frameBuffer.SoundBuffer[j];
                         // convert to WAV format
-                        for (var k = 0; k < BufferElement.SIZE; k++, s++)
-                            waveHdr->lpData[s] = (byte)(v[s] + 0x80);
+                        waveHdr->lpData[j] = (byte)(buffer.Span[j] | 0x80);
                     }
-                    waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
-                    waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    _ = waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                    _ = waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
                     queued = true;
                     continue;
                 }
@@ -140,41 +144,62 @@ namespace EMU7800.Win
             return queued ? usedBuffers : -1;
         }
 
+        internal static int GetBuffersQueued()
+        {
+            if (Hwo == IntPtr.Zero)
+                return -1;
+
+            var queued = 0;
+
+            var ptr = (byte*)Storage;
+            for (var i = 0; i < QueueLen; i++, ptr += sizeof(WAVEHDR) + SoundFrameSize)
+            {
+                var waveHdr = (WAVEHDR*)ptr;
+                if ((waveHdr->dwFlags & WHDR_DONE) != WHDR_DONE)
+                {
+                    queued++;
+                }
+            }
+
+            return queued;
+        }
+
         internal static void Close()
         {
-            if (Storage.Equals(IntPtr.Zero)) return;
+            if (Storage.Equals(IntPtr.Zero))
+                return;
 
-            waveOutReset(Hwo);
-            waveOutClose(Hwo);
+            _ = waveOutReset(Hwo);
+            _ = waveOutClose(Hwo);
             Marshal.FreeHGlobal(Storage);
             Storage = IntPtr.Zero;
         }
 
 #pragma warning disable IDE1006 // Naming Styles
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int waveOutReset(IntPtr hwo);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutReset(IntPtr hwo);
 
-        [DllImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern uint waveOutClose(IntPtr hwo);
+        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
+        static extern int waveOutClose(IntPtr hwo);
 
 #pragma warning restore IDE1006 // Naming Styles
     }

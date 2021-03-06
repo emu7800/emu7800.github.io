@@ -14,12 +14,12 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        readonly uint[] _normalPalette = new uint[0x100];
-        readonly uint[] _darkerPalette = new uint[0x100];
-        uint[] _currentPalette = Array.Empty<uint>();
+        ReadOnlyMemory<uint> _normalPalette  = ReadOnlyMemory<uint>.Empty;
+        ReadOnlyMemory<uint> _darkerPalette  = ReadOnlyMemory<uint>.Empty;
+        ReadOnlyMemory<uint> _currentPalette = ReadOnlyMemory<uint>.Empty;
 
         readonly static object _dynamicBitmapLocker = new();
-        readonly static byte[] _dynamicBitmapData = new byte[4 * 320 * 230];
+        readonly static Memory<byte> _dynamicBitmapData = new(new byte[4 * 320 * 230]);
         readonly static D2D_SIZE_U _dynamicBitmapDataSize = new(320, 230);
         IFrameRenderer _frameRenderer = new FrameRendererDefault();
         D2DBitmapInterpolationMode _dynamicBitmapInterpolationMode = D2DBitmapInterpolationMode.NearestNeighbor;
@@ -49,29 +49,17 @@ namespace EMU7800.D2D.Shell
 
         public bool IsGameBWConsoleSwitchSet
         {
-            get
-            {
-                var inputState = _inputState;
-                return (inputState != null) && inputState.IsGameBWConsoleSwitchSet;
-            }
+            get => _inputState.IsGameBWConsoleSwitchSet;
         }
 
         public bool IsLeftDifficultyAConsoleSwitchSet
         {
-            get
-            {
-                var inputState = _inputState;
-                return (inputState != null) && inputState.IsLeftDifficultyAConsoleSwitchSet;
-            }
+            get => _inputState.IsLeftDifficultyAConsoleSwitchSet;
         }
 
         public bool IsRightDifficultyAConsoleSwitchSet
         {
-            get
-            {
-                var inputState = _inputState;
-                return (inputState != null) && inputState.IsRightDifficultyAConsoleSwitchSet;
-            }
+            get => _inputState.IsRightDifficultyAConsoleSwitchSet;
         }
 
         public bool IsPaused
@@ -136,8 +124,7 @@ namespace EMU7800.D2D.Shell
                 return;
 
             _stopRequested = false;
-            for (var i = 0; i < _dynamicBitmapData.Length; i++)
-                _dynamicBitmapData[i] = 0;
+            _dynamicBitmapData.Span.Clear();
 
             var state = Tuple.Create(importedGameProgramInfo, startFresh);
             _workerTask = Task.Factory.StartNew(Run, state, TaskCreationOptions.LongRunning);
@@ -387,7 +374,6 @@ namespace EMU7800.D2D.Shell
 
             var frameBuffer = machine.CreateFrameBuffer();
             _frameRenderer = ToFrameRenderer(machineStateInfo, frameBuffer);
-            var audioBytes = new byte[frameBuffer.SoundBufferByteLength];
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -439,8 +425,8 @@ namespace EMU7800.D2D.Shell
 
                 if (!_soundOff && AudioDevice.IsClosed)
                 {
-                    var soundFrequency = frameBuffer.SoundBufferByteLength * CurrentFrameRate;
-                    AudioDevice.Configure(soundFrequency, frameBuffer.SoundBufferByteLength, 8);
+                    var soundFrequency = frameBuffer.SoundBuffer.Length * CurrentFrameRate;
+                    AudioDevice.Configure(soundFrequency, frameBuffer.SoundBuffer.Length, 8);
                 }
 
                 var buffersQueued = AudioDevice.CountBuffersQueued();
@@ -458,8 +444,7 @@ namespace EMU7800.D2D.Shell
 
                 if (!_soundOff && !_paused)
                 {
-                    UpdateAudioBytes(frameBuffer, audioBytes);
-                    AudioDevice.SubmitBuffer(audioBytes);
+                    AudioDevice.SubmitBuffer(frameBuffer.SoundBuffer);
                 }
 
                 lock (_dynamicBitmapLocker)
@@ -504,11 +489,10 @@ namespace EMU7800.D2D.Shell
             var random = new Random();
 
             CurrentFrameRate = 60;
-            const int soundBufferByteLength = 524;
-            var soundFrequency = soundBufferByteLength * CurrentFrameRate;
+            var soundBuffer = new Memory<byte>(new byte[524]);
+            var soundFrequency = soundBuffer.Length * CurrentFrameRate;
             var ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
-            AudioDevice.Configure(soundFrequency, soundBufferByteLength, 8);
-            var audioBytes = new byte[soundBufferByteLength];
+            AudioDevice.Configure(soundFrequency, soundBuffer.Length, 8);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -530,19 +514,20 @@ namespace EMU7800.D2D.Shell
 
                 if (!_soundOff)
                 {
-                    for (var i = 0; i < audioBytes.Length; i++)
-                        audioBytes[i] = (byte) (random.Next(2) | 0x80);
-                    AudioDevice.SubmitBuffer(audioBytes);
+                    for (var i = 0; i < soundBuffer.Length; i++)
+                        soundBuffer.Span[i] = (byte) (random.Next(2) | 0x80);
+                    AudioDevice.SubmitBuffer(soundBuffer);
                 }
 
                 lock (_dynamicBitmapLocker)
                 {
+                    var dbdSpan = _dynamicBitmapData.Span;
                     for (var i = 0; i < _dynamicBitmapData.Length; i += 4)
                     {
                         var c = (byte)random.Next(0xc0);
-                        _dynamicBitmapData[i] = c;
-                        _dynamicBitmapData[i + 1] = c;
-                        _dynamicBitmapData[i + 2] = c;
+                        dbdSpan[i] = c;
+                        dbdSpan[i + 1] = c;
+                        dbdSpan[i + 2] = c;
                     }
                     _dynamicBitmapDataUpdated = true;
                 }
@@ -560,7 +545,7 @@ namespace EMU7800.D2D.Shell
             => machineStateInfo.GameProgramInfo.MachineType switch
             {
                 MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160Blender(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
-              //MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData);
+              //MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
                 MachineType.A7800NTSC or MachineType.A7800PAL => new FrameRenderer320(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
                 _ => throw new ArgumentException("Unknown MachineType", nameof(machineStateInfo))
             };
@@ -586,34 +571,26 @@ namespace EMU7800.D2D.Shell
                 ? machineState.Machine.InputState.LeftControllerJack
                 : machineState.Machine.InputState.RightControllerJack;
 
-        void InitializePalettes(int[] sourcePalette)
+        void InitializePalettes(ReadOnlyMemory<uint> sourcePalette)
         {
-            for (var i = 0; i < _normalPalette.Length && i < sourcePalette.Length; i++)
-            {
-                _normalPalette[i] = (uint)sourcePalette[i];
+            _normalPalette = sourcePalette;
 
-                var color = sourcePalette[i];
+            var normalPaletteSpan = _normalPalette.Span;
+            var darkerPalette = new uint[_normalPalette.Length];
+
+            for (var i = 0; i < _normalPalette.Length; i++)
+            {
+                var color = normalPaletteSpan[i];
                 var r = (color >> 16) & 0xFF;
-                var g = (color >> 8) & 0xFF;
-                var b = (color >> 0) & 0xFF;
+                var g = (color >>  8) & 0xFF;
+                var b = (color >>  0) & 0xFF;
                 r >>= 1;
                 g >>= 1;
                 b >>= 1;
-                _darkerPalette[i] = (uint)(b | (g << 8) | (r << 16));
+                darkerPalette[i] = b | (g << 8) | (r << 16);
             }
-        }
 
-        static void UpdateAudioBytes(FrameBuffer frameBuffer, byte[] audioBytes)
-        {
-            for (var i = 0; i < frameBuffer.SoundBufferElementLength; i++)
-            {
-                var be = frameBuffer.SoundBuffer[i];
-                var si = i << BufferElement.SHIFT;
-                for (var j = 0; j < BufferElement.SIZE; j++)
-                {
-                    audioBytes[si | j] = (byte)(be[j] | 0x80);
-                }
-            }
+            _darkerPalette = new ReadOnlyMemory<uint>(darkerPalette);
         }
 
         void ClearPerPlayerButtonInput(int playerNo)

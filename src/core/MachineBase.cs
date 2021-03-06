@@ -90,7 +90,7 @@ namespace EMU7800.Core
         /// <summary>
         /// The color palette for the configured machine.
         /// </summary>
-        public int[] Palette { get; internal set; }
+        public ReadOnlyMemory<uint> Palette { get; }
 
         /// <summary>
         /// Dumps CPU registers to the log when NOP instructions are encountered.
@@ -184,8 +184,6 @@ namespace EMU7800.Core
         /// Computes the next machine frame, updating contents of the provided <see cref="FrameBuffer"/>.
         /// </summary>
         /// <param name="frameBuffer">The framebuffer to contain the computed output.</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException">frameBuffer is incompatible with machine.</exception>
         public virtual void ComputeNextFrame(FrameBuffer frameBuffer)
         {
             if (MachineHalt)
@@ -197,10 +195,7 @@ namespace EMU7800.Core
 
             FrameNumber++;
 
-            for (var i = 0; i < _FrameBuffer.SoundBufferElementLength; i++)
-            {
-                _FrameBuffer.SoundBuffer[i].ClearAll();
-            }
+            _FrameBuffer.SoundBuffer.Span.Clear();
         }
 
         /// <summary>
@@ -236,13 +231,13 @@ namespace EMU7800.Core
 
         #region Constructors
 
-        protected MachineBase(ILogger logger, int scanLines, int firstScanline, int fHZ, int soundSampleFreq, int[] palette, int vPitch)
+        protected MachineBase(ILogger logger, int scanLines, int firstScanline, int fHZ, int soundSampleFreq, ReadOnlyMemory<uint> palette, int vPitch)
         {
             Logger = logger;
             _Scanlines = scanLines;
             FirstScanline = firstScanline;
             FrameHZ = fHZ;
-            SoundSampleFrequency = soundSampleFreq > 0 ? soundSampleFreq : throw new ArgumentException("Must be a positive integer", nameof(soundSampleFreq));
+            SoundSampleFrequency = soundSampleFreq > 0 ? soundSampleFreq : throw new ArgumentException("must be a positive integer", nameof(soundSampleFreq));
             Palette = palette;
             _VisiblePitch = vPitch;
         }
@@ -251,14 +246,12 @@ namespace EMU7800.Core
 
         #region Serialization Members
 
-        protected MachineBase(DeserializationContext input, int[] palette)
+        protected MachineBase(DeserializationContext input, ReadOnlyMemory<uint> palette)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
-            if (palette == null)
-                throw new ArgumentNullException(nameof(palette));
             if (palette.Length != 0x100)
-                throw new ArgumentException("palette incorrect size, must be 256.");
+                throw new ArgumentException("palette incorrect size, must be 256", nameof(palette));
 
             input.CheckVersion(1);
             _MachineHalt = input.ReadBoolean();
@@ -311,7 +304,7 @@ namespace EMU7800.Core
             public override string ToString()
                 => "EMU7800.Core.MachineUnknown";
 
-            public MachineUnknown() : base(NullLogger.Default, 100, 1, 1, 1, Array.Empty<int>(), 1)
+            public MachineUnknown() : base(NullLogger.Default, 100, 1, 1, 1, ReadOnlyMemory<uint>.Empty, 1)
             {
             }
         }

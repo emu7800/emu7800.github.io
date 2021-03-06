@@ -7,7 +7,8 @@ namespace EMU7800.SoundEmulator
         #region Fields
 
         readonly InputTapeReader _inputTapeReader;
-        byte[] _currentRegisters = Array.Empty<byte>();
+        readonly static byte[] _emptyRegisters = new byte[16];
+        byte[] _currentRegisters = _emptyRegisters;
         bool _endOfTapeReached;
 
         #endregion
@@ -48,7 +49,7 @@ namespace EMU7800.SoundEmulator
             e.PokePokey(Constants.POKEY_AUDF4, reg[14]);
 
             if (--reg[15] <= 0)
-                _currentRegisters = Array.Empty<byte>();
+                _currentRegisters = _emptyRegisters;
         }
 
         #region Constructors

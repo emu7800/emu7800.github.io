@@ -93,7 +93,7 @@ namespace EMU7800.SoundEmulator
 
             var buffers = Buffers > 0 && Buffers < 65 ? Buffers : 8;
 
-            WinmmNativeMethods.Open(_machine.SoundSampleFrequency, framebuffer.SoundBufferByteLength, Buffers);
+            WinmmNativeMethods.Open(_machine.SoundSampleFrequency, framebuffer.SoundBuffer.Length, Buffers);
 
             while (!_stopRequested)
             {
@@ -106,7 +106,7 @@ namespace EMU7800.SoundEmulator
 
                 while (!_stopRequested)
                 {
-                    var buffersQueued = WinmmNativeMethods.Enqueue(framebuffer);
+                    var buffersQueued = WinmmNativeMethods.Enqueue(framebuffer.SoundBuffer);
                     if (buffersQueued >= 0)
                         break;
                     Thread.Yield();
@@ -118,9 +118,9 @@ namespace EMU7800.SoundEmulator
 
         void ComputeNoiseFrame(FrameBuffer framebuffer)
         {
-            for (var i = 0; i < framebuffer.SoundBufferElementLength * BufferElement.SIZE; i++)
+            for (var i = 0; i < framebuffer.SoundBuffer.Length; i++)
             {
-                framebuffer.SoundBuffer[i >> BufferElement.SHIFT][i] = (byte)(_random.Next(2));
+                framebuffer.SoundBuffer.Span[i] = (byte)_random.Next(2);
             }
         }
     }

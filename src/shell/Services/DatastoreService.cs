@@ -88,7 +88,7 @@ namespace EMU7800.Services
             return _cachedPersistedDir.TryGetValue(name, out var lastUpdated) ? lastUpdated : DateTime.MinValue;
         }
 
-        public static void PersistMachine(MachineStateInfo machineStateInfo, byte[] screenshotData)
+        public static void PersistMachine(MachineStateInfo machineStateInfo, ReadOnlyMemory<byte> screenshotData)
         {
             EnsurePersistedGameProgramsFolderExists();
 
@@ -123,7 +123,7 @@ namespace EMU7800.Services
             try
             {
                 using var fs = new FileStream(sssPath, FileMode.OpenOrCreate);
-                fs.Write(screenshotData);
+                fs.Write(screenshotData.Span);
                 fs.Flush(true);
                 fs.Close();
             }
