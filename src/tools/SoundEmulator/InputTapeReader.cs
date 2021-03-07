@@ -10,10 +10,8 @@ namespace EMU7800.SoundEmulator
 
         public int Load(string fileName)
         {
-            if (string.IsNullOrWhiteSpace(fileName))
-                throw new ArgumentNullException("fileName");
-
             _queue.Clear();
+
             using (var sr = new StreamReader(fileName))
             {
                 while (true)
@@ -22,7 +20,7 @@ namespace EMU7800.SoundEmulator
                     if (line == null)
                         break;
                     var parsedLine = ParseLine(line);
-                    if (parsedLine != null)
+                    if (parsedLine.Length > 0)
                     {
                         _queue.Enqueue(parsedLine);
                     }
@@ -33,11 +31,9 @@ namespace EMU7800.SoundEmulator
         }
 
         public byte[] Dequeue()
-        {
-            return _queue.Count > 0 ? _queue.Dequeue() : Array.Empty<byte>();
-        }
+            => _queue.Count > 0 ? _queue.Dequeue() : Array.Empty<byte>();
 
-        byte[] ParseLine(string line)
+        static byte[] ParseLine(string line)
         {
             const int byteCount = 16;
             var parsedLine = Array.Empty<byte>();

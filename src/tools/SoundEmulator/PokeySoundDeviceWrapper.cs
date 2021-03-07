@@ -7,33 +7,21 @@ namespace EMU7800.SoundEmulator
         readonly PokeySound _pokeySound;
 
         public void Reset()
-        {
-            _pokeySound.Reset();
-        }
+            => _pokeySound.Reset();
 
         public byte this[ushort addr]
         {
-            get { return 0; }
-            set
-            {
-                addr &= 0xf;
-                _pokeySound.Update(addr, value);
-            }
+            get => 0;
+            set => _pokeySound.Update((ushort)(addr & 0xf), value);
         }
 
         public void StartFrame()
-        {
-            _pokeySound.StartFrame();
-        }
+            => _pokeySound.StartFrame();
 
         public void EndFrame()
-        {
-            _pokeySound.EndFrame();
-        }
+            => _pokeySound.EndFrame();
 
         public PokeySoundDeviceWrapper(MachineBase m)
-        {
-            _pokeySound = new PokeySound(m);
-        }
+            => _pokeySound = new PokeySound(m);
     }
 }

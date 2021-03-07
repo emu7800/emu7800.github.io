@@ -1,135 +1,127 @@
-﻿using System;
+﻿using EMU7800.SoundEmulator;
+using System;
 using System.IO;
+using static System.Console;
 
-namespace EMU7800.SoundEmulator
+AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
+
+var helpRequested = false;
+var inputTapeFileName = string.Empty;
+var palRegionRequested = false;
+var buffers = 8;
+
+foreach (var arg in args)
 {
-    static class Program
+    if (StartsWith(arg, "/h"))
     {
-        static readonly SoundEmulator SoundEmulator = new();
-
-        [STAThread]
-        static int Main(string[] args)
+        helpRequested = true;
+    }
+    else if (StartsWith(arg, "/f"))
+    {
+        inputTapeFileName = GetStrArg(arg, string.Empty);
+    }
+    else if (StartsWith(arg, "/r"))
+    {
+        var regionVal = GetStrArg(arg, "ntsc");
+        palRegionRequested = regionVal.StartsWith("p", StringComparison.OrdinalIgnoreCase);
+    }
+    else if (StartsWith(arg, "/b"))
+    {
+        buffers = GetIntArg(arg, 8);
+        if (buffers < 1 || buffers > 64)
         {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomainUnhandledException;
-            Console.CancelKeyPress += Console_CancelKeyPress;
+            WriteLine("Buffers must be between 1 and 64.");
+            return 1;
+        }
+    }
+}
 
-            var helpRequested = false;
-            var inputTapeFileName = string.Empty;
-            var palRegionRequested = false;
-            var buffers = 8;
-
-            foreach (var arg in args)
-            {
-                if (StartsWith(arg, "/h"))
-                {
-                    helpRequested = true;
-                }
-                else if (StartsWith(arg, "/f"))
-                {
-                    inputTapeFileName = GetStrArg(arg, string.Empty);
-                }
-                else if (StartsWith(arg, "/r"))
-                {
-                    var regionVal = GetStrArg(arg, "ntsc");
-                    palRegionRequested = regionVal.StartsWith("p", StringComparison.OrdinalIgnoreCase);
-                }
-                else if (StartsWith(arg, "/b"))
-                {
-                    buffers = GetIntArg(arg, 8);
-                    if (buffers < 1 || buffers > 64)
-                    {
-                        Console.WriteLine("Buffers must be between 1 and 64.");
-                        return 1;
-                    }
-                }
-            }
-
-            Console.WriteLine(@"
+WriteLine(@"
 EMU7800 SoundEmulator
 Copyright (c) 2012 Mike Murphy
 ");
 
-            if (helpRequested)
-            {
-                Console.WriteLine(@"
+if (helpRequested)
+{
+    WriteLine(@"
 Usage:
     /h                    Show usage information
     /f:<filename>         Input tape (required)
     /r:{region}           Region select: NTSC or PAL (default:NTSC)
     /b:{#}                Number of buffers in sound queue (default:8)
 ");
-                return 0;
-            }
+    return 0;
+}
 
-            if (string.IsNullOrWhiteSpace(inputTapeFileName))
-            {
-                Console.WriteLine("Input tape not specified. /h for help.");
-                return 0;
-            }
-            if (!File.Exists(inputTapeFileName))
-            {
-                Console.WriteLine("Specified input tape filename not found.");
-                return 0;
-            }
+if (string.IsNullOrWhiteSpace(inputTapeFileName))
+{
+    WriteLine("Input tape not specified. /h for help.");
+    return 0;
+}
+if (!File.Exists(inputTapeFileName))
+{
+    WriteLine("Specified input tape filename not found.");
+    return 0;
+}
 
-            Console.WriteLine("Sound buffer queue size: {0}", buffers);
-            Console.WriteLine("Using {0} region 7800 machine configuration for playback.", palRegionRequested ? "PAL" : "NTSC");
+WriteLine($@"Sound buffer queue size: {buffers}
+Using {(palRegionRequested ? "PAL" : "NTSC")} region 7800 machine configuration for playback.
+Loading input tape: {inputTapeFileName}");
 
-            Console.WriteLine("Loading input tape: {0}", inputTapeFileName);
+var inputTapeReader = new InputTapeReader();
+var enqueuedCount = inputTapeReader.Load(inputTapeFileName);
 
-            var inputTapeReader = new InputTapeReader();
-            var enqueuedCount = inputTapeReader.Load(inputTapeFileName);
+WriteLine($@"Tape loaded, enqueued count: {enqueuedCount}
+Starting playback; CTRL-C terminates.");
 
-            Console.WriteLine("Tape loaded, enqueued count: {0}", enqueuedCount);
+var player = new InputTapePlayer(inputTapeReader) { EndOfTapeReached = () => WriteLine("End of tape reached.") };
 
-            Console.WriteLine("Starting playback; CTRL-C terminates.");
+var soundEmulator = new SoundEmulator();
 
-            var player = new InputTapePlayer(inputTapeReader) { EndOfTapeReached = () => Console.WriteLine("End of tape reached.") };
+CancelKeyPress += (o, e) => Console_CancelKeyPress(soundEmulator);
 
-            SoundEmulator.Buffers = buffers;
-            SoundEmulator.GetRegisterSettingsForNextFrame = player.GetRegisterSettingsForNextFrame;
+soundEmulator.Buffers = buffers;
+soundEmulator.GetRegisterSettingsForNextFrame = player.GetRegisterSettingsForNextFrame;
 
-            if (palRegionRequested)
-                SoundEmulator.StartPAL();
-            else
-                SoundEmulator.StartNTSC();
+if (palRegionRequested)
+{
+    soundEmulator.StartPAL();
+}
+else
+{
+    soundEmulator.StartNTSC();
+}
 
-            SoundEmulator.WaitUntilStopped();
+soundEmulator.WaitUntilStopped();
 
-            return 0;
-        }
+return 0;
 
-        static bool StartsWith(string arg, string text)
-        {
-            return !string.IsNullOrWhiteSpace(arg) && arg.StartsWith(text, StringComparison.OrdinalIgnoreCase);
-        }
+static bool StartsWith(string arg, string text)
+    => !string.IsNullOrWhiteSpace(arg) && arg.StartsWith(text, StringComparison.OrdinalIgnoreCase);
 
-        static int GetIntArg(string curArg, int defaultValue)
-        {
-            var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
-            if (startPos < 0)
-                return defaultValue;
-            return int.TryParse(curArg[(startPos + 1)..], out var num) ? num : defaultValue;
-        }
+static int GetIntArg(string curArg, int defaultValue)
+{
+    var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
+    return startPos >= 0 ? int.TryParse(curArg[(startPos + 1)..], out var num) ? num : defaultValue : defaultValue;
+}
 
-        static string GetStrArg(string curArg, string defaultValue)
-        {
-            var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
-            if (startPos < 0)
-                return defaultValue;
-            return curArg[(startPos + 1)..];
-        }
+static string GetStrArg(string curArg, string defaultValue)
+{
+    var startPos = curArg.IndexOf(":", StringComparison.OrdinalIgnoreCase);
+    return startPos >= 0 ? curArg[(startPos + 1)..] : defaultValue;
+}
 
-        static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Console.WriteLine(e.ExceptionObject.ToString());
-            Environment.Exit(1);
-        }
+static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+{
+    WriteLine(e.ExceptionObject.ToString());
+    Environment.Exit(1);
+}
 
-        static void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
-        {
-            Console.WriteLine("*** Ctrl-C Acknowledgement: Requesting Termination ***");
-            SoundEmulator.Stop();
-        }
+static void Console_CancelKeyPress(object? sender)
+{
+    WriteLine("*** Ctrl-C Acknowledgement: Requesting Termination ***");
+    if (sender is SoundEmulator soundEmulator)
+    {
+        soundEmulator.Stop();
     }
 }

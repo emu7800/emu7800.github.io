@@ -6,27 +6,13 @@
     <Authors>Mike Murphy</Authors>
     <Description>EMU7800 Sound Emulator</Description>
     <Copyright>Copyright © 2012 Mike Murphy</Copyright>
-    <PackageIcon>EMUIcon.ico</PackageIcon>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <StartupObject>EMU7800.SoundEmulator.Program</StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PublishSingleFile>true</PublishSingleFile>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="EMUIcon.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <Content Include="sample.tape.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -7,33 +7,21 @@ namespace EMU7800.SoundEmulator
         readonly TIASound _tiaSound;
 
         public void Reset()
-        {
-            _tiaSound.Reset();
-        }
+            => _tiaSound.Reset();
 
         public byte this[ushort addr]
         {
-            get { return 0; }
-            set
-            {
-                addr &= 0x1f;
-                _tiaSound.Update(addr, value);
-            }
+            get => 0;
+            set => _tiaSound.Update((ushort)(addr & 0x1f), value);
         }
 
         public void StartFrame()
-        {
-            _tiaSound.StartFrame();
-        }
+            => _tiaSound.StartFrame();
 
         public void EndFrame()
-        {
-            _tiaSound.EndFrame();
-        }
+            => _tiaSound.EndFrame();
 
         public TIASoundDeviceWrapper(MachineBase m)
-        {
-            _tiaSound = new TIASound(m, 57);
-        }
+            => _tiaSound = new TIASound(m, 57);
     }
 }

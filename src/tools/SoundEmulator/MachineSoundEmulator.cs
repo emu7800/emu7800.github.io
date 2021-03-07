@@ -15,14 +15,10 @@ namespace EMU7800.SoundEmulator
         readonly PokeySoundDeviceWrapper _pokeySoundDevice;
 
         public void PokeTia(byte tiaRegister, byte value)
-        {
-            Mem[(ushort)(TIA_BASE + tiaRegister)] = value;
-        }
+            => Mem[(ushort)(TIA_BASE + tiaRegister)] = value;
 
         public void PokePokey(byte pokeyRegister, byte value)
-        {
-            Mem[(ushort)(POKEY_BASE + pokeyRegister)] = value;
-        }
+            => Mem[(ushort)(POKEY_BASE + pokeyRegister)] = value;
 
         public override void ComputeNextFrame(FrameBuffer frameBuffer)
         {
@@ -45,15 +41,9 @@ namespace EMU7800.SoundEmulator
         }
 
         public static MachineSoundEmulator CreateForNTSC()
-        {
-            var m = new MachineSoundEmulator(31440, 262);
-            return m;
-        }
+            => new(31440, 262);
 
         public static MachineSoundEmulator CreateForPAL()
-        {
-            var m = new MachineSoundEmulator(31200, 312);
-            return m;
-        }
+            => new(31200, 312);
     }
 }

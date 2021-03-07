@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using EMU7800.Core;
-using EMU7800.Win;
+using EMU7800.Win32.Interop;
 
 namespace EMU7800.SoundEmulator
 {
@@ -38,7 +38,7 @@ namespace EMU7800.SoundEmulator
         public void StartNTSC()
         {
             if (_workerThread.IsAlive)
-                throw new InvalidOperationException("Already started.");
+                throw new InvalidOperationException("Already started");
 
             _machine = MachineSoundEmulator.CreateForNTSC();
 
@@ -49,7 +49,7 @@ namespace EMU7800.SoundEmulator
         public void StartPAL()
         {
             if (_workerThread.IsAlive)
-                throw new InvalidOperationException("Already started.");
+                throw new InvalidOperationException("Already started");
 
             _machine = MachineSoundEmulator.CreateForPAL();
 
@@ -60,7 +60,7 @@ namespace EMU7800.SoundEmulator
         public void StartNoise()
         {
             if (_workerThread.IsAlive)
-                throw new InvalidOperationException("Already started.");
+                throw new InvalidOperationException("Already started");
 
             _machine = MachineSoundEmulator.CreateForNTSC();
             _playNoise = true;
@@ -106,7 +106,7 @@ namespace EMU7800.SoundEmulator
 
                 while (!_stopRequested)
                 {
-                    var buffersQueued = WinmmNativeMethods.Enqueue(framebuffer.SoundBuffer);
+                    var buffersQueued = WinmmNativeMethods.Enqueue(framebuffer.SoundBuffer.Span);
                     if (buffersQueued >= 0)
                         break;
                     Thread.Yield();
