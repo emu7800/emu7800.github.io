@@ -21,10 +21,10 @@ namespace EMU7800.Win32.Interop
         public static int CountBuffersQueued()
             => IsOpened? WinmmNativeMethods.GetBuffersQueued() : -1;
 
-        public static void SubmitBuffer(ReadOnlyMemory<byte> buffer)
+        public static void SubmitBuffer(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length < BufferPayloadSizeInBytes)
-                throw new System.ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
+                throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
 
             if (!IsOpened)
             {

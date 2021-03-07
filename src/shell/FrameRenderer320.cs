@@ -21,15 +21,14 @@ namespace EMU7800.D2D.Shell
 
         #region IFrameRenderer Members
 
-        public void UpdateDynamicBitmapData(ReadOnlyMemory<uint> palette)
+        public void UpdateDynamicBitmapData(ReadOnlySpan<uint> palette)
         {
-            var paletteSpan = palette.Span;
             var fbufSpan = _frameBuffer.VideoBuffer.Span;
             var outSpan = _dynamicBitmapData.Span;
 
             for (int si = _startSourceIndex, di = 0; si < _endSourceIndex; si++)
             {
-                var nc = paletteSpan[fbufSpan[si]];
+                var nc = palette[fbufSpan[si]];
                 var rn = (nc >> 16) & 0xff;
                 var gn = (nc >> 8)  & 0xff;
                 var bn = (nc >> 0)  & 0xff;

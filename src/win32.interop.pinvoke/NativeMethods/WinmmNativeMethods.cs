@@ -108,7 +108,7 @@ namespace EMU7800.Win32.Interop
             return (int)nVolume;
         }
 
-        internal static int Enqueue(ReadOnlyMemory<byte> buffer)
+        internal static int Enqueue(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length < SoundFrameSize)
                 throw new ApplicationException("Bad enqueue request: buffer length is not at least " + SoundFrameSize);
@@ -131,7 +131,7 @@ namespace EMU7800.Win32.Interop
                     for (var j = 0; j < buffer.Length; j++)
                     {
                         // convert to WAV format
-                        waveHdr->lpData[j] = (byte)(buffer.Span[j] | 0x80);
+                        waveHdr->lpData[j] = (byte)(buffer[j] | 0x80);
                     }
                     _ = waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
                     _ = waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));

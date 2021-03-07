@@ -272,11 +272,11 @@ namespace EMU7800.D2D.Shell
                 if (_dynamicBitmap == DynamicBitmap.Default)
                 {
                     _dynamicBitmap = new DynamicBitmap(_dynamicBitmapDataSize);
-                    _dynamicBitmap.Load(_dynamicBitmapData);
+                    _dynamicBitmap.Load(_dynamicBitmapData.Span);
                 }
                 else if (_dynamicBitmapDataUpdated)
                 {
-                    _dynamicBitmap.Load(_dynamicBitmapData);
+                    _dynamicBitmap.Load(_dynamicBitmapData.Span);
                 }
                 _dynamicBitmapDataUpdated = false;
                 _frameRenderer.OnDynamicBitmapDataDelivered();
@@ -444,12 +444,12 @@ namespace EMU7800.D2D.Shell
 
                 if (!_soundOff && !_paused)
                 {
-                    AudioDevice.SubmitBuffer(frameBuffer.SoundBuffer);
+                    AudioDevice.SubmitBuffer(frameBuffer.SoundBuffer.Span);
                 }
 
                 lock (_dynamicBitmapLocker)
                 {
-                    _frameRenderer.UpdateDynamicBitmapData(_currentPalette);
+                    _frameRenderer.UpdateDynamicBitmapData(_currentPalette.Span);
                     _dynamicBitmapDataUpdated = true;
                 }
 
@@ -515,8 +515,8 @@ namespace EMU7800.D2D.Shell
                 if (!_soundOff)
                 {
                     for (var i = 0; i < soundBuffer.Length; i++)
-                        soundBuffer.Span[i] = (byte) (random.Next(2) | 0x80);
-                    AudioDevice.SubmitBuffer(soundBuffer);
+                        soundBuffer.Span[i] = (byte)random.Next(2);
+                    AudioDevice.SubmitBuffer(soundBuffer.Span);
                 }
 
                 lock (_dynamicBitmapLocker)
