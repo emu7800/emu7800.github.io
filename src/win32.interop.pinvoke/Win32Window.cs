@@ -1,40 +1,23 @@
 ﻿// © Mike Murphy
 
+using System;
 using static EMU7800.Win32.Interop.Win32NativeMethods;
 using static System.Console;
 
 namespace EMU7800.Win32.Interop
 {
-    public delegate void KeyboardKeyPressedHandler(ushort vKey, bool down);
-    public delegate void MouseMovedHandler(int x, int y, int dx, int dy);
-    public delegate void MouseButtonChangedHandler(int x, int y, bool down);
-    public delegate void MouseWheelChangedHandler(int x, int y, int delta);
-    public delegate void LURCycleHandler();
-    public delegate void VisibilityChangedHandler(bool isVisible);
-    public delegate void ResizedHandler(int w, int h);
-    public delegate void DeviceChangedHandler();
-
     public static class Win32Window
     {
-        static readonly KeyboardKeyPressedHandler KeyboardKeyPressedHandlerDefault = (vk, d) => { };
-        static readonly MouseMovedHandler MouseMovedHandlerDefault = (x, y, dx, dy) => { };
-        static readonly MouseButtonChangedHandler MouseButtonChangedHandlerDefault = (x, y, down) => { };
-        static readonly MouseWheelChangedHandler MouseWheelChangedHandlerDefault = (x, y, delta) => { };
-        static readonly LURCycleHandler LURCycleHandlerDefault = () => { };
-        static readonly VisibilityChangedHandler VisibilityChangedHandlerDefault = iv => { };
-        static readonly ResizedHandler ResizeHandlerDefault = (w, h) => { };
-        static readonly DeviceChangedHandler DeviceChangedHandlerDefault = () => { };
+        static IntPtr hWnd;
 
-        static System.IntPtr hWnd;
-
-        public static KeyboardKeyPressedHandler KeyboardKeyPressed { get; set; } = KeyboardKeyPressedHandlerDefault;
-        public static MouseMovedHandler MouseMoved { get; set; } = MouseMovedHandlerDefault;
-        public static MouseButtonChangedHandler MouseButtonChanged { get; set; } = MouseButtonChangedHandlerDefault;
-        public static MouseWheelChangedHandler MouseWheelChanged { get; set; } = MouseWheelChangedHandlerDefault;
-        public static LURCycleHandler LURCycle { get; set; } = LURCycleHandlerDefault;
-        public static VisibilityChangedHandler VisibilityChanged { get; set; } = VisibilityChangedHandlerDefault;
-        public static ResizedHandler Resized { get; set; } = ResizeHandlerDefault;
-        public static DeviceChangedHandler DeviceChanged { get; set; } = DeviceChangedHandlerDefault;
+        public static Action<ushort, bool> KeyboardKeyPressed { get; set; } = (vk, d) => { };
+        public static Action<int, int, int, int> MouseMoved { get; set; } = (x, y, dx, dy) => { };
+        public static Action<int, int, bool> MouseButtonChanged { get; set; } = (x, y, down) => { };
+        public static Action<int, int, int> MouseWheelChanged { get; set; } = (x, y, delta) => { };
+        public static Action LURCycle { get; set; } = () => { };
+        public static Action<bool> VisibilityChanged { get; set; } = iv => { };
+        public static Action<int, int> Resized { get; set; } = (w, h) => { };
+        public static Action DeviceChanged { get; set; } = () => { };
 
         public static void Run(bool startMaximized = true)
         {

@@ -8,6 +8,15 @@ namespace EMU7800.Win32.Interop
 {
     internal unsafe static class Win32NativeMethods
     {
+        delegate void KeyboardKeyPressedHandler(ushort vKey, bool down);
+        delegate void MouseMovedHandler(int x, int y, int dx, int dy);
+        delegate void MouseButtonChangedHandler(int x, int y, bool down);
+        delegate void MouseWheelChangedHandler(int x, int y, int delta);
+        delegate void LURCycleHandler();
+        delegate void VisibilityChangedHandler(bool isVisible);
+        delegate void ResizedHandler(int w, int h);
+        delegate void DeviceChangedHandler();
+
         static readonly KeyboardKeyPressedHandler RaiseKeyboardKeyPressedDelegate = new(RaiseKeyboardKeyPressed);
         static void RaiseKeyboardKeyPressed(ushort vKey, bool down) => Win32Window.KeyboardKeyPressed(vKey, down);
 

@@ -125,9 +125,7 @@ namespace EMU7800.Core
         readonly MachineBase M = MachineBase.Default;
         readonly TIASound TIASound = TIASound.Default;
 
-        delegate void PokeOpTyp(ushort addr, byte data);
-
-        readonly PokeOpTyp[] PokeOp;
+        readonly Action<ushort, byte>[] PokeOp;
 
         #endregion
 
@@ -1027,9 +1025,9 @@ namespace EMU7800.Core
             Collisions = 0;
         }
 
-        PokeOpTyp[] BuildPokeOpTable()
+        Action<ushort, byte>[] BuildPokeOpTable()
         {
-            var pokeOp = new PokeOpTyp[64];
+            var pokeOp = new Action<ushort, byte>[64];
             for (var i = 0; i < pokeOp.Length; i++)
             {
                 pokeOp[i] = opNULL;

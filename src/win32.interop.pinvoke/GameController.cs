@@ -1,16 +1,13 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using System;
 using static EMU7800.Win32.Interop.DirectInputNativeMethods;
 using static System.Console;
 
 namespace EMU7800.Win32.Interop
 {
     public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 };
-
-    public delegate void ButtonChangedHandler(int controllerNo, MachineInput input, bool down);
-    public delegate void PaddlePositionChangedHandler(int controllerNo, int paddleno, int ohms);
-    public delegate void DrivingPositionChangedHandler(int controllerNo, MachineInput machineInput);
 
     public class GameController
     {
@@ -29,9 +26,9 @@ namespace EMU7800.Win32.Interop
             MachineInput.NumPad0
         };
 
-        public static readonly ButtonChangedHandler ButtonChangedHandlerDefault = (cn, mi, d) => {};
-        public static readonly PaddlePositionChangedHandler PaddlePositionChangedHandlerDefault = (cn, pn, o) => {};
-        public static readonly DrivingPositionChangedHandler DrivingPositionChangedHandlerDefault = (cn, mi) => {};
+        static readonly Action<int, MachineInput, bool> ButtonChangedHandlerDefault = (cn, mi, d) => {};
+        static readonly Action<int, int, int> PaddlePositionChangedHandlerDefault = (cn, pn, o) => {};
+        static readonly Action<int, MachineInput> DrivingPositionChangedHandlerDefault = (cn, mi) => {};
 
         readonly int _controllerNo;
         int _daptorMode;
@@ -51,9 +48,9 @@ namespace EMU7800.Win32.Interop
             => JoystickType == JoystickType.Daptor
             || JoystickType == JoystickType.Daptor2;
 
-        public ButtonChangedHandler ButtonChanged { get; set; } = ButtonChangedHandlerDefault;
-        public PaddlePositionChangedHandler PaddlePositionChanged { get; set; } = PaddlePositionChangedHandlerDefault;
-        public DrivingPositionChangedHandler DrivingPositionChanged { get; set; } = DrivingPositionChangedHandlerDefault;
+        public Action<int, MachineInput, bool> ButtonChanged { get; set; } = ButtonChangedHandlerDefault;
+        public Action<int, int, int> PaddlePositionChanged { get; set; } = PaddlePositionChangedHandlerDefault;
+        public Action<int, MachineInput> DrivingPositionChanged { get; set; } = DrivingPositionChangedHandlerDefault;
 
         internal void RaiseEventsFromDirectInput()
         {

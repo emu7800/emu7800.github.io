@@ -16,9 +16,7 @@ namespace EMU7800.Core
     {
         public static readonly M6502 Default = new(MachineBase.Default, 1);
 
-        delegate void OpcodeHandler();
-
-        readonly OpcodeHandler[] Opcodes = new OpcodeHandler[0x100];
+        readonly Action[] Opcodes = new Action[0x100];
 
         const ushort
             // non-maskable interrupt vector
@@ -761,241 +759,239 @@ namespace EMU7800.Core
         {
             ushort EA;
 
-            Opcodes[0x65] = delegate { EA = aZPG();  clk(3); iADC(Mem[EA]); };
-            Opcodes[0x75] = delegate { EA = aZPX();  clk(4); iADC(Mem[EA]); };
-            Opcodes[0x61] = delegate { EA = aIDX();  clk(6); iADC(Mem[EA]); };
-            Opcodes[0x71] = delegate { EA = aIDY(1); clk(5); iADC(Mem[EA]); };
-            Opcodes[0x79] = delegate { EA = aABY(1); clk(4); iADC(Mem[EA]); };
-            Opcodes[0x6d] = delegate { EA = aABS();  clk(4); iADC(Mem[EA]); };
-            Opcodes[0x7d] = delegate { EA = aABX(1); clk(4); iADC(Mem[EA]); };
-            Opcodes[0x69] = delegate { /*aIMM*/      clk(2); iADC(Mem[PC++]); };
+            Opcodes[0x65] = () => { EA = aZPG();  clk(3); iADC(Mem[EA]); };
+            Opcodes[0x75] = () => { EA = aZPX();  clk(4); iADC(Mem[EA]); };
+            Opcodes[0x61] = () => { EA = aIDX();  clk(6); iADC(Mem[EA]); };
+            Opcodes[0x71] = () => { EA = aIDY(1); clk(5); iADC(Mem[EA]); };
+            Opcodes[0x79] = () => { EA = aABY(1); clk(4); iADC(Mem[EA]); };
+            Opcodes[0x6d] = () => { EA = aABS();  clk(4); iADC(Mem[EA]); };
+            Opcodes[0x7d] = () => { EA = aABX(1); clk(4); iADC(Mem[EA]); };
+            Opcodes[0x69] = () => { /*aIMM*/      clk(2); iADC(Mem[PC++]); };
 
-            Opcodes[0x25] = delegate { EA = aZPG();  clk(3); iAND(Mem[EA]); }; // may be 2 clk
-            Opcodes[0x35] = delegate { EA = aZPX();  clk(4); iAND(Mem[EA]); }; // may be 3 clk
-            Opcodes[0x21] = delegate { EA = aIDX();  clk(6); iAND(Mem[EA]); };
-            Opcodes[0x31] = delegate { EA = aIDY(1); clk(5); iAND(Mem[EA]); };
-            Opcodes[0x2d] = delegate { EA = aABS();  clk(4); iAND(Mem[EA]); };
-            Opcodes[0x39] = delegate { EA = aABY(1); clk(4); iAND(Mem[EA]); };
-            Opcodes[0x3d] = delegate { EA = aABX(1); clk(4); iAND(Mem[EA]); };
-            Opcodes[0x29] = delegate {    /*aIMM*/   clk(2); iAND(Mem[PC++]); };
+            Opcodes[0x25] = () => { EA = aZPG();  clk(3); iAND(Mem[EA]); }; // may be 2 clk
+            Opcodes[0x35] = () => { EA = aZPX();  clk(4); iAND(Mem[EA]); }; // may be 3 clk
+            Opcodes[0x21] = () => { EA = aIDX();  clk(6); iAND(Mem[EA]); };
+            Opcodes[0x31] = () => { EA = aIDY(1); clk(5); iAND(Mem[EA]); };
+            Opcodes[0x2d] = () => { EA = aABS();  clk(4); iAND(Mem[EA]); };
+            Opcodes[0x39] = () => { EA = aABY(1); clk(4); iAND(Mem[EA]); };
+            Opcodes[0x3d] = () => { EA = aABX(1); clk(4); iAND(Mem[EA]); };
+            Opcodes[0x29] = () => {    /*aIMM*/   clk(2); iAND(Mem[PC++]); };
 
-            Opcodes[0x06] = delegate { EA = aZPG();  clk(5); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x16] = delegate { EA = aZPX();  clk(6); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x0e] = delegate { EA = aABS();  clk(6); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x1e] = delegate { EA = aABX(0); clk(7); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x0a] = delegate {    /*aACC*/   clk(2);       A = iASL(A); };
+            Opcodes[0x06] = () => { EA = aZPG();  clk(5); Mem[EA] = iASL(Mem[EA]); };
+            Opcodes[0x16] = () => { EA = aZPX();  clk(6); Mem[EA] = iASL(Mem[EA]); };
+            Opcodes[0x0e] = () => { EA = aABS();  clk(6); Mem[EA] = iASL(Mem[EA]); };
+            Opcodes[0x1e] = () => { EA = aABX(0); clk(7); Mem[EA] = iASL(Mem[EA]); };
+            Opcodes[0x0a] = () => {    /*aACC*/   clk(2);       A = iASL(A); };
 
-            Opcodes[0x24] = delegate { EA = aZPG();  clk(3); iBIT(Mem[EA]); };
-            Opcodes[0x2c] = delegate { EA = aABS();  clk(4); iBIT(Mem[EA]); };
+            Opcodes[0x24] = () => { EA = aZPG();  clk(3); iBIT(Mem[EA]); };
+            Opcodes[0x2c] = () => { EA = aABS();  clk(4); iBIT(Mem[EA]); };
 
-            Opcodes[0x10] = delegate { EA = aREL();  clk(2); br(!fN, EA); /* BPL */ };
-            Opcodes[0x30] = delegate { EA = aREL();  clk(2); br( fN, EA); /* BMI */ };
-            Opcodes[0x50] = delegate { EA = aREL();  clk(2); br(!fV, EA); /* BVC */ };
-            Opcodes[0x70] = delegate { EA = aREL();  clk(2); br( fV, EA); /* BVS */ };
-            Opcodes[0x90] = delegate { EA = aREL();  clk(2); br(!fC, EA); /* BCC */ };
-            Opcodes[0xb0] = delegate { EA = aREL();  clk(2); br( fC, EA); /* BCS */ };
-            Opcodes[0xd0] = delegate { EA = aREL();  clk(2); br(!fZ, EA); /* BNE */ };
-            Opcodes[0xf0] = delegate { EA = aREL();  clk(2); br( fZ, EA); /* BEQ */ };
+            Opcodes[0x10] = () => { EA = aREL();  clk(2); br(!fN, EA); /* BPL */ };
+            Opcodes[0x30] = () => { EA = aREL();  clk(2); br( fN, EA); /* BMI */ };
+            Opcodes[0x50] = () => { EA = aREL();  clk(2); br(!fV, EA); /* BVC */ };
+            Opcodes[0x70] = () => { EA = aREL();  clk(2); br( fV, EA); /* BVS */ };
+            Opcodes[0x90] = () => { EA = aREL();  clk(2); br(!fC, EA); /* BCC */ };
+            Opcodes[0xb0] = () => { EA = aREL();  clk(2); br( fC, EA); /* BCS */ };
+            Opcodes[0xd0] = () => { EA = aREL();  clk(2); br(!fZ, EA); /* BNE */ };
+            Opcodes[0xf0] = () => { EA = aREL();  clk(2); br( fZ, EA); /* BEQ */ };
 
-            Opcodes[0x00] = delegate {    /*aIMP*/   clk(7); iBRK(); };
+            Opcodes[0x00] = () => {    /*aIMP*/   clk(7); iBRK(); };
 
-            Opcodes[0x18] = delegate {    /*aIMP*/   clk(2); iCLC(); };
+            Opcodes[0x18] = () => {    /*aIMP*/   clk(2); iCLC(); };
 
-            Opcodes[0xd8] = delegate {    /*aIMP*/   clk(2); iCLD(); };
+            Opcodes[0xd8] = () => {    /*aIMP*/   clk(2); iCLD(); };
 
-            Opcodes[0x58] = delegate {    /*aIMP*/   clk(2); iCLI(); };
+            Opcodes[0x58] = () => {    /*aIMP*/   clk(2); iCLI(); };
 
-            Opcodes[0xb8] = delegate {    /*aIMP*/   clk(2); iCLV(); };
+            Opcodes[0xb8] = () => {    /*aIMP*/   clk(2); iCLV(); };
 
-            Opcodes[0xc5] = delegate { EA = aZPG();  clk(3); iCMP(Mem[EA]); };
-            Opcodes[0xd5] = delegate { EA = aZPX();  clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xc1] = delegate { EA = aIDX();  clk(6); iCMP(Mem[EA]); };
-            Opcodes[0xd1] = delegate { EA = aIDY(1); clk(5); iCMP(Mem[EA]); };
-            Opcodes[0xcd] = delegate { EA = aABS();  clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xdd] = delegate { EA = aABX(1); clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xd9] = delegate { EA = aABY(1); clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xc9] = delegate { /*aIMM*/      clk(2); iCMP(Mem[PC++]); };
+            Opcodes[0xc5] = () => { EA = aZPG();  clk(3); iCMP(Mem[EA]); };
+            Opcodes[0xd5] = () => { EA = aZPX();  clk(4); iCMP(Mem[EA]); };
+            Opcodes[0xc1] = () => { EA = aIDX();  clk(6); iCMP(Mem[EA]); };
+            Opcodes[0xd1] = () => { EA = aIDY(1); clk(5); iCMP(Mem[EA]); };
+            Opcodes[0xcd] = () => { EA = aABS();  clk(4); iCMP(Mem[EA]); };
+            Opcodes[0xdd] = () => { EA = aABX(1); clk(4); iCMP(Mem[EA]); };
+            Opcodes[0xd9] = () => { EA = aABY(1); clk(4); iCMP(Mem[EA]); };
+            Opcodes[0xc9] = () => { /*aIMM*/      clk(2); iCMP(Mem[PC++]); };
 
-            Opcodes[0xe4] = delegate { EA = aZPG();  clk(3); iCPX(Mem[EA]); };
-            Opcodes[0xec] = delegate { EA = aABS();  clk(4); iCPX(Mem[EA]); };
-            Opcodes[0xe0] = delegate { /*aIMM*/      clk(2); iCPX(Mem[PC++]); };
+            Opcodes[0xe4] = () => { EA = aZPG();  clk(3); iCPX(Mem[EA]); };
+            Opcodes[0xec] = () => { EA = aABS();  clk(4); iCPX(Mem[EA]); };
+            Opcodes[0xe0] = () => { /*aIMM*/      clk(2); iCPX(Mem[PC++]); };
 
-            Opcodes[0xc4] = delegate { EA = aZPG();  clk(3); iCPY(Mem[EA]); };
-            Opcodes[0xcc] = delegate { EA = aABS();  clk(4); iCPY(Mem[EA]); };
-            Opcodes[0xc0] = delegate { /*aIMM*/      clk(2); iCPY(Mem[PC++]); };
+            Opcodes[0xc4] = () => { EA = aZPG();  clk(3); iCPY(Mem[EA]); };
+            Opcodes[0xcc] = () => { EA = aABS();  clk(4); iCPY(Mem[EA]); };
+            Opcodes[0xc0] = () => { /*aIMM*/      clk(2); iCPY(Mem[PC++]); };
 
-            Opcodes[0xc6] = delegate { EA = aZPG();  clk(5); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xd6] = delegate { EA = aZPX();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xce] = delegate { EA = aABS();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xde] = delegate { EA = aABX(0); clk(7); Mem[EA] = iDEC(Mem[EA]); };
+            Opcodes[0xc6] = () => { EA = aZPG();  clk(5); Mem[EA] = iDEC(Mem[EA]); };
+            Opcodes[0xd6] = () => { EA = aZPX();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
+            Opcodes[0xce] = () => { EA = aABS();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
+            Opcodes[0xde] = () => { EA = aABX(0); clk(7); Mem[EA] = iDEC(Mem[EA]); };
 
-            Opcodes[0xca] = delegate {    /*aIMP*/   clk(2); iDEX(); };
+            Opcodes[0xca] = () => {    /*aIMP*/   clk(2); iDEX(); };
 
-            Opcodes[0x88] = delegate {    /*aIMP*/   clk(2); iDEY(); };
+            Opcodes[0x88] = () => {    /*aIMP*/   clk(2); iDEY(); };
 
-            Opcodes[0x45] = delegate { EA = aZPG();  clk(3); iEOR(Mem[EA]); };
-            Opcodes[0x55] = delegate { EA = aZPX();  clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x41] = delegate { EA = aIDX();  clk(6); iEOR(Mem[EA]); };
-            Opcodes[0x51] = delegate { EA = aIDY(1); clk(5); iEOR(Mem[EA]); };
-            Opcodes[0x4d] = delegate { EA = aABS();  clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x5d] = delegate { EA = aABX(1); clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x59] = delegate { EA = aABY(1); clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x49] = delegate {    /*aIMM*/   clk(2); iEOR(Mem[PC++]); };
+            Opcodes[0x45] = () => { EA = aZPG();  clk(3); iEOR(Mem[EA]); };
+            Opcodes[0x55] = () => { EA = aZPX();  clk(4); iEOR(Mem[EA]); };
+            Opcodes[0x41] = () => { EA = aIDX();  clk(6); iEOR(Mem[EA]); };
+            Opcodes[0x51] = () => { EA = aIDY(1); clk(5); iEOR(Mem[EA]); };
+            Opcodes[0x4d] = () => { EA = aABS();  clk(4); iEOR(Mem[EA]); };
+            Opcodes[0x5d] = () => { EA = aABX(1); clk(4); iEOR(Mem[EA]); };
+            Opcodes[0x59] = () => { EA = aABY(1); clk(4); iEOR(Mem[EA]); };
+            Opcodes[0x49] = () => {    /*aIMM*/   clk(2); iEOR(Mem[PC++]); };
 
-            Opcodes[0xe6] = delegate { EA = aZPG();  clk(5); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xf6] = delegate { EA = aZPX();  clk(6); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xee] = delegate { EA = aABS();  clk(6); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xfe] = delegate { EA = aABX(0); clk(7); Mem[EA] = iINC(Mem[EA]); };
+            Opcodes[0xe6] = () => { EA = aZPG();  clk(5); Mem[EA] = iINC(Mem[EA]); };
+            Opcodes[0xf6] = () => { EA = aZPX();  clk(6); Mem[EA] = iINC(Mem[EA]); };
+            Opcodes[0xee] = () => { EA = aABS();  clk(6); Mem[EA] = iINC(Mem[EA]); };
+            Opcodes[0xfe] = () => { EA = aABX(0); clk(7); Mem[EA] = iINC(Mem[EA]); };
 
-            Opcodes[0xe8] = delegate {    /*aIMP*/   clk(2); iINX(); };
+            Opcodes[0xe8] = () => {    /*aIMP*/   clk(2); iINX(); };
 
-            Opcodes[0xc8] = delegate {    /*aIMP*/   clk(2); iINY(); };
+            Opcodes[0xc8] = () => {    /*aIMP*/   clk(2); iINY(); };
 
-            Opcodes[0xa5] = delegate { EA = aZPG();  clk(3); iLDA(Mem[EA]); };
-            Opcodes[0xb5] = delegate { EA = aZPX();  clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xa1] = delegate { EA = aIDX();  clk(6); iLDA(Mem[EA]); };
-            Opcodes[0xb1] = delegate { EA = aIDY(1); clk(5); iLDA(Mem[EA]); };
-            Opcodes[0xad] = delegate { EA = aABS();  clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xbd] = delegate { EA = aABX(1); clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xb9] = delegate { EA = aABY(1); clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xa9] = delegate {    /*aIMM*/   clk(2); iLDA(Mem[PC++]); };
+            Opcodes[0xa5] = () => { EA = aZPG();  clk(3); iLDA(Mem[EA]); };
+            Opcodes[0xb5] = () => { EA = aZPX();  clk(4); iLDA(Mem[EA]); };
+            Opcodes[0xa1] = () => { EA = aIDX();  clk(6); iLDA(Mem[EA]); };
+            Opcodes[0xb1] = () => { EA = aIDY(1); clk(5); iLDA(Mem[EA]); };
+            Opcodes[0xad] = () => { EA = aABS();  clk(4); iLDA(Mem[EA]); };
+            Opcodes[0xbd] = () => { EA = aABX(1); clk(4); iLDA(Mem[EA]); };
+            Opcodes[0xb9] = () => { EA = aABY(1); clk(4); iLDA(Mem[EA]); };
+            Opcodes[0xa9] = () => {    /*aIMM*/   clk(2); iLDA(Mem[PC++]); };
 
-            Opcodes[0xa6] = delegate { EA = aZPG();  clk(3); iLDX(Mem[EA]); };
-            Opcodes[0xb6] = delegate { EA = aZPY();  clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xae] = delegate { EA = aABS();  clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xbe] = delegate { EA = aABY(1); clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xa2] = delegate {    /*aIMM*/   clk(2); iLDX(Mem[PC++]); };
+            Opcodes[0xa6] = () => { EA = aZPG();  clk(3); iLDX(Mem[EA]); };
+            Opcodes[0xb6] = () => { EA = aZPY();  clk(4); iLDX(Mem[EA]); };
+            Opcodes[0xae] = () => { EA = aABS();  clk(4); iLDX(Mem[EA]); };
+            Opcodes[0xbe] = () => { EA = aABY(1); clk(4); iLDX(Mem[EA]); };
+            Opcodes[0xa2] = () => {    /*aIMM*/   clk(2); iLDX(Mem[PC++]); };
 
-            Opcodes[0xa4] = delegate { EA = aZPG();  clk(3); iLDY(Mem[EA]); };
-            Opcodes[0xb4] = delegate { EA = aZPX();  clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xac] = delegate { EA = aABS();  clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xbc] = delegate { EA = aABX(1); clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xa0] = delegate {    /*aIMM*/   clk(2); iLDY(Mem[PC++]); };
+            Opcodes[0xa4] = () => { EA = aZPG();  clk(3); iLDY(Mem[EA]); };
+            Opcodes[0xb4] = () => { EA = aZPX();  clk(4); iLDY(Mem[EA]); };
+            Opcodes[0xac] = () => { EA = aABS();  clk(4); iLDY(Mem[EA]); };
+            Opcodes[0xbc] = () => { EA = aABX(1); clk(4); iLDY(Mem[EA]); };
+            Opcodes[0xa0] = () => {    /*aIMM*/   clk(2); iLDY(Mem[PC++]); };
 
-            Opcodes[0x46] = delegate { EA = aZPG();  clk(5); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x56] = delegate { EA = aZPX();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x4e] = delegate { EA = aABS();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x5e] = delegate { EA = aABX(0); clk(7); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x4a] = delegate {    /*aACC*/   clk(2);       A = iLSR(A); };
+            Opcodes[0x46] = () => { EA = aZPG();  clk(5); Mem[EA] = iLSR(Mem[EA]); };
+            Opcodes[0x56] = () => { EA = aZPX();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
+            Opcodes[0x4e] = () => { EA = aABS();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
+            Opcodes[0x5e] = () => { EA = aABX(0); clk(7); Mem[EA] = iLSR(Mem[EA]); };
+            Opcodes[0x4a] = () => {    /*aACC*/   clk(2);       A = iLSR(A); };
 
-            Opcodes[0x4c] = delegate { EA = aABS();  clk(3); iJMP(EA); };
-            Opcodes[0x6c] = delegate { EA = aIND();  clk(5); iJMP(EA); };
+            Opcodes[0x4c] = () => { EA = aABS();  clk(3); iJMP(EA); };
+            Opcodes[0x6c] = () => { EA = aIND();  clk(5); iJMP(EA); };
 
-            Opcodes[0x20] = delegate { EA = aABS();  clk(6); iJSR(EA); };
+            Opcodes[0x20] = () => { EA = aABS();  clk(6); iJSR(EA); };
 
-            Opcodes[0xea] = delegate {    /*aIMP*/   clk(2); iNOP(); };
+            Opcodes[0xea] = () => {    /*aIMP*/   clk(2); iNOP(); };
 
-            Opcodes[0x05] = delegate { EA = aZPG();  clk(3); iORA(Mem[EA]); }; // may be 2 clk
-            Opcodes[0x15] = delegate { EA = aZPX();  clk(4); iORA(Mem[EA]); }; // may be 3 clk
-            Opcodes[0x01] = delegate { EA = aIDX();  clk(6); iORA(Mem[EA]); };
-            Opcodes[0x11] = delegate { EA = aIDY(1); clk(5); iORA(Mem[EA]); };
-            Opcodes[0x0d] = delegate { EA = aABS();  clk(4); iORA(Mem[EA]); };
-            Opcodes[0x1d] = delegate { EA = aABX(1); clk(4); iORA(Mem[EA]); };
-            Opcodes[0x19] = delegate { EA = aABY(1); clk(4); iORA(Mem[EA]); };
-            Opcodes[0x09] = delegate {    /*aIMM*/   clk(2); iORA(Mem[PC++]); };
+            Opcodes[0x05] = () => { EA = aZPG();  clk(3); iORA(Mem[EA]); }; // may be 2 clk
+            Opcodes[0x15] = () => { EA = aZPX();  clk(4); iORA(Mem[EA]); }; // may be 3 clk
+            Opcodes[0x01] = () => { EA = aIDX();  clk(6); iORA(Mem[EA]); };
+            Opcodes[0x11] = () => { EA = aIDY(1); clk(5); iORA(Mem[EA]); };
+            Opcodes[0x0d] = () => { EA = aABS();  clk(4); iORA(Mem[EA]); };
+            Opcodes[0x1d] = () => { EA = aABX(1); clk(4); iORA(Mem[EA]); };
+            Opcodes[0x19] = () => { EA = aABY(1); clk(4); iORA(Mem[EA]); };
+            Opcodes[0x09] = () => {    /*aIMM*/   clk(2); iORA(Mem[PC++]); };
 
-            Opcodes[0x48] = delegate {    /*aIMP*/   clk(3); iPHA(); };
+            Opcodes[0x48] = () => {    /*aIMP*/   clk(3); iPHA(); };
 
-            Opcodes[0x68] = delegate {    /*aIMP*/   clk(4); iPLA(); };
+            Opcodes[0x68] = () => {    /*aIMP*/   clk(4); iPLA(); };
 
-            Opcodes[0x08] = delegate {    /*aIMP*/   clk(3); iPHP(); };
+            Opcodes[0x08] = () => {    /*aIMP*/   clk(3); iPHP(); };
 
-            Opcodes[0x28] = delegate {    /*aIMP*/   clk(4); iPLP(); };
+            Opcodes[0x28] = () => {    /*aIMP*/   clk(4); iPLP(); };
 
-            Opcodes[0x26] = delegate { EA = aZPG();  clk(5); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x36] = delegate { EA = aZPX();  clk(6); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x2e] = delegate { EA = aABS();  clk(6); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x3e] = delegate { EA = aABX(0); clk(7); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x2a] = delegate {    /*aACC*/   clk(2);       A = iROL(A);       };
+            Opcodes[0x26] = () => { EA = aZPG();  clk(5); Mem[EA] = iROL(Mem[EA]); };
+            Opcodes[0x36] = () => { EA = aZPX();  clk(6); Mem[EA] = iROL(Mem[EA]); };
+            Opcodes[0x2e] = () => { EA = aABS();  clk(6); Mem[EA] = iROL(Mem[EA]); };
+            Opcodes[0x3e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROL(Mem[EA]); };
+            Opcodes[0x2a] = () => {    /*aACC*/   clk(2);       A = iROL(A);       };
 
-            Opcodes[0x66] = delegate { EA = aZPG();  clk(5); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x76] = delegate { EA = aZPX();  clk(6); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x6e] = delegate { EA = aABS();  clk(6); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x7e] = delegate { EA = aABX(0); clk(7); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x6a] = delegate {    /*aACC*/   clk(2);       A = iROR(A); };
+            Opcodes[0x66] = () => { EA = aZPG();  clk(5); Mem[EA] = iROR(Mem[EA]); };
+            Opcodes[0x76] = () => { EA = aZPX();  clk(6); Mem[EA] = iROR(Mem[EA]); };
+            Opcodes[0x6e] = () => { EA = aABS();  clk(6); Mem[EA] = iROR(Mem[EA]); };
+            Opcodes[0x7e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROR(Mem[EA]); };
+            Opcodes[0x6a] = () => {    /*aACC*/   clk(2);       A = iROR(A); };
 
-            Opcodes[0x40] = delegate {    /*aIMP*/   clk(6); iRTI(); };
+            Opcodes[0x40] = () => {    /*aIMP*/   clk(6); iRTI(); };
 
-            Opcodes[0x60] = delegate {    /*aIMP*/   clk(6); iRTS(); };
+            Opcodes[0x60] = () => {    /*aIMP*/   clk(6); iRTS(); };
 
-            Opcodes[0xe5] = delegate { EA = aZPG();  clk(3); iSBC(Mem[EA]); };
-            Opcodes[0xf5] = delegate { EA = aZPX();  clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xe1] = delegate { EA = aIDX();  clk(6); iSBC(Mem[EA]); };
-            Opcodes[0xf1] = delegate { EA = aIDY(1); clk(5); iSBC(Mem[EA]); };
-            Opcodes[0xed] = delegate { EA = aABS();  clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xfd] = delegate { EA = aABX(1); clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xf9] = delegate { EA = aABY(1); clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xe9] = delegate {    /*aIMM*/   clk(2); iSBC(Mem[PC++]); };
+            Opcodes[0xe5] = () => { EA = aZPG();  clk(3); iSBC(Mem[EA]); };
+            Opcodes[0xf5] = () => { EA = aZPX();  clk(4); iSBC(Mem[EA]); };
+            Opcodes[0xe1] = () => { EA = aIDX();  clk(6); iSBC(Mem[EA]); };
+            Opcodes[0xf1] = () => { EA = aIDY(1); clk(5); iSBC(Mem[EA]); };
+            Opcodes[0xed] = () => { EA = aABS();  clk(4); iSBC(Mem[EA]); };
+            Opcodes[0xfd] = () => { EA = aABX(1); clk(4); iSBC(Mem[EA]); };
+            Opcodes[0xf9] = () => { EA = aABY(1); clk(4); iSBC(Mem[EA]); };
+            Opcodes[0xe9] = () => {    /*aIMM*/   clk(2); iSBC(Mem[PC++]); };
 
-            Opcodes[0x38] = delegate {    /*aIMP*/   clk(2); iSEC(); };
+            Opcodes[0x38] = () => {    /*aIMP*/   clk(2); iSEC(); };
 
-            Opcodes[0xf8] = delegate {    /*aIMP*/   clk(2); iSED(); };
+            Opcodes[0xf8] = () => {    /*aIMP*/   clk(2); iSED(); };
 
-            Opcodes[0x78] = delegate {    /*aIMP*/   clk(2); iSEI(); };
+            Opcodes[0x78] = () => {    /*aIMP*/   clk(2); iSEI(); };
 
-            Opcodes[0x85] = delegate { EA = aZPG();  clk(3); Mem[EA] = iSTA(); };
-            Opcodes[0x95] = delegate { EA = aZPX();  clk(4); Mem[EA] = iSTA(); };
-            Opcodes[0x81] = delegate { EA = aIDX();  clk(6); Mem[EA] = iSTA(); };
-            Opcodes[0x91] = delegate { EA = aIDY(0); clk(6); Mem[EA] = iSTA(); };
-            Opcodes[0x8d] = delegate { EA = aABS();  clk(4); Mem[EA] = iSTA(); };
-            Opcodes[0x99] = delegate { EA = aABY(0); clk(5); Mem[EA] = iSTA(); };
-            Opcodes[0x9d] = delegate { EA = aABX(0); clk(5); Mem[EA] = iSTA(); };
+            Opcodes[0x85] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTA(); };
+            Opcodes[0x95] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTA(); };
+            Opcodes[0x81] = () => { EA = aIDX();  clk(6); Mem[EA] = iSTA(); };
+            Opcodes[0x91] = () => { EA = aIDY(0); clk(6); Mem[EA] = iSTA(); };
+            Opcodes[0x8d] = () => { EA = aABS();  clk(4); Mem[EA] = iSTA(); };
+            Opcodes[0x99] = () => { EA = aABY(0); clk(5); Mem[EA] = iSTA(); };
+            Opcodes[0x9d] = () => { EA = aABX(0); clk(5); Mem[EA] = iSTA(); };
 
-            Opcodes[0x86] = delegate { EA = aZPG();  clk(3); Mem[EA] = iSTX(); };
-            Opcodes[0x96] = delegate { EA = aZPY();  clk(4); Mem[EA] = iSTX(); };
-            Opcodes[0x8e] = delegate { EA = aABS();  clk(4); Mem[EA] = iSTX(); };
+            Opcodes[0x86] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTX(); };
+            Opcodes[0x96] = () => { EA = aZPY();  clk(4); Mem[EA] = iSTX(); };
+            Opcodes[0x8e] = () => { EA = aABS();  clk(4); Mem[EA] = iSTX(); };
 
-            Opcodes[0x84] = delegate { EA = aZPG();  clk(3); Mem[EA] = iSTY(); };
-            Opcodes[0x94] = delegate { EA = aZPX();  clk(4); Mem[EA] = iSTY(); };
-            Opcodes[0x8c] = delegate { EA = aABS();  clk(4); Mem[EA] = iSTY(); };
+            Opcodes[0x84] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTY(); };
+            Opcodes[0x94] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTY(); };
+            Opcodes[0x8c] = () => { EA = aABS();  clk(4); Mem[EA] = iSTY(); };
 
-            Opcodes[0xaa] = delegate {    /*aIMP*/   clk(2); iTAX(); };
+            Opcodes[0xaa] = () => {    /*aIMP*/   clk(2); iTAX(); };
 
-            Opcodes[0xa8] = delegate {    /*aIMP*/   clk(2); iTAY(); };
+            Opcodes[0xa8] = () => {    /*aIMP*/   clk(2); iTAY(); };
 
-            Opcodes[0xba] = delegate {    /*aIMP*/   clk(2); iTSX(); };
+            Opcodes[0xba] = () => {    /*aIMP*/   clk(2); iTSX(); };
 
-            Opcodes[0x8a] = delegate {    /*aIMP*/   clk(2); iTXA(); };
+            Opcodes[0x8a] = () => {    /*aIMP*/   clk(2); iTXA(); };
 
-            Opcodes[0x9a] = delegate {    /*aIMP*/   clk(2); iTXS(); };
+            Opcodes[0x9a] = () => {    /*aIMP*/   clk(2); iTXS(); };
 
-            Opcodes[0x98] = delegate {    /*aIMP*/   clk(2); iTYA(); };
+            Opcodes[0x98] = () => {    /*aIMP*/   clk(2); iTYA(); };
 
             // Illegal opcodes
 
             // DOP (SKB) - no operation, double NOP, skip byte - required for Medieval Mayhem
-            Opcodes[0x04] = delegate { clk(3); PC++; iNOP(); };
+            Opcodes[0x04] = () => { clk(3); PC++; iNOP(); };
 
             foreach (var opCode in new ushort[] { 0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72, 0x92, 0xb2, 0xd2, 0xf2 })
             {
-                Opcodes[opCode] = delegate { clk(2); iKIL(); };
+                Opcodes[opCode] = () => { clk(2); iKIL(); };
             }
-            Opcodes[0x3f] = delegate { EA = aABX(0); clk(4); iRLA(Mem[EA]); };
-            Opcodes[0xa7] = delegate { EA = aZPX();  clk(3); iLAX(Mem[EA]); };
-            Opcodes[0xb3] = delegate { EA = aIDY(0); clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xef] = delegate { EA = aABS();  clk(6); iISB(Mem[EA]); };
-            Opcodes[0x0c] = delegate { EA = aABS();  clk(2); iNOP(); };
+            Opcodes[0x3f] = () => { EA = aABX(0); clk(4); iRLA(Mem[EA]); };
+            Opcodes[0xa7] = () => { EA = aZPX();  clk(3); iLAX(Mem[EA]); };
+            Opcodes[0xb3] = () => { EA = aIDY(0); clk(6); iLAX(Mem[EA]); };
+            Opcodes[0xef] = () => { EA = aABS();  clk(6); iISB(Mem[EA]); };
+            Opcodes[0x0c] = () => { EA = aABS();  clk(2); iNOP(); };
             foreach (var opCode in new ushort[] { 0x1c, 0x3c, 0x5c, 0x7c, 0x9c, 0xdc, 0xfc })
             {
-                Opcodes[opCode] = delegate { EA = aABX(0); clk(2); iNOP(); };
+                Opcodes[opCode] = () => { EA = aABX(0); clk(2); iNOP(); };
             }
-            Opcodes[0x83] = delegate { EA = aIDX();  clk(6); Mem[EA] = iSAX(); };
-            Opcodes[0x87] = delegate { EA = aZPG();  clk(3); Mem[EA] = iSAX(); };
-            Opcodes[0x8f] = delegate { EA = aABS();  clk(4); Mem[EA] = iSAX(); };
-            Opcodes[0x97] = delegate { EA = aZPY();  clk(4); Mem[EA] = iSAX(); };
-            Opcodes[0xa3] = delegate { EA = aIDX();  clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xb7] = delegate { EA = aZPY();  clk(4); iLAX(Mem[EA]); };
-            Opcodes[0xaf] = delegate { EA = aABS();  clk(5); iLAX(Mem[EA]); };
-            Opcodes[0xbf] = delegate { EA = aABY(0); clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xff] = delegate { EA = aABX(0); clk(7); iISB(Mem[EA]); };
-
-            void opNULL() => Log($"{this}:**UNKNOWN OPCODE: ${Mem[(ushort)(PC - 1)]:x2} at ${PC - 1:x4}\n");
+            Opcodes[0x83] = () => { EA = aIDX();  clk(6); Mem[EA] = iSAX(); };
+            Opcodes[0x87] = () => { EA = aZPG();  clk(3); Mem[EA] = iSAX(); };
+            Opcodes[0x8f] = () => { EA = aABS();  clk(4); Mem[EA] = iSAX(); };
+            Opcodes[0x97] = () => { EA = aZPY();  clk(4); Mem[EA] = iSAX(); };
+            Opcodes[0xa3] = () => { EA = aIDX();  clk(6); iLAX(Mem[EA]); };
+            Opcodes[0xb7] = () => { EA = aZPY();  clk(4); iLAX(Mem[EA]); };
+            Opcodes[0xaf] = () => { EA = aABS();  clk(5); iLAX(Mem[EA]); };
+            Opcodes[0xbf] = () => { EA = aABY(0); clk(6); iLAX(Mem[EA]); };
+            Opcodes[0xff] = () => { EA = aABX(0); clk(7); iISB(Mem[EA]); };
 
             for (var i=0; i < Opcodes.Length; i++)
             {
                 if (Opcodes[i] == null)
                 {
-                    Opcodes[i] = opNULL;
+                    Opcodes[i] = () => Log($"{this}:**UNKNOWN OPCODE: ${Mem[(ushort)(PC - 1)]:x2} at ${PC - 1:x4}\n");
                 }
             }
         }
