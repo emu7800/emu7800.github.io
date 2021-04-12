@@ -279,7 +279,6 @@ namespace EMU7800.D2D.Shell
                     _dynamicBitmap.Load(_dynamicBitmapData.Span);
                 }
                 _dynamicBitmapDataUpdated = false;
-                _frameRenderer.OnDynamicBitmapDataDelivered();
             }
 
             GraphicsDevice.Draw(_dynamicBitmap, _dynamicBitmapRect, _dynamicBitmapInterpolationMode);
@@ -373,7 +372,8 @@ namespace EMU7800.D2D.Shell
             _currentPalette = _normalPalette;
 
             var frameBuffer = machine.CreateFrameBuffer();
-            _frameRenderer = ToFrameRenderer(machineStateInfo, frameBuffer);
+
+            _frameRenderer = ToFrameRenderer(machineStateInfo);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -449,7 +449,7 @@ namespace EMU7800.D2D.Shell
 
                 lock (_dynamicBitmapLocker)
                 {
-                    _frameRenderer.UpdateDynamicBitmapData(_currentPalette.Span);
+                    _frameRenderer.UpdateDynamicBitmapData(_currentPalette.Span, frameBuffer.VideoBuffer.Span, _dynamicBitmapData.Span);
                     _dynamicBitmapDataUpdated = true;
                 }
 
@@ -541,12 +541,11 @@ namespace EMU7800.D2D.Shell
             AudioDevice.Close();
         }
 
-        static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo, FrameBuffer frameBuffer)
+        static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo)
             => machineStateInfo.GameProgramInfo.MachineType switch
             {
-                MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160Blender(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
-              //MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
-                MachineType.A7800NTSC or MachineType.A7800PAL => new FrameRenderer320(machineStateInfo.Machine.FirstScanline, frameBuffer, _dynamicBitmapData),
+                MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline),
+                MachineType.A7800NTSC or MachineType.A7800PAL => new FrameRenderer320(machineStateInfo.Machine.FirstScanline),
                 _ => throw new ArgumentException("Unknown MachineType", nameof(machineStateInfo))
             };
 

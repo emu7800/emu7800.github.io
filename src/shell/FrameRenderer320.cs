@@ -1,6 +1,5 @@
 ﻿// © Mike Murphy
 
-using EMU7800.Core;
 using System;
 
 namespace EMU7800.D2D.Shell
@@ -9,50 +8,37 @@ namespace EMU7800.D2D.Shell
     {
         #region Fields
 
-        const int
-            Width  = 320,
-            Height = 230;
+        const int Width = 320, Height = 230;
 
         readonly int _startSourceIndex, _endSourceIndex;
-        readonly FrameBuffer _frameBuffer;
-        readonly Memory<byte> _dynamicBitmapData;
 
         #endregion
 
         #region IFrameRenderer Members
 
-        public void UpdateDynamicBitmapData(ReadOnlySpan<uint> palette)
+        public void UpdateDynamicBitmapData(ReadOnlySpan<uint> palette, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
         {
-            var fbufSpan = _frameBuffer.VideoBuffer.Span;
-            var outSpan = _dynamicBitmapData.Span;
-
             for (int si = _startSourceIndex, di = 0; si < _endSourceIndex; si++)
             {
-                var nc = palette[fbufSpan[si]];
+                var nc = palette[inputBuffer[si]];
                 var rn = (nc >> 16) & 0xff;
                 var gn = (nc >> 8)  & 0xff;
                 var bn = (nc >> 0)  & 0xff;
-                outSpan[di++] = (byte)bn;
-                outSpan[di++] = (byte)gn;
-                outSpan[di++] = (byte)rn;
+                outputBuffer[di++] = (byte)bn;
+                outputBuffer[di++] = (byte)gn;
+                outputBuffer[di++] = (byte)rn;
                 di++;
             }
-        }
-
-        public void OnDynamicBitmapDataDelivered()
-        {
         }
 
         #endregion
 
         #region Constructors
 
-        public FrameRenderer320(int firstVisibleScanline, FrameBuffer frameBuffer, Memory<byte> dynamicBitmapData)
+        public FrameRenderer320(int firstVisibleScanline)
         {
             _startSourceIndex = firstVisibleScanline * Width;
             _endSourceIndex = _startSourceIndex + Width * Height;
-            _frameBuffer = frameBuffer ?? throw new ArgumentNullException(nameof(frameBuffer));
-            _dynamicBitmapData = dynamicBitmapData;
         }
 
         #endregion
