@@ -248,8 +248,6 @@ namespace EMU7800.Core
 
         protected MachineBase(DeserializationContext input, ReadOnlyMemory<uint> palette)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
             if (palette.Length != 0x100)
                 throw new ArgumentException("palette incorrect size, must be 256", nameof(palette));
 
@@ -268,9 +266,6 @@ namespace EMU7800.Core
 
         public virtual void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(_MachineHalt);
             output.Write(_FrameHZ);

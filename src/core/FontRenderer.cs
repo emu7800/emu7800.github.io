@@ -73,9 +73,6 @@ namespace EMU7800.Core
         /// <exception cref="ArgumentNullException">text must be non-null.</exception>
         public static void DrawText(FrameBuffer frameBuffer, string text, int xoffset, int yoffset, byte fore, byte back)
         {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
-
             var textchars = text.ToUpper().ToCharArray();
 
             for (var i = 0; i < text.Length + 1; i++)

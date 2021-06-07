@@ -278,9 +278,6 @@ namespace EMU7800.Core
 
         public PIA(DeserializationContext input, MachineBase m) : this(m)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             var version = input.CheckVersion(1, 2);
             RAM = input.ReadExpectedBytes(0x80);
             TimerTarget = input.ReadUInt64();
@@ -298,9 +295,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(2);
             output.Write(RAM);
             output.Write(TimerTarget);

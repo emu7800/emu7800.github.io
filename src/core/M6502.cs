@@ -1000,9 +1000,6 @@ namespace EMU7800.Core
 
         public M6502(DeserializationContext input, MachineBase m, int runClocksMultiple) : this(m, runClocksMultiple)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             Clock = input.ReadUInt64();
             RunClocks = input.ReadInt32();
@@ -1021,9 +1018,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(Clock);
             output.Write(RunClocks);

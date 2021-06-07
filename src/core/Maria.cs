@@ -207,7 +207,7 @@ namespace EMU7800.Core
 
         public Maria(Machine7800 m, int scanlines)
         {
-            M = m ?? throw new ArgumentNullException(nameof(m));
+            M = m;
             InitializeVisibleScanlineValues(scanlines);
             TIASound = new TIASound(M, CPU_TICKS_PER_AUDIO_SAMPLE);
         }
@@ -948,10 +948,7 @@ namespace EMU7800.Core
 
         public Maria(DeserializationContext input, Machine7800 m, int scanlines)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            M = m ?? throw new ArgumentNullException(nameof(m));
+            M = m;
             InitializeVisibleScanlineValues(scanlines);
             TIASound = new TIASound(input, M, CPU_TICKS_PER_AUDIO_SAMPLE);
 
@@ -1012,9 +1009,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.Write(TIASound);
 
             output.WriteVersion(2);

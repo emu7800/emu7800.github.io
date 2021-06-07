@@ -51,9 +51,6 @@ namespace EMU7800.Core
 
         public Bios7800(DeserializationContext input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             ROM = input.ReadExpectedBytes(4096, 16384);
 
@@ -63,9 +60,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(ROM);
         }

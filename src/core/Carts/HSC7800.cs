@@ -10,7 +10,7 @@ namespace EMU7800.Core
 {
     public sealed class HSC7800 : IDevice
     {
-        public static readonly HSC7800 Default = new HSC7800();
+        public static readonly HSC7800 Default = new();
 
         readonly byte[] ROM;
         readonly ushort Mask;
@@ -56,9 +56,6 @@ namespace EMU7800.Core
 
         public HSC7800(DeserializationContext input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             ROM = input.ReadExpectedBytes(4096);
             SRAM = input.ReadRAM6116();
@@ -68,9 +65,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(ROM);
             output.Write(SRAM);

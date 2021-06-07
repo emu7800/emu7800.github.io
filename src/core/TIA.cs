@@ -1197,10 +1197,7 @@ namespace EMU7800.Core
 
         public TIA(DeserializationContext input, MachineBase m) : this()
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            M = m ?? throw new ArgumentNullException(nameof(m));
+            M = m;
             TIASound = input.ReadTIASound(M, CPU_TICKS_PER_AUDIO_SAMPLE);
 
             input.CheckVersion(1);
@@ -1258,9 +1255,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.Write(TIASound);
 
             output.WriteVersion(1);

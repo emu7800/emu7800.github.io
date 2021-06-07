@@ -12,7 +12,7 @@ namespace EMU7800.Core
 {
     public sealed class RAM6116 : IDevice
     {
-        public static readonly RAM6116 Default = new RAM6116();
+        public static readonly RAM6116 Default = new();
 
         readonly byte[] RAM = new byte[0x800];
 
@@ -40,18 +40,12 @@ namespace EMU7800.Core
 
         public RAM6116(DeserializationContext input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             RAM = input.ReadExpectedBytes(0x800);
         }
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(RAM);
         }

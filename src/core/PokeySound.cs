@@ -224,9 +224,6 @@ namespace EMU7800.Core
 
         public PokeySound(DeserializationContext input, MachineBase m) : this(m)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             _lastUpdateCpuClock = input.ReadUInt64();
             _bufferIndex = input.ReadInt32();
@@ -249,9 +246,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(_lastUpdateCpuClock);
             output.Write(_bufferIndex);

@@ -245,9 +245,6 @@ namespace EMU7800.Core
 
         public InputState(DeserializationContext input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
             input.CheckVersion(1);
             _rotState = input.ReadIntegers(2);
             _nextInputState = input.ReadIntegers(InputStateSize);
@@ -256,9 +253,6 @@ namespace EMU7800.Core
 
         public void GetObjectData(SerializationContext output)
         {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
             output.WriteVersion(1);
             output.Write(_rotState);
             output.Write(_nextInputState);

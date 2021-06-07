@@ -29,9 +29,7 @@ namespace EMU7800.Core
         #endregion
 
         public virtual void Attach(MachineBase m)
-        {
-            M = m;
-        }
+            => M = m;
 
         public virtual void StartFrame()
         {
@@ -112,18 +110,12 @@ namespace EMU7800.Core
 
         protected void LoadRom(byte[] romBytes, int multicartBankSize, int multicartBankNo)
         {
-            if (romBytes == null)
-                throw new ArgumentNullException(nameof(romBytes));
-
             ROM = new byte[multicartBankSize];
             Buffer.BlockCopy(romBytes, multicartBankSize*multicartBankNo, ROM, 0, multicartBankSize);
         }
 
         protected void LoadRom(byte[] romBytes, int minSize)
         {
-            if (romBytes == null)
-                throw new ArgumentNullException(nameof(romBytes));
-
             if (romBytes.Length >= minSize)
             {
                 ROM = romBytes;
@@ -136,9 +128,7 @@ namespace EMU7800.Core
         }
 
         protected void LoadRom(byte[] romBytes)
-        {
-            LoadRom(romBytes, romBytes.Length);
-        }
+            => LoadRom(romBytes, romBytes.Length);
 
         protected Cart()
         {
@@ -147,20 +137,10 @@ namespace EMU7800.Core
         #region Serialization Members
 
         protected Cart(DeserializationContext input)
-        {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input));
-
-            input.CheckVersion(1);
-        }
+            => input.CheckVersion(1);
 
         public virtual void GetObjectData(SerializationContext output)
-        {
-            if (output == null)
-                throw new ArgumentNullException(nameof(output));
-
-            output.WriteVersion(1);
-        }
+            => output.WriteVersion(1);
 
         #endregion
 
@@ -173,9 +153,7 @@ namespace EMU7800.Core
             }
 
             public UnknownCart()
-            {
-                ROM = Array.Empty<byte>();
-            }
+                => ROM = Array.Empty<byte>();
 
             public override string ToString()
                 => "EMU7800.Core.UnknownCart";

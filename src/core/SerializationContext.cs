@@ -163,9 +163,7 @@ namespace EMU7800.Core
         /// </summary>
         /// <param name="binaryWriter"/>
         internal SerializationContext(BinaryWriter binaryWriter)
-        {
-            _binaryWriter = binaryWriter ?? throw new ArgumentNullException(nameof(binaryWriter));
-        }
+            => _binaryWriter = binaryWriter;
 
         #endregion
     }
