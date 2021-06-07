@@ -72,11 +72,12 @@ namespace EMU7800.Services
 
                 foreach (var gpi in gpiList)
                 {
-                    if (!importedGameProgramInfoMd5Dict.TryGetValue(md5key, out var igpi))
+                    var md5keyPlus = $"{md5key} {gpi.LController} {gpi.RController}";
+                    if (!importedGameProgramInfoMd5Dict.TryGetValue(md5keyPlus, out var igpi))
                     {
                         igpi = new(gpi);
                         igpi.PersistedStateAt = DatastoreService.PersistedMachineAt(gpi);
-                        importedGameProgramInfoMd5Dict.Add(md5key, igpi);
+                        importedGameProgramInfoMd5Dict.Add(md5keyPlus, igpi);
                     }
                     igpi.StorageKeySet.Add(path);
                 }
