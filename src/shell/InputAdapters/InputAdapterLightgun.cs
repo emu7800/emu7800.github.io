@@ -51,10 +51,6 @@ namespace EMU7800.D2D.Shell
 
         public void MouseMoved(int playerNo, int x, int y, int dx, int dy)
         {
-        }
-
-        public void MouseButtonChanged(int playerNo, int x, int y, bool down, bool touchMode)
-        {
             var tx = x - _location.X;
             var ty = y - _location.Y;
             if (tx < 0 || ty < 0 || tx > _size.Width || ty > _size.Height)
@@ -62,7 +58,10 @@ namespace EMU7800.D2D.Shell
             var scanline = (int)(ty * _sfy) + _startingScanline;
             var hpos = (int)(tx * _sfx);
             _inputState.RaiseLightgunPos(_jackNo, scanline, hpos);
+        }
 
+        public void MouseButtonChanged(int playerNo, int x, int y, bool down, bool touchMode)
+        {
             _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
         }
 
