@@ -12,7 +12,7 @@ namespace EMU7800.D2D.Shell
 
         D2D_POINT_2F _location;
         D2D_SIZE_F _size;
-        float _sfx, _sfy;
+        float _sfx, _sfy, _tx, _ty;
 
         public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
         {
@@ -44,6 +44,7 @@ namespace EMU7800.D2D.Shell
             {
                 case KeyboardKey.X:
                 case KeyboardKey.Z:
+                    RaiseLightgunPos();
                     _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
                     break;
             }
@@ -51,17 +52,13 @@ namespace EMU7800.D2D.Shell
 
         public void MouseMoved(int playerNo, int x, int y, int dx, int dy)
         {
-            var tx = x - _location.X;
-            var ty = y - _location.Y;
-            if (tx < 0 || ty < 0 || tx > _size.Width || ty > _size.Height)
-                return;
-            var scanline = (int)(ty * _sfy) + _startingScanline;
-            var hpos = (int)(tx * _sfx);
-            _inputState.RaiseLightgunPos(_jackNo, scanline, hpos);
+            _tx = x - _location.X;
+            _ty = y - _location.Y;
         }
 
         public void MouseButtonChanged(int playerNo, int x, int y, bool down, bool touchMode)
         {
+            RaiseLightgunPos();
             _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
         }
 
@@ -81,6 +78,15 @@ namespace EMU7800.D2D.Shell
                     _pitch = 160;
                     break;
             }
+        }
+
+        void RaiseLightgunPos()
+        {
+            if (_tx < 0 || _ty < 0 || _tx > _size.Width || _ty > _size.Height)
+                return;
+            var scanline = (int)(_ty * _sfy) + _startingScanline;
+            var hpos = (int)(_tx * _sfx);
+            _inputState.RaiseLightgunPos(_jackNo, scanline, hpos);
         }
     }
 }
