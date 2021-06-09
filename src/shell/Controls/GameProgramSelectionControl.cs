@@ -64,9 +64,6 @@ namespace EMU7800.D2D.Shell
 
         public void BindTo(GameProgramInfoViewItemCollection[] gameProgramInfoViewItemCollection)
         {
-            if (gameProgramInfoViewItemCollection == null)
-                return;
-
             _scrollColumnInfoSet = Enumerable.Range(0, gameProgramInfoViewItemCollection.Length)
                 .Select(i => ToScrollColumnInfo(gameProgramInfoViewItemCollection[i]))
                     .ToArray();
@@ -493,8 +490,6 @@ namespace EMU7800.D2D.Shell
 
         void InitializeViewItemQuantities(bool includeCollectionRects)
         {
-            if (_scrollColumnInfoSet == null)
-                return;
             var maxLen = 0;
             for (var i = 0; i < _scrollColumnInfoSet.Length; i++)
             {
@@ -523,6 +518,8 @@ namespace EMU7800.D2D.Shell
             }
             _scrollXLeftMostBoundary = -(Location.X + _gameProgramViewItemCollectionsRect.ToSize().Width - Size.Width);
             _scrollXRightMostBoundary = 10;
+            if (_scrollXLeftMostBoundary > _scrollXRightMostBoundary)
+                _scrollXLeftMostBoundary = _scrollXRightMostBoundary;
         }
 
         D2D_RECT_F ToItemRect(int i, int j)
@@ -655,7 +652,7 @@ namespace EMU7800.D2D.Shell
         }
 
         static ScrollColumnInfo ToScrollColumnInfo(GameProgramInfoViewItemCollection gpvic)
-            =>new() { GameProgramInfoViewItemCollection = ToGameProgramInfoViewItemCollectionEx(gpvic) };
+            => new() { GameProgramInfoViewItemCollection = ToGameProgramInfoViewItemCollectionEx(gpvic) };
 
         static GameProgramInfoViewItemCollectionEx ToGameProgramInfoViewItemCollectionEx(GameProgramInfoViewItemCollection gpvic)
             => new()
