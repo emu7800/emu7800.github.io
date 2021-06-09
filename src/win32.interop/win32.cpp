@@ -111,9 +111,18 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 const UINT mouseButtonFlags = RI_MOUSE_LEFT_BUTTON_DOWN | RI_MOUSE_LEFT_BUTTON_UP | RI_MOUSE_RIGHT_BUTTON_DOWN | RI_MOUSE_RIGHT_BUTTON_UP;
                 if (g_MouseButtonChangedCallback && (raw->data.mouse.ulButtons & mouseButtonFlags))
                 {
-                    bool leftDown = (raw->data.mouse.ulButtons & RI_MOUSE_LEFT_BUTTON_DOWN) == RI_MOUSE_LEFT_BUTTON_DOWN;
-                    bool rightDown = (raw->data.mouse.ulButtons & RI_MOUSE_RIGHT_BUTTON_DOWN) == RI_MOUSE_RIGHT_BUTTON_DOWN;
-                    g_MouseButtonChangedCallback(x, y, leftDown || rightDown);
+                    static bool last_down = false;
+                    bool down = (raw->data.mouse.ulButtons & RI_MOUSE_LEFT_BUTTON_DOWN)  == RI_MOUSE_LEFT_BUTTON_DOWN;
+                    if (last_down && down)
+                    {
+                        // Mouse up events can be lost during periods of rapid clicking, and these events are needed to turn off
+                        // the corresponding prior input. As an imperfect solution, convert the 2nd 'down' to an 'up' and
+                        // pretend that 'down' never happened. This shouldn't be noticeable during periods of rapid clicking because
+                        // another 'down' would quickly appear subsequent.
+                        down = false;
+                    }
+                    g_MouseButtonChangedCallback(x, y, down);
+                    last_down = down;
                 }
             }
             else if (g_KeyboardKeyPressedCallback && raw->header.dwType == RIM_TYPEKEYBOARD)
