@@ -8,6 +8,8 @@ EMU7800 continues to be maintained to the present day as a non-commercial endeav
 Feel free to email feedback.
 Enjoy!
 
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/emu7800/emu7800.github.io)
+
 ## Build Tooling
 
 To build, the following tools are needed:
