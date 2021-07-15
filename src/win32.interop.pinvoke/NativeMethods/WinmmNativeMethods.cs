@@ -175,8 +175,6 @@ namespace EMU7800.Win32.Interop
             Storage = IntPtr.Zero;
         }
 
-#pragma warning disable IDE1006 // Naming Styles
-
         [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
@@ -200,7 +198,5 @@ namespace EMU7800.Win32.Interop
 
         [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern int waveOutClose(IntPtr hwo);
-
-#pragma warning restore IDE1006 // Naming Styles
     }
 }
