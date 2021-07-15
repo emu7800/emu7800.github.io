@@ -11,9 +11,9 @@
 #define HID_USAGE_GENERIC_MOUSE       0x02
 #define HID_USAGE_GENERIC_KEYBOARD    0x06
 
-void (*g_KeyboardKeyPressedCallback)(USHORT, bool)   = NULL;
+void (*g_KeyboardKeyPressedCallback)(USHORT, byte)   = NULL;
 void (*g_MouseMovedCallback)(int, int, int, int)     = NULL;
-void (*g_MouseButtonChangedCallback)(int, int, bool) = NULL;
+void (*g_MouseButtonChangedCallback)(int, int, byte) = NULL;
 void (*g_MouseWheelChangedCallback)(int, int, int)   = NULL;
 void (*g_LURCycleCallback)()                         = NULL;
 void (*g_VisibilityChangedCallback)(bool)            = NULL;
@@ -185,9 +185,9 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 extern "C" __declspec(dllexport) HWND __stdcall Win32_Initialize(
-    void (*keyboardKeyPressedCallback)(USHORT, bool),
+    void (*keyboardKeyPressedCallback)(USHORT, byte),
     void (*mouseMovedCallback)(int, int, int, int),
-    void (*mouseButtonChangedCallback)(int, int, bool),
+    void (*mouseButtonChangedCallback)(int, int, byte),
     void (*mouseWheelChangedCallback)(int, int, int),
     void (*lurCycleCallback)(),
     void (*visibilityChangedCallback)(bool),

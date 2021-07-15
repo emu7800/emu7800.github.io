@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -8,63 +9,51 @@ namespace EMU7800.Win32.Interop
 {
     internal unsafe static class Win32NativeMethods
     {
-        delegate void KeyboardKeyPressedHandler(ushort vKey, bool down);
-        delegate void MouseMovedHandler(int x, int y, int dx, int dy);
-        delegate void MouseButtonChangedHandler(int x, int y, bool down);
-        delegate void MouseWheelChangedHandler(int x, int y, int delta);
-        delegate void LURCycleHandler();
-        delegate void VisibilityChangedHandler(bool isVisible);
-        delegate void ResizedHandler(int w, int h);
-        delegate void DeviceChangedHandler();
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void RaiseKeyboardKeyPressed(ushort vKey, byte down) => Win32Window.KeyboardKeyPressed(vKey, down != 0);
 
-        static readonly KeyboardKeyPressedHandler RaiseKeyboardKeyPressedDelegate = new(RaiseKeyboardKeyPressed);
-        static void RaiseKeyboardKeyPressed(ushort vKey, bool down) => Win32Window.KeyboardKeyPressed(vKey, down);
-
-        static readonly MouseMovedHandler RaiseMouseMovedDelegate = new(RaiseMouseMoved);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseMouseMoved(int x, int y, int dx, int dy) => Win32Window.MouseMoved(x, y, dx, dy);
 
-        static readonly MouseButtonChangedHandler RaiseMouseButtonChangedDelegate = new(RaiseMouseButtonChanged);
-        static void RaiseMouseButtonChanged(int x, int y, bool down) => Win32Window.MouseButtonChanged(x, y, down);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        static void RaiseMouseButtonChanged(int x, int y, byte down) => Win32Window.MouseButtonChanged(x, y, down != 0);
 
-        static readonly MouseWheelChangedHandler RaiseMouseWheelChangedDelegate = new(RaiseMouseWheelChanged);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseMouseWheelChanged(int x, int y, int delta) => Win32Window.MouseWheelChanged(x, y, delta);
 
-        static readonly LURCycleHandler RaiseLURCycleDelegate = new(RaiseLURCycle);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseLURCycle() => Win32Window.LURCycle();
 
-        static readonly VisibilityChangedHandler RaiseVisibilityChangedDelegate = new(RaiseVisibilityChanged);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseVisibilityChanged(bool isVisible) => Win32Window.VisibilityChanged(isVisible);
 
-        static readonly ResizedHandler RaiseResizedDelegate = new(RaiseResized);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseResized(int w, int h) => Win32Window.Resized(w, h);
 
-        static readonly DeviceChangedHandler RaiseDeviceChangedDelegate = new(RaiseDeviceChanged);
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         static void RaiseDeviceChanged() => Win32Window.DeviceChanged();
-
-        static IntPtr GetIntPtr<TDelegate>(TDelegate d) where TDelegate : notnull
-            => Marshal.GetFunctionPointerForDelegate(d);
 
         public static IntPtr Win32_Initialize()
             => Win32_Initialize(
-                GetIntPtr(RaiseKeyboardKeyPressedDelegate),
-                GetIntPtr(RaiseMouseMovedDelegate),
-                GetIntPtr(RaiseMouseButtonChangedDelegate),
-                GetIntPtr(RaiseMouseWheelChangedDelegate),
-                GetIntPtr(RaiseLURCycleDelegate),
-                GetIntPtr(RaiseVisibilityChangedDelegate),
-                GetIntPtr(RaiseResizedDelegate),
-                GetIntPtr(RaiseDeviceChangedDelegate));
+                (delegate* unmanaged [Cdecl]<ushort, byte, void>)&RaiseKeyboardKeyPressed,
+                (delegate* unmanaged [Cdecl]<int, int, int, int, void>)&RaiseMouseMoved,
+                (delegate* unmanaged [Cdecl]<int, int, byte, void>)&RaiseMouseButtonChanged,
+                (delegate* unmanaged [Cdecl]<int, int, int, void>)&RaiseMouseWheelChanged,
+                (delegate* unmanaged [Cdecl]<void>)&RaiseLURCycle,
+                (delegate* unmanaged [Cdecl]<bool, void>)&RaiseVisibilityChanged,
+                (delegate* unmanaged [Cdecl]<int, int, void>)&RaiseResized,
+                (delegate* unmanaged [Cdecl]<void>)&RaiseDeviceChanged);
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         static extern IntPtr Win32_Initialize(
-            IntPtr keyboardkeypressedcb,
-            IntPtr mousemovedcb,
-            IntPtr mousebuttonchangedcb,
-            IntPtr mousewheelchangedcb,
-            IntPtr lurcyclecb,
-            IntPtr visibilitychangedcb,
-            IntPtr resizedcb,
-            IntPtr devicechangedcb);
+            delegate* unmanaged [Cdecl]<ushort, byte, void> keyboardkeypressedcb,
+            delegate* unmanaged [Cdecl]<int, int, int, int, void> mousemovedcb,
+            delegate* unmanaged [Cdecl]<int, int, byte, void> mousebuttonchangedcb,
+            delegate* unmanaged [Cdecl]<int, int, int, void> mousewheelchangedcb,
+            delegate* unmanaged [Cdecl]<void> lurcyclecb,
+            delegate* unmanaged [Cdecl]<bool, void> visibilitychangedcb,
+            delegate* unmanaged [Cdecl]<int, int, void> resizedcb,
+            delegate* unmanaged [Cdecl]<void> devicechangedcb);
 
         [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
         public static extern void Win32_ProcessEvents(IntPtr hWnd, int nCmdShow);
