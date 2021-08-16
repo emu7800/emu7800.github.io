@@ -1,5 +1,11 @@
 Push-Location $PSScriptRoot
 
+Push-Location .\src\win32.interop\
+
+msbuild.exe /p:Configuration=Release
+
+Pop-Location
+
 Push-Location .\src\win32\
 
 dotnet.exe publish -p:PublishProfile=FolderProfile -c Release
@@ -7,7 +13,7 @@ dotnet.exe publish -p:PublishProfile=FolderProfile -c Release
 Pop-Location
 
 # clear target
-Remove-Item -Recurse -Force .\artifacts
+Remove-Item -Recurse -Force .\artifacts -ErrorAction SilentlyContinue
 
 # copy source artifacts
 robocopy.exe .\src\                                      .\artifacts\EMU7800.src\src\ *.cs *.csproj *.cpp *.h *.manifest *.sln  *.filters *.rc *.vcxproj *.ico *.txt *.png *.json *.ps1 *.iss *.xml *.pubxml /S /XD obj bin /NFL
