@@ -171,7 +171,6 @@ namespace EMU7800.Core
         //      reset if caused by an internal interrupt
         bool fB
         {
-            get => Fget(1 << 4);
             set => Fset(1 << 4, value);
         }
 
@@ -219,8 +218,7 @@ namespace EMU7800.Core
         {
             push(MSB(PC));
             push(LSB(PC));
-            if (fB)
-                fB = false;
+            fB = false;
             push(P);
             fI = true;
             PC = WORD(Mem[NMI_VEC], Mem[NMI_VEC + 1]);
@@ -229,7 +227,7 @@ namespace EMU7800.Core
 
         void InterruptIRQ()
         {
-            if (IRQInterruptRequest && !fI)
+            if (!fI)
             {
                 push(MSB(PC));
                 push(LSB(PC));
