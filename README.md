@@ -1,5 +1,5 @@
 # EMU7800
-> Mike Murphy (mike@emu7800.net) - 12/1/2020
+> Mike Murphy (mike@emu7800.net) - 12/1/2021
 
 EMU7800 was originally completed in 2003 as a .NET programming exercise,
 being ported to the litany of subsequent now defunct .NET platforms (Windows Phone, Silverlight, UWP, etc.)
@@ -14,11 +14,11 @@ Enjoy!
 
 To build, the following tools are needed:
 
-- Visual Studio 2019 (https://visualstudio.microsoft.com/vs/community/)
+- Visual Studio 2022 (https://visualstudio.microsoft.com/vs/community/)
 
-- .NET 5.0.200 SDK x64 Windows (https://dotnet.microsoft.com/download)
+- .NET 6 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
-- Powershell 7.1.2 (``dotnet tool install powershell -g``)
+- Powershell 7.1.x (``dotnet tool install powershell -g``)
 
 - Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
 
@@ -28,7 +28,7 @@ To build, the following tools are needed:
 
 1. Build ``EMU7800.Win32.Interop.dll``
 
-    Visual Studio 2019 will be necessary to build this C++ component. There is a dedicated solution file that can be opened directly:
+    Visual Studio 2022 will be necessary to build this C++ component. There is a dedicated solution file that can be opened directly:
 
     `.\src\win32\interop\EMU7800.Win32.Interop.sln`
     

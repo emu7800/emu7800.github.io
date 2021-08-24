@@ -20,7 +20,7 @@ namespace EMU7800.Services
 
         const int A78FILE_HEADER_SIZE = 0x80;
 
-        static readonly MD5CryptoServiceProvider MD5CryptoProvider = new();
+        static readonly MD5 MD5 = MD5.Create();
         static readonly byte[] Atari7800Tag = Encoding.UTF8.GetBytes("ATARI7800");
         static readonly byte[] ActualCartDataStartsHereTag = Encoding.UTF8.GetBytes("ACTUAL CART DATA STARTS HERE");
         static readonly uint[] HexStringLookup = CreateHexStringLookupTable();
@@ -81,7 +81,7 @@ namespace EMU7800.Services
         }
 
         public static string ToMD5Key(byte[] bytes)
-            => ToHex(MD5CryptoProvider.ComputeHash(RemoveA78HeaderIfNecessary(bytes ?? Array.Empty<byte>())));
+            => ToHex(MD5.ComputeHash(RemoveA78HeaderIfNecessary(bytes ?? Array.Empty<byte>())));
 
         public static SpecialBinaryType ToSpecialBinaryType(string md5key)
         {

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <Authors>Mike Murphy</Authors>
     <Description>EMU7800 Sound Emulator</Description>
