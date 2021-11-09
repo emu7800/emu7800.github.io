@@ -18,17 +18,21 @@ To build, the following tools are needed:
 
 - .NET 6 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
-- Powershell 7.2.x
+- Powershell 7.2.x (https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#msi)
 
 - Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
 
+- Ensure MSBuild.exe is in your path, currently shipped in Visual Studio:
+
+  ``%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin``
+
 ## Build Steps
 
-1. Build ``EMU7800.Win32.Interop.dll``
+1. Build ``EMU7800.Win32.Interop.dll`` (choose Release configuration)
 
     Visual Studio 2022 will be necessary to build this C++ component. There is a dedicated solution file that can be opened directly:
 
-    `.\src\win32\interop\EMU7800.Win32.Interop.sln`
+    `.\src\win32.interop\EMU7800.Win32.Interop.sln`
     
     Alternatively, the solution file located here can build everything:
 
@@ -36,6 +40,6 @@ To build, the following tools are needed:
 
     However, this will not build the deployment packages.
 
-2. Run ``pwsh.exe .\BuildArtifacts.ps1``
+2. Run ``pwsh.exe .\Build.ps1``
 
     This will compile everything other than the C++ component, build the deployment packages, and drop the artifacts to a `.\artifacts` folder.
