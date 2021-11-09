@@ -18,11 +18,9 @@ To build, the following tools are needed:
 
 - .NET 6 SDK x64 Windows (https://dotnet.microsoft.com/download)
 
-- Powershell 7.1.x (``dotnet tool install powershell -g``)
+- Powershell 7.2.x
 
 - Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
-
-- MSI Wrapper 9.0.42.0 (https://www.exemsi.com/)
 
 ## Build Steps
 
