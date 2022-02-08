@@ -24,7 +24,7 @@ To build, the following tools are needed:
 
 - Ensure MSBuild.exe is in your path, currently shipped in Visual Studio:
 
-  ``%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin``
+  ``%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin``
 
 ## Build Steps
 
