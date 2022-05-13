@@ -14,15 +14,15 @@ Enjoy!
 
 To build, the following tools are needed:
 
-- Visual Studio 2022 (https://visualstudio.microsoft.com/vs/community/)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/vs/community/)
 
-- .NET 6 SDK x64 Windows (https://dotnet.microsoft.com/download)
+- [.NET 6 SDK x64 Windows](https://dotnet.microsoft.com/download)
 
-- Powershell 7.2.x (https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#msi)
+- [Powershell 7.2.x](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#msi)
 
-- Inno Setup Compiler 6.1.2 (https://www.innosetup.com/)
+- [Inno Setup Compiler 6.2.1](https://www.innosetup.com/)
 
-- Ensure MSBuild.exe is in your path, currently shipped in Visual Studio:
+- Ensure `MSBuild.exe` is in your path, currently shipped in Visual Studio:
 
   ``%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin``
 
@@ -43,3 +43,7 @@ To build, the following tools are needed:
 2. Run ``pwsh.exe .\Build.ps1``
 
     This will compile everything other than the C++ component, build the deployment packages, and drop the artifacts to a `.\artifacts` folder.
+
+## Other
+
+Currently `%windir%\System32\vcruntime140.dll` is needed to run. If missing, download it [here](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-140).
