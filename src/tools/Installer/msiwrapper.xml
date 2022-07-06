@@ -1,7 +1,7 @@
 <MsiWrapper>
   <Installer>
     <IconFile Detect="executable" Value="base64:AAABAAIAEBAQAAAABAAoAQAAJgAAACAgEAAAAAQA6AIAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAA&#xD;&#xA;AIAAAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAA&#xD;&#xA;AAD/AFGR+wAA//8AAP8AAP8AAAD//wAA////AAAAAAAAAAAADd3d3d3d3dAN3d3d3d3d0A3d3d3d&#xD;&#xA;3d3QDMzMzMzMzMAMzMzMzMzMwAzMzMzMzMzAC7u7u7u7u7ALu7u7u7u7sAu7u7u7u7uwCqqqqqqq&#xD;&#xA;qqAKqqqqqqqqoAqqqqqqqqqgCZmZmZmZmZAJmZmZmZmZkAmZmZmZmZmQ//8AAIABAACAAQAAgAEA&#xD;&#xA;AIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAACgAAAAgAAAA&#xD;&#xA;QAAAAAEABAAAAAAAAAIAAAAAAAAAAAAAEAAAABAAAAAAAAAAAACAAACAAAAAgIAAgAAAAIAAgACA&#xD;&#xA;gAAAgICAAMDAwAAAAP8AUZH7AAD//wAA/wAA/wAAAP//AAD///8AAAAAAAAAAAAAAAAAAAAAAAAA&#xD;&#xA;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3d3d3d3d3d3d3d3d3QAAAN3d3d3d3d3d3d&#xD;&#xA;3d3d0AAADd3d3d3d3d3d3d3d3dAAAA3d3d3d3d3d3d3d3d3QAAAN3d3d3d3d3d3d3d3d0AAADd3d&#xD;&#xA;3d3d3d3d3d3d3dAAAAzMzMzMzMzMzMzMzMzAAAAMzMzMzMzMzMzMzMzMwAAADMzMzMzMzMzMzMzM&#xD;&#xA;zMAAAAzMzMzMzMzMzMzMzMzAAAAMzMzMzMzMzMzMzMzMwAAAC7u7u7u7u7u7u7u7u7AAAAu7u7u7&#xD;&#xA;u7u7u7u7u7uwAAALu7u7u7u7u7u7u7u7sAAAC7u7u7u7u7u7u7u7u7AAAAu7u7u7u7u7u7u7u7uw&#xD;&#xA;AAAKqqqqqqqqqqqqqqqqoAAACqqqqqqqqqqqqqqqqqAAAAqqqqqqqqqqqqqqqqqgAAAKqqqqqqqq&#xD;&#xA;qqqqqqqqoAAACqqqqqqqqqqqqqqqqqAAAAmZmZmZmZmZmZmZmZmQAAAJmZmZmZmZmZmZmZmZkAAA&#xD;&#xA;CZmZmZmZmZmZmZmZmZAAAAmZmZmZmZmZmZmZmZmQAAAJmZmZmZmZmZmZmZmZkAAAAAAAAAAAAAAA&#xD;&#xA;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD////////////////gAAAH4AAA&#xD;&#xA;B+AAAAfgAAAH4AAAB+AAAAfgAAAH4AAAB+AAAAfgAAAH4AAAB+AAAAfgAAAH4AAAB+AAAAfgAAAH&#xD;&#xA;4AAAB+AAAAfgAAAH4AAAB+AAAAfgAAAH4AAAB+AAAAfgAAAH4AAAB////////////////w==" />
-    <Output FileName="..\..\..\artifacts\EMU7800Setup-x64-5.0.0.msi" />
+    <Output FileName="..\..\..\artifacts\EMU7800Setup-x64-5.2.0.msi" />
     <InstallPrivileges Value="Limited" />
     <PerUser Value="yes" />
     <ElevateExecutable Value="never" />
@@ -11,7 +11,7 @@
     <Registration Value="Hidden" />
     <RegistrationWrapped Value="Hidden" />
     <Manufacturer Detect="executable" Value="Mike Murphy" />
-    <ProductVersion Detect="" Value="5.0.0.0" />
+    <ProductVersion Detect="" Value="5.2.0.0" />
     <ProductName Detect="executable" Value="EMU7800" />
     <Comments Detect="" Value="Play Atari Today!" />
     <Contact Detect="" Value="mike@emu7800.net" />
@@ -20,7 +20,7 @@
     <AboutLink Detect="" Value="http://emu7800.net" />
   </Installer>
   <WrappedInstaller>
-    <Executable FileName="..\..\..\artifacts\EMU7800Setup-x64-5.0.0.exe" SuccessCodes="" Impersonate="yes" IncludeFiles="no" CompressionLevel="None" />
+    <Executable FileName="..\..\..\artifacts\EMU7800Setup-x64-5.2.0.exe" SuccessCodes="" Impersonate="yes" IncludeFiles="no" CompressionLevel="None" />
     <ApplicationId Value="{978124C8-D68F-4C5D-9E10-955C3A49CB93}" />
     <Install>
       <Arguments Value="">

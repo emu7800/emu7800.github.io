@@ -39,7 +39,7 @@ namespace EMU7800.D2D.Shell
             _buttonAbout = new QuestionMarkButton();
             _labelCopyr = new LabelControl
             {
-                Text = "© 2012-2021 Mike Murphy (mike@emu7800.net)",
+                Text = "© 2012-2022 Mike Murphy (mike@emu7800.net)",
                 TextFontFamilyName = Styles.SmallFontFamily,
                 TextFontSize = Styles.SmallFontSize,
                 TextAlignment = DWriteTextAlignment.Center,

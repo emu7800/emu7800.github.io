@@ -24,6 +24,7 @@ Compress-Archive .\artifacts\EMU7800.src\                .\artifacts\EMU7800.src
 
 # copy executable artifacts
 robocopy.exe     .\src\win32\bin\Release\net6.0\publish\ .\artifacts\EMU7800.bin\ /XD ref /XF *.runtimeconfig.dev.json *.exp *.ilk *.lib *.pdb *.iobj *.ipdb  /S /NFL
+robocopy.exe     .\lib\                                  .\artifacts\EMU7800.bin\ vcruntime140.dll    /NFL
 New-Item -Name                                           .\artifacts\EMU7800.bin\ROMS\ -ItemType directory
 Compress-Archive .\lib\roms\Bios78\                      .\artifacts\EMU7800.bin\ROMS\Bios78.zip      -CompressionLevel Optimal -Force
 Compress-Archive .\lib\roms\Atari\                       .\artifacts\EMU7800.bin\ROMS\Atari.zip       -CompressionLevel Optimal -Force
@@ -36,4 +37,4 @@ Pop-Location
 
 pwsh.exe .\src\tools\Installer\Build.ps1
 
-Compress-Archive .\artifacts\EMU7800Setup-x64-5.1.0.exe .\artifacts\EMU7800.bin-x64-5.1.0.zip -CompressionLevel Optimal -Force
+Compress-Archive .\artifacts\EMU7800Setup-x64-5.2.0.exe .\artifacts\EMU7800.bin-x64-5.2.0.zip -CompressionLevel Optimal -Force

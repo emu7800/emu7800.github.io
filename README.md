@@ -1,5 +1,5 @@
 # EMU7800
-> Mike Murphy (mike@emu7800.net) - 12/1/2021
+> Mike Murphy (mike@emu7800.net) - 7/1/2022
 
 EMU7800 was originally completed in 2003 as a .NET programming exercise,
 being ported to the litany of subsequent now defunct .NET platforms (Windows Phone, Silverlight, UWP, etc.)
@@ -43,7 +43,3 @@ To build, the following tools are needed:
 2. Run ``pwsh.exe .\Build.ps1``
 
     This will compile everything other than the C++ component, build the deployment packages, and drop the artifacts to a `.\artifacts` folder.
-
-## Other
-
-Currently `%windir%\System32\vcruntime140.dll` is needed to run. If missing, download it [here](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-140).
