@@ -4,7 +4,7 @@ using System.Security;
 
 namespace EMU7800.Win32.Interop
 {
-    internal unsafe static class XInputNativeMethods
+    internal unsafe static partial class XInputNativeMethods
     {
         static readonly GCHandle[,] XInputStates = AllocateXInputStateStructures();
         static readonly int[] CurrXInputStateIndices = new int[4];
@@ -122,10 +122,10 @@ namespace EMU7800.Win32.Interop
                 }
             };
 
-        [DllImport("xinput1_4.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int XInputGetState(int dwUserIndex, IntPtr xinputState);
+        [LibraryImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int XInputGetState(int dwUserIndex, IntPtr xinputState);
 
-        [DllImport("xinput1_4.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int XInputGetCapabilities(int dwUserIndex, int dwFlags, ref XINPUT_CAPABILITIES capabilities);
+        [LibraryImport("xinput1_4.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int XInputGetCapabilities(int dwUserIndex, int dwFlags, ref XINPUT_CAPABILITIES capabilities);
     }
 }

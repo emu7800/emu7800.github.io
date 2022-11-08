@@ -10,11 +10,11 @@ using static System.Console;
 
 var option = args.Length > 0 ? args[0].ToLower() : string.Empty;
 
-if (option.Length == 0 || new[] { "-c", "/c" }.Any(s => option.StartsWith(s)))
+if (option.Length == 0 || new[] { "-c", "/c" }.Any(option.StartsWith))
 {
-    if (option.Length == 0)
+    if (option.Length > 0)
     {
-        FreeConsole();
+        AllocConsole();
     }
     Start(option.Length == 0);
     return 0;
@@ -153,7 +153,7 @@ Controller:
     {
         WriteLine(@"
 ** EMU7800 **
-Copyright (c) 2012-2021 Mike Murphy
+Copyright (c) 2012-2022 Mike Murphy
 
 Usage:
     EMU7800.exe [<option> <filename> [MachineType [CartType [LController [RController]]]]]
@@ -191,4 +191,4 @@ static void Start(bool startMaximized = true)
 }
 
 [System.Runtime.InteropServices.DllImport("Kernel32.dll")]
-static extern void FreeConsole();
+static extern void AllocConsole();

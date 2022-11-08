@@ -149,22 +149,12 @@ namespace EMU7800.D2D.Shell
             _buttonAbout.IsVisible = false;
             _labelBusyInit.IsVisible = true;
 
-            await Task.Run(() => SettingsCheck());
-            await Task.Run(() => ImportCheck());
+            await Task.Run(DatastoreService.GetSettings);
+            await Task.Run(RomImportService.ImportDefaultsIfNecessary);
 
             _buttonPlayAtariToday.IsVisible = true;
             _buttonAbout.IsVisible = true;
             _labelBusyInit.IsVisible = false;
-        }
-
-        static void SettingsCheck()
-        {
-            DatastoreService.GetSettings();
-        }
-
-        static void ImportCheck()
-        {
-            RomImportService.ImportDefaultsIfNecessary();
         }
 
         static string GetVersionInfo()

@@ -8,7 +8,7 @@ using System.Security;
 
 namespace EMU7800.Win32.Interop
 {
-    internal unsafe class DirectInputNativeMethods
+    internal unsafe partial class DirectInputNativeMethods
     {
         public const int
             AXISRANGE = 1000,
@@ -107,13 +107,13 @@ namespace EMU7800.Win32.Interop
         public static int Shutdown()
             => DInput8_Shutdown();
 
-        [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int DInput8_Initialize(IntPtr hWnd, int axisRange, out IntPtr productName1Ptr, out IntPtr productName2Ptr);
+        [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int DInput8_Initialize(IntPtr hWnd, int axisRange, out IntPtr productName1Ptr, out IntPtr productName2Ptr);
 
-        [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int DInput8_Poll(int deviceno, ref IntPtr ppCurrState, ref IntPtr ppPrevState);
+        [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int DInput8_Poll(int deviceno, ref IntPtr ppCurrState, ref IntPtr ppPrevState);
 
-        [DllImport("EMU7800.Win32.Interop.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int DInput8_Shutdown();
+        [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int DInput8_Shutdown();
     }
 }

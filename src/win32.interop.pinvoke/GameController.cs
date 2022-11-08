@@ -54,7 +54,7 @@ namespace EMU7800.Win32.Interop
 
         internal void RaiseEventsFromDirectInput()
         {
-            DirectInputNativeMethods.Poll(InternalDeviceNumber, out var currState, out var prevState);
+            Poll(InternalDeviceNumber, out var currState, out var prevState);
 
             var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
             if (maybeNewDaptorMode != _daptorMode)

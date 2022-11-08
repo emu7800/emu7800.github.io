@@ -17,8 +17,7 @@
         public override void Reset()
         {
             base.Reset();
-            if (_pokeySound != null)
-                _pokeySound.Reset();
+            _pokeySound?.Reset();
         }
 
         public override byte this[ushort addr]

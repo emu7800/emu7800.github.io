@@ -23,8 +23,14 @@ namespace EMU7800.Win32.Interop
         {
             Resized += (w, h) => GraphicsDevice.Resize(new(w, h));
 
-            hWnd = Win32_Initialize();
+            hWnd = Win32_CreateWindow();
             WriteLine($"Win32 initialized: hWnd=0x{hWnd:x8}");
+
+            if (hWnd == IntPtr.Zero)
+            {
+                WriteLine("Win32 initialization failure");
+                return;
+            }
 
             var hr = GraphicsDevice.Initialize(hWnd);
             WriteLine($"D2D initialized: HR=0x{hr:x8}");
@@ -39,7 +45,6 @@ namespace EMU7800.Win32.Interop
 
             GameControllers.Shutdown();
             GraphicsDevice.Shutdown();
-            Win32_Quit();
 
             WriteLine("Done");
         }

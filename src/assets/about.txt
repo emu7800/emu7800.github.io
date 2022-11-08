@@ -1,8 +1,8 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Updated to latest .NET6. Included vcruntime140.dll as not all machines have it installed.
+WHATS NEW—Updated to .NET7. Added directional key repeat on Select Game Program menu.
 
-BASIC OPERATION—Several classic games are included to jump-start your experience. Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
+BASIC OPERATION—Several classic games are included to jump start your experience! Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
 GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
 
@@ -17,7 +17,7 @@ GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, includi
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
 
-ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise, being ported to the litany of subsequent .NET platforms. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback. Enjoy!
+ABOUT—EMU7800 was originally completed in 2003 as a .NET programming exercise. EMU7800 continues to be maintained to the present day as a non-commercial endeavor. Feel free to email feedback. Enjoy!
 
 Mike Murphy
 mike@emu7800.net

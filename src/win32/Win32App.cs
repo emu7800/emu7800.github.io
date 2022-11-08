@@ -45,8 +45,7 @@ namespace EMU7800.D2D.Shell.Win32
         {
             if (disposing)
             {
-                if (_pageBackStack != null)
-                    _pageBackStack.Dispose();
+                _pageBackStack?.Dispose();
             }
         }
 

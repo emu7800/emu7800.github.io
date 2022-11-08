@@ -200,7 +200,7 @@
                     _counters[i]++;
                     _counters[i] &= 0x0fff;
                     break;
-                case 0x03: // DFxFRACDATA 
+                case 0x03: // DFxFRACDATA
                     result = _ram[DisplayBaseAddr + _fractionalCounters[i] >> 8];
                     _fractionalCounters[i] = (_fractionalCounters[i] + _fractionalIncrements[i]) & 0xfffff;
                     break;
@@ -396,7 +396,7 @@
 
         #region Serialization Members
 
-        public CartDPC2(DeserializationContext input, MachineBase m) : base(input)
+        public CartDPC2(DeserializationContext input) : base(input)
         {
             input.CheckVersion(1);
             LoadRom(input.ReadExpectedBytes(MinimumSize), MinimumSize);

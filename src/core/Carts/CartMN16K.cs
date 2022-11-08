@@ -6,7 +6,7 @@
     public sealed class CartMN16K : Cart
     {
         //
-        // Cart Format                Mapping to ROM Address Space	
+        // Cart Format                Mapping to ROM Address Space
         // Segment1: 0x0000:0x0800    Bank1:0x1000:0x0800  Select Seg: 1fe0-1fe6, 1fe7=RAM Seg1
         // Segment2: 0x0800:0x0800    Bank2:0x1800:0x0800  Always Seg8
         // Segment3: 0x1000:0x0800
@@ -49,7 +49,7 @@
             Bank = 0;
             BankRAM = 0;
         }
-    
+
         public override byte this[ushort addr]
         {
             get
@@ -73,7 +73,7 @@
                 if (RAMBankOn && addr < 0x0400)
                 {
                     RAM[addr & 0x03ff] = value;
-                } 
+                }
                 else if (addr >= 0x0800 && addr < 0x0900)
                 {
                     RAM[0x400 + BankBaseRAMAddr + (addr & 0xff)] = value;
@@ -99,7 +99,7 @@
             if (addr >= 0x0fe0 && addr < 0x0fe8)
             {
                 Bank = addr & 0x07;
-            } 
+            }
             else if (addr >= 0x0fe8 && addr < 0x0fec)
             {
                 BankRAM = addr & 0x03;

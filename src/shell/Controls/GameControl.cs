@@ -183,17 +183,13 @@ namespace EMU7800.D2D.Shell
 
         public bool SwapLeftControllerPaddles()
         {
-            var tmp0 = _paddleSwaps[0];
-            _paddleSwaps[0] = _paddleSwaps[1];
-            _paddleSwaps[1] = tmp0;
+            (_paddleSwaps[1], _paddleSwaps[0]) = (_paddleSwaps[0], _paddleSwaps[1]);
             return _paddleSwaps[0] == 1;
         }
 
         public bool SwapRightControllerPaddles()
         {
-            var tmp2 = _paddleSwaps[2];
-            _paddleSwaps[2] = _paddleSwaps[3];
-            _paddleSwaps[3] = tmp2;
+            (_paddleSwaps[3], _paddleSwaps[2]) = (_paddleSwaps[2], _paddleSwaps[3]);
             return _paddleSwaps[2] == 3;
         }
 

@@ -6,13 +6,11 @@
  * Copyright © 2003, 2011 Mike Murphy
  *
  */
-using System;
-
 namespace EMU7800.Core
 {
     public sealed class AddressSpace
     {
-        public static readonly AddressSpace Default = new AddressSpace(MachineBase.Default, 16, 6);
+        public static readonly AddressSpace Default = new(MachineBase.Default, 16, 6);
 
         public MachineBase M { get; } = MachineBase.Default;
 

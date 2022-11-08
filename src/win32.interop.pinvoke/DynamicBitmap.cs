@@ -10,7 +10,7 @@ namespace EMU7800.Win32.Interop
 
         #region Fields
 
-        readonly D2D_SIZE_U _bsize;
+        readonly D2D_SIZE_U _bsize = new D2D_SIZE_U();
         readonly int _expectedDataLength, _expectedPitch;
 
         public IntPtr BitmapPtr { get; private set; }
@@ -61,7 +61,7 @@ namespace EMU7800.Win32.Interop
 
         #region Constructors
 
-        DynamicBitmap() : this(new D2D_SIZE_U()) {}
+        DynamicBitmap() {}
 
         public DynamicBitmap(D2D_SIZE_U bsize)
         {

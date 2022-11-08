@@ -2,7 +2,6 @@
 
 using EMU7800.Assets;
 using EMU7800.Services.Dto;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,8 +74,10 @@ namespace EMU7800.Services
                     var md5keyPlus = $"{md5key} {gpi.LController} {gpi.RController}";
                     if (!importedGameProgramInfoMd5Dict.TryGetValue(md5keyPlus, out var igpi))
                     {
-                        igpi = new(gpi);
-                        igpi.PersistedStateAt = DatastoreService.PersistedMachineAt(gpi);
+                        igpi = new(gpi)
+                        {
+                            PersistedStateAt = DatastoreService.PersistedMachineAt(gpi)
+                        };
                         importedGameProgramInfoMd5Dict.Add(md5keyPlus, igpi);
                     }
                     igpi.StorageKeySet.Add(path);

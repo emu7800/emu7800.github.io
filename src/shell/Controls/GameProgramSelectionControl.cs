@@ -52,6 +52,9 @@ namespace EMU7800.D2D.Shell
 
         bool _reinitializeAtNextUpdate, _initializeAtNextUpdate = true;
 
+        KeyboardKey _keyRepeatKey = KeyboardKey.None;
+        long _keyRepeatTicks = 0;
+
 #if PROFILE
         // On TVPC, GetCursorPos() returns incorrect results when mouse wheel is turning after directinput API has been started once.
         // This displays the mouse position when the wheel is turned.
@@ -156,18 +159,27 @@ namespace EMU7800.D2D.Shell
 
         public override void KeyboardKeyPressed(KeyboardKey key, bool down)
         {
-            if (down)
-                return;
             switch (key)
             {
                 case KeyboardKey.Enter:
-                    RaiseSelected();
+                    if (!down)
+                        RaiseSelected();
                     break;
                 case KeyboardKey.Left:
                 case KeyboardKey.Right:
                 case KeyboardKey.Up:
                 case KeyboardKey.Down:
-                    HandleKeyPressed(key);
+                    if (down)
+                    {
+                        _keyRepeatKey = key;
+                        _keyRepeatTicks = (long)(0.75 / TimerDevice.SecondsPerTick);
+                    }
+                    else
+                    {
+                        _keyRepeatKey = KeyboardKey.None;
+                        _keyRepeatTicks = 0;
+                        HandleKeyPressed(key);
+                    }
                     break;
             }
         }
@@ -175,26 +187,16 @@ namespace EMU7800.D2D.Shell
         public override void ControllerButtonChanged(int controllerNo, MachineInput input, bool down)
         {
             base.ControllerButtonChanged(controllerNo, input, down);
-            if (down)
-                return;
-            switch (input)
+            var key = input switch
             {
-                case MachineInput.Start:
-                    RaiseSelected();
-                    break;
-                case MachineInput.Left:
-                    HandleKeyPressed(KeyboardKey.Left);
-                    break;
-                case MachineInput.Right:
-                    HandleKeyPressed(KeyboardKey.Right);
-                    break;
-                case MachineInput.Up:
-                    HandleKeyPressed(KeyboardKey.Up);
-                    break;
-                case MachineInput.Down:
-                    HandleKeyPressed(KeyboardKey.Down);
-                    break;
-            }
+                MachineInput.Start => KeyboardKey.Enter,
+                MachineInput.Left  => KeyboardKey.Left,
+                MachineInput.Right => KeyboardKey.Right,
+                MachineInput.Up    => KeyboardKey.Up,
+                MachineInput.Down  => KeyboardKey.Down,
+                _                  => KeyboardKey.None
+            };
+            KeyboardKeyPressed(key, down);
         }
 
         public override void Update(TimerDevice td)
@@ -268,6 +270,16 @@ namespace EMU7800.D2D.Shell
                     rect.Bottom = gpvic.ScrollYBottomMostBoundary + h;
                 }
                 gpvic.CollectionRect = rect;
+            }
+
+            if (_keyRepeatKey > 0)
+            {
+                _keyRepeatTicks -= td.DeltaTicks;
+                if (_keyRepeatTicks <= 0)
+                {
+                    _keyRepeatTicks += (long)(0.10 / TimerDevice.SecondsPerTick);
+                    HandleKeyPressed(_keyRepeatKey);
+                }
             }
         }
 

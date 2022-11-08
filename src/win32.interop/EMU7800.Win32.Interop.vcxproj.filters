@@ -32,9 +32,6 @@
     <ClCompile Include="directinput8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="direct2d1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

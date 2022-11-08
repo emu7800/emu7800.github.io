@@ -6,7 +6,7 @@
     public sealed class CartPB8K : Cart
     {
         //
-        // Cart Format                Mapping to ROM Address Space	
+        // Cart Format                Mapping to ROM Address Space
         // Segment1: 0x0000:0x0400    Bank1:0x1000:0x0400  Select Segment: 1fe0-1fe7
         // Segment2: 0x0400:0x0400    Bank2:0x1400:0x0400  Select Segment: 1fe8-1ff0
         // Segment3: 0x0800:0x0400    Bank3:0x1800:0x0400  Select Segment: 1ff0-1ff8

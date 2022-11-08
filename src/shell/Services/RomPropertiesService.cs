@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace EMU7800.Services
 {
-    public static class RomPropertiesService
+    public static partial class RomPropertiesService
     {
         #region Fields
 
@@ -30,7 +30,10 @@ namespace EMU7800.Services
         const string ReferenceRepositoryCsvHeader
             = "Title,Manufacturer,Author,Qualifier,Year,ModelNo,Rarity,CartType,MachineType,LController,RController,MD5,HelpUri";
 
-        readonly static Regex _regexMd5KeyType = new(@"^([0-9a-f]{32,32})$", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        readonly static Regex _regexMd5KeyType = CompiledMd5RegEx();
+
+        [GeneratedRegex("^([0-9a-f]{32,32})$", RegexOptions.IgnoreCase | RegexOptions.Singleline, "en-US")]
+        private static partial Regex CompiledMd5RegEx();
 
         #endregion
 

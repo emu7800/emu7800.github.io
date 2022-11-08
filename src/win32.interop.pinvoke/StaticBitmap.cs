@@ -10,7 +10,7 @@ namespace EMU7800.Win32.Interop
 
         #region Fields
 
-        readonly byte[] _data;
+        readonly byte[] _data = Array.Empty<byte>();
 
         public IntPtr BitmapPtr { get; private set; }
 
@@ -52,7 +52,7 @@ namespace EMU7800.Win32.Interop
 
         #region Constructors
 
-        StaticBitmap() : this(Array.Empty<byte>()) {}
+        StaticBitmap() {}
 
         public StaticBitmap(byte[] data)
         {

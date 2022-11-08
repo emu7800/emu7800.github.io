@@ -14,8 +14,8 @@ namespace EMU7800.D2D.Shell
 
         #endregion
 
-        public long Frequency { get; private set; }
-        public float SecondsPerTick { get; private set; }
+        public static long Frequency => Stopwatch.Frequency;
+        public static float SecondsPerTick => 1.0f / Stopwatch.Frequency;
 
         public int DeltaTicks { get; private set; }
         public float DeltaInSeconds { get; private set; }
@@ -36,9 +36,6 @@ namespace EMU7800.D2D.Shell
         {
             if (!Stopwatch.IsHighResolution || Stopwatch.Frequency == 0)
                 throw new NotSupportedException("High resolution timer not available");
-
-            Frequency = Stopwatch.Frequency;
-            SecondsPerTick = 1.0f / Frequency;
 
             _stopwatch.Start();
         }

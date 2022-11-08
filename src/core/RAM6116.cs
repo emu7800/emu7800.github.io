@@ -6,8 +6,6 @@
  * Copyright © 2004 Mike Murphy
  *
  */
-using System;
-
 namespace EMU7800.Core
 {
     public sealed class RAM6116 : IDevice

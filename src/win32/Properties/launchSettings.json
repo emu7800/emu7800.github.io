@@ -2,7 +2,7 @@
   "profiles": {
     "EMU7800": {
       "commandName": "Project",
-      "commandLineArgs": "-c",
+      "commandLineArgs": "",
       "nativeDebugging": true
     }
   }
