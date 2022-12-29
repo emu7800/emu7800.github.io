@@ -337,7 +337,7 @@ internal unsafe static partial class Win32NativeMethods
             hInstance     = Marshal.GetHINSTANCE(typeof(Win32NativeMethods).Module),
             lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(WndProcDelegate),
             hCursor       = LoadCursor(IntPtr.Zero, IDC_ARROW),
-            hIcon         = GetIconHandle(),
+            hIcon         = ExtractAssociatedIcon(IntPtr.Zero, new StringBuilder("EMU7800.exe"), out _),
             lpszClassName = EMU7800,
             lpszMenuName  = null
         };
@@ -404,12 +404,6 @@ internal unsafe static partial class Win32NativeMethods
                 Win32Window.LURCycle();
             }
         }
-    }
-
-    static IntPtr GetIconHandle()
-    {
-        var entryAssembly = Assembly.GetEntryAssembly();
-        return entryAssembly == null ? IntPtr.Zero : ExtractAssociatedIcon(IntPtr.Zero, new StringBuilder(entryAssembly.Location), out _);
     }
 
     #pragma warning disable SYSLIB1054

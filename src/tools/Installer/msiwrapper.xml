@@ -11,7 +11,7 @@
     <Registration Value="Hidden" />
     <RegistrationWrapped Value="Hidden" />
     <Manufacturer Detect="executable" Value="Mike Murphy" />
-    <ProductVersion Detect="" Value="5.3.0.0" />
+    <ProductVersion Detect="" Value="5.3.0.1" />
     <ProductName Detect="executable" Value="EMU7800" />
     <Comments Detect="" Value="Play Atari Today!" />
     <Contact Detect="" Value="mike@emu7800.net" />
