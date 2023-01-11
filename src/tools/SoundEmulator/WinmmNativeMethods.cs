@@ -12,7 +12,7 @@ using System.Security;
 
 namespace EMU7800.Win32.Interop
 {
-    internal unsafe static class WinmmNativeMethods
+    internal unsafe static partial class WinmmNativeMethods
     {
         static IntPtr Hwo;
         static IntPtr Storage = IntPtr.Zero;
@@ -23,7 +23,7 @@ namespace EMU7800.Win32.Interop
         const uint WHDR_DONE = 0x00000001;  // WAVEHDR done flag
 
         [StructLayout(LayoutKind.Sequential)]
-        struct WAVEFORMATEX
+        internal struct WAVEFORMATEX
         {
             internal ushort wFormatTag;     // format type
             internal ushort nChannels;      // number of channels (i.e. mono, stereo...)
@@ -35,7 +35,7 @@ namespace EMU7800.Win32.Interop
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        struct WAVEHDR
+        internal struct WAVEHDR
         {
             internal byte* lpData;          // pointer to locked data buffer
             internal uint dwBufferLength;   // length of data buffer
@@ -175,32 +175,28 @@ namespace EMU7800.Win32.Interop
             Storage = IntPtr.Zero;
         }
 
-#pragma warning disable IDE1006 // Naming Styles
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutOpen(IntPtr* phwo, uint uDeviceID, WAVEFORMATEX* pwfx, IntPtr dwCallback, IntPtr dwInstance, uint fdwOpen);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutSetVolume(IntPtr hwo, uint dwVolume);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutSetVolume(IntPtr hwo, uint dwVolume);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutGetVolume(IntPtr hwo, uint* pdwVolume);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutPrepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutUnprepareHeader(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutWrite(IntPtr hwo, WAVEHDR* wh, uint cbwh);
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutReset(IntPtr hwo);
 
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutReset(IntPtr hwo);
-
-        [DllImport("winmm.dll", ExactSpelling = true), SuppressUnmanagedCodeSecurity]
-        static extern int waveOutClose(IntPtr hwo);
-
-#pragma warning restore IDE1006 // Naming Styles
+        [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]
+        internal static partial int waveOutClose(IntPtr hwo);
     }
 }

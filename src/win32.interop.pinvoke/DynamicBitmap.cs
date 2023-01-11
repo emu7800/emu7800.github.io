@@ -10,7 +10,7 @@ namespace EMU7800.Win32.Interop
 
         #region Fields
 
-        readonly D2D_SIZE_U _bsize = new D2D_SIZE_U();
+        readonly D2D_SIZE_U _bsize = new();
         readonly int _expectedDataLength, _expectedPitch;
 
         public IntPtr BitmapPtr { get; private set; }

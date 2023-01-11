@@ -11,13 +11,12 @@
     <FileVersion>5.3.0.1</FileVersion>
     <Nullable>enable</Nullable>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
+	<NoWarn>1701;1702;IDE0058</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <NoWarn>1701;1702;IDE0058</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702;IDE0058</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
