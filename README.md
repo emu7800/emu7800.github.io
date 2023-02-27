@@ -1,5 +1,5 @@
 # EMU7800
-> Mike Murphy (mike@emu7800.net) - 12/1/2022
+> Mike Murphy (mike@emu7800.net) - 12/1/2023
 
 EMU7800 was originally completed in 2003 as a .NET programming exercise.
 It continues to be maintained to the present day as a non-commercial endeavor.
@@ -12,7 +12,7 @@ Enjoy!
 
 To build, the following tools are needed:
 
-- [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 - [Inno Setup Compiler 6.2.1](https://www.innosetup.com/)
 

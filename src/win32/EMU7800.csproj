@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <LangVersion>11.0</LangVersion>
     <Authors>Mike Murphy</Authors>
     <Description>An Atari 2600/7800 .NET-based Emulator</Description>
-    <Copyright>Copyright © 2012-2022 Mike Murphy</Copyright>
-    <AssemblyVersion>5.3.0.1</AssemblyVersion>
-    <FileVersion>5.3.0.1</FileVersion>
+    <Copyright>Copyright © 2012-2023 Mike Murphy</Copyright>
+    <AssemblyVersion>5.4.0.0</AssemblyVersion>
+    <FileVersion>5.4.0.0</FileVersion>
     <Nullable>enable</Nullable>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
-	<NoWarn>1701;1702;IDE0058</NoWarn>
+    <NoWarn>1701;1702;IDE0058</NoWarn>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>
