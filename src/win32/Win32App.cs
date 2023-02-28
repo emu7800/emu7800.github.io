@@ -6,8 +6,6 @@ using EMU7800.Win32.Interop;
 using System;
 using System.Diagnostics;
 
-#pragma warning disable CA1822 // Mark members as static
-
 namespace EMU7800.D2D.Shell.Win32
 {
     public sealed class Win32App : IDisposable

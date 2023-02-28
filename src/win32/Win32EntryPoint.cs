@@ -8,16 +8,14 @@ using System.Linq;
 
 using static System.Console;
 
-var option = args.Length > 0 ? args[0].ToLower() : string.Empty;
-
-if (option.Length == 0 || new[] { "-c", "/c" }.Any(option.StartsWith))
+if (args.Length == 0 || new[] { "-c", "/c" }.Any(OptEq))
 {
-    if (option.Length > 0)
+    if (args.Length > 0)
     {
         AllocConsole();
     }
-    Start(option.Length == 0);
-    return 0;
+    Start(args.Length == 0);
+    EnvironmentExit(0, args.Length > 0);
 }
 
 var romPath        = args.Length > 1 ? args[1] : string.Empty;
@@ -26,7 +24,7 @@ var cartTypeStr    = args.Length > 3 ? args[3] : string.Empty;
 var lControllerStr = args.Length > 4 ? args[4] : string.Empty;
 var rControllerStr = args.Length > 5 ? args[5] : string.Empty;
 
-if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
+if (new[] { "-r", "/r" }.Any(OptEq))
 {
     if (machineTypeStr.Length > 0)
     {
@@ -44,8 +42,9 @@ if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
             }
             else if (cartTypeStr.StartsWith("A78"))
             {
+                AllocConsole();
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
-                Environment.Exit(-8);
+                EnvironmentExit(-8);
             }
             lController = lController is Controller.None ? Controller.Joystick : lController;
             rController = rController is Controller.None ? Controller.Joystick : rController;
@@ -60,18 +59,19 @@ if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
             }
             else if (!cartTypeStr.StartsWith("A78"))
             {
+                AllocConsole();
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
-                Environment.Exit(-8);
+                EnvironmentExit(-8);
             }
             lController = lController is Controller.None ? Controller.ProLineJoystick : lController;
             rController = rController is Controller.None ? Controller.ProLineJoystick : rController;
         }
         else
         {
+            AllocConsole();
             WriteLine("Unknown MachineType: " + machineType);
-            Environment.Exit(-8);
+            EnvironmentExit(-8);
         }
-        WriteLine($"Starting {romPath} with {machineType} {cartType} {lController} {rController}...");
 
         StartGameProgram(new(machineType, cartType, lController, rController, romPath));
     }
@@ -92,14 +92,16 @@ if (new[] { "-r", "/r" }.Any(s => option.StartsWith(s)))
             }
             else
             {
+                AllocConsole();
                 WriteLine("No information in ROMProperties.csv database for: " + romPath);
-                Environment.Exit(-8);
+                EnvironmentExit(-8);
             }
         }
     }
 }
-else if (romPath.Length > 0 && new[] { "-d", "/d" }.Any(s => option.StartsWith(s)))
+else if (romPath.Length > 0 && new[] { "-d", "/d" }.Any(OptEq))
 {
+    AllocConsole();
     RomBytesService.DumpBin(romPath, WriteLine);
     var gpiList = GameProgramLibraryService.GetGameProgramInfos(romPath);
     if (gpiList.Any())
@@ -130,15 +132,19 @@ No matching entries found in ROMProperties.csv database");
     MD5         : {gpi.MD5}
     HelpUri     : {gpi.HelpUri}");
     }
+    EnvironmentExit(0);
 }
 else
 {
-    if (!new[] { "-?", "/?", "--?", "-h", "/h", "--help" }.Any(s => option.StartsWith(s)))
+    if (args.Length >= 1 && !new[] { "-?", "/?", "--?", "-h", "/h", "--help" }.Any(OptEq))
     {
-        WriteLine("Unknown option: " + option);
+        AllocConsole();
+        WriteLine("Unknown option: " + args[0]);
+        EnvironmentExit(0);
     }
-    else if (romPath.ToLower() == "enums")
+    else if (args.Length >= 2 && CiEq(args[1], "enums"))
     {
+        AllocConsole();
         WriteLine(@$"
 MachineType:
 {string.Join("\n", GetMachineTypes())}
@@ -148,9 +154,11 @@ CartType:
 
 Controller:
 {string.Join("\n", GetControllers())}");
+        EnvironmentExit(0);
     }
     else
     {
+        AllocConsole();
         WriteLine(@"
 ** EMU7800 **
 Copyright (c) 2012-2023 Mike Murphy
@@ -163,11 +171,23 @@ Options:
 -d <filename>: Dump Game Program information
 -? enums     : List valid MachineTypes, CartTypes, and Controllers
 -?           : This help
-             : Run Game Program selection menu (specify -c to keep console)");
+(none)       : Run Game Program selection menu (specify -c to keep console)");
+        EnvironmentExit(0);
     }
 }
 
 return 0;
+
+static void EnvironmentExit(int exitCode, bool waitForAnyKey = true)
+{
+    if (waitForAnyKey)
+    {
+        WriteLine("");
+        WriteLine("Hit any key to close");
+        ReadKey();
+    }
+    Environment.Exit(exitCode);
+}
 
 static IEnumerable<string> GetMachineTypes()
     => MachineTypeUtil.GetAllValues().Select(MachineTypeUtil.ToString);
@@ -177,6 +197,12 @@ static IEnumerable<string> GetCartTypes()
 
 static IEnumerable<string> GetControllers()
     => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);
+
+bool OptEq(string opt)
+    => CiEq(opt, args[0]);
+
+static bool CiEq(string a, string b)
+    => string.Compare(a, b, true) == 0;
 
 static void StartGameProgram(GameProgramInfoViewItem gpivi)
 {
