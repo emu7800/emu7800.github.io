@@ -4,6 +4,7 @@ using EMU7800.Services;
 using EMU7800.Services.Dto;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using static System.Console;
@@ -102,22 +103,28 @@ if (new[] { "-r", "/r" }.Any(OptEq))
 else if (romPath.Length > 0 && new[] { "-d", "/d" }.Any(OptEq))
 {
     AllocConsole();
-    RomBytesService.DumpBin(romPath, WriteLine);
-    var gpiList = GameProgramLibraryService.GetGameProgramInfos(romPath);
-    if (gpiList.Any())
-    {
-        WriteLine(@"
-Found matching entries in ROMProperties.csv database:");
-    }
-    else
-    {
-        WriteLine(@"
-No matching entries found in ROMProperties.csv database");
-    }
+    List<string> romPaths = Directory.Exists(romPath)
+        ? new DirectoryInfo(romPath).GetFiles().Select(fi => fi.FullName).ToList()
+        : new List<string> { romPath };
 
-    foreach (var gpi in gpiList)
+    foreach (var path in romPaths)
     {
-        WriteLine(@$"
+        RomBytesService.DumpBin(path, WriteLine);
+        var gpiList = GameProgramLibraryService.GetGameProgramInfos(path);
+        if (gpiList.Any())
+        {
+            WriteLine(@"
+Found matching entries in ROMProperties.csv database:");
+        }
+        else
+        {
+            WriteLine(@"
+No matching entries found in ROMProperties.csv database");
+        }
+
+        foreach (var gpi in gpiList)
+        {
+            WriteLine(@$"
     Title       : {gpi.Title}
     Manufacturer: {gpi.Manufacturer}
     Author      : {gpi.Author}
@@ -131,6 +138,7 @@ No matching entries found in ROMProperties.csv database");
     RController : {gpi.RController}
     MD5         : {gpi.MD5}
     HelpUri     : {gpi.HelpUri}");
+        }
     }
     EnvironmentExit(0);
 }
@@ -140,20 +148,6 @@ else
     {
         AllocConsole();
         WriteLine("Unknown option: " + args[0]);
-        EnvironmentExit(0);
-    }
-    else if (args.Length >= 2 && CiEq(args[1], "enums"))
-    {
-        AllocConsole();
-        WriteLine(@$"
-MachineType:
-{string.Join("\n", GetMachineTypes())}
-
-CartType:
-{string.Join("\n", GetCartTypes())}
-
-Controller:
-{string.Join("\n", GetControllers())}");
         EnvironmentExit(0);
     }
     else
@@ -169,9 +163,17 @@ Usage:
 Options:
 -r <filename>: Try launching Game Program (uses specified machine configuration or .a78 header info)
 -d <filename>: Dump Game Program information
--? enums     : List valid MachineTypes, CartTypes, and Controllers
 -?           : This help
 (none)       : Run Game Program selection menu (specify -c to keep console)");
+        WriteLine(@$"
+MachineTypes:
+{string.Join(Environment.NewLine, GetMachineTypes())}
+
+CartTypes:
+{string.Join(Environment.NewLine, GetCartTypes())}
+
+Controllers:
+{string.Join(Environment.NewLine, GetControllers())}");
         EnvironmentExit(0);
     }
 }
