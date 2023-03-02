@@ -9,12 +9,12 @@ using System.Linq;
 
 using static System.Console;
 
+if (args.Length > 0) {
+    AllocConsole();
+}
+
 if (args.Length == 0 || new[] { "-c", "/c" }.Any(OptEq))
 {
-    if (args.Length > 0)
-    {
-        AllocConsole();
-    }
     Start(args.Length == 0);
     EnvironmentExit(0, args.Length > 0);
 }
@@ -43,7 +43,6 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             }
             else if (cartTypeStr.StartsWith("A78"))
             {
-                AllocConsole();
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
                 EnvironmentExit(-8);
             }
@@ -60,7 +59,6 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             }
             else if (!cartTypeStr.StartsWith("A78"))
             {
-                AllocConsole();
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
                 EnvironmentExit(-8);
             }
@@ -69,7 +67,6 @@ if (new[] { "-r", "/r" }.Any(OptEq))
         }
         else
         {
-            AllocConsole();
             WriteLine("Unknown MachineType: " + machineType);
             EnvironmentExit(-8);
         }
@@ -93,7 +90,6 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             }
             else
             {
-                AllocConsole();
                 WriteLine("No information in ROMProperties.csv database for: " + romPath);
                 EnvironmentExit(-8);
             }
@@ -102,9 +98,8 @@ if (new[] { "-r", "/r" }.Any(OptEq))
 }
 else if (romPath.Length > 0 && new[] { "-d", "/d" }.Any(OptEq))
 {
-    AllocConsole();
     List<string> romPaths = Directory.Exists(romPath)
-        ? new DirectoryInfo(romPath).GetFiles().Select(fi => fi.FullName).ToList()
+        ? new DirectoryInfo(romPath).GetFiles().Where(IsBinOrA78File).Select(fi => fi.FullName).ToList()
         : new List<string> { romPath };
 
     foreach (var path in romPaths)
@@ -146,13 +141,11 @@ else
 {
     if (args.Length >= 1 && !new[] { "-?", "/?", "--?", "-h", "/h", "--help" }.Any(OptEq))
     {
-        AllocConsole();
         WriteLine("Unknown option: " + args[0]);
         EnvironmentExit(0);
     }
     else
     {
-        AllocConsole();
         WriteLine(@"
 ** EMU7800 **
 Copyright (c) 2012-2023 Mike Murphy
@@ -190,6 +183,10 @@ static void EnvironmentExit(int exitCode, bool waitForAnyKey = true)
     }
     Environment.Exit(exitCode);
 }
+
+static bool IsBinOrA78File(FileInfo fi)
+    => fi.Extension.Equals(".a78", StringComparison.OrdinalIgnoreCase)
+    || fi.Extension.Equals(".bin", StringComparison.OrdinalIgnoreCase);
 
 static IEnumerable<string> GetMachineTypes()
     => MachineTypeUtil.GetAllValues().Select(MachineTypeUtil.ToString);
