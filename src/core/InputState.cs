@@ -176,6 +176,9 @@ namespace EMU7800.Core
                 case MachineInput.RightDifficulty:
                     if (down) ToggleConsoleSwitchState(ConsoleSwitch.RightDifficultyA);
                     break;
+                case MachineInput.Pause:
+                    SetConsoleSwitchState(ConsoleSwitch.Pause, down);
+                    break;
             }
         }
 

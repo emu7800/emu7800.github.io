@@ -9,31 +9,29 @@ using System.Linq;
 
 using static System.Console;
 
-if (args.Length > 0) {
-    AllocConsole();
-}
-
-if (args.Length == 0 || new[] { "-c", "/c" }.Any(OptEq))
+if (new[] { "-r", "/r", "-rc", "/rc" }.Any(OptEq))
 {
-    Start(args.Length == 0);
-    EnvironmentExit(0, args.Length > 0);
-}
-
-var romPath        = args.Length > 1 ? args[1] : string.Empty;
-var machineTypeStr = args.Length > 2 ? args[2] : string.Empty;
-var cartTypeStr    = args.Length > 3 ? args[3] : string.Empty;
-var lControllerStr = args.Length > 4 ? args[4] : string.Empty;
-var rControllerStr = args.Length > 5 ? args[5] : string.Empty;
-
-if (new[] { "-r", "/r" }.Any(OptEq))
-{
-    if (machineTypeStr.Length > 0)
+    if (new[] { "-rc", "/rc" }.Any(OptEq))
     {
-        var machineType = MachineTypeUtil.From(machineTypeStr);
-        var cartType = CartTypeUtil.From(cartTypeStr);
-        var lController = ControllerUtil.From(lControllerStr);
-        var rController = ControllerUtil.From(rControllerStr);
-        if (machineType is MachineType.A2600NTSC or MachineType.A2600PAL)
+        AllocConsole();
+    }
+
+    var romPath = args.Length > 1 ? args[1] : string.Empty;
+    if (string.IsNullOrWhiteSpace(romPath) || !File.Exists(romPath))
+    {
+        WriteLine($"Rom path not specified or not found: '{romPath}'");
+        EnvironmentExit(-8);
+    }
+
+    var machineType = args.Select(arg => MachineTypeUtil.From(arg)).FirstOrDefault(mt => mt != MachineType.Unknown);
+    var cartType    = args.Select(arg => CartTypeUtil.From(arg)).FirstOrDefault(ct => ct != CartType.Unknown);
+    var lController = args.Select(arg => ControllerUtil.From(arg)).FirstOrDefault(co => co != Controller.None);
+    var rController = args.Select(arg => ControllerUtil.From(arg)).Where(co => co != Controller.None).Skip(1).FirstOrDefault();
+
+    if (machineType != MachineType.Unknown)
+    {
+        RomImportService.Import();
+        if (MachineTypeUtil.Is2600(machineType))
         {
             if (cartType is CartType.Unknown)
             {
@@ -41,7 +39,7 @@ if (new[] { "-r", "/r" }.Any(OptEq))
                 var len = bytes.Length;
                 cartType = RomBytesService.InferCartTypeFromSize(machineType, len);
             }
-            else if (cartTypeStr.StartsWith("A78"))
+            else if (cartType.ToString().StartsWith("A78"))
             {
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
                 EnvironmentExit(-8);
@@ -49,7 +47,7 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             lController = lController is Controller.None ? Controller.Joystick : lController;
             rController = rController is Controller.None ? Controller.Joystick : rController;
         }
-        else if (machineType is MachineType.A7800NTSC or MachineType.A7800PAL)
+        else if (MachineTypeUtil.Is7800(machineType))
         {
             if (cartType is CartType.Unknown)
             {
@@ -57,7 +55,7 @@ if (new[] { "-r", "/r" }.Any(OptEq))
                 var len = RomBytesService.RemoveA78HeaderIfNecessary(bytes).Length;
                 cartType = RomBytesService.InferCartTypeFromSize(machineType, len);
             }
-            else if (!cartTypeStr.StartsWith("A78"))
+            else if (!cartType.ToString().StartsWith("A78"))
             {
                 WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
                 EnvironmentExit(-8);
@@ -70,7 +68,6 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             WriteLine("Unknown MachineType: " + machineType);
             EnvironmentExit(-8);
         }
-
         StartGameProgram(new(machineType, cartType, lController, rController, romPath));
     }
     else
@@ -95,12 +92,18 @@ if (new[] { "-r", "/r" }.Any(OptEq))
             }
         }
     }
+    EnvironmentExit(0);
 }
-else if (romPath.Length > 0 && new[] { "-d", "/d" }.Any(OptEq))
+
+if (new[] { "-d", "/d" }.Any(OptEq))
 {
-    List<string> romPaths = Directory.Exists(romPath)
-        ? new DirectoryInfo(romPath).GetFiles().Where(IsBinOrA78File).Select(fi => fi.FullName).ToList()
-        : new List<string> { romPath };
+    AllocConsole();
+    var romPath = args.Length > 1 ? args[1] : string.Empty;
+    var romPaths = string.IsNullOrEmpty(romPath)
+        ? new List<string>()
+        : Directory.Exists(romPath)
+            ? new DirectoryInfo(romPath).GetFiles().Where(IsBinOrA78File).Select(fi => fi.FullName).ToList()
+            : new List<string> { romPath };
 
     foreach (var path in romPaths)
     {
@@ -137,16 +140,11 @@ No matching entries found in ROMProperties.csv database");
     }
     EnvironmentExit(0);
 }
-else
+
+if (new[] { "-?", "/?", "-h", "/h", "--help" }.Any(OptEq))
 {
-    if (args.Length >= 1 && !new[] { "-?", "/?", "--?", "-h", "/h", "--help" }.Any(OptEq))
-    {
-        WriteLine("Unknown option: " + args[0]);
-        EnvironmentExit(0);
-    }
-    else
-    {
-        WriteLine(@"
+    AllocConsole();
+    WriteLine($@"
 ** EMU7800 **
 Copyright (c) 2012-2023 Mike Murphy
 
@@ -154,11 +152,12 @@ Usage:
     EMU7800.exe [<option> <filename> [MachineType [CartType [LController [RController]]]]]
 
 Options:
--r <filename>: Try launching Game Program (uses specified machine configuration or .a78 header info)
--d <filename>: Dump Game Program information
--?           : This help
-(none)       : Run Game Program selection menu (specify -c to keep console)");
-        WriteLine(@$"
+-r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
+-rc <filename>: Like -r, but opens console window
+-d <filename> : Dump Game Program information (opens console window)
+-?            : This help (opens console window)
+(none)        : Run Game Program selection menu (specify -c to open console window)
+
 MachineTypes:
 {string.Join(Environment.NewLine, GetMachineTypes())}
 
@@ -167,26 +166,40 @@ CartTypes:
 
 Controllers:
 {string.Join(Environment.NewLine, GetControllers())}");
-        EnvironmentExit(0);
-    }
+    EnvironmentExit(0);
 }
 
-return 0;
+if (new[] { "-c", "/c" }.Any(OptEq))
+{
+    AllocConsole();
+    Start(false);
+    EnvironmentExit(0);
+}
+
+if (args.Length == 0)
+{
+    Start(true);
+    EnvironmentExit(0, false);
+}
+
+AllocConsole();
+WriteLine("Unknown option: " + args[0]);
+EnvironmentExit(-8);
 
 static void EnvironmentExit(int exitCode, bool waitForAnyKey = true)
 {
     if (waitForAnyKey)
     {
-        WriteLine("");
-        WriteLine("Hit any key to close");
+        WriteLine(@"
+Hit any key to close");
         ReadKey();
     }
     Environment.Exit(exitCode);
 }
 
 static bool IsBinOrA78File(FileInfo fi)
-    => fi.Extension.Equals(".a78", StringComparison.OrdinalIgnoreCase)
-    || fi.Extension.Equals(".bin", StringComparison.OrdinalIgnoreCase);
+    => CiEq(fi.Extension, ".a78")
+    || CiEq(fi.Extension, ".bin");
 
 static IEnumerable<string> GetMachineTypes()
     => MachineTypeUtil.GetAllValues().Select(MachineTypeUtil.ToString);
@@ -198,7 +211,7 @@ static IEnumerable<string> GetControllers()
     => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);
 
 bool OptEq(string opt)
-    => CiEq(opt, args[0]);
+    => args.Length >= 1 && CiEq(opt, args[0]);
 
 static bool CiEq(string a, string b)
     => string.Compare(a, b, true) == 0;

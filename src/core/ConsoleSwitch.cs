@@ -7,5 +7,6 @@
         GameBW,
         LeftDifficultyA,
         RightDifficultyA,
+        Pause = 2
     }
 }

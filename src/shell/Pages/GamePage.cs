@@ -373,6 +373,9 @@ namespace EMU7800.D2D.Shell
                 case KeyboardKey.S:
                     _gameControl.RaiseMachineInput(MachineInput.Select, down);
                     break;
+                case KeyboardKey.P:
+                    _gameControl.RaiseMachineInput(MachineInput.Pause, down);
+                    break;
                 case KeyboardKey.F1:
                     if (down)
                         return;

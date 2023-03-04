@@ -112,11 +112,11 @@ namespace EMU7800.Core
 
             return typeName switch
             {
-                "EMU7800.Core.Machine2600NTSC" => new Machine2600NTSC(this),
-                "EMU7800.Core.Machine2600PAL"  => new Machine2600PAL(this),
-                "EMU7800.Core.Machine7800NTSC" => new Machine7800NTSC(this),
-                "EMU7800.Core.Machine7800PAL"  => new Machine7800PAL(this),
-                _                              => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+                "EMU7800.Core." + nameof(Machine2600NTSC) => new Machine2600NTSC(this),
+                "EMU7800.Core." + nameof(Machine2600PAL)  => new Machine2600PAL(this),
+                "EMU7800.Core." + nameof(Machine7800NTSC) => new Machine7800NTSC(this),
+                "EMU7800.Core." + nameof(Machine7800PAL)  => new Machine7800PAL(this),
+                _ => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
             };
         }
 
@@ -144,9 +144,6 @@ namespace EMU7800.Core
         public InputState ReadInputState()
             => new(this);
 
-        public HSC7800 ReadOptionalHSC7800()
-            => ReadBoolean() ? new HSC7800(this) : HSC7800.Default;
-
         public Bios7800 ReadOptionalBios7800()
             => ReadBoolean() ? new Bios7800(this) : Bios7800.Default;
 
@@ -161,32 +158,33 @@ namespace EMU7800.Core
 
             return typeName switch
             {
-                "EMU7800.Core.CartA2K"      => new CartA2K(this),
-                "EMU7800.Core.CartA4K"      => new CartA4K(this),
-                "EMU7800.Core.CartA8K"      => new CartA8K(this),
-                "EMU7800.Core.CartA8KR"     => new CartA8KR(this),
-                "EMU7800.Core.CartA16K"     => new CartA16K(this),
-                "EMU7800.Core.CartA16KR"    => new CartA16KR(this),
-                "EMU7800.Core.CartDC8K"     => new CartDC8K(this),
-                "EMU7800.Core.CartPB8K"     => new CartPB8K(this),
-                "EMU7800.Core.CartTV8K"     => new CartTV8K(this),
-                "EMU7800.Core.CartCBS12K"   => new CartCBS12K(this),
-                "EMU7800.Core.CartA32K"     => new CartA32K(this),
-                "EMU7800.Core.CartA32KR"    => new CartA32KR(this),
-                "EMU7800.Core.CartMN16K"    => new CartMN16K(this),
-                "EMU7800.Core.CartDPC"      => new CartDPC(this),
-                "EMU7800.Core.Cart7808"     => new Cart7808(this),
-                "EMU7800.Core.Cart7816"     => new Cart7816(this),
-                "EMU7800.Core.Cart7832P"    => new Cart7832P(this, m),
-                "EMU7800.Core.Cart7832"     => new Cart7832(this),
-                "EMU7800.Core.Cart7848"     => new Cart7848(this),
-                "EMU7800.Core.Cart78SGP"    => new Cart78SGP(this, m),
-                "EMU7800.Core.Cart78SG"     => new Cart78SG(this),
-                "EMU7800.Core.Cart78S9"     => new Cart78S9(this),
-                "EMU7800.Core.Cart78S4"     => new Cart78S4(this),
-                "EMU7800.Core.Cart78AB"     => new Cart78AB(this),
-                "EMU7800.Core.Cart78AC"     => new Cart78AC(this),
-                _                           => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+                "EMU7800.Core." + nameof(CartA2K)    => new CartA2K(this),
+                "EMU7800.Core." + nameof(CartA4K)    => new CartA4K(this),
+                "EMU7800.Core." + nameof(CartA8K)    => new CartA8K(this),
+                "EMU7800.Core." + nameof(CartA8KR)   => new CartA8KR(this),
+                "EMU7800.Core." + nameof(CartA16K)   => new CartA16K(this),
+                "EMU7800.Core." + nameof(CartA16KR)  => new CartA16KR(this),
+                "EMU7800.Core." + nameof(CartDC8K)   => new CartDC8K(this),
+                "EMU7800.Core." + nameof(CartPB8K)   => new CartPB8K(this),
+                "EMU7800.Core." + nameof(CartTV8K)   => new CartTV8K(this),
+                "EMU7800.Core." + nameof(CartCBS12K) => new CartCBS12K(this),
+                "EMU7800.Core." + nameof(CartA32K)   => new CartA32K(this),
+                "EMU7800.Core." + nameof(CartA32KR)  => new CartA32KR(this),
+                "EMU7800.Core." + nameof(CartMN16K)  => new CartMN16K(this),
+                "EMU7800.Core." + nameof(CartDPC)    => new CartDPC(this),
+                "EMU7800.Core." + nameof(Cart7808)   => new Cart7808(this),
+                "EMU7800.Core." + nameof(Cart7816)   => new Cart7816(this),
+                "EMU7800.Core." + nameof(Cart7832P)  => new Cart7832P(this, m),
+                "EMU7800.Core." + nameof(Cart7832)   => new Cart7832(this),
+                "EMU7800.Core." + nameof(Cart7848)   => new Cart7848(this),
+                "EMU7800.Core." + nameof(Cart78SGP)  => new Cart78SGP(this, m),
+                "EMU7800.Core." + nameof(Cart78SG)   => new Cart78SG(this),
+                "EMU7800.Core." + nameof(Cart78S9)   => new Cart78S9(this),
+                "EMU7800.Core." + nameof(Cart78S4)   => new Cart78S4(this),
+                "EMU7800.Core." + nameof(Cart78AB)   => new Cart78AB(this),
+                "EMU7800.Core." + nameof(Cart78AC)   => new Cart78AC(this),
+                "EMU7800.Core." + nameof(HSC7800)    => new HSC7800(this),
+                _ => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
             };
         }
 
