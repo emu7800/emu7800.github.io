@@ -116,21 +116,19 @@ namespace EMU7800.Core
         /// <param name="machineType"></param>
         /// <param name="cart"></param>
         /// <param name="bios">7800 BIOS, optional.</param>
-        /// <param name="hsc">7800 High Score cart, optional.</param>
         /// <param name="p1">Left controller, optional.</param>
         /// <param name="p2">Right controller, optional.</param>
         /// <param name="logger"></param>
         /// <exception cref="Emu7800Exception">Specified MachineType is unexpected.</exception>
-        public static MachineBase Create(MachineType machineType, Cart cart, Bios7800 bios, HSC7800 hsc, Controller p1, Controller p2, ILogger logger)
+        public static MachineBase Create(MachineType machineType, Cart cart, Bios7800 bios, Controller p1, Controller p2, ILogger logger)
         {
-            MachineBase m = machineType switch
-            {
-                MachineType.A2600NTSC => new Machine2600NTSC(cart, logger),
-                MachineType.A2600PAL  => new Machine2600PAL(cart, logger),
-                MachineType.A7800NTSC => new Machine7800NTSC(cart, bios, hsc, logger),
-                MachineType.A7800PAL  => new Machine7800PAL(cart, bios, hsc, logger),
-                _                     => throw new Emu7800Exception("Unexpected MachineType: " + machineType),
-            };
+            MachineBase m =
+                MachineTypeUtil.Is2600NTSC(machineType) ? new Machine2600NTSC(cart, logger) :
+                MachineTypeUtil.Is2600PAL(machineType)  ? new Machine2600PAL(cart, logger) :
+                MachineTypeUtil.Is7800NTSC(machineType) ? new Machine7800NTSC(cart, bios, logger) :
+                MachineTypeUtil.Is7800PAL(machineType)  ? new Machine7800PAL(cart, bios, logger) :
+                throw new Emu7800Exception("Unexpected MachineType: " + machineType);
+
             m.InputState.LeftControllerJack = p1;
             m.InputState.RightControllerJack = p2;
 

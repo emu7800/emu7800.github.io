@@ -99,33 +99,24 @@ namespace EMU7800.Services
         }
 
         public static CartType InferCartTypeFromSize(MachineType machineType, int romByteCount)
-        {
-            switch (machineType)
+            => MachineTypeUtil.Is2600(machineType) ? romByteCount switch
             {
-                case MachineType.A2600NTSC:
-                case MachineType.A2600PAL:
-                    switch (romByteCount)
-                    {
-                        case 2048:  return CartType.A2K;
-                        case 4096:  return CartType.A4K;
-                        case 8192:  return CartType.A8K;
-                        case 16384: return CartType.A16K;
-                        case 32768: return CartType.A32K;
-                    }
-                    break;
-                case MachineType.A7800NTSC:
-                case MachineType.A7800PAL:
-                    switch (romByteCount)
-                    {
-                        case 8192:  return CartType.A7808;
-                        case 16384: return CartType.A7816;
-                        case 32768: return CartType.A7832;
-                        case 49152: return CartType.A7848;
-                    }
-                    break;
+                 2048 => CartType.A2K,
+                 4096 => CartType.A4K,
+                 8192 => CartType.A8K,
+                16384 => CartType.A16K,
+                32768 => CartType.A32K,
+                _     => CartType.Unknown,
             }
-            return CartType.Unknown;
-        }
+            : MachineTypeUtil.Is7800(machineType) ? romByteCount switch
+            {
+                 8192 => CartType.A7808,
+                16384 => CartType.A7816,
+                32768 => CartType.A7832,
+                49152 => CartType.A7848,
+                _     => CartType.Unknown,
+            }
+            : CartType.Unknown;
 
         public static void DumpBin(string path, Action<string> printLineFn)
         {

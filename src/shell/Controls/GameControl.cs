@@ -538,12 +538,9 @@ namespace EMU7800.D2D.Shell
         }
 
         static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo)
-            => machineStateInfo.GameProgramInfo.MachineType switch
-            {
-                MachineType.A2600NTSC or MachineType.A2600PAL => new FrameRenderer160(machineStateInfo.Machine.FirstScanline),
-                MachineType.A7800NTSC or MachineType.A7800PAL => new FrameRenderer320(machineStateInfo.Machine.FirstScanline),
-                _ => throw new ArgumentException("Unknown MachineType", nameof(machineStateInfo))
-            };
+            => MachineTypeUtil.Is2600(machineStateInfo.GameProgramInfo.MachineType) ? new FrameRenderer160(machineStateInfo.Machine.FirstScanline) :
+               MachineTypeUtil.Is7800(machineStateInfo.GameProgramInfo.MachineType) ? new FrameRenderer320(machineStateInfo.Machine.FirstScanline) :
+               throw new ArgumentException("Unknown MachineType", nameof(machineStateInfo));
 
         IInputAdapter ToInputAdapter(MachineStateInfo machineState, int jackNo)
         {
@@ -590,17 +587,12 @@ namespace EMU7800.D2D.Shell
 
         void ClearPerPlayerButtonInput(int playerNo)
         {
-            var buttonInput = new[]
-            {
-                MachineInput.Fire,
-                MachineInput.Fire2,
-                MachineInput.Up,
-                MachineInput.Down,
-                MachineInput.Left,
-                MachineInput.Right
-            };
-            for (var i = 0; i < buttonInput.Length; i++)
-                _inputState.RaiseInput(playerNo, buttonInput[i], false);
+            _inputState.RaiseInput(playerNo, MachineInput.Fire,  false);
+            _inputState.RaiseInput(playerNo, MachineInput.Fire2, false);
+            _inputState.RaiseInput(playerNo, MachineInput.Up,    false);
+            _inputState.RaiseInput(playerNo, MachineInput.Down,  false);
+            _inputState.RaiseInput(playerNo, MachineInput.Left,  false);
+            _inputState.RaiseInput(playerNo, MachineInput.Right, false);
         }
 
         #endregion

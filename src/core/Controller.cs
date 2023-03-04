@@ -34,12 +34,9 @@ namespace EMU7800.Core
             var controller = From(controllerStr);
             return controller != Controller.None
                 ? controller
-                : MachineTypeUtil.From(machineTypeStr) switch
-                {
-                    MachineType.A2600NTSC or MachineType.A2600PAL => Controller.Joystick,
-                    MachineType.A7800NTSC or MachineType.A7800PAL => Controller.ProLineJoystick,
-                    _ => Controller.None,
-                };
+                : MachineTypeUtil.Is2600(MachineTypeUtil.From(machineTypeStr)) ? Controller.Joystick
+                : MachineTypeUtil.Is7800(MachineTypeUtil.From(machineTypeStr)) ? Controller.ProLineJoystick
+                : Controller.None;
         }
 
         public static string ToControllerWordString(Controller controller, bool plural = false)
