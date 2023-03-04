@@ -74,6 +74,12 @@ namespace EMU7800.Core
             Map(basea, size, device);
         }
 
+        public bool Map(Cart cart)
+        {
+            cart.Attach(M);
+            return cart.Map();
+        }
+
         #region Constructors
 
         public AddressSpace(MachineBase m, int addrSpaceShift, int pageShift)

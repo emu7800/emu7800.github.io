@@ -22,7 +22,7 @@ namespace EMU7800.Core
 
         #region IDevice Members
 
-        public virtual void Reset() { }
+        public virtual void Reset() {}
 
         public abstract byte this[ushort addr] { get; set; }
 
@@ -31,18 +31,15 @@ namespace EMU7800.Core
         public virtual void Attach(MachineBase m)
             => M = m;
 
-        public virtual void StartFrame()
-        {
-        }
+        public virtual bool Map()
+            => false;
 
-        public virtual void EndFrame()
-        {
-        }
+        public virtual void StartFrame() {}
+
+        public virtual void EndFrame() {}
 
         protected internal virtual bool RequestSnooping
-        {
-            get => false;
-        }
+            => false;
 
         /// <summary>
         /// Creates an instance of the specified cart.
@@ -130,9 +127,7 @@ namespace EMU7800.Core
         protected void LoadRom(byte[] romBytes)
             => LoadRom(romBytes, romBytes.Length);
 
-        protected Cart()
-        {
-        }
+        protected Cart() {}
 
         #region Serialization Members
 
@@ -149,7 +144,7 @@ namespace EMU7800.Core
             public override byte this[ushort addr]
             {
                 get => 0;
-                set { }
+                set {}
             }
 
             public UnknownCart()
