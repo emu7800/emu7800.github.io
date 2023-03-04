@@ -253,9 +253,9 @@ namespace EMU7800.Core
         //
         // D0 Game Reset  0=on
         // D1 Game Select 0=on
-        // D2 (used on 7800)
-        // D3 Console Color 1=Color, 0=B/W
-        // D4 (used on 7800)
+        // D2 (unused on 7800)
+        // D3 Console Color 1=Color, 0=B/W on 2600, Pause on 7800
+        // D4 (unused on 7800)
         // D5 (unused)
         // D6 Left  Difficulty A 1=A (pro), 0=B (novice)
         // D7 Right Difficulty A 1=A (pro), 0=B (novice)
