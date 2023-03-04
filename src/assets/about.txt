@@ -1,6 +1,6 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Updated to .NET8 AOT for better performance.
+WHATS NEW—Updated to .NET8 AOT for improved performance. Added support for XM and corrected high score cart support. Implemented the 7800 pause key.
 
 BASIC OPERATION—Several classic games are included to jump start your experience! Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
@@ -14,6 +14,7 @@ GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, includi
 - The H key toggles the Heads Up Display (HUD) during gameplay
 - Left and right fire buttons are mapped to the Z/X keys respectively
 - The PageDown/PageUp keys toggle power
+- The P key implements the 7800 console pause function
 
 HUD—During gameplay, the settings icon at the upper left will activate the Heads Up Display (HUD). The top row of buttons emulates the hardware switches of the Atari console. Cycling the Power button will clear game state and settings for the current title.
 
