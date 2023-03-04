@@ -492,6 +492,7 @@ Donkey Kong Jr.,Coleco,,,1983,,,,A2600PAL,,,2091af29b4e7b86914d79d9aaa4cbd20,
 Donkey Kong Junior,Atari,,,1988,CX7849,Common,,A7800NTSC,,,5e332fbfc1e0fc74223d2e73271ce650,http://www.atariage.com/manual_thumbs.html?SoftwareID=2128
 Donkey Kong Junior,Atari,,,1988,CX7849,Common,,A7800PAL,,,4dc5f88243250461bd61053b13777060,http://www.atariage.com/manual_thumbs.html?SoftwareID=2128
 Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSC,,,3430f61013dd7df4fb2a5d1d87a7ad81,
+Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSC,,,c956d5ce7417cc2dab61a9afd8f372d0,
 Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800PAL,,,b44b2533407af3c56dba8476ce580ea3,
 Doomzerk,,Eduardo,Hack,,,,,A2600NTSC,,,200a9d2a7cb4441ce4f002df6aa47e38,
 Double Dragon,Activision,Dan Kitchen,,1989,AK-050-04,Rare,A16K,A2600PAL,,,47464694e9cce07fdbfd096605bf39d4,
@@ -646,6 +647,7 @@ Frog Pond,Atari,,Prototype,,CX2665,,,A2600NTSC,,,5f73e7175474c1c22fb8030c3158e9b
 Frogger,Parker Bros,Ed English,,1983,PB5300,Common,,A2600NTSC,,,081e2c114c9c20b61acf25fc95c71bf4,http://www.atariage.com/manual_html_page.html?SoftwareID=1033
 Frogger,Parker Bros,Ed English,,1983,PB5300,Common,,A2600PAL,,,02ced7ea2b7cb509748db6bfa227ebec,http://www.atariage.com/manual_html_page.html?SoftwareID=1033
 Frogger Demo,,"Matthias Luedtke, Manuel Polik",Homebrew Hack,2005,,,,A7800NTSC,,,45136d1d9eddf0bebad32995647b3298,
+Froggie,,Matthias Luedtke,Homebrew,2018,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,6053233cb59c0b4ca633623fd76c4576
 Frogger II - Threeedeep!,Parker Bros,Mark Lesser,,1983,PB5590,Extremely Rare,PB8K,A2600NTSC,,,27c6a2ca16ad7d814626ceea62fa8fb4,
 Frogs and Flies,Mattel,,,1982,MT5664,Uncommon,,A2600NTSC,,,dcc2956c7a39fdbf1e861fc5c595da0d,
 Frogs and Flies,Mattel,,,1982,MT5664,Uncommon,,A2600PAL,,,1b8c3c0bfb815b2a1010bba95998b66e,
@@ -1168,7 +1170,7 @@ Oystron (V2.82),,,Homebrew,,,,,A2600NTSC,,,70d14c66c319683b4c19abbe0e3db57c,http
 Oystron (V2.85),,,Homebrew,,,,,A2600NTSC,,,5360693f1eb90856176bd1c0a7b17432,http://www.io.com/~nickb/atari/oystron.html
 Oystron (V2.9),,,Homebrew,1997,,,,A2600NTSC,,,91f0a708eeb93c133e9672ad2c8e0429,http://www.io.com/~nickb/atari/oystron.html
 Oystron X,,,Homebrew,,,,,A2600NTSC,,,aa2c4b32656bde9a75042a4d158583e1,http://www.io.com/~nickb/atari/oystron.html
-PacArcade,,,Homebrew,2011,,,A7816,A7800NTSC,,,90223a8a363bdf643a19d0f97e63b1b2,
+Pac Arcade,,,Homebrew,2011,,,A7816,A7800NTSC,,,90223a8a363bdf643a19d0f97e63b1b2,
 Pac Ghost Sprite Demo,,,,,,,,A2600NTSC,,,d0498baca989e792db4b8270a02b9624,
 Pac Ghost Sprite Demo 2,,,,,,,,A2600NTSC,,,bd430c2193045c68d1a20a018a976248,
 Pac Invaders,,,,,,,,A2600NTSC,,,f9da42f91a1c5cfa344d2ff440c6f8d4,
@@ -1185,8 +1187,11 @@ Pac-Man,Atari,Tod Frye,,,CX2646,Common,,A2600PAL,,,c2410d03820e0ff0a449fa6170f51
 Pac-Man,CCE,Tod Frye,,,,,,A2600NTSC,,,ca53fc8fd8b3c4a7df89ac86b222eba0,http://www.atariage.com/manual_thumbs.html?SoftwareID=1193
 Pac-Man,CCE,Tod Frye,,,,,,A2600PAL,,,651d2b6743a3a18b426bce2c881af212,http://www.atariage.com/manual_thumbs.html?SoftwareID=1193
 Pac-Man Collection,,Bob DeCrescenzo,Homebrew,2006,,,,A7800NTSC,,,5d7bc7092de69095137456733e7b685d,http://www.atariage.com/software_page.html?SoftwareID=4086
-Pac-Man Collection 40th Anniversary XM,,Bob DeCrescenzo,Homebrew,2021,,,A78SG,A7800NTSC,,,f4649aad8aa5c24e4725ab74299d2963,
+Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2021,,,A78SG,A7800NTSC,,,f4649aad8aa5c24e4725ab74299d2963,
+Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,,,f2512870a8abc82df42b2721f8c9e7af,
+Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,,,2b60de20a55056a11e6412a22445296f,
 Pac-Man 320,,Bob DeCrescenzo,Homebrew,2011,,,A7832P,A7800NTSC,,,80ffad3edb50f0970e780a727a4524dd,
+Pac-Man Energy Drink Edition,,Bob DeCrescenzo,Homebrew,2022,,,A7848,A7800NTSC,,,2b51ebf2f371d0790a5629e27727ebba
 Pac-Space,,,,,,,,A2600NTSC,,,c569e57dca93d3bee115a49923057fd7,
 Panda Chase,Home Vision,,,,,Extremely Rare,,A2600NTSC,,,f8582bc6ca7046adb8e18164e8cecdbc,
 Parachute,Home Vision,Thomas Jentzsch,Hack,,,,,A2600NTSC,,,245f07c8603077a0caf5f83ee6cf8b43,
@@ -1492,6 +1497,7 @@ Schnecke und Eichhoernchen,Bitcorp,,,1983,PG208,Rare,,A2600PAL,,,898b5467551d32a
 Schussel - der Polizistenschreck,Starsoft,,,,,Extremely Rare,,A2600PAL,,,7ff53f6922708119e7bf478d7d618c86,
 Scramble,,Bob DeCrescenzo,Hack,2012,,,,A7800NTSC,,,c265cfd65534a4514f226cb4c7f7d6bf,
 Scramble,,Bob DeCrescenzo,Hack,2012,,,,A7800NTSC,,,57651b6c8e62811fab0361cea537b79c,
+Scramble,,Bob DeCrescenzo,Hack,2012,,,,A7800NTSC,,,a3a85e507d6f718972b1464ce1aaf8a4,
 Scramble,,Bob DeCrescenzo,Hack,2012,,,,A7800PAL,,,1ee26fc6b06b4c9ba74931914b7e719d,
 Scramble,,Bob DeCrescenzo,Hack,2012,,,,A7800PAL,,,65fe82f419f6583a0f9a736242cb303d,
 Scrapyard Dog,Atari,,,1990,CX7879,Scarce,A78SG,A7800NTSC,,,980c35ae9625773a450aa7ef51751c04,http://www.atariage.com/manual_thumbs.html?SoftwareID=2148
@@ -1787,6 +1793,8 @@ Super Challenge Football,Mattel,,,1982,MT5658,Common,,A2600NTSC,,,e275cbe7d4e11e
 Super Circus,,,,,,,,A2600PAL,,,feba8686fd0376015258d1152923958a,
 Super Circus AtariAge,,Bob DeCrescenzo,Homebrew,2010,,,A7832P,A7800NTSC,,,592f2b4c7e66e42d5525e6d1417c1838,
 Super Circus AtariAge,,Bob DeCrescenzo,Homebrew,2010,,,A7832P,A7800PAL,,,9f02c8a014d9fadfeea86301bf340ea8,
+Super Circus AtariAge (0450),,Bob DeCrescenzo,Homebrew,2017,,,A7832,A7800NTSC,ProLineJoystick,ProLineJoystick,02508e6df5e173b4063a7e6e63295817,
+Super Circus AtariAge (4000),,Bob DeCrescenzo,Homebrew,2017,,,A7832,A7800NTSC,ProLineJoystick,ProLineJoystick,81cee326b99d6831de10a566e338bd25,
 Super Cobra,Parker Bros,Mike Brodie,,1982,PB5320,Uncommon,PB8K,A2600NTSC,,,c29f8db680990cb45ef7fef6ab57a2c2,
 Super Cobra,Parker Bros,Mike Brodie,,1982,PB5320,Uncommon,PB8K,A2600NTSC,,,cd6b3dff86a55a4a6d23007ee360ea0e,
 Super Cobra,Parker Bros,Mike Brodie,,1982,PB5320,Uncommon,PB8K,A2600PAL,,,d326db524d93fa2897ab69c42d6fb698,
@@ -2032,3 +2040,5 @@ Zero Patrol,,Charles Morgan,Hack,,,,,A2600NTSC,,,c5a76bafc4676edb76e0126fb9f0fb2
 Zoo Fun,Home Vision,,,,,Extremely Rare,,A2600PAL,,,fb833ed50c865a9a505a125fc9d79a7e,
 Z-Tack,Bomb,Robert Esken Jr.,,,CA283,Extremely Rare,,A2600NTSC,,,c469151655e333793472777052013f4f,
 Z-Tack 2,,Steve Engelhardt,Hack,,,,,A2600NTSC,,,97d0151beb84acbe82aa6db18cd91b98,
+Galaxian,,Bob DeCrescenzo,Homebrew,2021,,,A7832,A7800NTSC,ProLineJoystick,ProLineJoystick,2f4ae1015a345652b36004a8c62a4ac6,
+Gorf,,,Homebrew,2009,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,3d12489c553cb1a90c8ebd6534383fa1
