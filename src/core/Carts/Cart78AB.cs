@@ -18,7 +18,7 @@
 
         public override byte this[ushort addr]
         {
-            get { return ROM[ (Bank[addr >> 14] << 14) | (addr & 0x3fff) ]; }
+            get => ROM[(Bank[addr >> 14] << 14) |(addr & 0x3fff)];
             set
             {
                 if ((addr >> 14) == 2)

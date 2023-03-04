@@ -11,8 +11,8 @@
 
         public override byte this[ushort addr]
         {
-            get { return ROM[addr & 0x0fff]; }
-            set { }
+            get => ROM[addr & 0x0fff];
+            set {}
         }
 
         #endregion

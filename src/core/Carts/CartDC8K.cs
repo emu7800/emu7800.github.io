@@ -17,10 +17,9 @@
 
         #region IDevice Members
 
-        public override byte this[ushort addr]
-        {
-            get { return (addr & 0x2000) == 0 ? ROM[addr & 0x0fff + 0x1000] : ROM[addr & 0x0fff]; }
-            set { }
+        public override byte this[ushort addr] {
+            get => (addr & 0x2000) == 0 ? ROM[addr & 0x0fff + 0x1000] : ROM[addr & 0x0fff];
+            set {}
         }
 
         #endregion

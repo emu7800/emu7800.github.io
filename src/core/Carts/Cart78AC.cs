@@ -30,16 +30,10 @@
 
         #region IDevice Members
 
-        public override byte this[ushort addr]
-        {
-            get
-            {
-                return ROM[ (Bank[addr >> 13] << 13) | (addr & 0x1fff) ];
-            }
-            set
-            {
-                if ((addr & 0xfff0) == 0xff80)
-                {
+        public override byte this[ushort addr] {
+            get => ROM[(Bank[addr >> 13] << 13) | (addr & 0x1fff)];
+            set {
+                if ((addr & 0xfff0) == 0xff80) {
                     Bank[5] = (addr & 7) << 1;
                     Bank[6] = Bank[5] + 1;
                 }
