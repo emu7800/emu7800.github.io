@@ -15,10 +15,9 @@ namespace EMU7800.Core
         #region Fields
 
         protected Maria Maria { get; }
+        protected RAM6116 RAM0 { get; }
         protected RAM6116 RAM1 { get; }
-        protected RAM6116 RAM2 { get; }
         protected Bios7800 BIOS { get; }
-        protected HSC7800 HSC { get; }
 
         #endregion
 
@@ -42,7 +41,6 @@ namespace EMU7800.Core
         {
             base.Reset();
             SwapInBIOS();
-            HSC.Reset();
             Cart.Reset();
             Maria.Reset();
             PIA.Reset();
@@ -127,7 +125,7 @@ namespace EMU7800.Core
             Maria.EndFrame();
         }
 
-        public Machine7800(Cart cart, Bios7800 bios, HSC7800 hsc, ILogger logger, int scanlines, int startl, int fHZ, int sRate, ReadOnlyMemory<uint> p)
+        public Machine7800(Cart cart, Bios7800 bios, ILogger logger, int scanlines, int startl, int fHZ, int sRate, ReadOnlyMemory<uint> p)
             : base(logger, scanlines, startl, fHZ, sRate, p, 320)
         {
             Mem = new AddressSpace(this, 16, 6);  // 7800: 16bit, 64byte pages
@@ -142,32 +140,28 @@ namespace EMU7800.Core
 
             PIA = new PIA(this);
             Mem.Map(0x0280, 0x0080, PIA);
+         //?Mem.Map(0x0380, 0x0080, PIA);
             Mem.Map(0x0480, 0x0080, PIA);
             Mem.Map(0x0580, 0x0080, PIA);
 
+            RAM0 = new RAM6116();
             RAM1 = new RAM6116();
-            RAM2 = new RAM6116();
-            Mem.Map(0x1800, 0x0800, RAM1);
-            Mem.Map(0x2000, 0x0800, RAM2);
+            Mem.Map(0x1800, 0x0800, RAM0);
+            Mem.Map(0x2000, 0x0800, RAM1);
 
-            Mem.Map(0x0040, 0x00c0, RAM2); // page 0 shadow
-            Mem.Map(0x0140, 0x00c0, RAM2); // page 1 shadow
-            Mem.Map(0x2800, 0x0800, RAM2); // shadow1
-            Mem.Map(0x3000, 0x0800, RAM2); // shadow2
-            Mem.Map(0x3800, 0x0800, RAM2); // shadow3
+            Mem.Map(0x0040, 0x00c0, RAM1);
+            Mem.Map(0x0140, 0x00c0, RAM1);
+            Mem.Map(0x2800, 0x0800, RAM1);
 
             BIOS = bios;
-            HSC = hsc;
-
-            if (HSC != HSC7800.Default)
-            {
-                Mem.Map(0x1000, 0x800, HSC.SRAM);
-                Mem.Map(0x3000, 0x1000, HSC);
-                Logger.WriteLine("7800 Highscore Cartridge Installed");
-            }
-
             Cart = cart;
-            Mem.Map(0x4000, 0xc000, Cart);
+
+            if (!Mem.Map(Cart))
+            {
+                Mem.Map(0x3000, 0x0800, RAM1);
+                Mem.Map(0x3800, 0x0800, RAM1);
+                Mem.Map(0x4000, 0xc000, Cart);
+            }
         }
 
         #region Serialization Members
@@ -188,31 +182,28 @@ namespace EMU7800.Core
 
             PIA = input.ReadPIA(this);
             Mem.Map(0x0280, 0x0080, PIA);
+         //?Mem.Map(0x0380, 0x0080, PIA);
             Mem.Map(0x0480, 0x0080, PIA);
             Mem.Map(0x0580, 0x0080, PIA);
 
+            RAM0 = input.ReadRAM6116();
             RAM1 = input.ReadRAM6116();
-            RAM2 = input.ReadRAM6116();
-            Mem.Map(0x1800, 0x0800, RAM1);
-            Mem.Map(0x2000, 0x0800, RAM2);
+            Mem.Map(0x1800, 0x0800, RAM0);
+            Mem.Map(0x2000, 0x0800, RAM1);
 
-            Mem.Map(0x0040, 0x00c0, RAM2); // page 0 shadow
-            Mem.Map(0x0140, 0x00c0, RAM2); // page 1 shadow
-            Mem.Map(0x2800, 0x0800, RAM2); // shadow1
-            Mem.Map(0x3000, 0x0800, RAM2); // shadow2
-            Mem.Map(0x3800, 0x0800, RAM2); // shadow3
+            Mem.Map(0x0040, 0x00c0, RAM1);
+            Mem.Map(0x0140, 0x00c0, RAM1);
+            Mem.Map(0x2800, 0x0800, RAM1);
 
             BIOS = input.ReadOptionalBios7800();
-            HSC = input.ReadOptionalHSC7800();
-
-            if (HSC != HSC7800.Default)
-            {
-                Mem.Map(0x1000, 0x800, HSC.SRAM);
-                Mem.Map(0x3000, 0x1000, HSC);
-            }
-
             Cart = input.ReadCart(this);
-            Mem.Map(0x4000, 0xc000, Cart);
+
+            if (!Mem.Map(Cart))
+            {
+                Mem.Map(0x3000, 0x0800, RAM1);
+                Mem.Map(0x3800, 0x0800, RAM1);
+                Mem.Map(0x4000, 0xc000, Cart);
+            }
         }
 
         public override void GetObjectData(SerializationContext output)
@@ -224,10 +215,9 @@ namespace EMU7800.Core
             output.Write(CPU);
             output.Write(Maria);
             output.Write(PIA);
+            output.Write(RAM0);
             output.Write(RAM1);
-            output.Write(RAM2);
             output.WriteOptional(BIOS);
-            output.WriteOptional(HSC);
             output.Write(Cart);
         }
 

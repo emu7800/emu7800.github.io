@@ -10,7 +10,7 @@ namespace EMU7800.Services
 {
     public class MachineFactory
     {
-        public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo, bool use7800Bios = false, bool use7800Hsc = false)
+        public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo)
         {
             if (importedGameProgramInfo.StorageKeySet.Count == 0)
                 throw new ArgumentException("importedGameProgramInfo.StorageKeySet", nameof(importedGameProgramInfo));
@@ -38,13 +38,6 @@ namespace EMU7800.Services
                 }
             }
 
-            if (gameProgramInfo.MachineType != MachineType.A7800NTSC
-            &&  gameProgramInfo.MachineType != MachineType.A7800PAL)
-                use7800Bios = use7800Hsc = false;
-
-            var bios7800 = use7800Bios ? GetBios7800(gameProgramInfo) : Bios7800.Default;
-            var hsc7800 = use7800Hsc ? GetHSC7800() : HSC7800.Default;
-
             Cart cart;
             try
             {
@@ -56,10 +49,25 @@ namespace EMU7800.Services
                 return MachineStateInfo.Default;
             }
 
+            var bios7800 = Bios7800.Default;
+
+            if (MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType))
+            {
+                bios7800 = GetBios7800(gameProgramInfo);
+                Info("7800 BIOS Installed");
+            }
+
+            if (MachineTypeUtil.Is7800hsc(gameProgramInfo.MachineType))
+            {
+                cart = GetHSC7800Cart(cart);
+                var suffix = cart is HSC7800 ? "installed" : "not installed because ROM not found";
+                Info("7800 High Score Cartridge " + suffix);
+            }
+
             MachineBase machine;
             try
             {
-                machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800, hsc7800,
+                machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800,
                     gameProgramInfo.LController, gameProgramInfo.RController, NullLogger.Default);
             }
             catch (Emu7800Exception ex)
@@ -84,9 +92,9 @@ namespace EMU7800.Services
 
         static IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
             => DatastoreService.ImportedSpecialBinaryInfo
-                .Where(sbi => gameProgramInfo.MachineType == MachineType.A7800NTSC
+                .Where(sbi => MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsNTSC(gameProgramInfo.MachineType)
                                 && (sbi.Type == SpecialBinaryType.Bios7800Ntsc || sbi.Type == SpecialBinaryType.Bios7800NtscAlternate)
-                           || gameProgramInfo.MachineType == MachineType.A7800PAL
+                           || MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsPAL(gameProgramInfo.MachineType)
                                 && sbi.Type == SpecialBinaryType.Bios7800Pal);
 
         static Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
@@ -97,19 +105,22 @@ namespace EMU7800.Services
                 .Select(b => new Bios7800(b))
                 .FirstOrDefault() ?? Bios7800.Default;
 
-        static HSC7800 GetHSC7800()
-            => PickFirstHSC7800(DatastoreService.ImportedSpecialBinaryInfo
-                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800));
+        static Cart GetHSC7800Cart(Cart cart)
+            => PickFirstHSC7800Cart(DatastoreService.ImportedSpecialBinaryInfo
+                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800), cart);
 
-        static HSC7800 PickFirstHSC7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
+        static Cart PickFirstHSC7800Cart(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet, Cart cart)
             => specialBinaryInfoSet
                 .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
                 .Where(b => b.Length > 0)
-                .Select(b => new HSC7800(b))
-                .FirstOrDefault() ?? HSC7800.Default;
+                .Select(b => new HSC7800(b, cart))
+                .FirstOrDefault() ?? cart;
+
+        static void Info(string message)
+            => Console.WriteLine(message);
 
         static void Error(string message)
-            => Console.WriteLine("ERROR: " + message);
+            => Info("ERROR: " + message);
 
         #endregion
     }

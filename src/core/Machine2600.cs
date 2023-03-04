@@ -68,7 +68,11 @@ namespace EMU7800.Core
             }
 
             Cart = cart;
-            Mem.Map(0x1000, 0x1000, Cart);
+
+            if (!Mem.Map(Cart))
+            {
+                Mem.Map(0x1000, 0x1000, Cart);
+            }
         }
 
         #region Serialization Members
