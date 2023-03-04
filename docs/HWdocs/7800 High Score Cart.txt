@@ -1,0 +1,293 @@
+r
+                            7800
+                         High Score
+                          Cartridge
+
+                     For Use ONLY with the
+                     Atari 7800 PROSystem.
+
+
+
+
+                  A 7800 Systems, Inc. Product
+
+               An Atari-History.com owned Company.
+
+                  http://www.atari-history.com
+
+
+
+Introduction:
+
+  Congratulations on your purchase ofthe 7800 High Score Cartridge.
+This cartridge is based on the original designs created in 1984. However In
+the summer of 1984 Atari, Inc. was sold and the Atari 7800 PROsystem
+game console was put on hold until it was finally re-released in 1986. The
+accessories such as the High Score Cartridge and Computer Keyboard were
+canceled and never produced.
+
+  Thanks to Gary Rubio, a former Atari Consumer Electronics Engineer
+who provided Curt Vendel with both the original GCC schematic as well as
+the original code for the High Seore Cartridge it has finally been designed,
+laid out and built for gamers to use and enjoy.
+
+(Picture of the 7800 High Score Cartridge)
+
+
+
+Getting Started:
+
+
+  Your 7800 High Score cartridge is capable of saving up to 5 scores for
+up to 13 different games. Only the first 9 games designed back in 1984
+were written to support the 7800 High Score cartridge. These games
+include:
+
+Asteroids
+Dig Dug
+Centipede
+Galaga
+Joust
+Ms. Pac Man
+Xevious
+Food Fight
+Robotron 2084
+
+  Preparing your 7800 High Score Cartridge for use is simple.
+Included in your package along with this manual and the 7800 High Score
+cartridge is a plastic envelope containing a CR2032 3 volt lithium battery.
+This battery supplies power to the onboard 16K of Static Memory inside of
+the cartridge that will hold your high scores.
+
+
+Contents:
+
+1 Manual
+1 High Score Cartridge
+1 3volt battery
+
+
+
+
+Installing the Battery:
+
+1.  Gently pry apart the top and bottom covers of the cartridge, they will
+    come apart easily. Once apart, place the bottom cover with the
+    cartridge board down onto a flat surface.
+
+2.  Remove the battery from its plastic bag and keeping the Positive (+)
+    side UP, slide the battery into the battery holder shown below: (Fig 1)
+
+
+(Picture of 7800 High Score Cartridge cartridge board)
+
+
+
+3.  Place the top cover back over the cartridge board and gentle squeeze
+    the two halves back together. Your cartridge is now ready for use.
+
+
+
+
+
+Using your High Score Cartridge:
+
+  Insert your High Score cartridge into your Atari 7800 PROsystem
+with the label facing away from you. Now take your favorite Atari 7800
+PROsystem game and plug it into the Pass-Thru connector on the TOP of the
+7800 High Score Cartridge with its label facing AWAY from you.
+
+  Power on your Atari 7800 PROsystem. You should see the Atari Fuji
+symbol cycling the rainbow of colors along with The name ATARI in the
+center of the striped rainbow in the center of the screen. Your game should
+start its opening screen. Wait approximateLy 24 seconds and you will see
+the PERSONALIZE CARTRIDGE screen appear.
+
+
+
+(Picture of the PERSONALIZE CARTRIDGE screen)
+
+
+
+
+Personalize Your High Score Cartridge:
+
+  Your 7800 High Score Cartridge is yours and you need to give it a
+unique personalized title so that if you were to ever use your cartridge along
+with someone else who also owned a 7800 High Score Cartridge you will
+know who's cartridge is who's. You may enter a title of up to 32
+characters long.
+
+
+
+
+How to Personalize:
+
+
+1.  Moving the joystick plugged into the LEFT joystick port, move it left-
+    right or up-down to move to the letter/character you wish to select,
+    then press the FIRE button.
+2.  Repeat step one until you have finished. Once finished move the
+    joystick until you see a solid BLOCK character, press the FIRE button
+    to finish.
+3.  If you make a mistake and need to ERASE a letter/character, move
+    the joystick until you see a left pointing arrow, this is the backspace
+    character, press the FIRE button to backspace and change the previous
+    letter/character.
+4.  Once finished your High Score cartridge will now store your
+    Personalized Title and you are ready to play your favorite game.
+
+
+
+
+Saving High Scores:
+
+1.  Once a game is over, if your high score is higher then any of the 5
+high scores on the cartridge you will go to the High Score entry screen
+to enter your initials (up to 3 Initials) or if your score did not beat any
+of the top 5 you will be taken to the High Score screen to view the
+current High Score holders.
+
+2.  If you are using the High Score Cartridge for the first time on a
+particular game, there are no High Scores, so whatever the first 5
+highest scores are will be entered into the High Score Cartridge
+memory for you to add your initials to.
+
+3.  Move the Joystick left-right or up-down to select a letter/character
+press the FIRE button to select. If you make a mistake, move to the
+left pointing ARROW character, this is the backspace, press FIRE to
+backspace.
+
+4.  When you have selected the 3 initials that you want to save a solid
+BLOCK will appear as the forth character, press FIRE to save your
+initials, the High Score screen will display for 10 seconds, then return
+to the Attract Mode screen normally found on most Atari 7800 game
+cartridges.
+
+
+(Picture of the High Score screen)
+
+
+
+Clearing Scores & Changing Personalized Name:
+
+
+  If for some reason you wanted to wipe out the High Scores for a
+particular game or for all High Scores or if you wanted to change the
+Personalized Name of your cartridge you can enter the Maintenance Mode
+of the cartridge.
+
+1.  Insert a game that works with the High Score Cartridge such as
+    Asteroids on top of the High Score Cartridge.
+2.  Wait 24 seconds for the High Score Screen to appear.
+3.  Press and hold the PAUSE button and press the Select Button.
+4.  You are now in the Maintenance Mode screen. Select what you would
+    like to clear and press the FIRE button. Once complete move the
+    Joystick to DO Nothing and press FIRE and select YES and you will
+    EXIT the Maintenance Screen.
+
+
+
+Changing Batteries:
+
+  If you need to install a new battery you need to remember that once
+the battery is removed from your High Score Cartridge, even for just a
+moment you will lose ALL Personalization and ALL High Scores for ALL
+games. If this is not a problem the follow the LOSE MEMORY section, if
+keeping your High Score is important and necessary, follow the RETAIN
+MEMORY section.
+
+LOSE MEMORY
+
+1.  Open the High Score Cartridge by gently prying the 2 halves apart,
+    remove the old battery (you may need a small flat heat screw driver to
+    gentle pop the old battery out of the battery holder.
+2.  Install new battery with the Positive (+) side facing UP and place the
+    two covers together and gentle squeeze them together until they snap
+    tight.
+
+RETAIN MEMORY
+
+  This procedure is a little difficult, only perform it if you feel
+comfortable working on the cartridge while it is plugged into the Atari 7800
+PROsystem. Although performing this procedure will not and/or should not
+damage your Atari 7800 PROsystem and/or 7800 High Score Cartridge, you
+perform this procedure at your own risk. Curt Vendel and/or Gary Rubio is
+not responsible/liable for damages which may occur by performing the
+procedure below:
+
+1.  WARNING!!! Static shock can damage the components on the High
+    Score Board, before handling it, touch a piece of bare metal on a piece
+    of furniture or a (cold) radiator in your home/office to discharge any
+    static you may have built up on your person.
+2.  Open your High Score Cartridge and remove the board for the plastic
+    halves.
+3.  With the power OFF on you 7800 PROsystem, insert the High Score
+    board into the cartridge slot with the battery/components side of the
+    board facing AWAY from the front of the Atari 7800 PROsystem
+    console.
+4.  Turn the console power ON. The screen may be black or have
+    several lines on the screen, this is normal.
+5.  Using a small flat head screwdriver, CAREFULLY pry out the old
+    battery from the battery holder. (Power from the console is feeding
+    power to the 16K of Static Memory at this point, DO NOT power off
+    the console until after the new battery is installed)
+6.  With the Positive (+) side of the new CR2032 battery (available at
+    Radio Shack) facing up, slide it into the battery holder until it is firmly
+    in place.
+7.  Power OFF your Atari 7800 PROsystem console. Return the high
+    score board back onto the bottom halve (the one with the post) with its
+    components facing UP. Place the top halve (label on it) back on top
+    and gentle squeeze them together.
+8.  Test your cartridge by plugging it in, inserting a High Score
+    compatible game on top of it, power up and wait 24 seconds, if the
+    high score screen comes up then you saved your scores, if the
+    cartridge asks your to PERSONALIZE it, then you've lost the
+    onboard memory and your scores.
+
+
+
+
+
+Troubleshooting:
+
+Problem:  When I plug a game in, its coming up with garbage characters or a blank
+screen.
+
+Remedy:  1.  Reinsert High Score cartridge, then game on top High Score
+         Cartridge. Power ON and test again.
+
+         2.  Cartridge contacts may be dirty and need cleaning. Open cartridge,
+    remove the High Score board and using a pencil eraser go over the cartridge
+    contacts (silver) at the bottom of the board on BOTH sides. Reassemble
+    cartridge, plug in and test again.
+
+Problem:  Scores are not saving, and/or everytime I power on the Atari 7800 console
+with my High Score Cartridge it asks me to Personalize it.
+
+Remedy:  Battery is dead and/or not properly seated in battery holder. Check battery
+and replace if necessary with a CR2032 battery available at Radio Shack.
+
+Problem:  I play a game, then when its over I'm taken to the High Score screen, but
+the Personalized title is all garbled and all of the screens are very high with XAX or
+similar initials in all 5 high score spots.
+
+Remedy:  No battery installed or battery is dead, replace with CR2032 battery
+available at Radio Shack.
+
+Problem:  If I play for an extended period of time the Atari 7800 PROsystem console
+will sometimes lock up and I can't play anymore until I power off then back on.
+
+Remedy:  There is an overheat/lockup problem with the MARIA graphics processor
+chip in the Atari 7800 PROsystem consoles which can cause this problem to occur, there
+is no remedy to fix this problem.
+
+
+
+
+
+              Your 7800 High Score Cartridge should bring you
+                          Years of use and fun....
+
+
+                                 ENJOY!

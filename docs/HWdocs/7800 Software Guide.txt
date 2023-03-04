@@ -118,7 +118,7 @@ that graphics must be stored into Line RAM on a raster by raster
 basis.
 
 The only limit to the number, and size of objects on one scan
-line is tha mount of time it takes to loan each into Line RAM, as
+line is the amount of time it takes to load each into Line RAM, as
 all loading must occur during one scan line.
 
 DISPLAY
@@ -661,7 +661,7 @@ bits.
                     _______________________________
      graphics      |   |   |   |   |   |   |   |   |
      byte          |___|___|___|___|___|___|___|___|
-                         
+
 
 In 160x4 mode, the data is read as follows: the left pixel's
 color is specified by bits 3,2,7,6 (where 3 is MSB, 6 is LSB).
@@ -681,7 +681,7 @@ is LSB).
                     _______________________________
      graphic       |   |   |   |   |   |   |   |   |
      byte          |___|___|___|___|___|___|___|___|
-                         
+
 
 320A mode is a direct mapping like 160x2, except that each bit
 specifies the color of one pixel.
@@ -742,7 +742,7 @@ mapping for 320C mode is as follows:
 
      palette
      bits                         <P2><D3><D2>  <P2><D1><D0>
-                                  \__________/  \__________/ 
+                                  \__________/  \__________/
      color                             |             /
      bits           D7  D6  D5  D4     |            /
                                        |           /
@@ -833,13 +833,13 @@ must be left free. Put FFs in this area until encrypted.
 
             _________________________________
      0000  |                                 |
-           |          TIA Registers          |  
+           |          TIA Registers          |
            |_________________________________|  001F
      0020  |                                 |
-           |         MARIA Registers         |  
+           |         MARIA Registers         |
            |_________________________________|  003F
      0040  |                                 |
-           |               RAM               |  
+           |               RAM               |
            |        (6116 Block Zero)        |
            |_________________________________|  00FF
      0100  |                                 |
@@ -851,49 +851,49 @@ must be left free. Put FFs in this area until encrypted.
            |         (6116 Block One)        |
            |_________________________________|  01FF
      0200  |                                 |
-           |             Shadowed            |  
+           |             Shadowed            |
            |_________________________________|  027F
      0280  |                                 |
-           |            6532 Ports           |  
+           |            6532 Ports           |
            |_________________________________|  02FF
      0300  |                                 |
-           |             Shadowed            |  
+           |             Shadowed            |
            |_________________________________|  03FF
      0400  |                                 |
-           |            Available            |  
+           |            Available            |
            |_________________________________|  047F
      0480  |                                 |
-           |      6532 RAM -- Don't Use      |  
+           |      6532 RAM -- Don't Use      |
            |_________________________________|  04FF
      0500  |                                 |
-           |            Available            |  
+           |            Available            |
            |_________________________________|  17FF
      1800  |                                 |
-           |               RAM               |  
+           |               RAM               |
            |_________________________________|  203F
      2040  |                                 |
-           |        Block Zero Shadow        |  
+           |        Block Zero Shadow        |
            |_________________________________|  20FF
      2100  |                                 |
-           |               RAM               |  
+           |               RAM               |
            |_________________________________|  213F
      2140  |                                 |
-           |        Block One Shadow         |  
+           |        Block One Shadow         |
            |_________________________________|  21FF
      2200  |                                 |
-           |               RAM               |  
+           |               RAM               |
            |_________________________________|  27FF
      2800  |                                 |
-           |        Same as 2000-27FF        |  
+           |        Same as 2000-27FF        |
            |_________________________________|  3FFF
      4000  |                                 |
-           |            Available            |  
+           |            Available            |
            |_________________________________|  FF79
      FF7A  |                                 |
-           |     Reserved for Encryption     |  
+           |     Reserved for Encryption     |
            |_________________________________|  FFF9
      FFFA  |                                 |
-           |       Available (vectors)       |  
+           |       Available (vectors)       |
            |_________________________________|  FFFF
 
 
