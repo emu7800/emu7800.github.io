@@ -4,7 +4,7 @@ r
                           Cartridge
 
                      For Use ONLY with the
-                     Atari 7800 PROSystem.
+                     Atari 7800 ProSystem.
 
 
 
@@ -21,14 +21,14 @@ Introduction:
 
   Congratulations on your purchase ofthe 7800 High Score Cartridge.
 This cartridge is based on the original designs created in 1984. However In
-the summer of 1984 Atari, Inc. was sold and the Atari 7800 PROsystem
+the summer of 1984 Atari, Inc. was sold and the Atari 7800 ProSystem
 game console was put on hold until it was finally re-released in 1986. The
 accessories such as the High Score Cartridge and Computer Keyboard were
 canceled and never produced.
 
   Thanks to Gary Rubio, a former Atari Consumer Electronics Engineer
 who provided Curt Vendel with both the original GCC schematic as well as
-the original code for the High Seore Cartridge it has finally been designed,
+the original code for the High Score Cartridge it has finally been designed,
 laid out and built for gamers to use and enjoy.
 
 (Picture of the 7800 High Score Cartridge)
@@ -92,12 +92,12 @@ Installing the Battery:
 
 Using your High Score Cartridge:
 
-  Insert your High Score cartridge into your Atari 7800 PROsystem
+  Insert your High Score cartridge into your Atari 7800 ProSystem
 with the label facing away from you. Now take your favorite Atari 7800
-PROsystem game and plug it into the Pass-Thru connector on the TOP of the
+ProSystem game and plug it into the Pass-Thru connector on the TOP of the
 7800 High Score Cartridge with its label facing AWAY from you.
 
-  Power on your Atari 7800 PROsystem. You should see the Atari Fuji
+  Power on your Atari 7800 ProSystem. You should see the Atari Fuji
 symbol cycling the rainbow of colors along with The name ATARI in the
 center of the striped rainbow in the center of the screen. Your game should
 start its opening screen. Wait approximateLy 24 seconds and you will see
@@ -210,8 +210,8 @@ RETAIN MEMORY
 
   This procedure is a little difficult, only perform it if you feel
 comfortable working on the cartridge while it is plugged into the Atari 7800
-PROsystem. Although performing this procedure will not and/or should not
-damage your Atari 7800 PROsystem and/or 7800 High Score Cartridge, you
+ProSystem. Although performing this procedure will not and/or should not
+damage your Atari 7800 ProSystem and/or 7800 High Score Cartridge, you
 perform this procedure at your own risk. Curt Vendel and/or Gary Rubio is
 not responsible/liable for damages which may occur by performing the
 procedure below:
@@ -222,9 +222,9 @@ procedure below:
     static you may have built up on your person.
 2.  Open your High Score Cartridge and remove the board for the plastic
     halves.
-3.  With the power OFF on you 7800 PROsystem, insert the High Score
+3.  With the power OFF on you 7800 ProSystem, insert the High Score
     board into the cartridge slot with the battery/components side of the
-    board facing AWAY from the front of the Atari 7800 PROsystem
+    board facing AWAY from the front of the Atari 7800 ProSystem
     console.
 4.  Turn the console power ON. The screen may be black or have
     several lines on the screen, this is normal.
@@ -235,7 +235,7 @@ procedure below:
 6.  With the Positive (+) side of the new CR2032 battery (available at
     Radio Shack) facing up, slide it into the battery holder until it is firmly
     in place.
-7.  Power OFF your Atari 7800 PROsystem console. Return the high
+7.  Power OFF your Atari 7800 ProSystem console. Return the high
     score board back onto the bottom halve (the one with the post) with its
     components facing UP. Place the top halve (label on it) back on top
     and gentle squeeze them together.
@@ -275,11 +275,11 @@ similar initials in all 5 high score spots.
 Remedy:  No battery installed or battery is dead, replace with CR2032 battery
 available at Radio Shack.
 
-Problem:  If I play for an extended period of time the Atari 7800 PROsystem console
+Problem:  If I play for an extended period of time the Atari 7800 ProSystem console
 will sometimes lock up and I can't play anymore until I power off then back on.
 
 Remedy:  There is an overheat/lockup problem with the MARIA graphics processor
-chip in the Atari 7800 PROsystem consoles which can cause this problem to occur, there
+chip in the Atari 7800 ProSystem consoles which can cause this problem to occur, there
 is no remedy to fix this problem.
 
 
