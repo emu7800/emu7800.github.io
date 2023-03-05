@@ -184,6 +184,7 @@ namespace EMU7800.Core
                 "EMU7800.Core." + nameof(Cart78AB)   => new Cart78AB(this),
                 "EMU7800.Core." + nameof(Cart78AC)   => new Cart78AC(this),
                 "EMU7800.Core." + nameof(HSC7800)    => new HSC7800(this),
+                "EMU7800.Core." + nameof(XM7800)     => new XM7800(this, m),
                 _ => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
             };
         }

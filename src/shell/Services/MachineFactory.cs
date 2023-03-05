@@ -64,6 +64,13 @@ namespace EMU7800.Services
                 Info("7800 High Score Cartridge " + suffix);
             }
 
+            if (MachineTypeUtil.Is7800xm(gameProgramInfo.MachineType))
+            {
+                cart = GetXM7800Cart(cart);
+                var suffix = cart is XM7800 ? "installed" : "not installed because High Score cartridge ROM not found";
+                Info("7800 eXpansion Module " + suffix);
+            }
+
             MachineBase machine;
             try
             {
@@ -106,14 +113,19 @@ namespace EMU7800.Services
                 .FirstOrDefault() ?? Bios7800.Default;
 
         static Cart GetHSC7800Cart(Cart cart)
-            => PickFirstHSC7800Cart(DatastoreService.ImportedSpecialBinaryInfo
-                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800), cart);
-
-        static Cart PickFirstHSC7800Cart(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet, Cart cart)
-            => specialBinaryInfoSet
+            => DatastoreService.ImportedSpecialBinaryInfo
+                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800)
                 .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
                 .Where(b => b.Length > 0)
                 .Select(b => new HSC7800(b, cart))
+                .FirstOrDefault() ?? cart;
+
+        static Cart GetXM7800Cart(Cart cart)
+            => DatastoreService.ImportedSpecialBinaryInfo
+                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800)
+                .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
+                .Where(b => b.Length > 0)
+                .Select(b => new XM7800(b, cart))
                 .FirstOrDefault() ?? cart;
 
         static void Info(string message)

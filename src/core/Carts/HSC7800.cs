@@ -3,8 +3,8 @@
  *
  * The 7800 High Score cartridge--courtesy of Matthias <matthias@atari8bit.de>.
  *
- *   2KB NVRAM at $1000-$17ff
- *   4KB ROM   at $3000-$3fff
+ *   2KB NVRAM         $1000-$17ff
+ *   4KB ROM           $3000-$3fff
  *
  */
 using System;
@@ -19,8 +19,18 @@ public sealed class HSC7800 : Cart
 
     #region IDevice Members
 
+    const int
+        ROM_SHIFT   = 12, // 4 KB rom size
+        ROM_SIZE    = 1 << ROM_SHIFT,
+        ROM_MASK    = ROM_SIZE - 1,
+        NVRAM_SHIFT = 11, // 2 KB nvram size
+        NVRAM_SIZE  = 1 << NVRAM_SHIFT,
+        NVRAM_MASK  = NVRAM_SIZE - 1
+        ;
+
     public override void Reset()
     {
+        base.Reset();
         Cart.Reset();
     }
 
@@ -28,13 +38,13 @@ public sealed class HSC7800 : Cart
     {
         get => (addr & 0xf000) switch
         {
-            0x1000 => NVRAM[addr & 0x7ff],
-            0x3000 => ROM[addr & 0xfff],
-            _ => Cart[addr]
+            0x1000 => NVRAM[addr & NVRAM_MASK],
+            0x3000 => ROM[addr & ROM_MASK],
+            _      => Cart[addr]
         };
         set
         {
-            NVRAM[addr & 0x7ff] = value;
+            NVRAM[addr & NVRAM_MASK] = value;
         }
     }
 
@@ -53,7 +63,8 @@ public sealed class HSC7800 : Cart
     HSC7800()
     {
         ROM = new byte[0x1000];
-        NVRAM = LoadNVRAM();
+        NVRAM = new byte[0x800];
+        LoadNVRAM(NVRAM);
     }
 
     public HSC7800(byte[] hscRom, Cart cart) : this()
@@ -86,33 +97,32 @@ public sealed class HSC7800 : Cart
 
     #endregion
 
-    static byte[] LoadNVRAM()
+    static void LoadNVRAM(byte[] bytes)
     {
         try
         {
-            var bytes = File.ReadAllBytes(GetHSCPath());
-            if (bytes.Length >= 0x1000)
+            var readBytes = File.ReadAllBytes(GetHSCNVRAMPath());
+            if (readBytes.Length == bytes.Length)
             {
-                return bytes;
+                Buffer.BlockCopy(readBytes, 0, bytes, 0, bytes.Length);
             }
         }
         catch
         {
         }
-        return new byte[0x1000];
     }
 
-    void SaveNVRAM(byte[] bytes)
+    static void SaveNVRAM(byte[] bytes)
     {
         try
         {
-            File.WriteAllBytes(GetHSCPath(), bytes);
+            File.WriteAllBytes(GetHSCNVRAMPath(), bytes);
         }
         catch
         {
         }
     }
 
-    static string GetHSCPath()
+    static string GetHSCNVRAMPath()
         => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", ".hscnvram");
 }
