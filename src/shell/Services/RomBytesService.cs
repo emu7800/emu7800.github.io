@@ -212,7 +212,7 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
             var bankOf144kRomAt4k = (cartType2 & 4) != 0;
             //var bank6At4k         = (cartType2 & 5) != 0;
             //var bankedRamAt4k     = (cartType2 & 6) != 0;
-            //var pokeyAt0450       = (cartType2 & 7) != 0;
+            var pokeyAt0450       = (cartType2 & 7) != 0;
             //var mirrorRamAt4k     = (cartType2 & 8) != 0;
 
             // TODO: this will need to become more nuanced:
@@ -236,17 +236,17 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
                 return CartType.A78S4;
             }
 
-            return To78CartTypeBySize(cartSize, pokeyAt4k);
+            return To78CartTypeBySize(cartSize, pokeyAt0450, pokeyAt4k);
         }
 
-        static CartType To78CartTypeBySize(int size, bool usesPokey)
+        static CartType To78CartTypeBySize(int size, bool pokeyAt0450, bool pokeyAt4k)
         {
             if (size <= 0x2000)
                 return CartType.A7808;
             if (size <= 0x4000)
                 return CartType.A7816;
             if (size <= 0x8000)
-                return usesPokey ? CartType.A7832P : CartType.A7832;
+                return pokeyAt0450 ? CartType.A7832PL : pokeyAt4k ? CartType.A7832P : CartType.A7832;
             if (size <= 0xC000)
                 return CartType.A7848;
             return CartType.Unknown;

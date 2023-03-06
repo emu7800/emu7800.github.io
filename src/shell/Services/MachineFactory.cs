@@ -59,14 +59,22 @@ namespace EMU7800.Services
 
             if (MachineTypeUtil.Is7800hsc(gameProgramInfo.MachineType))
             {
-                cart = GetHSC7800Cart(cart);
+                var hscRom = GetHSCRom();
+                if (hscRom.Length > 0)
+                {
+                    cart = new HSC7800(hscRom, cart);
+                }
                 var suffix = cart is HSC7800 ? "installed" : "not installed because ROM not found";
                 Info("7800 High Score Cartridge " + suffix);
             }
 
             if (MachineTypeUtil.Is7800xm(gameProgramInfo.MachineType))
             {
-                cart = GetXM7800Cart(cart);
+                var hscRom = GetHSCRom();
+                if (hscRom.Length > 0)
+                {
+                    cart = new XM7800(hscRom, cart);
+                }
                 var suffix = cart is XM7800 ? "installed" : "not installed because High Score cartridge ROM not found";
                 Info("7800 eXpansion Module " + suffix);
             }
@@ -112,21 +120,11 @@ namespace EMU7800.Services
                 .Select(b => new Bios7800(b))
                 .FirstOrDefault() ?? Bios7800.Default;
 
-        static Cart GetHSC7800Cart(Cart cart)
+        static byte[] GetHSCRom()
             => DatastoreService.ImportedSpecialBinaryInfo
                 .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800)
                 .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
-                .Where(b => b.Length > 0)
-                .Select(b => new HSC7800(b, cart))
-                .FirstOrDefault() ?? cart;
-
-        static Cart GetXM7800Cart(Cart cart)
-            => DatastoreService.ImportedSpecialBinaryInfo
-                .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800)
-                .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
-                .Where(b => b.Length > 0)
-                .Select(b => new XM7800(b, cart))
-                .FirstOrDefault() ?? cart;
+                .FirstOrDefault() ?? Array.Empty<byte>();
 
         static void Info(string message)
             => Console.WriteLine(message);

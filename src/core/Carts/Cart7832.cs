@@ -12,9 +12,15 @@ public sealed class Cart7832 : Cart
 
     #region IDevice Members
 
+    const int
+        ROM_SHIFT = 15, // 32 KB rom size
+        ROM_SIZE  = 1 << ROM_SHIFT,
+        ROM_MASK  = ROM_SIZE - 1
+        ;
+
     public override byte this[ushort addr]
     {
-        get => ROM[addr & 0x7fff];
+        get => ROM[addr & ROM_MASK];
         set {}
     }
 
@@ -24,14 +30,14 @@ public sealed class Cart7832 : Cart
         => "EMU7800.Core.Cart7832";
 
     public Cart7832(byte[] romBytes)
-        => LoadRom(romBytes, 0x8000);
+        => LoadRom(romBytes, ROM_SIZE);
 
     #region Serialization Members
 
     public Cart7832(DeserializationContext input) : base(input)
     {
         input.CheckVersion(1);
-        LoadRom(input.ReadExpectedBytes(0x8000), 0x8000);
+        LoadRom(input.ReadExpectedBytes(ROM_SIZE), ROM_SIZE);
     }
 
     public override void GetObjectData(SerializationContext output)
