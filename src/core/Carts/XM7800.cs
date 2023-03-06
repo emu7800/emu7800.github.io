@@ -27,9 +27,9 @@ public sealed class XM7800 : Cart
 
     byte XCTRL;
     int BankNo => XCTRL & 7;
-    bool RamEnable => (XCTRL & 8) != 0;
-    bool PokeyEnable => (XCTRL & 0x10) != 0;
-    bool PokeyEnabledAtFrameStart;
+    bool RamEnabled => (XCTRL & 8) != 0;
+    bool PokeyEnabled => (XCTRL & 0x10) != 0;
+    bool YmEnabled => (XCTRL & 0x84) != 0;
 
     #region IDevice
 
@@ -58,29 +58,29 @@ public sealed class XM7800 : Cart
     {
         get => (addr & 0xf000) switch
         {
-            0x0000 => (addr & 0x04ff) switch
+            0x0000 => (addr & 0x04f0) switch
             {
                 0x0450 => Pokey1.Read(addr),
-                0x0460 => Pokey2.Read(addr),
+                0x0460 => YmEnabled ? /* YM2151.Read(addr & 1) */ (byte)0xff : /* Pokey2.Read(addr) */ (byte)0xff,
                 0x0470 => XCTRL,
                 _      => 0xff,
             },
             0x1000 => NVRAM[addr & NVRAM_MASK],
             0x3000 => ROM[addr & ROM_MASK],
-            _      => RamEnable ? RAM[BankNo << RAM_BANKSHIFT | (addr & RAM_BANKMASK)] : Cart[addr]
+            _      => RamEnabled ? RAM[BankNo << RAM_BANKSHIFT | (addr & RAM_BANKMASK)] : Cart[addr]
         };
         set
         {
             switch (addr & 0xf000)
             {
                 case 0x0000:
-                    switch (addr & 0x4ff)
+                    switch (addr & 0x4f0)
                     {
                         case 0x0450:
                             Pokey1.Update(addr, value);
                             break;
                         case 0x0460:
-                            Pokey2.Update(addr, value);
+                            if (YmEnabled) { /* YM2151.Update(addr & 1, value( */ } else { /* Pokey2.Update(addr, value) */ }
                             break;
                         case 0x0470:
                             XCTRL = value;
@@ -91,7 +91,14 @@ public sealed class XM7800 : Cart
                     NVRAM[addr & NVRAM_MASK] = value;
                     break;
                 default:
-                    RAM[BankNo << RAM_BANKSHIFT | (addr & RAM_BANKMASK)] = value;
+                    if (RamEnabled)
+                    {
+                        RAM[BankNo << RAM_BANKSHIFT | (addr & RAM_BANKMASK)] = value;
+                    }
+                    else
+                    {
+                        Cart[addr] = value;
+                    }
                     break;
             }
         }
@@ -108,19 +115,20 @@ public sealed class XM7800 : Cart
 
     public override void StartFrame()
     {
-        PokeyEnabledAtFrameStart = PokeyEnable;
-        if (!PokeyEnabledAtFrameStart)
-            return;
-        Pokey1.StartFrame();
-        //_pokeySound2.StartFrame();
+        if (PokeyEnabled)
+        {
+            Pokey1.StartFrame();
+          //Pokey2.StartFrame();
+        }
     }
 
     public override void EndFrame()
     {
-        if (!PokeyEnabledAtFrameStart)
-            return;
-        Pokey1.EndFrame();
-        //_pokeySound2.EndFrame();
+        if (PokeyEnabled)
+        {
+            Pokey1.EndFrame();
+          //Pokey2.EndFrame();
+        }
     }
 
     public override bool Map()

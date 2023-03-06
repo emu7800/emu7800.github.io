@@ -491,9 +491,9 @@ Donkey Kong Jr.,Coleco,,,1983,2653,Rare,,A2600NTSC,,,7fd52208fb6391bae0cd7e68c27
 Donkey Kong Jr.,Coleco,,,1983,,,,A2600PAL,,,2091af29b4e7b86914d79d9aaa4cbd20,
 Donkey Kong Junior,Atari,,,1988,CX7849,Common,,A7800NTSC,,,5e332fbfc1e0fc74223d2e73271ce650,http://www.atariage.com/manual_thumbs.html?SoftwareID=2128
 Donkey Kong Junior,Atari,,,1988,CX7849,Common,,A7800PAL,,,4dc5f88243250461bd61053b13777060,http://www.atariage.com/manual_thumbs.html?SoftwareID=2128
-Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSC,,,3430f61013dd7df4fb2a5d1d87a7ad81,
-Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSC,,,c956d5ce7417cc2dab61a9afd8f372d0,
-Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800PAL,,,b44b2533407af3c56dba8476ce580ea3,
+Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSCxm,ProLineJoystick,ProLineJoystick,3430f61013dd7df4fb2a5d1d87a7ad81,
+Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800NTSCxm,ProLineJoystick,ProLineJoystick,c956d5ce7417cc2dab61a9afd8f372d0,
+Donkey Kong XM,,Perry,Homebrew,2013,,,A78S9,A7800PALxm,ProLineJoystick,ProLineJoystick,b44b2533407af3c56dba8476ce580ea3,
 Doomzerk,,Eduardo,Hack,,,,,A2600NTSC,,,200a9d2a7cb4441ce4f002df6aa47e38,
 Double Dragon,Activision,Dan Kitchen,,1989,AK-050-04,Rare,A16K,A2600PAL,,,47464694e9cce07fdbfd096605bf39d4,
 Double Dragon,Activision,Dan Kitchen,,1989,,,A16K,A2600PAL,,,3624e5568368929fabb55d7f9df1022e,
@@ -1187,9 +1187,9 @@ Pac-Man,Atari,Tod Frye,,,CX2646,Common,,A2600PAL,,,c2410d03820e0ff0a449fa6170f51
 Pac-Man,CCE,Tod Frye,,,,,,A2600NTSC,,,ca53fc8fd8b3c4a7df89ac86b222eba0,http://www.atariage.com/manual_thumbs.html?SoftwareID=1193
 Pac-Man,CCE,Tod Frye,,,,,,A2600PAL,,,651d2b6743a3a18b426bce2c881af212,http://www.atariage.com/manual_thumbs.html?SoftwareID=1193
 Pac-Man Collection,,Bob DeCrescenzo,Homebrew,2006,,,,A7800NTSC,,,5d7bc7092de69095137456733e7b685d,http://www.atariage.com/software_page.html?SoftwareID=4086
-Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2021,,,A78SG,A7800NTSC,,,f4649aad8aa5c24e4725ab74299d2963,
-Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,,,f2512870a8abc82df42b2721f8c9e7af,
-Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,,,2b60de20a55056a11e6412a22445296f,
+Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2021,,,A78SG,A7800NTSC,ProLineJoystick,ProLineJoystick,f4649aad8aa5c24e4725ab74299d2963,
+Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,ProLineJoystick,ProLineJoystick,f2512870a8abc82df42b2721f8c9e7af,
+Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSC,ProLineJoystick,ProLineJoystick,2b60de20a55056a11e6412a22445296f,
 Pac-Man 320,,Bob DeCrescenzo,Homebrew,2011,,,A7832P,A7800NTSC,,,80ffad3edb50f0970e780a727a4524dd,
 Pac-Man Energy Drink Edition,,Bob DeCrescenzo,Homebrew,2022,,,A7848,A7800NTSC,,,2b51ebf2f371d0790a5629e27727ebba
 Pac-Space,,,,,,,,A2600NTSC,,,c569e57dca93d3bee115a49923057fd7,
