@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-namespace EMU7800.Core;
+﻿namespace EMU7800.Core;
 
 /// <summary>
 /// Atari 7800 non-bankswitched 32KB cartridge w/Pokey at $4000

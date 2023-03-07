@@ -77,10 +77,10 @@ public sealed class XM7800 : Cart
                     switch (addr & 0x4f0)
                     {
                         case 0x0450:
-                            Pokey1.Update(addr, value);
+                            if (PokeyEnabled) { Pokey1.Update(addr, value); }
                             break;
                         case 0x0460:
-                            if (YmEnabled) { /* YM2151.Update(addr & 1, value( */ } else { /* Pokey2.Update(addr, value) */ }
+                            if (YmEnabled) { /* YM2151.Update(addr & 1, value( */ } else if (PokeyEnabled) { /* Pokey2.Update(addr, value) */ }
                             break;
                         case 0x0470:
                             XCTRL = value;

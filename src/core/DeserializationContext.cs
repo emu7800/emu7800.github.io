@@ -105,22 +105,19 @@ namespace EMU7800.Core
         }
 
         public MachineBase ReadMachine()
-        {
-            var typeName = _binaryReader.ReadString();
-            if (string.IsNullOrWhiteSpace(typeName))
-                throw new Emu7800SerializationException("Invalid type name");
+            => CreateMachine(_binaryReader.ReadString());
 
-            return typeName switch
+        public MachineBase CreateMachine(string typeName)
+            => typeName switch
             {
                 "EMU7800.Core." + nameof(Machine2600NTSC) => new Machine2600NTSC(this),
                 "EMU7800.Core." + nameof(Machine2600PAL)  => new Machine2600PAL(this),
                 "EMU7800.Core." + nameof(Machine7800NTSC) => new Machine7800NTSC(this),
                 "EMU7800.Core." + nameof(Machine7800PAL)  => new Machine7800PAL(this),
-                _ => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+                _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'"),
             };
-        }
 
-        public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
+    public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
             => new(this, m, addrSpaceShift, pageShift);
 
         public M6502 ReadM6502(MachineBase m, int runClocksMultiple)
@@ -151,12 +148,10 @@ namespace EMU7800.Core
             => ReadBoolean() ? new PokeySound(this, m) : PokeySound.Default;
 
         public Cart ReadCart(MachineBase m)
-        {
-            var typeName = _binaryReader.ReadString();
-            if (string.IsNullOrWhiteSpace(typeName))
-                throw new Emu7800SerializationException("Invalid type name");
+            => CreateCart(m, _binaryReader.ReadString());
 
-            return typeName switch
+        public Cart CreateCart(MachineBase m, string typeName)
+            => typeName switch
             {
                 "EMU7800.Core." + nameof(CartA2K)    => new CartA2K(this),
                 "EMU7800.Core." + nameof(CartA4K)    => new CartA4K(this),
@@ -175,6 +170,7 @@ namespace EMU7800.Core
                 "EMU7800.Core." + nameof(Cart7808)   => new Cart7808(this),
                 "EMU7800.Core." + nameof(Cart7816)   => new Cart7816(this),
                 "EMU7800.Core." + nameof(Cart7832P)  => new Cart7832P(this, m),
+                "EMU7800.Core." + nameof(Cart7832PL) => new Cart7832PL(this, m),
                 "EMU7800.Core." + nameof(Cart7832)   => new Cart7832(this),
                 "EMU7800.Core." + nameof(Cart7848)   => new Cart7848(this),
                 "EMU7800.Core." + nameof(Cart78SGP)  => new Cart78SGP(this, m),
@@ -185,9 +181,8 @@ namespace EMU7800.Core
                 "EMU7800.Core." + nameof(Cart78AC)   => new Cart78AC(this),
                 "EMU7800.Core." + nameof(HSC7800)    => new HSC7800(this),
                 "EMU7800.Core." + nameof(XM7800)     => new XM7800(this, m),
-                _ => throw new Emu7800SerializationException("Unable to resolve type name: " + typeName),
+                _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'")
             };
-        }
 
         #region Constructors
 

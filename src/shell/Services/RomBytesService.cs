@@ -209,31 +209,28 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
             var pokeyAt4k         = (cartType2 & 1) != 0;
             var superCart         = (cartType2 & 2) != 0;
             var superCartRamAt4k  = (cartType2 & 3) != 0;
-            var bankOf144kRomAt4k = (cartType2 & 4) != 0;
+            //var bankOf144kRomAt4k = (cartType2 & 4) != 0;
             //var bank6At4k         = (cartType2 & 5) != 0;
             //var bankedRamAt4k     = (cartType2 & 6) != 0;
             var pokeyAt0450       = (cartType2 & 7) != 0;
             //var mirrorRamAt4k     = (cartType2 & 8) != 0;
 
-            // TODO: this will need to become more nuanced:
+            // TODO: this may need to become more nuanced:
             if (cartSize > 131072)
             {
                 return CartType.A78S9;
             }
 
-            if (superCart)
+            if (cartSize == 131072)
             {
-                return pokeyAt4k ? CartType.A78SGP : CartType.A78SG;
-            }
-
-            if (superCartRamAt4k)
-            {
-                return CartType.A78S4R;
-            }
-
-            if (bankOf144kRomAt4k)
-            {
-                return CartType.A78S4;
+                if (superCartRamAt4k)
+                {
+                    return CartType.A78SGR;
+                }
+                if (superCart)
+                {
+                    return CartType.A78SG;
+                }
             }
 
             return To78CartTypeBySize(cartSize, pokeyAt0450, pokeyAt4k);
