@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EMU7800.Core;
+﻿namespace EMU7800.Core;
 
 /// <summary>
 /// Atari 7800 SuperGame S4 bankswitched cartridge
@@ -10,16 +8,16 @@ public sealed class Cart78S4 : Cart
     //
     // Cart Format                Mapping to ROM Address Space
     // Bank0: 0x00000:0x4000
-    // Bank1: 0x04000:0x4000      0x4000:0x4000  Bank2
-    // Bank2: 0x08000:0x4000      0x8000:0x4000  Bank0 (0 on startup)
+    // Bank1: 0x04000:0x4000      0x4000:0x4000  Bank2   Optional RAM at 6000-8000
+    // Bank2: 0x08000:0x4000      0x8000:0x4000  Bank0   (0 on startup)
     // Bank3: 0x0c000:0x4000      0xc000:0x4000  Bank3
     // Bank4: 0x10000:0x4000
     // Bank5: 0x14000:0x4000
     // Bank6: 0x18000:0x4000
     // Bank7: 0x1c000:0x4000
     //
-    readonly byte[] RAM = Array.Empty<byte>();
-    readonly int[] Bank = new int[4];
+    readonly int[] Bank = new[] { 0, 2, 0, 3 };
+    readonly byte[] RAM = System.Array.Empty<byte>();
 
     #region IDevice Members
 
@@ -64,14 +62,10 @@ public sealed class Cart78S4 : Cart
     {
         if (needRAM)
         {
-            RAM = new byte[0x2000];
+            RAM = new byte[RAM_SIZE];
         }
 
-        LoadRom(romBytes, 0xffff);
-
-        Bank[1] = 2;
-        Bank[2] = 0;
-        Bank[3] = 3;
+        LoadRom(romBytes, ROM_SIZE * 8);
     }
 
     #region Serialization Members
@@ -89,7 +83,6 @@ public sealed class Cart78S4 : Cart
     public override void GetObjectData(SerializationContext output)
     {
         base.GetObjectData(output);
-
         output.WriteVersion(2);
         output.Write(ROM);
         output.Write(Bank);

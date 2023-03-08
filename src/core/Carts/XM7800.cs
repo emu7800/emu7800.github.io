@@ -11,15 +11,11 @@
  *   RAM               $4000-$7FFF    16384 bytes bank
  *
  */
-
-using System.IO;
-using System;
-
 namespace EMU7800.Core;
 
 public sealed class XM7800 : Cart
 {
-    readonly byte[] NVRAM;
+    static readonly byte[] NVRAM = new byte[NVRAM_SIZE];
     readonly byte[] RAM;
     readonly Cart Cart = Default;
     PokeySound Pokey1 = PokeySound.Default;
@@ -144,18 +140,13 @@ public sealed class XM7800 : Cart
 
     XM7800()
     {
-        ROM = new byte[0x1000];
-        NVRAM = new byte[0x800];
-        RAM = new byte[0x20000];
-        LoadNVRAM(NVRAM);
+        ROM = new byte[ROM_SIZE];
+        RAM = new byte[RAM_BANKSIZE * 8];
     }
 
     public XM7800(byte[] hscRom, Cart cart) : this()
     {
-        if (hscRom.Length != ROM.Length)
-            throw new ArgumentException($"ROM size not {ROM.Length}", nameof(hscRom));
-
-        LoadRom(hscRom);
+        LoadRom(hscRom, ROM_SIZE);
         Cart = cart;
     }
 
@@ -179,39 +170,9 @@ public sealed class XM7800 : Cart
         output.Write(ROM);
         output.Write(RAM);
         output.Write(Cart);
-        SaveNVRAM(NVRAM);
         output.WriteOptional(Pokey1);
         output.WriteOptional(Pokey2);
     }
 
     #endregion
-
-    static void LoadNVRAM(byte[] bytes)
-    {
-        try
-        {
-            var readBytes = File.ReadAllBytes(GetXMNVRAMPath());
-            if (readBytes.Length == bytes.Length)
-            {
-                Buffer.BlockCopy(readBytes, 0, bytes, 0, bytes.Length);
-            }
-        }
-        catch
-        {
-        }
-    }
-
-    static void SaveNVRAM(byte[] bytes)
-    {
-        try
-        {
-            File.WriteAllBytes(GetXMNVRAMPath(), bytes);
-        }
-        catch
-        {
-        }
-    }
-
-    static string GetXMNVRAMPath()
-        => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", ".xmnvram");
 }

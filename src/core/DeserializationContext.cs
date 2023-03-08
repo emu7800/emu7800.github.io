@@ -176,6 +176,7 @@ namespace EMU7800.Core
                 "EMU7800.Core." + nameof(Cart78SGP)  => new Cart78SGP(this, m),
                 "EMU7800.Core." + nameof(Cart78SG)   => new Cart78SG(this),
                 "EMU7800.Core." + nameof(Cart78S9)   => new Cart78S9(this),
+                "EMU7800.Core." + nameof(Cart78S9PL) => new Cart78S9PL(this, m),
                 "EMU7800.Core." + nameof(Cart78S4)   => new Cart78S4(this),
                 "EMU7800.Core." + nameof(Cart78AB)   => new Cart78AB(this),
                 "EMU7800.Core." + nameof(Cart78AC)   => new Cart78AC(this),

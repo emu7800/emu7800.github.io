@@ -7,14 +7,11 @@
  *   4KB ROM           $3000-$3fff
  *
  */
-using System;
-using System.IO;
-
 namespace EMU7800.Core;
 
 public sealed class HSC7800 : Cart
 {
-    readonly byte[] NVRAM;
+    static readonly byte[] NVRAM = new byte[NVRAM_SIZE];
     readonly Cart Cart = Default;
 
     #region IDevice Members
@@ -62,17 +59,12 @@ public sealed class HSC7800 : Cart
 
     HSC7800()
     {
-        ROM = new byte[0x1000];
-        NVRAM = new byte[0x800];
-        LoadNVRAM(NVRAM);
+        ROM = new byte[ROM_SIZE];
     }
 
     public HSC7800(byte[] hscRom, Cart cart) : this()
     {
-        if (hscRom.Length != ROM.Length)
-            throw new ArgumentException($"ROM size not {ROM.Length}", nameof(hscRom));
-
-        LoadRom(hscRom);
+        LoadRom(hscRom, ROM_SIZE);
         Cart = cart;
     }
 
@@ -92,37 +84,7 @@ public sealed class HSC7800 : Cart
         output.WriteVersion(1);
         output.Write(ROM);
         output.Write(Cart);
-        SaveNVRAM(NVRAM);
     }
 
     #endregion
-
-    static void LoadNVRAM(byte[] bytes)
-    {
-        try
-        {
-            var readBytes = File.ReadAllBytes(GetHSCNVRAMPath());
-            if (readBytes.Length == bytes.Length)
-            {
-                Buffer.BlockCopy(readBytes, 0, bytes, 0, bytes.Length);
-            }
-        }
-        catch
-        {
-        }
-    }
-
-    static void SaveNVRAM(byte[] bytes)
-    {
-        try
-        {
-            File.WriteAllBytes(GetHSCNVRAMPath(), bytes);
-        }
-        catch
-        {
-        }
-    }
-
-    static string GetHSCNVRAMPath()
-        => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", ".hscnvram");
 }

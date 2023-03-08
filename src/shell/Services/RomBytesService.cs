@@ -176,8 +176,16 @@ A78 : Title           : {gpi.Title}
       Left Controller : {ControllerUtil.ToString(gpi.LController)}
       Right Controller: {ControllerUtil.ToString(gpi.RController)}
       Header Version  : {ToHex(bytes[A78VERSION])}
-      Cart Type       : {ToHex(bytes[A78CARTTYPE])} {ToHex(bytes[A78CARTTYPE+1])}
       TV HSC XM       : {ToHex(bytes[A78TVTYPE])} {ToHex(bytes[A78SAVEDATA])} {ToHex(bytes[A78XMREQ])}
+      Cart Type       : {ToHex(bytes[A78CARTTYPE])} {ToHex(bytes[A78CARTTYPE+1])}
+             pokeyAt4k={((bytes[A78CARTTYPE+1] & (1 << 0)) != 0)}
+             superGame={((bytes[A78CARTTYPE+1] & (1 << 1)) != 0)}
+      superGameRamAt4k={((bytes[A78CARTTYPE+1] & (1 << 2)) != 0)}
+               romAt4k={((bytes[A78CARTTYPE+1] & (1 << 3)) != 0)}
+             bank6At4k={((bytes[A78CARTTYPE+1] & (1 << 4)) != 0)}
+    superGameBankedRam={((bytes[A78CARTTYPE+1] & (1 << 5)) != 0)}
+           pokeyAt0450={((bytes[A78CARTTYPE+1] & (1 << 6)) != 0)}
+         mirrorRamAt4k={((bytes[A78CARTTYPE+1] & (1 << 7)) != 0)}
 ");
             }
 
@@ -206,46 +214,41 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
                 return CartType.A78AC;
             }
 
-            var pokeyAt4k         = (cartType2 & 1) != 0;
-            var superCart         = (cartType2 & 2) != 0;
-            var superCartRamAt4k  = (cartType2 & 3) != 0;
-            //var bankOf144kRomAt4k = (cartType2 & 4) != 0;
-            //var bank6At4k         = (cartType2 & 5) != 0;
-            //var bankedRamAt4k     = (cartType2 & 6) != 0;
-            var pokeyAt0450       = (cartType2 & 7) != 0;
-            //var mirrorRamAt4k     = (cartType2 & 8) != 0;
+            var pokeyAt4k          = (cartType2 & (1 << 0)) != 0;
+            var superGame          = (cartType2 & (1 << 1)) != 0;
+            var superGameRamAt4k   = (cartType2 & (1 << 2)) != 0;
+            var romAt4k            = (cartType2 & (1 << 3)) != 0;
+            var bank6At4k          = (cartType2 & (1 << 4)) != 0;
+          //var superGameBankedRam = (cartType2 & (1 << 5)) != 0;
+            var pokeyAt0450        = (cartType2 & (1 << 6)) != 0;
+          //var mirrorRamAt4k      = (cartType2 & (1 << 7)) != 0;
 
-            // TODO: this may need to become more nuanced:
-            if (cartSize > 131072)
+            if (superGame)
             {
-                return CartType.A78S9;
+                if (romAt4k)
+                {
+                    return pokeyAt0450 ? CartType.A78S9PL : CartType.A78S9;  // supergame_large
+                }
+                if (bank6At4k)
+                {
+                    return CartType.A78SG;  // supergame_rom
+                }
+                if (superGameRamAt4k)
+                {
+                    return CartType.A78SGR; // supergame_ram
+                }
+                return pokeyAt4k ? CartType.A78SGP : CartType.A78SG;  // supergame
             }
 
-            if (cartSize == 131072)
-            {
-                if (superCartRamAt4k)
-                {
-                    return CartType.A78SGR;
-                }
-                if (superCart)
-                {
-                    return CartType.A78SG;
-                }
-            }
-
-            return To78CartTypeBySize(cartSize, pokeyAt0450, pokeyAt4k);
-        }
-
-        static CartType To78CartTypeBySize(int size, bool pokeyAt0450, bool pokeyAt4k)
-        {
-            if (size <= 0x2000)
+            if (cartSize <= 0x2000)
                 return CartType.A7808;
-            if (size <= 0x4000)
+            if (cartSize <= 0x4000)
                 return CartType.A7816;
-            if (size <= 0x8000)
+            if (cartSize <= 0x8000)
                 return pokeyAt0450 ? CartType.A7832PL : pokeyAt4k ? CartType.A7832P : CartType.A7832;
-            if (size <= 0xC000)
+            if (cartSize <= 0xC000)
                 return CartType.A7848;
+
             return CartType.Unknown;
         }
 

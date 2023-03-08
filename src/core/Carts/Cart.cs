@@ -98,6 +98,7 @@ namespace EMU7800.Core
                 CartType.A78SG   => new Cart78SG(romBytes, false),
                 CartType.A78SGR  => new Cart78SG(romBytes, true),
                 CartType.A78S9   => new Cart78S9(romBytes),
+                CartType.A78S9PL => new Cart78S9PL(romBytes),
                 CartType.A78S4   => new Cart78S4(romBytes, false),
                 CartType.A78S4R  => new Cart78S4(romBytes, true),
                 CartType.A78AB   => new Cart78AB(romBytes),
