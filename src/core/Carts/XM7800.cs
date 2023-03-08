@@ -105,6 +105,7 @@ public sealed class XM7800 : Cart
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
+        Cart.Attach(m);
         Pokey1 = new PokeySound(m);
         Pokey2 = new PokeySound(m);
     }
@@ -132,7 +133,10 @@ public sealed class XM7800 : Cart
         M?.Mem.Map(0x0440, 0x40, this);
         M?.Mem.Map(0x1000, 0x800, this);
         M?.Mem.Map(0x3000, 0x1000, this);
-        M?.Mem.Map(0x4000, 0xc000, this);
+        if (M != null && !M.Mem.Map(Cart))
+        {
+            M?.Mem.Map(0x4000, 0xc000, Cart);
+        }
         return true;
     }
 
@@ -142,6 +146,7 @@ public sealed class XM7800 : Cart
     {
         ROM = new byte[ROM_SIZE];
         RAM = new byte[RAM_BANKSIZE * 8];
+        LoadNVRAM(GetXMNVRAMPath());
     }
 
     public XM7800(byte[] hscRom, Cart cart) : this()
@@ -172,7 +177,39 @@ public sealed class XM7800 : Cart
         output.Write(Cart);
         output.WriteOptional(Pokey1);
         output.WriteOptional(Pokey2);
+        SaveNVRAM(GetXMNVRAMPath());
     }
 
     #endregion
+
+    static void LoadNVRAM(string path)
+    {
+        try
+        {
+            using var fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            using var br = new System.IO.BinaryReader(fs, System.Text.Encoding.UTF8, leaveOpen: true);
+            var bytes = br.ReadBytes(NVRAM_SIZE);
+            System.Buffer.BlockCopy(bytes, 0, NVRAM, 0, NVRAM_SIZE);
+        }
+        catch
+        {
+        }
+    }
+
+    static void SaveNVRAM(string path)
+    {
+        try
+        {
+            using var fs = System.IO.File.Open(path, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+            using var bw = new System.IO.BinaryWriter(fs, System.Text.Encoding.UTF8, leaveOpen: true);
+            bw.Write(NVRAM);
+            bw.Flush();
+        }
+        catch
+        {
+        }
+    }
+
+    static string GetXMNVRAMPath()
+        => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", "XMnvram.bin");
 }

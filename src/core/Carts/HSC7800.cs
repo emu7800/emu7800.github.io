@@ -47,11 +47,29 @@ public sealed class HSC7800 : Cart
 
     #endregion
 
+    public override void Attach(MachineBase m)
+    {
+        base.Attach(m);
+        Cart.Attach(m);
+    }
+
+    public override void StartFrame()
+        => Cart.StartFrame();
+
+    public override void EndFrame()
+        => Cart.EndFrame();
+
+    public override string ToString()
+        => "EMU7800.Core." + nameof(HSC7800);
+
     public override bool Map()
     {
         M?.Mem.Map(0x1000, 0x800, this);
         M?.Mem.Map(0x3000, 0x1000, this);
-        M?.Mem.Map(0x4000, 0xc000, Cart);
+        if (M != null && !M.Mem.Map(Cart))
+        {
+            M?.Mem.Map(0x4000, 0xc000, Cart);
+        }
         return true;
     }
 
@@ -60,6 +78,7 @@ public sealed class HSC7800 : Cart
     HSC7800()
     {
         ROM = new byte[ROM_SIZE];
+        LoadNVRAM(GetHSCNVRAMPath());
     }
 
     public HSC7800(byte[] hscRom, Cart cart) : this()
@@ -84,7 +103,39 @@ public sealed class HSC7800 : Cart
         output.WriteVersion(1);
         output.Write(ROM);
         output.Write(Cart);
+        SaveNVRAM(GetHSCNVRAMPath());
     }
 
     #endregion
+
+    static void LoadNVRAM(string path)
+    {
+        try
+        {
+            using var fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
+            using var br = new System.IO.BinaryReader(fs, System.Text.Encoding.UTF8, leaveOpen: true);
+            var bytes = br.ReadBytes(NVRAM_SIZE);
+            System.Buffer.BlockCopy(bytes, 0, NVRAM, 0, NVRAM_SIZE);
+        }
+        catch
+        {
+        }
+    }
+
+    static void SaveNVRAM(string path)
+    {
+        try
+        {
+            using var fs = System.IO.File.Open(path, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+            using var bw = new System.IO.BinaryWriter(fs, System.Text.Encoding.UTF8, leaveOpen: true);
+            bw.Write(NVRAM);
+            bw.Flush();
+        }
+        catch
+        {
+        }
+    }
+
+    static string GetHSCNVRAMPath()
+        => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", "HSCnvram.bin");
 }
