@@ -11,7 +11,7 @@ namespace EMU7800.Core;
 
 public sealed class HSC7800 : Cart
 {
-    static readonly byte[] NVRAM = new byte[NVRAM_SIZE];
+    readonly byte[] NVRAM = new byte[NVRAM_SIZE];
     readonly Cart Cart = Default;
 
     #region IDevice Members
@@ -108,7 +108,7 @@ public sealed class HSC7800 : Cart
 
     #endregion
 
-    static void LoadNVRAM(string path)
+    void LoadNVRAM(string path)
     {
         try
         {
@@ -122,7 +122,7 @@ public sealed class HSC7800 : Cart
         }
     }
 
-    static void SaveNVRAM(string path)
+    void SaveNVRAM(string path)
     {
         try
         {

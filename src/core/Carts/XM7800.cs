@@ -15,7 +15,7 @@ namespace EMU7800.Core;
 
 public sealed class XM7800 : Cart
 {
-    static readonly byte[] NVRAM = new byte[NVRAM_SIZE];
+    readonly byte[] NVRAM = new byte[NVRAM_SIZE];
     readonly byte[] RAM;
     readonly Cart Cart = Default;
     PokeySound Pokey1 = PokeySound.Default;
@@ -182,7 +182,7 @@ public sealed class XM7800 : Cart
 
     #endregion
 
-    static void LoadNVRAM(string path)
+    void LoadNVRAM(string path)
     {
         try
         {
@@ -196,7 +196,7 @@ public sealed class XM7800 : Cart
         }
     }
 
-    static void SaveNVRAM(string path)
+    void SaveNVRAM(string path)
     {
         try
         {

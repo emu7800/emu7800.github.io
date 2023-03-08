@@ -51,8 +51,9 @@ namespace EMU7800.Core
         {
             base.ComputeNextFrame(frameBuffer);
 
-            AssertDebug(CPU.Jammed || CPU.RunClocks <= 0 && (CPU.RunClocks % CPU.RunClocksMultiple) == 0);
-            AssertDebug(CPU.Jammed || ((CPU.Clock + (ulong)(CPU.RunClocks / CPU.RunClocksMultiple)) % (114 * (ulong)FrameBuffer.Scanlines)) == 0);
+            AssertDebug(!CPU.Jammed);
+            AssertDebug(CPU.RunClocks <= 0 && (CPU.RunClocks % CPU.RunClocksMultiple) == 0);
+            AssertDebug(((CPU.Clock + (ulong)(CPU.RunClocks / CPU.RunClocksMultiple)) % (114 * (ulong)FrameBuffer.Scanlines)) == 0);
 
             ulong startOfScanlineCpuClock = 0;
 
@@ -140,7 +141,6 @@ namespace EMU7800.Core
 
             PIA = new PIA(this);
             Mem.Map(0x0280, 0x0080, PIA);
-         //?Mem.Map(0x0380, 0x0080, PIA);
             Mem.Map(0x0480, 0x0080, PIA);
             Mem.Map(0x0580, 0x0080, PIA);
 
@@ -151,15 +151,18 @@ namespace EMU7800.Core
 
             Mem.Map(0x0040, 0x00c0, RAM1);
             Mem.Map(0x0140, 0x00c0, RAM1);
+            Mem.Map(0x2040, 0x00c0, RAM1);
+            Mem.Map(0x2140, 0x00c0, RAM1);
+
             Mem.Map(0x2800, 0x0800, RAM1);
+            Mem.Map(0x3000, 0x0800, RAM1);
+            Mem.Map(0x3800, 0x0800, RAM1);
 
             BIOS = bios;
             Cart = cart;
 
             if (!Mem.Map(Cart))
             {
-                Mem.Map(0x3000, 0x0800, RAM1);
-                Mem.Map(0x3800, 0x0800, RAM1);
                 Mem.Map(0x4000, 0xc000, Cart);
             }
         }
@@ -182,7 +185,6 @@ namespace EMU7800.Core
 
             PIA = input.ReadPIA(this);
             Mem.Map(0x0280, 0x0080, PIA);
-         //?Mem.Map(0x0380, 0x0080, PIA);
             Mem.Map(0x0480, 0x0080, PIA);
             Mem.Map(0x0580, 0x0080, PIA);
 
@@ -193,15 +195,18 @@ namespace EMU7800.Core
 
             Mem.Map(0x0040, 0x00c0, RAM1);
             Mem.Map(0x0140, 0x00c0, RAM1);
+            Mem.Map(0x2040, 0x00c0, RAM1);
+            Mem.Map(0x2140, 0x00c0, RAM1);
+
             Mem.Map(0x2800, 0x0800, RAM1);
+            Mem.Map(0x3000, 0x0800, RAM1);
+            Mem.Map(0x3800, 0x0800, RAM1);
 
             BIOS = input.ReadOptionalBios7800();
             Cart = input.ReadCart(this);
 
             if (!Mem.Map(Cart))
             {
-                Mem.Map(0x3000, 0x0800, RAM1);
-                Mem.Map(0x3800, 0x0800, RAM1);
                 Mem.Map(0x4000, 0xc000, Cart);
             }
         }

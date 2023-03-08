@@ -753,6 +753,20 @@ namespace EMU7800.Core
         byte iSAX()
             => (byte)(A & X);
 
+        // ALR (ASR)
+        void iALR(byte mem)
+        {
+            iAND(mem);
+            iLSR(mem);
+        }
+
+        // ANC (ANC2)
+        void iANC(byte mem)
+        {
+            iAND(mem);
+            fC = (A & 0x80) != 0;
+        }
+
         void InstallOpcodes()
         {
             ushort EA;
@@ -961,6 +975,13 @@ namespace EMU7800.Core
 
             // DOP (SKB) - no operation, double NOP, skip byte - required for Medieval Mayhem
             Opcodes[0x04] = () => { clk(3); PC++; iNOP(); };
+
+            // ALR (ASR) - required for Popeye and Ghost n' Goblins
+            Opcodes[0x4b] = () => {    /*aIMM*/   clk(2); iALR(Mem[PC++]); };
+
+            // ANC - required for Popeye and Ghost n' Goblins
+            Opcodes[0x0b] = () => {    /*aIMM*/   clk(2); iANC(Mem[PC++]); };
+            Opcodes[0x2b] = Opcodes[0x0b];
 
             foreach (var opCode in new ushort[] { 0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72, 0x92, 0xb2, 0xd2, 0xf2 })
             {
