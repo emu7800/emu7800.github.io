@@ -63,15 +63,15 @@ public sealed class YM2151
     byte _status;       // chip status
 
     // ASG 980324
-    static readonly uint[] _timerAtime = new uint[0x400];
-    static readonly uint[] _timerBtime = new uint[0x100];
+    static uint[] _timerAtime = new uint[0x400];
+    static uint[] _timerBtime = new uint[0x100];
     uint _timerAindex, _timerBindex;
     ulong _timerA, _timerB;
     int irqlinestate;
 
     #endregion
 
-    static readonly uint[] _noiseTable = new uint[32];
+    static uint[] _noiseTable = new uint[0x20];
 
     int _bufferIndex;
 
@@ -79,6 +79,11 @@ public sealed class YM2151
 
     public void Reset()
     {
+        // TODO temporary workaround due to preview .NET releases
+        if (_timerAtime == null) _timerAtime = new uint[0x400];
+        if (_timerBtime == null) _timerBtime = new uint[0x100];
+        if (_noiseTable == null) _noiseTable = new uint[0x20];
+
         for (var i = 0; i < 32; i++)
         {
             _operators[i].Volume = 0x3ff;
