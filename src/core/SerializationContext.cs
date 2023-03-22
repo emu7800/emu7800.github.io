@@ -14,6 +14,9 @@ namespace EMU7800.Core
 
         #endregion
 
+        public void Write(string value)
+            => _binaryWriter.Write(value);
+
         public void Write(byte value)
             => _binaryWriter.Write(value);
 
@@ -100,6 +103,9 @@ namespace EMU7800.Core
         public void Write(Maria maria)
             => maria.GetObjectData(this);
 
+        public void Write(NVRAM2k nvram)
+            => nvram.GetObjectData(this);
+
         public void Write(Cart cart)
         {
             _binaryWriter.Write(cart.ToString() ?? string.Empty);
@@ -154,6 +160,15 @@ namespace EMU7800.Core
             if (!exist)
                 return;
             pokeySound.GetObjectData(this);
+        }
+
+        public void WriteOptional(YM2151 ym2151)
+        {
+            var exist = ym2151 != YM2151.Default;
+            Write(exist);
+            if (!exist)
+                return;
+            ym2151.GetObjectData(this);
         }
 
         #region Constructors

@@ -1,25 +1,28 @@
 ﻿/*
  * XM7800.cs
  *
- * The 7800 eXpansion Module cartridge
+ * The 7800 eXpansion Module
  *
- *   POKEY1            $0450-$045F       16 bytes
- *   POKEY2*           $0460-$046F       16 bytes
- *   XCTRL             $0470-$047F        1 byte  XXXPMBBB  X=NA, P=pokey enable, M=ram enable, B=ram bankno
- *   2KB NVRAM         $1000-$17ff
- *   4KB ROM           $3000-$3fff
- *   RAM               $4000-$7FFF    16384 bytes bank
+ *   POKEY1     $0450-$045F    16 bytes
+ *   POKEY2     $0460-$046F    16 bytes
+ *   YM2151     $0460-$0461     2 bytes
+ *   XCTRL      $0470-$047F     1 byte  YXXPMBBB  Y=ym2151 enable, X=NA, P=pokey enable, M=ram enable, B=ram bankno
+ *   2KB NVRAM  $1000-$17ff
+ *   4KB ROM    $3000-$3fff
+ *   RAM        $4000-$7FFF  16KB bank size
  *
  */
 namespace EMU7800.Core;
 
 public sealed class XM7800 : Cart
 {
-    readonly byte[] NVRAM = new byte[NVRAM_SIZE];
+    readonly NVRAM2k NVRAM;
     readonly byte[] RAM;
     readonly Cart Cart = Default;
-    PokeySound Pokey1 = PokeySound.Default;
-    PokeySound Pokey2 = PokeySound.Default;
+
+    PokeySound _pokeySound = PokeySound.Default;
+    //PokeySound _pokeySound2 = PokeySound.Default;
+    YM2151 _ym2151 = YM2151.Default;
 
     byte XCTRL;
     int BankNo => XCTRL & 7;
@@ -35,19 +38,18 @@ public sealed class XM7800 : Cart
         RAM_BANKMASK  = RAM_BANKSIZE - 1,
         ROM_SHIFT     = 12, // 4 KB rom size
         ROM_SIZE      = 1 << ROM_SHIFT,
-        ROM_MASK      = ROM_SIZE - 1,
-        NVRAM_SHIFT   = 11, // 2 KB nvram size
-        NVRAM_SIZE    = 1 << NVRAM_SHIFT,
-        NVRAM_MASK    = NVRAM_SIZE - 1
+        ROM_MASK      = ROM_SIZE - 1
         ;
 
     public override void Reset()
     {
         base.Reset();
+        NVRAM.Reset();
         XCTRL = 0;
         Cart.Reset();
-        Pokey1.Reset();
-        Pokey2.Reset();
+        _pokeySound.Reset();
+        //_pokeySound2.Reset();
+        _ym2151.Reset();
     }
 
     public override byte this[ushort addr]
@@ -56,12 +58,12 @@ public sealed class XM7800 : Cart
         {
             0x0000 => (addr & 0x04f0) switch
             {
-                0x0450 => Pokey1.Read(addr),
-                0x0460 => YmEnabled ? /* YM2151.Read(addr & 1) */ (byte)0xff : /* Pokey2.Read(addr) */ (byte)0xff,
+                0x0450 => _pokeySound.Read(addr),
+                0x0460 => YmEnabled ? _ym2151.Read(addr) : /* _pokeySound2.Read(addr) */ (byte)0xff,
                 0x0470 => XCTRL,
                 _      => 0xff,
             },
-            0x1000 => NVRAM[addr & NVRAM_MASK],
+            0x1000 => NVRAM[addr],
             0x3000 => ROM[addr & ROM_MASK],
             _      => RamEnabled ? RAM[BankNo << RAM_BANKSHIFT | (addr & RAM_BANKMASK)] : Cart[addr]
         };
@@ -73,10 +75,10 @@ public sealed class XM7800 : Cart
                     switch (addr & 0x4f0)
                     {
                         case 0x0450:
-                            if (PokeyEnabled) { Pokey1.Update(addr, value); }
+                            if (PokeyEnabled) { _pokeySound.Update(addr, value); }
                             break;
                         case 0x0460:
-                            if (YmEnabled) { /* YM2151.Update(addr & 1, value( */ } else if (PokeyEnabled) { /* Pokey2.Update(addr, value) */ }
+                            if (YmEnabled) { _ym2151.Update(addr, value); } else if (PokeyEnabled) { /* _pokeySound2.Update(addr, value) */ }
                             break;
                         case 0x0470:
                             XCTRL = value;
@@ -84,7 +86,7 @@ public sealed class XM7800 : Cart
                     }
                     break;
                 case 0x1000:
-                    NVRAM[addr & NVRAM_MASK] = value;
+                    NVRAM[addr] = value;
                     break;
                 default:
                     if (RamEnabled)
@@ -106,16 +108,21 @@ public sealed class XM7800 : Cart
     {
         base.Attach(m);
         Cart.Attach(m);
-        Pokey1 = new PokeySound(m);
-        Pokey2 = new PokeySound(m);
+        _pokeySound = new(m);
+        //_pokeySound2 = new(m);
+        _ym2151 = new(m);
     }
 
     public override void StartFrame()
     {
         if (PokeyEnabled)
         {
-            Pokey1.StartFrame();
-          //Pokey2.StartFrame();
+            _pokeySound.StartFrame();
+          //_pokeySound2.StartFrame();
+        }
+        if (YmEnabled)
+        {
+            _ym2151.StartFrame();
         }
     }
 
@@ -123,8 +130,12 @@ public sealed class XM7800 : Cart
     {
         if (PokeyEnabled)
         {
-            Pokey1.EndFrame();
-          //Pokey2.EndFrame();
+            _pokeySound.EndFrame();
+          //_pokeySound2.EndFrame();
+        }
+        if (YmEnabled)
+        {
+            _ym2151.EndFrame();
         }
     }
 
@@ -146,7 +157,7 @@ public sealed class XM7800 : Cart
     {
         ROM = new byte[ROM_SIZE];
         RAM = new byte[RAM_BANKSIZE * 8];
-        LoadNVRAM(GetXMNVRAMPath());
+        NVRAM = new NVRAM2k("XM.bin");
     }
 
     public XM7800(byte[] hscRom, Cart cart) : this()
@@ -164,9 +175,11 @@ public sealed class XM7800 : Cart
         input.CheckVersion(1);
         LoadRom(input.ReadBytes());
         RAM = input.ReadBytes();
+        NVRAM = input.ReadNVRAM2k();
         Cart = input.ReadCart(m);
-        Pokey1 = input.ReadOptionalPokeySound(m);
-        Pokey2 = input.ReadOptionalPokeySound(m);
+        _pokeySound = input.ReadOptionalPokeySound(m);
+        //_pokeySound2 = input.ReadOptionalPokeySound(m);
+        _ym2151 = input.ReadOptionalYM2151(m);
     }
 
     public override void GetObjectData(SerializationContext output)
@@ -174,42 +187,12 @@ public sealed class XM7800 : Cart
         output.WriteVersion(1);
         output.Write(ROM);
         output.Write(RAM);
+        output.Write(NVRAM);
         output.Write(Cart);
-        output.WriteOptional(Pokey1);
-        output.WriteOptional(Pokey2);
-        SaveNVRAM(GetXMNVRAMPath());
+        output.WriteOptional(_pokeySound);
+        //output.WriteOptional(_pokeySound2);
+        output.WriteOptional(_ym2151);
     }
 
     #endregion
-
-    void LoadNVRAM(string path)
-    {
-        try
-        {
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            using var br = new System.IO.BinaryReader(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            var bytes = br.ReadBytes(NVRAM_SIZE);
-            System.Buffer.BlockCopy(bytes, 0, NVRAM, 0, NVRAM_SIZE);
-        }
-        catch
-        {
-        }
-    }
-
-    void SaveNVRAM(string path)
-    {
-        try
-        {
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-            using var bw = new System.IO.BinaryWriter(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            bw.Write(NVRAM);
-            bw.Flush();
-        }
-        catch
-        {
-        }
-    }
-
-    static string GetXMNVRAMPath()
-        => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", "XMnvram.bin");
 }

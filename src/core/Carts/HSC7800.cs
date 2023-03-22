@@ -11,23 +11,21 @@ namespace EMU7800.Core;
 
 public sealed class HSC7800 : Cart
 {
-    readonly byte[] NVRAM = new byte[NVRAM_SIZE];
+    readonly NVRAM2k NVRAM;
     readonly Cart Cart = Default;
 
     #region IDevice Members
 
     const int
-        ROM_SHIFT   = 12, // 4 KB rom size
-        ROM_SIZE    = 1 << ROM_SHIFT,
-        ROM_MASK    = ROM_SIZE - 1,
-        NVRAM_SHIFT = 11, // 2 KB nvram size
-        NVRAM_SIZE  = 1 << NVRAM_SHIFT,
-        NVRAM_MASK  = NVRAM_SIZE - 1
+        ROM_SHIFT = 12, // 4 KB rom size
+        ROM_SIZE  = 1 << ROM_SHIFT,
+        ROM_MASK  = ROM_SIZE - 1
         ;
 
     public override void Reset()
     {
         base.Reset();
+        NVRAM.Reset();
         Cart.Reset();
     }
 
@@ -35,14 +33,11 @@ public sealed class HSC7800 : Cart
     {
         get => (addr & 0xf000) switch
         {
-            0x1000 => NVRAM[addr & NVRAM_MASK],
+            0x1000 => NVRAM[addr],
             0x3000 => ROM[addr & ROM_MASK],
             _      => Cart[addr]
         };
-        set
-        {
-            NVRAM[addr & NVRAM_MASK] = value;
-        }
+        set => NVRAM[addr] = value;
     }
 
     #endregion
@@ -78,7 +73,7 @@ public sealed class HSC7800 : Cart
     HSC7800()
     {
         ROM = new byte[ROM_SIZE];
-        LoadNVRAM(GetHSCNVRAMPath());
+        NVRAM = new NVRAM2k("HSC.bin");
     }
 
     public HSC7800(byte[] hscRom, Cart cart) : this()
@@ -95,6 +90,7 @@ public sealed class HSC7800 : Cart
     {
         input.CheckVersion(1);
         LoadRom(input.ReadBytes());
+        NVRAM = input.ReadNVRAM2k();
         Cart = input.ReadCart(M);
     }
 
@@ -102,40 +98,9 @@ public sealed class HSC7800 : Cart
     {
         output.WriteVersion(1);
         output.Write(ROM);
+        output.Write(NVRAM);
         output.Write(Cart);
-        SaveNVRAM(GetHSCNVRAMPath());
     }
 
     #endregion
-
-    void LoadNVRAM(string path)
-    {
-        try
-        {
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            using var br = new System.IO.BinaryReader(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            var bytes = br.ReadBytes(NVRAM_SIZE);
-            System.Buffer.BlockCopy(bytes, 0, NVRAM, 0, NVRAM_SIZE);
-        }
-        catch
-        {
-        }
-    }
-
-    void SaveNVRAM(string path)
-    {
-        try
-        {
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-            using var bw = new System.IO.BinaryWriter(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            bw.Write(NVRAM);
-            bw.Flush();
-        }
-        catch
-        {
-        }
-    }
-
-    static string GetHSCNVRAMPath()
-        => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", "HSCnvram.bin");
 }

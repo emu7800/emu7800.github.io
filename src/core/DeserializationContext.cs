@@ -15,6 +15,9 @@ namespace EMU7800.Core
 
         #endregion
 
+        public string ReadString()
+            => _binaryReader.ReadString();
+
         public bool ReadBoolean()
             => _binaryReader.ReadBoolean();
 
@@ -146,6 +149,12 @@ namespace EMU7800.Core
 
         public PokeySound ReadOptionalPokeySound(MachineBase m)
             => ReadBoolean() ? new PokeySound(this, m) : PokeySound.Default;
+
+        public YM2151 ReadOptionalYM2151(MachineBase m)
+            => ReadBoolean() ? new YM2151(this, m) : YM2151.Default;
+
+        public NVRAM2k ReadNVRAM2k()
+            => new(this);
 
         public Cart ReadCart(MachineBase m)
             => CreateCart(m, _binaryReader.ReadString());
