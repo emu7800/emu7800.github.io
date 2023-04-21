@@ -1,6 +1,6 @@
 root = true
 
-[{*.json,*.csproj,*.proj}]
+[{*.json,*.csproj,*.proj,*.props}]
 indent_style = space
 indent_size = 2
 
