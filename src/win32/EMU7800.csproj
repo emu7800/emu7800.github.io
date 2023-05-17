@@ -13,6 +13,7 @@
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <NoWarn>1701;1702;IDE0058</NoWarn>
     <PublishAot>true</PublishAot>
+    <OptimizationPreferance>Speed</OptimizationPreferance>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>

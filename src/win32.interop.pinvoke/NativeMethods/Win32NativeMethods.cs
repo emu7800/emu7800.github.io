@@ -334,7 +334,7 @@ internal unsafe static partial class Win32NativeMethods
         {
             cbSize        = Marshal.SizeOf<WNDCLASSEX>(),
             style         = CS_HREDRAW | CS_VREDRAW,
-            hInstance     = Marshal.GetHINSTANCE(typeof(Win32NativeMethods).Module),
+            hInstance     = -1,
             lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(WndProcDelegate),
             hCursor       = LoadCursor(IntPtr.Zero, IDC_ARROW),
             hIcon         = ExtractAssociatedIcon(IntPtr.Zero, new StringBuilder("EMU7800.exe"), out _),
