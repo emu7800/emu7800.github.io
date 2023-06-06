@@ -1094,9 +1094,7 @@ namespace EMU7800.Core
 
         // convenience overload
         byte DmaRead(int addr)
-        {
-            return DmaRead((ushort)addr);
-        }
+            => DmaRead((ushort)addr);
 
         byte DmaRead(ushort addr)
         {
@@ -1104,7 +1102,11 @@ namespace EMU7800.Core
             if (addr < 0x1800)
                 LogDebug($"Maria: Questionable DMA read at ${addr:x4} by PC=${M.CPU.PC:x4}");
 #endif
-            return M.Mem[addr];
+            M.Mem.MariaRead = 1;
+            var rb = M.Mem[addr];
+            M.Mem.MariaRead = 0;
+
+            return rb;
         }
 
         [System.Diagnostics.Conditional("DEBUG")]

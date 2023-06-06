@@ -39,7 +39,8 @@ namespace EMU7800.Services
         public static IList<GameProgramInfo> GetGameProgramInfos(string romPath)
         {
             var bytes = DatastoreService.GetRomBytes(romPath);
-            var md5key = RomBytesService.ToMD5Key(bytes);
+            var rawBytes = RomBytesService.RemoveA78HeaderIfNecessary(bytes);
+            var md5key = RomBytesService.ToMD5Key(rawBytes);
             var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
             return RomPropertiesService.ToGameProgramInfo(romPropertiesCsv)
                 .Where(gpi => gpi.MD5 == md5key)
@@ -91,8 +92,8 @@ namespace EMU7800.Services
         static string ToMachineTypeSubTitle(ImportedGameProgramInfo igpi)
             => ToCommaDelimitedString(ToMachineTypeSubTitleWords(igpi));
 
-        static IEnumerable<string> ToAuthorSubTitleWords(ImportedGameProgramInfo igpi)
-            => new List<string>
+        static List<string> ToAuthorSubTitleWords(ImportedGameProgramInfo igpi)
+            => new()
             {
                 igpi.GameProgramInfo.Manufacturer,
                 ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
@@ -101,8 +102,8 @@ namespace EMU7800.Services
                 igpi.GameProgramInfo.Year
             };
 
-        static IEnumerable<string> ToManufacturerSubTitleWords(ImportedGameProgramInfo igpi)
-            => new List<string>
+        static List<string> ToManufacturerSubTitleWords(ImportedGameProgramInfo igpi)
+            => new()
             {
                 igpi.GameProgramInfo.Author,
                 ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),
@@ -111,8 +112,8 @@ namespace EMU7800.Services
                 igpi.GameProgramInfo.Year
             };
 
-        static IEnumerable<string> ToMachineTypeSubTitleWords(ImportedGameProgramInfo igpi)
-            => new List<string>
+        static List<string> ToMachineTypeSubTitleWords(ImportedGameProgramInfo igpi)
+            => new()
             {
                 igpi.GameProgramInfo.Manufacturer,
                 ControllerUtil.ToControllerWordString(igpi.GameProgramInfo.LController, AreControllersSame(igpi)),

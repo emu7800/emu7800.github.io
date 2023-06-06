@@ -120,6 +120,8 @@ Found matching entries in ROMProperties.csv database:");
 No matching entries found in ROMProperties.csv database");
         }
 
+        var thisExePath = Environment.ProcessPath;
+
         foreach (var gpi in gpiList)
         {
             WriteLine(@$"
@@ -135,7 +137,10 @@ No matching entries found in ROMProperties.csv database");
     LController : {gpi.LController}
     RController : {gpi.RController}
     MD5         : {gpi.MD5}
-    HelpUri     : {gpi.HelpUri}");
+    HelpUri     : {gpi.HelpUri}
+
+    Launch by copying and pasting to Start > Run:
+    ""{Environment.ProcessPath}"" -r ""{Path.GetFullPath(path)}"" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}");
         }
     }
     EnvironmentExit(0);
@@ -205,7 +210,7 @@ static IEnumerable<string> GetMachineTypes()
     => MachineTypeUtil.GetAllValues().Select(MachineTypeUtil.ToString);
 
 static IEnumerable<string> GetCartTypes()
-    => CartTypeUtil.GetAllValues().Select(ct => $"{CartTypeUtil.ToString(ct), -7}: {CartTypeUtil.ToCartTypeWordString(ct)}");
+    => CartTypeUtil.GetAllValues().Select(ct => $"{CartTypeUtil.ToString(ct), -14}: {CartTypeUtil.ToCartTypeWordString(ct)}");
 
 static IEnumerable<string> GetControllers()
     => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);

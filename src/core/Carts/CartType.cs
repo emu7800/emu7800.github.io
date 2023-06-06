@@ -45,6 +45,17 @@ namespace EMU7800.Core
         A78S4R,
         A78AB,
         A78AC,
+        A78BB32K,
+        A78BB32KP,
+        A78BB32KRPL,
+        A78BB48K,
+        A78BB48KP,
+        A78BB52K,
+        A78BB52KP,
+        A78BB128K,
+        A78BB128KR,
+        A78BB128KRPL,
+        A78BB128KP,
     };
 
     public static class CartTypeUtil
@@ -70,21 +81,37 @@ namespace EMU7800.Core
                 CartType.DC8K    => "Special Activision cart (Robot Tank and Decathlon)",
                 CartType.DPC     => "Pitfall II DPC cart",
                 CartType.M32N12K => "32N1 Multicart: 32x2KB",
+
                 CartType.A7808   => "Atari7800 non-bankswitched 8KB cart",
                 CartType.A7816   => "Atari7800 non-bankswitched 16KB cart",
                 CartType.A7832   => "Atari7800 non-bankswitched 32KB cart",
                 CartType.A7832P  => "Atari7800 non-bankswitched 32KB cart w/Pokey at 4000",
-                CartType.A7832PL => "Atari7800 non-bankswitched 32KB cart w/Pokey at 0450",
+                CartType.A7832PL => "Atari7800 non-bankswitched 32KB cart w/Pokey at 450",
                 CartType.A7848   => "Atari7800 non-bankswitched 48KB cart",
+
                 CartType.A78SG   => "Atari7800 SuperGame cart",
                 CartType.A78SGP  => "Atari7800 SuperGame cart w/Pokey",
                 CartType.A78SGR  => "Atari7800 SuperGame cart w/RAM",
                 CartType.A78S9   => "Atari7800 SuperGame cart, nine banks",
-                CartType.A78S9PL => "Atari7800 SuperGame cart, nine banks w/Pokey at 0450",
+                CartType.A78S9PL => "Atari7800 SuperGame cart, nine banks w/Pokey at 450",
                 CartType.A78S4   => "Atari7800 SuperGame cart, four banks",
-                CartType.A78S4R  => "Atari7800 SuperGame cart, four banks, w/RAM",
+                CartType.A78S4R  => "Atari7800 SuperGame cart, four banks w/RAM",
+
                 CartType.A78AB   => "F18 Hornet cart (Absolute)",
                 CartType.A78AC   => "Double Dragon cart (Activision)",
+
+                CartType.A78BB32K     => "Atari7800 bankset bankswitched 2x32K",
+                CartType.A78BB32KP    => "Atari7800 bankset bankswitched 2x32K w/Pokey@4000",
+                CartType.A78BB32KRPL  => "Atari7800 bankset bankswitched 2x32K w/RAM@4000 w/Pokey@800",
+                CartType.A78BB48K     => "Atari7800 bankset bankswitched 2x48K",
+                CartType.A78BB48KP    => "Atari7800 bankset bankswitched 2x48K w/Pokey@4000",
+                CartType.A78BB52K     => "Atari7800 bankset bankswitched 2x52K",
+                CartType.A78BB52KP    => "Atari7800 bankset bankswitched 2x52K w/Pokey@4000",
+                CartType.A78BB128K    => "Atari7800 bankset bankswitched 2x128K w/Bank6@4000",
+                CartType.A78BB128KR   => "Atari7800 bankset bankswitched 2x128K w/RAM@4000",
+                CartType.A78BB128KRPL => "Atari7800 bankset bankswitched 2x128K w/RAM@4000 w/Pokey@800",
+                CartType.A78BB128KP   => "Atari7800 bankset bankswitched 2x128K w/Pokey@4000",
+
                 _ => string.Empty
             };
 

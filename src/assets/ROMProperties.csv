@@ -2043,5 +2043,20 @@ Z-Tack 2,,Steve Engelhardt,Hack,,,,,A2600NTSC,,,97d0151beb84acbe82aa6db18cd91b98
 Galaxian,,Bob DeCrescenzo,Homebrew,2021,,,A7832,A7800NTSC,ProLineJoystick,ProLineJoystick,2f4ae1015a345652b36004a8c62a4ac6,
 Gorf,,,Homebrew,2009,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,3d12489c553cb1a90c8ebd6534383fa1
 Ghosts'n Goblins,,Matt Smith,Homebrew,2021,,,A78SGR,A7800NTSC,ProLineJoystick,None,ffc704d30566a2c24d6e9d845e4c9f11
-Popeye (RC35Demo),,Darryl Guenther,Homebrew,2021,,,A78S9PL,A7800NTSChsc,ProLineJoystick,ProLineJoystick,bf38e9f6bfccba51f46bf9443bd1892e
-Attack of the PETSCII Robots,,The 8-Bit Guy,Homebrew,2023,,,A78SG,A7800NTSC,ProLineJoystick,ProLineJoystick,a1a0f95e7cf484db26df3cbd8a5415c4
+Popeye (RC35Demo),,Darryl Guenther,Homebrew,2021,,,A78S9PL,A7800NTSChsc,ProLineJoystick,ProLineJoystick,bf38e9f6bfccba51f46bf9443bd1892e,https://atariage.com/store/index.php?l=product_detail&p=1287
+PETSCII Robots - Shareware,,The 8-Bit Guy,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,ProLineJoystick,ProLineJoystick,a1a0f95e7cf484db26df3cbd8a5415c4,https://atariage.com/store/index.php?l=product_detail&p=1282
+Bankset 2x32K,,8BitDev.org,Homebrew,2023,,,A78BB32K,A7800NTSC,,,76172b03a17af0dc88498042877656fd,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x32K Pokey@4000a,,8BitDev.org,Homebrew,2023,,,A78BB32KP,A7800NTSC,,,d231c51e8915287f34c59385f150b84f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x32K Pokey@4000b,,8BitDev.org,Homebrew,2023,,,A78BB32KP,A7800NTSC,,,115c3bff688611df9e87a16f01ae5291,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x32K RAM Pokey@800,,8BitDev.org,Homebrew,2023,,,A78BB32KRPL,A7800NTSC,,,5dadf198c8eac8131d4b256e50ff5bc4,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x48Ka,,8BitDev.org,Homebrew,2023,,,A78BB48K,A7800NTSC,,,8ebd74e4fab61e9256e2208a558b3895,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x48Kb,,8BitDev.org,Homebrew,2023,,,A78BB48K,A7800NTSC,,,2899a5df277ac400956a6cd839482e64,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x48K Pokey@4000a,,8BitDev.org,Homebrew,2023,,,A78BB48KP,A7800NTSC,,,8a749ddaa57eb6ad19eb50af95b89b9f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x48K Pokey@4000b,,8BitDev.org,Homebrew,2023,,,A78BB48KP,A7800NTSC,,,ff3bc72ca4086065e92408f18986a169,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x52Ka,,8BitDev.org,Homebrew,2023,,,A78BB52K,A7800NTSC,,,6c36bfdb98759e14b5b62675a746c3bb,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x52Kb,,8BitDev.org,Homebrew,2023,,,A78BB52K,A7800NTSC,,,172c69f1cf259eaffe0fb200648d7dc0,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x52Ka Pokey@4000,,8BitDev.org,Homebrew,2023,,,A78BB52KP,A7800NTSC,,,dc197204091a05753947c5c0b96a1dc8,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x52Kb Pokey@4000,,8BitDev.org,Homebrew,2023,,,A78BB52KP,A7800NTSC,,,f569abef972929404893c2461f811c15,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x128K,,8BitDev.org,Homebrew,2023,,,A78BB128K,A7800NTSC,,,2a7bb2b113c828344632fb27c522bacd,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x128K RAM@4000,,8BitDev.org,Homebrew,2023,,,A78BB128KR,A7800NTSC,,,94d57e3f44b9288b53b586c0f8b664fa,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Bankset 2x128K RAM@4000 Pokey@800,,8BitDev.org,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,,,85f986155bfe6677a85a2bb1329f193f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching

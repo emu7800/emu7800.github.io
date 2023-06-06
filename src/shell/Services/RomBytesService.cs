@@ -46,10 +46,11 @@ namespace EMU7800.Services
             {
                 if (Atari7800Tag[i] != bytes[1 + i])
                 {
-                    if (Atari7800Tag[i] == 0 && bytes[1 + i] != 0x20)
+                    if (Atari7800Tag[i] == 0 && bytes[1 + i] == 0x20)
                     {
-                        return false;
+                        continue;
                     }
+                    return false;
                 }
             }
 
@@ -177,15 +178,15 @@ A78 : Title           : {gpi.Title}
       Right Controller: {ControllerUtil.ToString(gpi.RController)}
       Header Version  : {ToHex(bytes[A78VERSION])}
       TV HSC XM       : {ToHex(bytes[A78TVTYPE])} {ToHex(bytes[A78SAVEDATA])} {ToHex(bytes[A78XMREQ])}
-      Cart Type       : {ToHex(bytes[A78CARTTYPE])} {ToHex(bytes[A78CARTTYPE+1])}
-             pokeyAt4k={((bytes[A78CARTTYPE+1] & (1 << 0)) != 0)}
-             superGame={((bytes[A78CARTTYPE+1] & (1 << 1)) != 0)}
-      superGameRamAt4k={((bytes[A78CARTTYPE+1] & (1 << 2)) != 0)}
-               romAt4k={((bytes[A78CARTTYPE+1] & (1 << 3)) != 0)}
-             bank6At4k={((bytes[A78CARTTYPE+1] & (1 << 4)) != 0)}
-    superGameBankedRam={((bytes[A78CARTTYPE+1] & (1 << 5)) != 0)}
-           pokeyAt0450={((bytes[A78CARTTYPE+1] & (1 << 6)) != 0)}
-         mirrorRamAt4k={((bytes[A78CARTTYPE+1] & (1 << 7)) != 0)}
+      Cart Type       : {ToHex(bytes[A78CARTTYPE+1])} {ToHex(bytes[A78CARTTYPE])}
+              pokeyAt4k={(bytes[A78CARTTYPE+1] & (1 << 0)) != 0}
+              superGame={(bytes[A78CARTTYPE+1] & (1 << 1)) != 0}
+       superGameRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 2)) != 0}
+                romAt4k={(bytes[A78CARTTYPE+1] & (1 << 3)) != 0}
+                bankset={(bytes[A78CARTTYPE+1] & (1 << 4)) != 0}
+             banksetram={(bytes[A78CARTTYPE+1] & (1 << 5)) != 0}
+            pokeyAt0450={(bytes[A78CARTTYPE+1] & (1 << 6)) != 0}
+          mirrorRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 7)) != 0}
 ");
             }
 
@@ -218,8 +219,8 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
             var superGame          = (cartType2 & (1 << 1)) != 0;
             var superGameRamAt4k   = (cartType2 & (1 << 2)) != 0;
             var romAt4k            = (cartType2 & (1 << 3)) != 0;
-            var bank6At4k          = (cartType2 & (1 << 4)) != 0;
-          //var superGameBankedRam = (cartType2 & (1 << 5)) != 0;
+          //var bankset            = (cartType2 & (1 << 4)) != 0;
+          //var banksetram         = (cartType2 & (1 << 5)) != 0;
             var pokeyAt0450        = (cartType2 & (1 << 6)) != 0;
           //var mirrorRamAt4k      = (cartType2 & (1 << 7)) != 0;
 
@@ -228,10 +229,6 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
                 if (romAt4k)
                 {
                     return pokeyAt0450 ? CartType.A78S9PL : CartType.A78S9;  // supergame_large
-                }
-                if (bank6At4k)
-                {
-                    return CartType.A78SG;  // supergame_rom
                 }
                 if (superGameRamAt4k)
                 {

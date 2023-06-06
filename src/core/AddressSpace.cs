@@ -27,6 +27,8 @@ namespace EMU7800.Core
 
         public byte DataBusState { get; private set; }
 
+        public int MariaRead { get; set; }
+
         public override string ToString()
             => "EMU7800.Core.AddressSpace";
 
