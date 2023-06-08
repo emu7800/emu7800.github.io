@@ -120,8 +120,6 @@ Found matching entries in ROMProperties.csv database:");
 No matching entries found in ROMProperties.csv database");
         }
 
-        var thisExePath = Environment.ProcessPath;
-
         foreach (var gpi in gpiList)
         {
             WriteLine(@$"
@@ -143,6 +141,7 @@ No matching entries found in ROMProperties.csv database");
     ""{Environment.ProcessPath}"" -r ""{Path.GetFullPath(path)}"" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}");
         }
     }
+
     EnvironmentExit(0);
 }
 
@@ -154,14 +153,15 @@ if (new[] { "-?", "/?", "-h", "/h", "--help" }.Any(OptEq))
 Copyright (c) 2012-2023 Mike Murphy
 
 Usage:
-    EMU7800.exe [<option> <filename> [MachineType [CartType [LController [RController]]]]]
+    EMU7800.exe [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
 
 Options:
 -r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
 -rc <filename>: Like -r, but opens console window
--d <filename> : Dump Game Program information (opens console window)
--?            : This help (opens console window)
-(none)        : Run Game Program selection menu (specify -c to open console window)
+-d <path>     : Dump Game Program information
+-c            : Run Game Program selection menu with console window
+(none)        : Run Game Program selection menu without console window
+-?            : This help
 
 MachineTypes:
 {string.Join(Environment.NewLine, GetMachineTypes())}
@@ -207,10 +207,10 @@ static bool IsBinOrA78File(FileInfo fi)
     || CiEq(fi.Extension, ".bin");
 
 static IEnumerable<string> GetMachineTypes()
-    => MachineTypeUtil.GetAllValues().Select(MachineTypeUtil.ToString);
+    => MachineTypeUtil.GetAllValues().Select(mt => $"{MachineTypeUtil.ToString(mt), -13}: {MachineTypeUtil.ToMachineTypeWordString(mt)}");
 
 static IEnumerable<string> GetCartTypes()
-    => CartTypeUtil.GetAllValues().Select(ct => $"{CartTypeUtil.ToString(ct), -14}: {CartTypeUtil.ToCartTypeWordString(ct)}");
+    => CartTypeUtil.GetAllValues().Select(ct => $"{CartTypeUtil.ToString(ct), -13}: {CartTypeUtil.ToCartTypeWordString(ct)}");
 
 static IEnumerable<string> GetControllers()
     => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);
