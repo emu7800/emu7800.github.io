@@ -2060,3 +2060,4 @@ Bankset 2x52Kb Pokey@4000,,8BitDev.org,Homebrew,2023,,,A78BB52KP,A7800NTSC,,,f56
 Bankset 2x128K,,8BitDev.org,Homebrew,2023,,,A78BB128K,A7800NTSC,,,2a7bb2b113c828344632fb27c522bacd,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Bankset 2x128K RAM@4000,,8BitDev.org,Homebrew,2023,,,A78BB128KR,A7800NTSC,,,94d57e3f44b9288b53b586c0f8b664fa,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Bankset 2x128K RAM@4000 Pokey@800,,8BitDev.org,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,,,85f986155bfe6677a85a2bb1329f193f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
+Lunar Patrol,,OldStyle,Homebrew,2022,,,A78S9,A7800NTSC,ProLineJoystick,ProLineJoystick,79cd8bc8e4d4327d81808e7cf5a89f68
