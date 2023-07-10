@@ -1818,8 +1818,8 @@ Super VoleyBall,CCE,,,,,,,A2600NTSC,,,cbc373fbcb1653b4c56bfabba33ea50d,
 SuperCharger - Escape from the Mindmaster,Starpath,,,1982,,,,A2600NTSC,,,639ded0c9e53bc3f91defb5dde930286,
 SuperCharger Loader,Starpath,,,1982,,,,A2600NTSC,,,4565c1a7abce773e53c75b35414adefd,
 Super-Cowboy beim Rodeo,Starsoft,,,,,,,A2600PAL,,,bdecc81f740200780db04a107c3a1eba,
-Superman (1),Atari,John Dunn,,1978,CX2631,Common,,A2600NTSC,,,a9531c763077464307086ec9a1fd057d,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
-Superman (2),Atari,John Dunn,,1978,CX2631,Common,,A2600NTSC,,,5de8803a59c36725888346fdc6e7429d,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
+Superman,Atari,John Dunn,,1978,CX2631,Common,,A2600NTSC,,,a9531c763077464307086ec9a1fd057d,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
+Superman,Atari,John Dunn,,1978,CX2631,Common,,A2600NTSC,,,5de8803a59c36725888346fdc6e7429d,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
 Superman,Atari,John Dunn,,1978,CX2631,Common,,A2600PAL,,,dbb10b904242fcfb8428f372e00c01af,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
 Superman,Atari,John Dunn,,1978,CX2631,Common,,A2600PAL,,,fd10915633aea4f9cd8b518a25d62b55,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
 Superman,Atari,John Dunn,,1978,CX2631,Common,,A2600PAL,,,169d4c7bd3a4d09e184a3b993823d048,http://www.atariage.com/manual_thumbs.html?SoftwareID=1380
@@ -2063,3 +2063,4 @@ Bankset 2x128K,,8BitDev.org,Homebrew,2023,,,A78BB128K,A7800NTSC,,,2a7bb2b113c828
 Bankset 2x128K RAM@4000,,8BitDev.org,Homebrew,2023,,,A78BB128KR,A7800NTSC,,,94d57e3f44b9288b53b586c0f8b664fa,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Bankset 2x128K RAM@4000 Pokey@800,,8BitDev.org,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,,,85f986155bfe6677a85a2bb1329f193f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Lunar Patrol,,OldStyle,Homebrew,2022,,,A78S9,A7800NTSC,ProLineJoystick,ProLineJoystick,79cd8bc8e4d4327d81808e7cf5a89f68
+Pac-Man 8K,,Dennis Debro,Homebrew,2007,,,,A2600NTSC,,,3ddee021a7daa2fbeb620cca5d662b9d,
