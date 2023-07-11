@@ -80,9 +80,9 @@ public sealed class YM2151
     public void Reset()
     {
         // TODO temporary workaround due to preview .NET releases
-        if (_timerAtime == null) _timerAtime = new uint[0x400];
-        if (_timerBtime == null) _timerBtime = new uint[0x100];
-        if (_noiseTable == null) _noiseTable = new uint[0x20];
+        _timerAtime ??= new uint[0x400];
+        _timerBtime ??= new uint[0x100];
+        _noiseTable ??= new uint[0x20];
 
         for (var i = 0; i < 32; i++)
         {

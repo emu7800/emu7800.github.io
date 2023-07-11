@@ -648,9 +648,7 @@ namespace EMU7800.D2D.Shell
         }
 
         bool IsFocusSet
-        {
-            get { return (_focusedCollectionIndex >= 0 && _focusedCollectionItemIndex >= 0); }
-        }
+            => _focusedCollectionIndex >= 0 && _focusedCollectionItemIndex >= 0;
 
         void SetFocus(int collectionIndex, int collectionItemIndex)
         {

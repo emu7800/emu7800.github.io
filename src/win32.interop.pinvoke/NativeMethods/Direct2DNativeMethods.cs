@@ -18,9 +18,9 @@ namespace EMU7800.Win32.Interop
         public float Right;
         public float Bottom;
 
-        public D2D_POINT_2F ToLocation()
+        public readonly D2D_POINT_2F ToLocation()
             => new(this);
-        public D2D_SIZE_F ToSize()
+        public readonly D2D_SIZE_F ToSize()
             => new(this);
         public D2D_RECT_F(float left, float top, float right, float bottom)
             => (Left, Top, Right, Bottom) = (left, top, right, bottom);

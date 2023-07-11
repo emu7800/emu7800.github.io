@@ -13,7 +13,7 @@ namespace EMU7800.Services
         public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo)
         {
             if (importedGameProgramInfo.StorageKeySet.Count == 0)
-                throw new ArgumentException("importedGameProgramInfo.StorageKeySet", nameof(importedGameProgramInfo));
+                throw new ArgumentException("StorageKeysSet is unexpectedly empty.", nameof(importedGameProgramInfo));
 
             var romBytes = importedGameProgramInfo.StorageKeySet
                 .Select(sk => DatastoreService.GetRomBytes(sk))

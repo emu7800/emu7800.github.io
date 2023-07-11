@@ -51,12 +51,12 @@ namespace EMU7800.Win32.Interop
 
             public bool InterpretJoyButtonDown(int i) => (rgbButtons[i] & 0x80) == 0x80;
 
-            public bool InterpretJoyLeft()  => lX < -DEADZONE;
-            public bool InterpretJoyRight() => lX >  DEADZONE;
-            public bool InterpretJoyUp()    => lY < -DEADZONE;
-            public bool InterpretJoyDown()  => lY >  DEADZONE;
+            public readonly bool InterpretJoyLeft()  => lX < -DEADZONE;
+            public readonly bool InterpretJoyRight() => lX >  DEADZONE;
+            public readonly bool InterpretJoyUp()    => lY < -DEADZONE;
+            public readonly bool InterpretJoyDown()  => lY >  DEADZONE;
 
-            public int InterpretStelladaptorDrivingPosition()
+            public readonly int InterpretStelladaptorDrivingPosition()
             {
                 if      (lY < -DEADZONE)
                     return 3;                          // up
@@ -68,10 +68,10 @@ namespace EMU7800.Win32.Interop
                     return 0;                          // center
             }
 
-            public int InterpretStelladaptorPaddlePosition(int paddleno)
+            public readonly int InterpretStelladaptorPaddlePosition(int paddleno)
                 => (((paddleno & 1) == 0) ? lX : lY);
 
-            public int InterpretDaptor2Mode()
+            public readonly int InterpretDaptor2Mode()
                 => lZ switch
                 {
                     -1000 =>  0,  // 2600 mode
