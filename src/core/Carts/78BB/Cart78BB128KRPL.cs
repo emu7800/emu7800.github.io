@@ -15,7 +15,7 @@ public sealed class Cart78BB128KRPL : Cart78BB
     // 0xC000:0x4000   0x3C000:0x4000 ROM Maria readable - 16kb bank 7
     // 0xC000:0x4000    0x4000:0x4000 RAM CPU writable
 
-    readonly int[] Bank = new[] { 0, 6, 0, 7 };
+    readonly int[] Bank = [0, 6, 0, 7];
 
     PokeySound _pokeySound = PokeySound.Default;
 

@@ -26,7 +26,7 @@ public sealed class Cart78AC : Cart
     //
     // Banks are actually 16KB, but handled as 8KB for implementation ease.
     //
-    readonly int[] Bank = new[] { 0, 0, 13, 12, 15, 0, 1, 14 };
+    readonly int[] Bank = [0, 0, 13, 12, 15, 0, 1, 14];
 
     #region IDevice Members
 

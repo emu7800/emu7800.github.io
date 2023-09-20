@@ -12,7 +12,7 @@ public sealed class Cart78AB : Cart
     // Bank2: 0x08000:0x4000      0x8000:0x4000  Bank2
     // Bank3: 0x0c000:0x4000      0xc000:0x4000  Bank3
     //
-    readonly int[] Bank = new[] { 0, 0, 2, 3 };
+    readonly int[] Bank = [0, 0, 2, 3];
 
     #region IDevice Members
 

@@ -9,9 +9,9 @@ using System.Linq;
 
 using static System.Console;
 
-if (new[] { "-r", "/r", "-rc", "/rc" }.Any(OptEq))
+if (IsArg0("-rc", "/rc", "-r", "/r"))
 {
-    if (new[] { "-rc", "/rc" }.Any(OptEq))
+    if (IsArg0("-rc", "/rc"))
     {
         AllocConsole();
     }
@@ -95,7 +95,7 @@ if (new[] { "-r", "/r", "-rc", "/rc" }.Any(OptEq))
     EnvironmentExit(0);
 }
 
-if (new[] { "-d", "/d" }.Any(OptEq))
+if (IsArg0("-d", "/d"))
 {
     AllocConsole();
     var romPath = args.Length > 1 ? args[1] : string.Empty;
@@ -145,7 +145,7 @@ No matching entries found in ROMProperties.csv database");
     EnvironmentExit(0);
 }
 
-if (new[] { "-?", "/?", "-h", "/h", "--help" }.Any(OptEq))
+if (IsArg0("-?", "/?", "-h", "/h", "--help"))
 {
     AllocConsole();
     WriteLine($@"
@@ -174,7 +174,7 @@ Controllers:
     EnvironmentExit(0);
 }
 
-if (new[] { "-c", "/c" }.Any(OptEq))
+if (IsArg0("-c", "/c"))
 {
     AllocConsole();
     Start(false);
@@ -215,8 +215,8 @@ static IEnumerable<string> GetCartTypes()
 static IEnumerable<string> GetControllers()
     => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);
 
-bool OptEq(string opt)
-    => args.Length >= 1 && CiEq(opt, args[0]);
+bool IsArg0(params string[] options)
+    => args.Length >= 1 && options.Any(opt => CiEq(opt, args[0]));
 
 static bool CiEq(string a, string b)
     => string.Compare(a, b, true) == 0;

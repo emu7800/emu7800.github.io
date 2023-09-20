@@ -3,13 +3,9 @@
 using EMU7800.Services.Dto;
 using System;
 
-namespace EMU7800.D2D.Shell
-{
-    public class GameProgramSelectedEventArgs : EventArgs
-    {
-        public GameProgramInfoViewItem GameProgramInfoViewItem { get; }
+namespace EMU7800.D2D.Shell;
 
-        public GameProgramSelectedEventArgs(GameProgramInfoViewItem gpivi)
-            => GameProgramInfoViewItem = gpivi;
-    }
+public class GameProgramSelectedEventArgs(GameProgramInfoViewItem gpivi) : EventArgs
+{
+    public GameProgramInfoViewItem GameProgramInfoViewItem { get; } = gpivi;
 }

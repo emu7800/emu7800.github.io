@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>11.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <Authors>Mike Murphy</Authors>
     <Description>EMU7800 Sound Emulator</Description>
@@ -11,6 +11,10 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <NoWarn>1701;1702;IDE0058</NoWarn>
+    <PublishAot>true</PublishAot>
+    <OptimizationPreference>Size</OptimizationPreference>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StackTraceSupport>false</StackTraceSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG</DefineConstants>

@@ -9,7 +9,7 @@
 /// </summary>
 public abstract class Cart78BB : Cart
 {
-    protected byte[] RAM { get; private set; } = System.Array.Empty<byte>();
+    protected byte[] RAM { get; private set; } = [];
 
     public Cart78BB() {}
     public Cart78BB(DeserializationContext input) : base(input) {}

@@ -16,8 +16,8 @@ public sealed class Cart78SG : Cart
     // Bank6: 0x18000:0x4000
     // Bank7: 0x1c000:0x4000
     //
-    readonly int[] Bank = new[] { 0, 6, 0, 7 };
-    readonly byte[] RAM = System.Array.Empty<byte>();
+    readonly int[] Bank = [0, 6, 0, 7];
+    readonly byte[] RAM = [];
 
     #region IDevice Members
 

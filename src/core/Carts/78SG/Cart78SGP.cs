@@ -16,7 +16,7 @@ public sealed class Cart78SGP : Cart
     // Bank6: 0x18000:0x4000
     // Bank7: 0x1c000:0x4000
     //
-    readonly int[] _bank = new[] { 0, 0, 0, 7 };
+    readonly int[] _bank = [0, 0, 0, 7];
     PokeySound _pokeySound = PokeySound.Default;
 
     #region IDevice Members
