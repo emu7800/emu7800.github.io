@@ -14,7 +14,7 @@ To build, the following tools are needed:
 
 - [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-- [Inno Setup Compiler 6.2.1](https://www.innosetup.com/)
+- [Inno Setup Compiler 6.2.2](https://www.innosetup.com/)
 
 To execute the build, run ```dotnet msbuild /tl``` from a command-prompt at the root of the source directory (where this README is found.)
 This will build and drop everything under a newly created sub-directory ```artifacts\```.
