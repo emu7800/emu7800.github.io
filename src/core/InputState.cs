@@ -37,13 +37,13 @@ public class InputState
 
     /// <summary>
     /// Enables the incoming input state buffer to be populated prior to the start of the frame.
-    /// Useful for input playback senarios.
+    /// Useful for input playback scenarios.
     /// </summary>
     public Action<int[]> InputAdvancing { get; set; } = nis => {};
 
     /// <summary>
     /// Enables access to the input state buffer.
-    /// Useful for input recording senarios.
+    /// Useful for input recording scenarios.
     /// </summary>
     public Action<int[]> InputAdvanced { get; set; } = nis => {};
 
