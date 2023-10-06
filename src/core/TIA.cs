@@ -593,6 +593,10 @@ namespace EMU7800.Core
                         retval |= 0x80;
                     }
                     break;
+                case 0xf:
+                    // Required by Haunted House (2600), probably undefined behavior.
+                    retval = 0xf;
+                    break;
             }
             return (byte)(retval | (M.Mem.DataBusState & 0x3f));
         }
