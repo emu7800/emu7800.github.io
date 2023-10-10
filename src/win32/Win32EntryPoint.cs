@@ -100,10 +100,10 @@ if (IsArg0("-d", "/d"))
     AllocConsole();
     var romPath = args.Length > 1 ? args[1] : string.Empty;
     var romPaths = string.IsNullOrEmpty(romPath)
-        ? new List<string>()
+        ? []
         : Directory.Exists(romPath)
             ? new DirectoryInfo(romPath).GetFiles().Where(IsBinOrA78File).Select(fi => fi.FullName).ToList()
-            : new List<string> { romPath };
+            : [romPath];
 
     foreach (var path in romPaths)
     {

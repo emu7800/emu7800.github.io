@@ -73,7 +73,7 @@ public class DatastoreService
     #region Machine Persistence
 
     static bool HasPersistedDirBeenScanned = false;
-    static Dictionary<string, DateTime> _cachedPersistedDir = new();
+    static Dictionary<string, DateTime> _cachedPersistedDir = [];
 
     public static DateTime PersistedMachineAt(GameProgramInfo gameProgramInfo)
     {
