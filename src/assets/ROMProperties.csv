@@ -507,7 +507,8 @@ Dragon Defender,,Thomas Jentzsch,Hack,,,,,A2600NTSC,,,24d9a55d8f0633e886a1b33ee1
 Dragonfire,Imagic,Bob Smith,,1982,IA3611,Common,,A2600NTSC,,,41810dd94bd0de1110bedc5092bef5b0,http://www.atariage.com/manual_html_page.html?SoftwareID=995
 Dragonfire,Imagic,Bob Smith,,1982,IA3611,Common,,A2600PAL,,,6fc394dbf21cf541a60e3b3631b817f1,http://www.atariage.com/manual_html_page.html?SoftwareID=995
 Dragonfire,Imagic,Bob Smith,,1982,IA3611,Common,,A2600PAL,,,1267e3c6ca951ff1df6f222c8f813d97,http://www.atariage.com/manual_html_page.html?SoftwareID=995
-Dragon's Cache,,Todd Furmanski,,2021,,,A7848,A7800NTSC,,,7b7825ca2c79148f1c4ade6baacc1a76,
+Dragon's Cache,,Todd Furmanski,Homebrew,2021,,,A7848,A7800NTSC,,,7b7825ca2c79148f1c4ade6baacc1a76,
+Dragon's Havoc,,Todd Furmanski,Homebrew,2022,,,A7848,A7800NTSC,,,8c2798f929a43317f300d3ccbe25918e,
 Dragster,Activision,David Crane,,1980,AG-001,Uncommon,,A2600NTSC,,,77057d9d14b99e465ea9e29783af0ae3,http://www.atariage.com/manual_thumbs.html?SoftwareID=997
 Dragster,Activision,David Crane,,1980,AG-001,Uncommon,,A2600NTSC,,,63a6eda1da30446569ac76211d0f861c,http://www.atariage.com/manual_thumbs.html?SoftwareID=997
 Dragster,Activision,David Crane,,1980,AG-001,Uncommon,,A2600NTSC,,,d763e3a9cdcdd56c715ec826106fab6a,http://www.atariage.com/manual_thumbs.html?SoftwareID=997
@@ -875,6 +876,7 @@ Keystone Kapers,Activision,Garry Kitchen,,1983,AX-025,Uncommon,,A2600PAL,,,bedfb
 Keystone Kapers,CCE,Garry Kitchen,,,,,,A2600NTSC,,,e28113d10c0c14cc3b5f430b0d142fcb,
 Keystone Kapers (Brazil),Digivision,Garry Kitchen,,,,,,A2600NTSC,,,1351c67b42770c1bd758c3e42f553fea,
 Keystone Kaypers (Brazil),Zirok,Garry Kitchen,,,,,,A2600NTSC,,,7187118674ff3c0bb932e049d9dbb379,
+Keystone Koppers Demo,MuddyVision,Lewis Hill,Homebrew,2022,,,A78SGR,A7800NTSC,,,1c9deabc48f07d1bf2c68731fccd27b5,
 King Arthur,Starsoft,,,,,,,A2600PAL,,,05ccf96247af12eef59698f1a060a54f,
 King Kong,Tigervision,Karl Olinger,,1982,7-001,Rare,,A2600NTSC,,,0b1056f1091cfdc5eb0e2301f47ac6c3,
 King Kong,Tigervision,Karl Olinger,,1982,7-001,Rare,,A2600PAL,,,0dd4c69b5f9a7ae96a7a08329496779a,
@@ -1189,7 +1191,9 @@ Pac-Man,CCE,Tod Frye,,,,,,A2600PAL,,,651d2b6743a3a18b426bce2c881af212,http://www
 Pac-Man Collection,,Bob DeCrescenzo,Homebrew,2006,,,,A7800NTSC,,,5d7bc7092de69095137456733e7b685d,http://www.atariage.com/software_page.html?SoftwareID=4086
 Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2021,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,f4649aad8aa5c24e4725ab74299d2963,
 Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,f2512870a8abc82df42b2721f8c9e7af,
+Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2023,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,39dc7f6f39f9b3e341a5ffea76e71fb1,
 Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,2b60de20a55056a11e6412a22445296f,
+Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2023,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,2686f20449c339f7d31671f1cdec7249,
 Pac-Man 320,,Bob DeCrescenzo,Homebrew,2011,,,A7832P,A7800NTSC,,,80ffad3edb50f0970e780a727a4524dd,
 Pac-Man Energy Drink Edition,,Bob DeCrescenzo,Homebrew,2022,,,A7848,A7800NTSC,,,2b51ebf2f371d0790a5629e27727ebba
 Pac-Space,,,,,,,,A2600NTSC,,,c569e57dca93d3bee115a49923057fd7,
