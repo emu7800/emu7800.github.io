@@ -52,12 +52,6 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="ZipBin" DependsOnTargets="CopyBin">
-    <ZipDirectory SourceDirectory="$(OutputArtifactsDir)\EMU7800.bin"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin.zip"
-                  Overwrite="true"
-                  />
-  </Target>
   <Target Name="ZipRoms">
     <MakeDir Directories="$(OutputArtifactsDir)\EMU7800.bin\ROMS" />
     <ZipDirectory SourceDirectory=".\lib\roms\Bios78"
@@ -85,7 +79,13 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="BuildInstaller" DependsOnTargets="CopyBin;ZipRoms">
+  <Target Name="ZipBin" DependsOnTargets="CopyBin;ZipRoms">
+    <ZipDirectory SourceDirectory="$(OutputArtifactsDir)\EMU7800.bin"
+                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin.$(Emu7800Version).zip"
+                  Overwrite="true"
+                  />
+  </Target>
+  <Target Name="BuildInstaller" DependsOnTargets="ZipBin">
     <Exec Command="pwsh.exe .\src\tools\Installer\Build.ps1" />
   </Target>
   <Target Name="BuildAll" DependsOnTargets="Clean;BuildInstaller" />
