@@ -427,6 +427,7 @@ public sealed class GamePage : PageBase
     public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
     {
         ResetBackAndSettingsButtonVisibilityCounter();
+        base.MouseMoved(pointerId, x, y, dx, dy);
     }
 
     public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
