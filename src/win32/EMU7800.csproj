@@ -6,9 +6,9 @@
     <LangVersion>12.0</LangVersion>
     <Authors>Mike Murphy</Authors>
     <Description>An Atari 2600/7800 .NET-based Emulator</Description>
-    <Copyright>Copyright © 2012-2023 Mike Murphy</Copyright>
-    <AssemblyVersion>5.4.0.0</AssemblyVersion>
-    <FileVersion>5.4.0.0</FileVersion>
+    <Copyright>Copyright © 2012-2024 Mike Murphy</Copyright>
+    <AssemblyVersion>5.4.0.1</AssemblyVersion>
+    <FileVersion>5.4.0.1</FileVersion>
     <Nullable>enable</Nullable>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <NoWarn>1701;1702;IDE0058</NoWarn>
