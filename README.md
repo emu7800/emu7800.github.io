@@ -1,5 +1,5 @@
 # EMU7800
-> Mike Murphy (mike@emu7800.net) - 12/1/2023
+> Mike Murphy (mike@emu7800.net) - 4/8/2024
 
 EMU7800 was originally completed in 2003 as a .NET programming exercise.
 It continues to be maintained to the present day as a non-commercial endeavor.
