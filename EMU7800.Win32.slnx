@@ -1,0 +1,36 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Profile" />
+    <BuildType Name="Release" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Build.proj" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="index.html" />
+    <File Path="LICENSE.TXT" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src\assets\EMU7800.Assets.csproj">
+    <Configuration Solution="Profile|*" Project="Debug|*" />
+  </Project>
+  <Project Path="src\core\EMU7800.Core.csproj">
+    <Configuration Solution="Profile|*" Project="Debug|*" />
+  </Project>
+  <Project Path="src\shell\EMU7800.Shell.csproj">
+    <Configuration Solution="Profile|*" Project="Debug|*" />
+  </Project>
+  <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj">
+    <Configuration Solution="Profile|*" Project="Debug|*" />
+  </Project>
+  <Project Path="src\win32\EMU7800.csproj">
+    <BuildDependency Project="src\assets\EMU7800.Assets.csproj" />
+    <Configuration Solution="Profile|*" Project="Debug|*" />
+  </Project>
+</Solution>
