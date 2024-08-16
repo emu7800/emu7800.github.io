@@ -61,7 +61,7 @@ public sealed class XM7800 : Cart
                 0x0450 => _pokeySound.Read(addr),
                 0x0460 => YmEnabled ? _ym2151.Read(addr) : /* _pokeySound2.Read(addr) */ (byte)0xff,
                 0x0470 => XCTRL,
-                _      => 0xff,
+                _      => 0xff
             },
             0x1000 => NVRAM[addr],
             0x3000 => ROM[addr & ROM_MASK],
@@ -141,12 +141,12 @@ public sealed class XM7800 : Cart
 
     public override bool Map()
     {
-        M?.Mem.Map(0x0440, 0x40, this);
-        M?.Mem.Map(0x1000, 0x800, this);
-        M?.Mem.Map(0x3000, 0x1000, this);
-        if (M != null && !M.Mem.Map(Cart))
+        M.Mem.Map(0x0440, 0x40, this);
+        M.Mem.Map(0x1000, 0x800, this);
+        M.Mem.Map(0x3000, 0x1000, this);
+        if (!M.Mem.Map(Cart))
         {
-            M?.Mem.Map(0x4000, 0xc000, Cart);
+            M.Mem.Map(0x4000, 0xc000, Cart);
         }
         return true;
     }

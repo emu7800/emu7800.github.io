@@ -284,23 +284,25 @@ public sealed class TIASound
     {
         for (; BufferIndex < M.FrameBuffer.SoundBuffer.Length && count-- > 0; BufferIndex++)
         {
-            if (DivByNCounter[0] > 1)
+            switch (DivByNCounter[0])
             {
-                DivByNCounter[0]--;
+                case > 1:
+                    DivByNCounter[0]--;
+                    break;
+                case 1:
+                    DivByNCounter[0] = DivByNMaximum[0];
+                    ProcessChannel(0);
+                    break;
             }
-            else if (DivByNCounter[0] == 1)
+            switch (DivByNCounter[1])
             {
-                DivByNCounter[0] = DivByNMaximum[0];
-                ProcessChannel(0);
-            }
-            if (DivByNCounter[1] > 1)
-            {
-                DivByNCounter[1]--;
-            }
-            else if (DivByNCounter[1] == 1)
-            {
-                DivByNCounter[1] = DivByNMaximum[1];
-                ProcessChannel(1);
+                case > 1:
+                    DivByNCounter[1]--;
+                    break;
+                case 1:
+                    DivByNCounter[1] = DivByNMaximum[1];
+                    ProcessChannel(1);
+                    break;
             }
 
             M.FrameBuffer.SoundBuffer.Span[BufferIndex] += (byte)(OutputVol[0] + OutputVol[1]);
@@ -322,7 +324,7 @@ public sealed class TIASound
         {
             if ((AUDC[chan] & 0x04) != 0)
             {   // pure modified clock selected
-                OutputVol[chan] = (OutputVol[chan] != 0) ? (byte)0 : AUDV[chan];
+                OutputVol[chan] = OutputVol[chan] != 0 ? (byte)0 : AUDV[chan];
             }
             else if ((AUDC[chan] & 0x08) != 0)
             {    // check for poly5/poly9
@@ -332,11 +334,11 @@ public sealed class TIASound
                     {   // poly9 size: 2^9 - 1 = 511
                         P9[chan] = 0;
                     }
-                    OutputVol[chan] = (Bit9[P9[chan]] == 1) ? AUDV[chan] : (byte)0;
+                    OutputVol[chan] = Bit9[P9[chan]] == 1 ? AUDV[chan] : (byte)0;
                 }
                 else
                 {   // must be poly5
-                    OutputVol[chan] = (Bit5[P5[chan]] == 1) ? AUDV[chan] : (byte)0;
+                    OutputVol[chan] = Bit5[P5[chan]] == 1 ? AUDV[chan] : (byte)0;
                 }
             }
             else
@@ -345,7 +347,7 @@ public sealed class TIASound
                 {           // POLY4 size: 2^4 - 1 = 15
                     P4[chan] = 0;
                 }
-                OutputVol[chan] = (Bit4[P4[chan]] == 1) ? AUDV[chan] : (byte)0;
+                OutputVol[chan] = Bit4[P4[chan]] == 1 ? AUDV[chan] : (byte)0;
             }
         }
     }

@@ -27,14 +27,9 @@ public sealed class Cart78BB32KP : Cart78BB
 
     public override byte this[ushort addr]
     {
-        get
-        {
-            if ((addr & 0xf000) == 0x4000)
-            {
-                return _pokeySound.Read(addr);
-            }
-            return ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | addr];
-        }
+        get => (addr & 0xf000) == 0x4000
+            ? _pokeySound.Read(addr)
+            : ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | addr];
         set
         {
             if ((addr & 0xf000) == 0x4000)
@@ -52,7 +47,7 @@ public sealed class Cart78BB32KP : Cart78BB
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(M);
+        _pokeySound = new(M);
     }
 
     public override void StartFrame()

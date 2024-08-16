@@ -50,7 +50,7 @@ public sealed class Win32App : IDisposable
     {
         if (disposing)
         {
-            _pageBackStack?.Dispose();
+            _pageBackStack.Dispose();
         }
     }
 
@@ -69,9 +69,10 @@ public sealed class Win32App : IDisposable
 
         foreach (var gc in GameControllers.Controllers)
         {
-            gc.ButtonChanged          += (cn, mi, down)  => _pageBackStack.ControllerButtonChanged(cn, mi, down);
-            gc.PaddlePositionChanged  += (cn, pn, o)     => _pageBackStack.PaddlePositionChanged(cn, pn, o);
-            gc.DrivingPositionChanged += (cn, mi)        => _pageBackStack.DrivingPositionChanged(cn, mi);
+            gc.ButtonChanged          += _pageBackStack.ControllerButtonChanged;
+            gc.PaddlePositionChanged  += _pageBackStack.PaddlePositionChanged;
+            gc.PaddleButtonChanged    += _pageBackStack.PaddleButtonChanged;
+            gc.DrivingPositionChanged += _pageBackStack.DrivingPositionChanged;
         }
     }
 

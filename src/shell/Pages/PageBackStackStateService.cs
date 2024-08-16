@@ -22,7 +22,7 @@ public static class PageBackStackStateService
     {
         _pageStack.Push(newPage);
         _pendingPage = newPage;
-        IsPagePending = _pendingPage != PageBase.Default;
+        IsPagePending = !ReferenceEquals(_pendingPage, PageBase.Default);
     }
 
     public static void Replace(PageBase newPage)
@@ -31,7 +31,7 @@ public static class PageBackStackStateService
         _pageStack.Push(newPage);
         _pendingPage = newPage;
         _disposingPages.Add(replacedPage);
-        IsPagePending = _pendingPage != PageBase.Default;
+        IsPagePending = !ReferenceEquals(_pendingPage, PageBase.Default);
         IsDisposablePages = true;
     }
 
@@ -43,7 +43,7 @@ public static class PageBackStackStateService
         var newPage = _pageStack.Peek();
         _pendingPage = newPage;
         _disposingPages.Add(poppedPage);
-        IsPagePending = _pendingPage != PageBase.Default;
+        IsPagePending = !ReferenceEquals(_pendingPage, PageBase.Default);
         IsDisposablePages = true;
         return true;
     }

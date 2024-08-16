@@ -184,7 +184,7 @@ public class InputState
 
     public void RaisePaddleInput(int playerNo, int ohms)
     {
-        if (ohms >= 0 && ohms < 1000000)
+        if (ohms is >= 0 and < 1000000)
         {
             _nextInputState[OhmsIndex + (playerNo & 3)] = ohms;
         }
@@ -218,7 +218,7 @@ public class InputState
         _nextInputState[ControllerActionStateIndex] = LeftControllerJack switch
         {
             Controller.Paddles => _nextInputState[ControllerActionStateIndex + 1] = 0,
-            _                  => 0,
+            _                  => 0
         };
         _nextInputState[LightgunPositionIndex] = _nextInputState[LightgunPositionIndex + 1] = 0;
     }
@@ -310,7 +310,7 @@ public class InputState
     {
         if (value)
         {
-            _nextInputState[ControllerActionStateIndex + (playerNo & 3)] |= (1 << (int)action);
+            _nextInputState[ControllerActionStateIndex + (playerNo & 3)] |= 1 << (int)action;
         }
         else
         {

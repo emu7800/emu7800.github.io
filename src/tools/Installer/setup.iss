@@ -1,7 +1,7 @@
-; Inno Setup downloadable from https://jrsoftware.org/isinfo.php
+﻿; Inno Setup downloadable from https://jrsoftware.org/isinfo.php
 
 #define MyAppName "EMU7800"
-#define MyAppVersion "5.4.0"
+#define MyAppVersion "5.5.0"
 #define MyAppPublisher "Mike Murphy"
 #define MyAppURL "http://emu7800.net"
 #define MyAppExeName "EMU7800.exe"
@@ -23,7 +23,7 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
 OutputDir=..\..\..\artifacts
-OutputBaseFilename=EMU7800Setup-x64-5.4.0
+OutputBaseFilename=EMU7800Setup-x64-5.5.0
 SetupIconFile=..\..\win32\EMUIcon.ico
 Compression=lzma
 SolidCompression=yes

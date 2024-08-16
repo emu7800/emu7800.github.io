@@ -204,19 +204,15 @@ public static class TIATables
         var tabl = new uint[2 * 160];
         for (var i = 0; i < 20; i++)
         {
-            uint mask = 0;
-            if (i < 4)
+#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type.
+            var mask = i switch
             {
-                mask = (uint)(1 << i);
-            }
-            else if (i < 12)
-            {
-                mask = (uint)(1 << (11 + 4 - i));
-            }
-            else if (i < 20)
-            {
-                mask = (uint)(1 << i);
-            }
+                <  4 => (uint)(1 << i),
+                < 12 => (uint)(1 << (11 + 4 - i)),
+                < 20 => (uint)(1 << i)
+                // >= 20 not possible
+            };
+#pragma warning restore CS8509
             for (var j = 0; j < 4; j++)
             {
                 // for non-reflected mode
@@ -240,7 +236,7 @@ public static class TIATables
             {
                 tabl[BLMaskIndex(size, i)] = false;
             }
-            for (var i = 0; i < (1 << size); i++)
+            for (var i = 0; i < 1 << size; i++)
             {
                 tabl[BLMaskIndex(size, i)] = true;
             }
@@ -254,7 +250,7 @@ public static class TIATables
 
         for (var size = 0; size < 4; size++)
         {
-            for (var i = 0; i < (1 << size); i++)
+            for (var i = 0; i < 1 << size; i++)
             {
                 tabl[MxMaskIndex(size, 0, i)] = true;
 
@@ -307,32 +303,32 @@ public static class TIATables
                 // 6: 3 copies medium
                 // 7: quad sized player
 
-                if (nusiz >= 0 && nusiz <= 4 || nusiz == 6)
+                if (nusiz is >= 0 and <= 4 or 6)
                 {
-                    if (hpos >= 0 && hpos < 8)
+                    if (hpos is >= 0 and < 8)
                     {
                         tabl[ti1] = (byte)(1 << (7 - hpos));
                     }
                 }
-                if (nusiz == 1 || nusiz == 3)
+                if (nusiz is 1 or 3)
                 {
-                    if (hpos >= 16 && hpos < 24)
+                    if (hpos is >= 16 and < 24)
                     {
                         tabl[ti1] = (byte)(1 << (23 - hpos));
                         tabl[ti2] = (byte)(1 << (23 - hpos));
                     }
                 }
-                if (nusiz == 2 || nusiz == 3 || nusiz == 6)
+                if (nusiz is 2 or 3 or 6)
                 {
-                    if (hpos >= 32 && hpos < 40)
+                    if (hpos is >= 32 and < 40)
                     {
                         tabl[ti1] = (byte)(1 << (39 - hpos));
                         tabl[ti2] = (byte)(1 << (39 - hpos));
                     }
                 }
-                if (nusiz == 4 || nusiz == 6)
+                if (nusiz is 4 or 6)
                 {
-                    if (hpos >= 64 && hpos < 72)
+                    if (hpos is >= 64 and < 72)
                     {
                         tabl[ti1] = (byte)(1 << (71 - hpos));
                         tabl[ti2] = (byte)(1 << (71 - hpos));
@@ -340,21 +336,21 @@ public static class TIATables
                 }
                 if (nusiz == 5)
                 {
-                    if (hpos >= 0 && hpos < 16)
+                    if (hpos is >= 0 and < 16)
                     {
                         tabl[ti1] = (byte)(1 << ((15 - hpos) >> 1));
                     }
                 }
                 if (nusiz == 7)
                 {
-                    if (hpos >= 0 && hpos < 32)
+                    if (hpos is >= 0 and < 32)
                     {
                         tabl[ti1] = (byte)(1 << ((31 - hpos) >> 2));
                     }
                 }
             }
 
-            var shift = nusiz == 5 || nusiz == 7 ? 2 : 1;
+            var shift = nusiz is 5 or 7 ? 2 : 1;
             while (shift-- > 0)
             {
                 var ti1 = PxMaskIndex(0, nusiz, 0);
@@ -390,7 +386,7 @@ public static class TIATables
     }
 
     static bool TstCx(int i, TIACxFlags cxf1, TIACxFlags cxf2)
-        => ((i & ((int)cxf1)) != 0) && ((i & ((int)cxf2)) != 0);
+        => (i & (int)cxf1) != 0 && (i & (int)cxf2) != 0;
 
     static TIACxPairFlags[] BuildCollisionMaskTable()
     {

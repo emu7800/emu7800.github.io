@@ -32,7 +32,7 @@ public sealed class Cart78S9 : Cart
         get => ROM[(Bank[addr >> ROM_SHIFT] << ROM_SHIFT) | (addr & ROM_MASK)];
         set
         {
-            if ((addr >> ROM_SHIFT) == 2)
+            if (addr >> ROM_SHIFT == 2)
             {
                 Bank[2] = (value & 7) + 1;
             }

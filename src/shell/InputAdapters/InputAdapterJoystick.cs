@@ -1,15 +1,12 @@
-// © Mike Murphy
+﻿// © Mike Murphy
 
 using EMU7800.Core;
 using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell;
 
-public sealed class InputAdapterJoystick(InputState inputState, int jackNo) : IInputAdapter
+public sealed class InputAdapterJoystick(InputState inputState) : IInputAdapter
 {
-    readonly InputState _inputState = inputState;
-    readonly int _jackNo = jackNo;
-
     public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
     {
     }
@@ -24,7 +21,7 @@ public sealed class InputAdapterJoystick(InputState inputState, int jackNo) : II
             case MachineInput.Down:
             case MachineInput.Fire:
             case MachineInput.Fire2:
-                _inputState.RaiseInput(_jackNo, machineInput, down);
+                inputState.RaiseInput(playerNo, machineInput, down);
                 break;
         }
     }
@@ -37,6 +34,10 @@ public sealed class InputAdapterJoystick(InputState inputState, int jackNo) : II
     {
     }
 
+    public void PaddleButtonChanged(int playerNo, bool down)
+    {
+    }
+
     public void DrivingPaddleChanged(int playerNo, MachineInput machineInput)
     {
     }
@@ -46,22 +47,22 @@ public sealed class InputAdapterJoystick(InputState inputState, int jackNo) : II
         switch (key)
         {
             case KeyboardKey.Z:  // left fire mapped to 2600 fire
-                _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
+                inputState.RaiseInput(playerNo, MachineInput.Fire, down);
                 break;
             case KeyboardKey.X:  // right fire mapped to booster trigger
-                _inputState.RaiseInput(_jackNo, MachineInput.Fire2, down);
+                inputState.RaiseInput(playerNo, MachineInput.Fire2, down);
                 break;
             case KeyboardKey.Left:
-                _inputState.RaiseInput(_jackNo, MachineInput.Left, down);
+                inputState.RaiseInput(playerNo, MachineInput.Left, down);
                 break;
             case KeyboardKey.Right:
-                _inputState.RaiseInput(_jackNo, MachineInput.Right, down);
+                inputState.RaiseInput(playerNo, MachineInput.Right, down);
                 break;
             case KeyboardKey.Up:
-                _inputState.RaiseInput(_jackNo, MachineInput.Up, down);
+                inputState.RaiseInput(playerNo, MachineInput.Up, down);
                 break;
             case KeyboardKey.Down:
-                _inputState.RaiseInput(_jackNo, MachineInput.Down, down);
+                inputState.RaiseInput(playerNo, MachineInput.Down, down);
                 break;
         }
     }

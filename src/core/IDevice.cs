@@ -6,11 +6,10 @@
  * Copyright © 2003, 2011 Mike Murphy
  *
  */
-namespace EMU7800.Core
+namespace EMU7800.Core;
+
+public interface IDevice
 {
-    public interface IDevice
-    {
-        void Reset();
-        byte this[ushort addr] { get; set; }
-    }
+    void Reset();
+    byte this[ushort addr] { get; set; }
 }

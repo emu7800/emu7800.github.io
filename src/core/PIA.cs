@@ -13,8 +13,6 @@ public sealed class PIA(MachineBase m) : IDevice
 {
     public static readonly PIA Default = new(MachineBase.Default);
 
-    readonly MachineBase M = m;
-
     readonly byte[] RAM = new byte[0x80];
 
     ulong TimerTarget;
@@ -33,7 +31,7 @@ public sealed class PIA(MachineBase m) : IDevice
     {
         // Some games will loop/hang on $0284 if these are initialized to zero
         TimerShift = 10;
-        TimerTarget = M.CPU.Clock + (ulong)(0xff << TimerShift);
+        TimerTarget = m.CPU.Clock + (ulong)(0xff << TimerShift);
 
         IRQEnabled = false;
         IRQTriggered = false;
@@ -78,7 +76,7 @@ public sealed class PIA(MachineBase m) : IDevice
             case 7:
                 return ReadInterruptFlag();
             default:
-                LogDebug($"PIA: Unhandled peek ${addr:x4}, PC=${M.CPU.PC:x4}");
+                LogDebug($"PIA: Unhandled peek ${addr:x4}, PC=${m.CPU.PC:x4}");
                 return 0;
         }
     }
@@ -101,7 +99,7 @@ public sealed class PIA(MachineBase m) : IDevice
             }
             else
             {
-                LogDebug($"PIA: Timer: Unhandled poke ${addr:x4} w/${data:x2}, PC=${M.CPU.PC:x4}");
+                LogDebug($"PIA: Timer: Unhandled poke ${addr:x4} w/${data:x2}, PC=${m.CPU.PC:x4}");
             }
         }
         else
@@ -132,15 +130,15 @@ public sealed class PIA(MachineBase m) : IDevice
             0 =>  0,  // 0: TIM1T:  set    1 clock interval (  838 nsec/interval)
             1 =>  3,  // 1: TIM8T:  set    8 clock interval (  6.7 usec/interval)
             2 =>  6,  // 2: TIM64T: set   64 clock interval ( 53.6 usec/interval)
-            _ => 10,  // 3: T1024T: set 1024 clock interval (858.2 usec/interval)
+            _ => 10   // 3: T1024T: set 1024 clock interval (858.2 usec/interval)
         };
-        TimerTarget = M.CPU.Clock + (ulong)(data << TimerShift);
+        TimerTarget = m.CPU.Clock + (ulong)(data << TimerShift);
     }
 
     byte ReadTimerRegister()
     {
         IRQTriggered = false;
-        var delta = (int)(TimerTarget - M.CPU.Clock);
+        var delta = (int)(TimerTarget - m.CPU.Clock);
         if (delta >= 0)
         {
             return (byte)(delta >> TimerShift);
@@ -154,8 +152,8 @@ public sealed class PIA(MachineBase m) : IDevice
 
     byte ReadInterruptFlag()
     {
-        var delta = (int)(TimerTarget - M.CPU.Clock);
-        return (byte)((delta >= 0 || IRQEnabled && IRQTriggered) ? 0x00 : 0x80);
+        var delta = (int)(TimerTarget - m.CPU.Clock);
+        return (byte)(delta >= 0 || IRQEnabled && IRQTriggered ? 0x00 : 0x80);
     }
 
     // PortA: Controller Jacks
@@ -179,27 +177,27 @@ public sealed class PIA(MachineBase m) : IDevice
     byte ReadPortA()
     {
         var porta = 0;
-        var mi = M.InputState;
+        var mi = m.InputState;
 
         switch (mi.LeftControllerJack)
         {
             case Controller.Joystick:
             case Controller.ProLineJoystick:
             case Controller.BoosterGrip:
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Up)    ? 0 : (1 << 4);
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Down)  ? 0 : (1 << 5);
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Left)  ? 0 : (1 << 6);
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Right) ? 0 : (1 << 7);
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Up)    ? 0 : 1 << 4;
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Down)  ? 0 : 1 << 5;
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Left)  ? 0 : 1 << 6;
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Right) ? 0 : 1 << 7;
                 break;
             case Controller.Driving:
                 porta |= mi.SampleCapturedDrivingState(0) << 4;
                 break;
             case Controller.Paddles:
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? 0 : (1 << 7);
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? 0 : (1 << 6);
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? 0 : 1 << 7;
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? 0 : 1 << 6;
                 break;
             case Controller.Lightgun:
-                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? (1 << 4) : 0;
+                porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? 1 << 4 : 0;
                 break;
         }
 
@@ -208,20 +206,20 @@ public sealed class PIA(MachineBase m) : IDevice
             case Controller.Joystick:
             case Controller.ProLineJoystick:
             case Controller.BoosterGrip:
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Up)    ? 0 : (1 << 0);
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Down)  ? 0 : (1 << 1);
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Left)  ? 0 : (1 << 2);
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Right) ? 0 : (1 << 3);
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Up)    ? 0 : 1 << 0;
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Down)  ? 0 : 1 << 1;
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Left)  ? 0 : 1 << 2;
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Right) ? 0 : 1 << 3;
                 break;
             case Controller.Driving:
                 porta |= mi.SampleCapturedDrivingState(1);
                 break;
             case Controller.Paddles:
-                porta |= mi.SampleCapturedControllerActionState(2, ControllerAction.Trigger) ? 0 : (1 << 3);
-                porta |= mi.SampleCapturedControllerActionState(3, ControllerAction.Trigger) ? 0 : (1 << 2);
+                porta |= mi.SampleCapturedControllerActionState(2, ControllerAction.Trigger) ? 0 : 1 << 3;
+                porta |= mi.SampleCapturedControllerActionState(3, ControllerAction.Trigger) ? 0 : 1 << 2;
                 break;
             case Controller.Lightgun:
-                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? (1 << 0) : 0;
+                porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? 1 << 0 : 0;
                 break;
         }
 
@@ -230,12 +228,12 @@ public sealed class PIA(MachineBase m) : IDevice
 
     void WritePortA(byte porta)
     {
-        WrittenPortA = (byte)((porta & DDRA) | (WrittenPortA & (~DDRA)));
+        WrittenPortA = (byte)(porta & DDRA | (WrittenPortA & ~DDRA));
     }
 
     void WritePortB(byte portb)
     {
-        WrittenPortB = (byte)((portb & DDRB) | (WrittenPortB & (~DDRB)));
+        WrittenPortB = (byte)(portb & DDRB | (WrittenPortB & ~DDRB));
     }
 
     // PortB: Console Switches
@@ -252,13 +250,13 @@ public sealed class PIA(MachineBase m) : IDevice
     byte ReadPortB()
     {
         var portb = 0;
-        var mi = M.InputState;
+        var mi = m.InputState;
 
-        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameReset)        ? 0 : (1 << 0);
-        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameSelect)       ? 0 : (1 << 1);
-        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameBW)           ? 0 : (1 << 3);
-        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.LeftDifficultyA)  ? (1 << 6) : 0;
-        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.RightDifficultyA) ? (1 << 7) : 0;
+        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameReset)        ? 0 : 1 << 0;
+        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameSelect)       ? 0 : 1 << 1;
+        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameBW)           ? 0 : 1 << 3;
+        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.LeftDifficultyA)  ? 1 << 6 : 0;
+        portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.RightDifficultyA) ? 1 << 7 : 0;
 
         return (byte)portb;
     }
@@ -301,11 +299,11 @@ public sealed class PIA(MachineBase m) : IDevice
     #region Helpers
 
     void Log(string message)
-        => M.Logger.WriteLine(message);
+        => m.Logger.WriteLine(message);
 
     [System.Diagnostics.Conditional("DEBUG")]
     void LogDebug(string message)
-        => M.Logger.WriteLine(message);
+        => m.Logger.WriteLine(message);
 
     #endregion
 }

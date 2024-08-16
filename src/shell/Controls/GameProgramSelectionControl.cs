@@ -11,7 +11,7 @@ namespace EMU7800.D2D.Shell;
 
 public sealed class GameProgramSelectionControl : ControlBase
 {
-    static readonly EventHandler<GameProgramSelectedEventArgs> DefaultEventHandler = (s, o) => {};
+    static readonly EventHandler<GameProgramSelectedEventArgs> DefaultEventHandler = (_, _) => {};
 
     #region Fields
 
@@ -53,7 +53,7 @@ public sealed class GameProgramSelectionControl : ControlBase
     bool _reinitializeAtNextUpdate, _initializeAtNextUpdate = true;
 
     KeyboardKey _keyRepeatKey = KeyboardKey.None;
-    long _keyRepeatTicks = 0;
+    long _keyRepeatTicks;
 
 #if PROFILE
     // On TVPC, GetCursorPos() returns incorrect results when mouse wheel is turning after directinput API has been started once.
@@ -135,10 +135,10 @@ public sealed class GameProgramSelectionControl : ControlBase
         if (_scrollColumnInfoSet.Length == 0 || _isMouseDownByPointerId >= 0)
             return;
 
-        var mouseOutsideWindow = (y < Location.Y + GapForCollectionTitle
+        var mouseOutsideWindow = y < Location.Y + GapForCollectionTitle
             || y > Location.Y + Size.Height
                 || x < Location.X
-                    || x > Location.X + Size.Width);
+                    || x > Location.X + Size.Width;
 
         if (mouseOutsideWindow)
         {
@@ -219,7 +219,7 @@ public sealed class GameProgramSelectionControl : ControlBase
             TranslateRect(ref iconRect, _focusedCollectionIndex);
 
             // prevents left/right jittering when screen is narrow (e.g., in snapped view)
-            var effectiveItemWidth = (Size.Width > ITEM_WIDTH + 20) ? ITEM_WIDTH : 0.75 * Size.Width;
+            var effectiveItemWidth = Size.Width > ITEM_WIDTH + 20 ? ITEM_WIDTH : 0.75 * Size.Width;
             if (iconRect.Left < Location.X)
                 focusScrollXVelocity = 10 * AccelerationUnit;
             else if (iconRect.Left + effectiveItemWidth > Location.X + Size.Width)
@@ -308,7 +308,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                             );
                     GraphicsDevice.Draw(
                         gpivic.NameTextLayout,
-                        new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - (float)gpivic.NameTextLayout.Height),
+                        new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height),
                         D2DSolidColorBrush.White
                         );
                 }
@@ -349,9 +349,9 @@ public sealed class GameProgramSelectionControl : ControlBase
 
                 var itemRectHeight = itemRect.Bottom - itemRect.Top;
                 var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
-                var textYStart = itemRect.Top + itemRectHeight / 2 - (float)totalTextHeight / 2;
+                var textYStart = itemRect.Top + itemRectHeight / 2 - totalTextHeight / 2;
                 D2D_POINT_2F textTitleLocation = new(itemRect.Left + 64, textYStart);
-                D2D_POINT_2F textSubTitleLocation = new(itemRect.Left + 64, textYStart + (float)gpivi.TitleTextLayout.Height);
+                D2D_POINT_2F textSubTitleLocation = new(itemRect.Left + 64, textYStart + gpivi.TitleTextLayout.Height);
 
                 if (i == _focusedCollectionIndex && j == _focusedCollectionItemIndex)
                 {
@@ -386,7 +386,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         }
     }
 
-    protected async override void CreateResources()
+    protected override async void CreateResources()
     {
         base.CreateResources();
 
@@ -515,7 +515,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                     new(ITEM_WIDTH, clen * ITEM_HEIGHT)
                     );
             }
-            scrollColumnInfo.ScrollYTopMostBoundary = (scrollColumnInfo.CollectionRect.ToSize().Height > (Size.Height - GapForCollectionTitle))
+            scrollColumnInfo.ScrollYTopMostBoundary = scrollColumnInfo.CollectionRect.ToSize().Height > Size.Height - GapForCollectionTitle
                 ? Location.Y + Size.Height - 2 * GapForCollectionTitle - scrollColumnInfo.CollectionRect.ToSize().Height
                 : scrollColumnInfo.ScrollYBottomMostBoundary;
             if (clen > maxLen)
@@ -631,7 +631,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         Sub(ref pt, i * (ITEM_WIDTH + GapBetweenCollections), j * ITEM_HEIGHT);
         Sub(ref pt, new(ICON_DX, ICON_DY));
 
-        var insideIconRect = pt.X < ICON_WIDTH && pt.Y < ICON_HEIGHT && pt.X >= 0 && pt.Y >= 0;
+        var insideIconRect = pt is { X: < ICON_WIDTH and >= 0, Y: < ICON_HEIGHT and >= 0 };
         return (i, j, insideIconRect);
     }
 
@@ -668,7 +668,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         => new()
         {
             Name = gpvic.Name,
-            GameProgramInfoViewItemSet = gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx).ToArray(),
+            GameProgramInfoViewItemSet = gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx).ToArray()
         };
 
     static GameProgramInfoViewItemEx ToGameProgramInfoViewItemEx(GameProgramInfoViewItem gpvi)

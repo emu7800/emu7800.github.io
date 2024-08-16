@@ -109,36 +109,37 @@ if (IsArg0("-d", "/d"))
     {
         RomBytesService.DumpBin(path, WriteLine);
         var gpiList = GameProgramLibraryService.GetGameProgramInfos(path);
-        if (gpiList.Any())
-        {
-            WriteLine(@"
-Found matching entries in ROMProperties.csv database:");
-        }
-        else
-        {
-            WriteLine(@"
-No matching entries found in ROMProperties.csv database");
-        }
+        WriteLine(gpiList.Any()
+            ? """
+
+              Found matching entries in ROMProperties.csv database:
+              """
+            : """
+
+              No matching entries found in ROMProperties.csv database
+              """);
 
         foreach (var gpi in gpiList)
         {
-            WriteLine(@$"
-    Title       : {gpi.Title}
-    Manufacturer: {gpi.Manufacturer}
-    Author      : {gpi.Author}
-    Qualifier   : {gpi.Qualifier}
-    Year        : {gpi.Year}
-    ModelNo     : {gpi.ModelNo}
-    Rarity      : {gpi.Rarity}
-    CartType    : {gpi.CartType}
-    MachineType : {gpi.MachineType}
-    LController : {gpi.LController}
-    RController : {gpi.RController}
-    MD5         : {gpi.MD5}
-    HelpUri     : {gpi.HelpUri}
+            WriteLine($"""
 
-    Launch by copying and pasting to Start > Run:
-    ""{Environment.ProcessPath}"" -r ""{Path.GetFullPath(path)}"" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}");
+                           Title       : {gpi.Title}
+                           Manufacturer: {gpi.Manufacturer}
+                           Author      : {gpi.Author}
+                           Qualifier   : {gpi.Qualifier}
+                           Year        : {gpi.Year}
+                           ModelNo     : {gpi.ModelNo}
+                           Rarity      : {gpi.Rarity}
+                           CartType    : {gpi.CartType}
+                           MachineType : {gpi.MachineType}
+                           LController : {gpi.LController}
+                           RController : {gpi.RController}
+                           MD5         : {gpi.MD5}
+                           HelpUri     : {gpi.HelpUri}
+
+                           Launch by copying and pasting to Start > Run:
+                           "{Environment.ProcessPath}" -r "{Path.GetFullPath(path)}" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}
+                       """);
         }
     }
 
@@ -148,29 +149,31 @@ No matching entries found in ROMProperties.csv database");
 if (IsArg0("-?", "/?", "-h", "/h", "--help"))
 {
     AllocConsole();
-    WriteLine($@"
-** EMU7800 **
-Copyright (c) 2012-2023 Mike Murphy
+    WriteLine($"""
 
-Usage:
-    EMU7800.exe [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
+               ** EMU7800 **
+               Copyright (c) 2012-2024 Mike Murphy
 
-Options:
--r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
--rc <filename>: Like -r, but opens console window
--d <path>     : Dump Game Program information
--c            : Run Game Program selection menu with console window
-(none)        : Run Game Program selection menu without console window
--?            : This help
+               Usage:
+                   EMU7800.exe [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
 
-MachineTypes:
-{string.Join(Environment.NewLine, GetMachineTypes())}
+               Options:
+               -r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
+               -rc <filename>: Like -r, but opens console window
+               -d <path>     : Dump Game Program information
+               -c            : Run Game Program selection menu with console window
+               (none)        : Run Game Program selection menu without console window
+               -?            : This help
 
-CartTypes:
-{string.Join(Environment.NewLine, GetCartTypes())}
+               MachineTypes:
+               {string.Join(Environment.NewLine, GetMachineTypes())}
 
-Controllers:
-{string.Join(Environment.NewLine, GetControllers())}");
+               CartTypes:
+               {string.Join(Environment.NewLine, GetCartTypes())}
+
+               Controllers:
+               {string.Join(Environment.NewLine, GetControllers())}
+               """);
     EnvironmentExit(0);
 }
 
@@ -183,7 +186,7 @@ if (IsArg0("-c", "/c"))
 
 if (args.Length == 0)
 {
-    Start(true);
+    Start();
     EnvironmentExit(0, false);
 }
 
@@ -195,8 +198,10 @@ static void EnvironmentExit(int exitCode, bool waitForAnyKey = true)
 {
     if (waitForAnyKey)
     {
-        WriteLine(@"
-Hit any key to close");
+        WriteLine("""
+
+                  Hit any key to close
+                  """);
         ReadKey();
     }
     Environment.Exit(exitCode);
@@ -219,7 +224,7 @@ bool IsArg0(params string[] options)
     => args.Length >= 1 && options.Any(opt => CiEq(opt, args[0]));
 
 static bool CiEq(string a, string b)
-    => string.Compare(a, b, true) == 0;
+    => string.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0;
 
 static void StartGameProgram(GameProgramInfoViewItem gpivi)
 {

@@ -17,7 +17,7 @@ public abstract class PageBase : IDisposable
 
     #endregion
 
-    protected ControlCollection Controls = new();
+    protected readonly ControlCollection Controls = new();
 
     public virtual void OnNavigatingHere()
     {
@@ -59,6 +59,11 @@ public abstract class PageBase : IDisposable
     public virtual void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
     {
         Controls.PaddlePositionChanged(controllerNo, paddleNo, ohms);
+    }
+
+    public virtual void PaddleButtonChanged(int controllerNo, int paddleNo, bool down)
+    {
+        Controls.PaddleButtonChanged(controllerNo, paddleNo, down);
     }
 
     public virtual void DrivingPositionChanged(int controllerNo, MachineInput input)
@@ -129,9 +134,7 @@ public abstract class PageBase : IDisposable
         }
     }
 
-    class PageDefault : PageBase
-    {
-    }
+    class PageDefault : PageBase;
 
     #endregion
 }

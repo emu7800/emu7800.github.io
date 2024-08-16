@@ -11,8 +11,8 @@ public abstract class Cart78BB : Cart
 {
     protected byte[] RAM { get; private set; } = [];
 
-    public Cart78BB() {}
-    public Cart78BB(DeserializationContext input) : base(input) {}
+    protected Cart78BB() {}
+    protected Cart78BB(DeserializationContext input) : base(input) {}
 
     protected new void LoadRom(byte[] romBytes, int romSize)
     {

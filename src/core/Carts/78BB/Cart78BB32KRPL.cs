@@ -39,11 +39,9 @@ public sealed class Cart78BB32KRPL : Cart78BB
             {
                 return _pokeySound.Read(addr);
             }
-            if (addr >= 0x4000 && addr < 0x8000)
-            {
-                return RAM[(M.Mem.MariaRead << RAMBANK_SHIFT) | (addr & RAMBANK_MASK)];
-            }
-            return ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | addr];
+            return addr is >= 0x4000 and < 0x8000
+                ? RAM[(M.Mem.MariaRead << RAMBANK_SHIFT) | (addr & RAMBANK_MASK)]
+                : ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | addr];
         }
         set
         {
@@ -51,13 +49,14 @@ public sealed class Cart78BB32KRPL : Cart78BB
             {
                 _pokeySound.Update(addr, value);
             }
-            else if (addr >= 0x4000 && addr < 0x8000)
+            else switch (addr)
             {
-                RAM[0 << RAMBANK_SHIFT | (addr & RAMBANK_MASK)] = value;
-            }
-            else if (addr >= 0xc000)
-            {
-                RAM[1 << RAMBANK_SHIFT | (addr & RAMBANK_MASK)] = value;
+                case >= 0x4000 and < 0x8000:
+                    RAM[addr & RAMBANK_MASK] = value;
+                    break;
+                case >= 0xc000:
+                    RAM[1 << RAMBANK_SHIFT | (addr & RAMBANK_MASK)] = value;
+                    break;
             }
         }
     }
@@ -69,15 +68,15 @@ public sealed class Cart78BB32KRPL : Cart78BB
 
     public override bool Map()
     {
-        M?.Mem.Map(0x0800, 0x0f, this);
-        M?.Mem.Map(0x4000, 0xc000, this);
+        M.Mem.Map(0x0800, 0x0f, this);
+        M.Mem.Map(0x4000, 0xc000, this);
         return true;
     }
 
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(M);
+        _pokeySound = new(M);
     }
 
     public override void StartFrame()

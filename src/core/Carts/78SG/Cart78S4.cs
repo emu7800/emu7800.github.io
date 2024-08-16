@@ -34,7 +34,7 @@ public sealed class Cart78S4 : Cart
     {
         get
         {
-            if (RAM.Length > 0 && addr >= 0x6000 && addr < 0x6000 + RAM_SIZE)
+            if (RAM.Length > 0 && addr is >= 0x6000 and < 0x6000 + RAM_SIZE)
             {
                 return RAM[addr & RAM_MASK];
             }
@@ -42,11 +42,11 @@ public sealed class Cart78S4 : Cart
         }
         set
         {
-            if (RAM.Length > 0 && addr >= 0x6000 && addr < 0x6000 + RAM_SIZE)
+            if (RAM.Length > 0 && addr is >= 0x6000 and < 0x6000 + RAM_SIZE)
             {
                 RAM[addr & RAM_MASK] = value;
             }
-            else if ((addr >> ROM_SHIFT) == 2)
+            else if (addr >> ROM_SHIFT == 2)
             {
                 Bank[2] = value & 3;
             }

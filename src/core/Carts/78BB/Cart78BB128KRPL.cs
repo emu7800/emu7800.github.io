@@ -47,7 +47,7 @@ public sealed class Cart78BB128KRPL : Cart78BB
             {
                 0 => _pokeySound.Read(addr),
                 1 => RAM[M.Mem.MariaRead << RAMBANK_SHIFT | addr & RAMBANK_MASK],
-                _ => ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | (Bank[bankNo] << ROMBANK_SHIFT) | (addr & ROMBANK_MASK)],
+                _ => ROM[(M.Mem.MariaRead << (ROM_SHIFT - 1)) | (Bank[bankNo] << ROMBANK_SHIFT) | (addr & ROMBANK_MASK)]
             };
         }
         set
@@ -78,15 +78,15 @@ public sealed class Cart78BB128KRPL : Cart78BB
 
     public override bool Map()
     {
-        M?.Mem.Map(0x0800, 0x0f, this);
-        M?.Mem.Map(0x4000, 0xc000, this);
+        M.Mem.Map(0x0800, 0x0f, this);
+        M.Mem.Map(0x4000, 0xc000, this);
         return true;
     }
 
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(M);
+        _pokeySound = new(M);
     }
 
     public override void StartFrame()

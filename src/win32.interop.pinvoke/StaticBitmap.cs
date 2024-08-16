@@ -2,7 +2,7 @@
 
 namespace EMU7800.Win32.Interop;
 
-using static EMU7800.Win32.Interop.Direct2DNativeMethods;
+using static Direct2DNativeMethods;
 
 public class StaticBitmap(byte[] data) : IDisposable
 {
@@ -10,7 +10,7 @@ public class StaticBitmap(byte[] data) : IDisposable
 
     public static readonly StaticBitmap Default = new([]);
 
-    readonly IntPtr BitmapPtr = InitializeStaticBitmap(data ?? []);
+    readonly IntPtr BitmapPtr = InitializeStaticBitmap(data);
 
     bool _disposed;
 

@@ -4,7 +4,7 @@ using System.Security;
 
 namespace EMU7800.Win32.Interop;
 
-internal unsafe static partial class XInputNativeMethods
+internal static partial class XInputNativeMethods
 {
     static readonly GCHandle[,] XInputStates = AllocateXInputStateStructures();
     static readonly int[] CurrXInputStateIndices = new int[4];

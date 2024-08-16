@@ -51,24 +51,15 @@ public abstract class Cart : IDevice
     {
         if (cartType == CartType.Unknown)
         {
-            switch (romBytes.Length)
+            cartType = romBytes.Length switch
             {
-                case 2048:
-                    cartType = CartType.A2K;
-                    break;
-                case 4096:
-                    cartType = CartType.A4K;
-                    break;
-                case 8192:
-                    cartType = CartType.A8K;
-                    break;
-                case 16384:
-                    cartType = CartType.A16K;
-                    break;
-                case 32768:
-                    cartType = CartType.A32K;
-                    break;
-            }
+                 2048 => CartType.A2K,
+                 4096 => CartType.A4K,
+                 8192 => CartType.A8K,
+                16384 => CartType.A16K,
+                32768 => CartType.A32K,
+                _ => cartType
+            };
         }
 
         return cartType switch
@@ -114,7 +105,7 @@ public abstract class Cart : IDevice
             CartType.A78BB128KR   => new Cart78BB128KR(romBytes),
             CartType.A78BB128KP   => new Cart78BB128KP(romBytes),
             CartType.A78BB128KRPL => new Cart78BB128KRPL(romBytes),
-            _ => throw new Emu7800Exception("Unexpected CartType: " + cartType),
+            _ => throw new Emu7800Exception("Unexpected CartType: " + cartType)
         };
     }
 

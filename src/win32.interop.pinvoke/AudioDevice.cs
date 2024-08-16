@@ -1,70 +1,73 @@
 using System;
 
-namespace EMU7800.Win32.Interop
+namespace EMU7800.Win32.Interop;
+
+public static class AudioDevice
 {
-    public static class AudioDevice
+    static int Frequency, BufferPayloadSizeInBytes, QueueLength;
+
+    public static bool IsOpened { get; private set; }
+    public static bool IsClosed => !IsOpened;
+
+    public static uint WaveOutVolume
     {
-        static int Frequency, BufferPayloadSizeInBytes, QueueLength;
+        get => (uint)WinmmNativeMethods.GetVolume();
+        set => WinmmNativeMethods.SetVolume(value);
+    }
 
-        public static bool IsOpened { get; private set; }
-        public static bool IsClosed => !IsOpened;
+    public static uint ToVolume(int left, int right)
+        => ((uint)left & 0xffff) | (((uint)right & 0xffff) << 16);
 
-        public static uint WaveOutVolume
+    public static int CountBuffersQueued()
+        => IsOpened? WinmmNativeMethods.GetBuffersQueued() : -1;
+
+    public static void SubmitBuffer(ReadOnlySpan<byte> buffer)
+    {
+        if (buffer.Length < BufferPayloadSizeInBytes)
+            throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
+
+        if (!IsOpened)
         {
-            get => (uint)WinmmNativeMethods.GetVolume();
-            set => WinmmNativeMethods.SetVolume(value);
+            var ec = WinmmNativeMethods.Open(Frequency, BufferPayloadSizeInBytes, QueueLength);
+            IsOpened = ec == 0;
         }
 
-        public static uint ToVolume(int left, int right)
-            => (((uint)left) & 0xffff) | ((((uint)right) & 0xffff) << 16);
-
-        public static int CountBuffersQueued()
-            => IsOpened? WinmmNativeMethods.GetBuffersQueued() : -1;
-
-        public static void SubmitBuffer(ReadOnlySpan<byte> buffer)
+        if (IsOpened)
         {
-            if (buffer.Length < BufferPayloadSizeInBytes)
-                throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
-
-            if (!IsOpened)
-            {
-                var ec = WinmmNativeMethods.Open(Frequency, BufferPayloadSizeInBytes, QueueLength);
-                IsOpened = ec == 0;
-            }
-
-            if (IsOpened)
-            {
-                WinmmNativeMethods.Enqueue(buffer);
-            }
+            WinmmNativeMethods.Enqueue(buffer);
         }
+    }
 
-        public static void Close()
+    public static void Close()
+    {
+        if (IsOpened)
         {
-            if (IsOpened)
-            {
-                WinmmNativeMethods.Close();
-                IsOpened = false;
-            }
+            WinmmNativeMethods.Close();
+            IsOpened = false;
         }
+    }
 
-        public static void Configure(int frequency, int bufferSizeInBytes, int queueLength)
+    public static void Configure(int frequency, int bufferSizeInBytes, int queueLength)
+    {
+        if (frequency < 0)
+            frequency = 0;
+
+        bufferSizeInBytes = bufferSizeInBytes switch
         {
-            if (frequency < 0)
-                frequency = 0;
+            < 0     => 0,
+            > 0x400 => 0x400,
+            _ => bufferSizeInBytes
+        };
 
-            if (bufferSizeInBytes < 0)
-                bufferSizeInBytes = 0;
-            else if (bufferSizeInBytes > 0x400)
-                bufferSizeInBytes = 0x400;
+        queueLength = queueLength switch
+        {
+            < 0    => 0,
+            > 0x10 => 0x10,
+            _ => queueLength
+        };
 
-            if (queueLength < 0)
-                queueLength = 0;
-            else if (queueLength > 0x10)
-                queueLength = 0x10;
-
-            Frequency = frequency;
-            BufferPayloadSizeInBytes = bufferSizeInBytes;
-            QueueLength = queueLength;
-        }
+        Frequency = frequency;
+        BufferPayloadSizeInBytes = bufferSizeInBytes;
+        QueueLength = queueLength;
     }
 }

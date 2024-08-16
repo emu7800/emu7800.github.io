@@ -1,14 +1,13 @@
 ﻿// © Mike Murphy
 
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
 namespace EMU7800.Win32.Interop;
 
-delegate IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+internal delegate IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct WNDCLASSEX
@@ -122,7 +121,7 @@ internal struct RAWINPUT
     [FieldOffset(24)] public RAWINPUTdata data;
 }
 
-internal unsafe static partial class Win32NativeMethods
+internal static unsafe partial class Win32NativeMethods
 {
     const int
         WM_CREATE        = 0x001,
@@ -192,7 +191,7 @@ internal unsafe static partial class Win32NativeMethods
         EMU7800 = "EMU7800"
         ;
 
-    static readonly WndProc WndProcDelegate = new(WndProc);
+    static readonly WndProc WndProcDelegate = WndProc;
     static int lpdSize, dpiForSystem, last_x, last_y;
     static IntPtr lpd;
 
@@ -367,7 +366,6 @@ internal unsafe static partial class Win32NativeMethods
 
         var isVisible = true;
 
-        MSG msg;
         while (true)
         {
             if (IsIconic(hWnd))
@@ -387,6 +385,7 @@ internal unsafe static partial class Win32NativeMethods
                 }
             }
 
+            MSG msg;
             var gotMsg = isVisible ? PeekMessage(&msg, IntPtr.Zero, 0, 0, PM_REMOVE) : GetMessage(&msg, IntPtr.Zero, 0, 0);
 
             if (msg.message == WM_QUIT)
@@ -486,4 +485,3 @@ internal unsafe static partial class Win32NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool GetClientRect(IntPtr hWnd, RECT* lpRect);
 }
-

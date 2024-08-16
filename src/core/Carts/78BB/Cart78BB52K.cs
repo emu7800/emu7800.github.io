@@ -29,7 +29,7 @@ public sealed class Cart78BB52K : Cart78BB
 
     public override bool Map()
     {
-        M?.Mem.Map(0x3000, 0xd000, this);
+        M.Mem.Map(0x3000, 0xd000, this);
         return true;
     }
 

@@ -1,9 +1,5 @@
 <Project DefaultTargets="BuildAll">
-  <PropertyGroup>
-    <Emu7800Version>5.4.0</Emu7800Version>
-    <NetVersion>net8.0</NetVersion>
-    <OutputArtifactsDir>.\artifacts</OutputArtifactsDir>
-  </PropertyGroup>
+  <Import Project="Directory.Build.Props" />
   <ItemGroup>
     <ProjectToBuild Include="src/EMU7800.Win32.sln">
       <Properties>Configuration=Release;Platform=x64;PublishReadyToRun=true</Properties>
@@ -13,75 +9,75 @@
     </ProjectToBuild>
   </ItemGroup>
   <ItemGroup>
-    <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(OutputArtifactsDir)\**" />
+    <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
   </ItemGroup>
   <Target Name="Clean">
     <MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />
-    <RemoveDir Directories="$(OutputArtifactsDir)" />
+    <RemoveDir Directories="$(ArtifactsPath)" />
   </Target>
   <Target Name="Restore">
-    <MSBuild Projects="@(ProjectToBuild)" Targets="Restore" Properties="Configuration=Release" />
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Restore" />
   </Target>
   <Target Name="Build" DependsOnTargets="Restore">
     <MSBuild Projects="@(ProjectToBuild)" Targets="Build" Properties="Configuration=Release" />
   </Target>
   <Target Name="Publish" DependsOnTargets="Build">
-    <MSBuild Projects="src/win32/EMU7800.csproj" Targets="Publish" Properties="Configuration=Release;PublishProfile=FolderProfile.pubxml;TargetFramework=net8.0;RuntimeIdentifer=win-x64"/>
+    <MSBuild Projects="src/win32/EMU7800.csproj" Targets="Publish" Properties="Configuration=Release;PublishProfile=FolderProfile.pubxml"/>
   </Target>
   <Target Name="CopySource">
-    <MakeDir Directories="$(OutputArtifactsDir)\EMU7800.src" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
     <Copy SourceFiles="@(SourceArtifacts)"
-          DestinationFiles="@(SourceArtifacts->'$(OutputArtifactsDir)\EMU7800.src\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(SourceArtifacts->'$(ArtifactsPath)\EMU7800.src\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
   <Target Name="CopyBin" DependsOnTargets="Publish">
     <ItemGroup>
-        <BinArtifacts Include=".\src\win32\bin\Release\$(NetVersion)\publish\win-x64\**\*"
+        <BinArtifacts Include=".\src\win32\bin\Release\$(TargetFramework)\publish\$(RuntimeIdentifier)\**\*"
                       Exclude="**\ref\**;**\*.runtimeconfig.dev.json;**\*.exp;**\*.ilk;**\*.lib;**\*.pdb;**\*.iobj;**\*.ipdb" />
     </ItemGroup>
-    <MakeDir Directories="$(OutputArtifactsDir)\EMU7800.bin" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.bin" />
     <Copy SourceFiles="@(BinArtifacts)"
-          DestinationFiles="@(BinArtifacts->'$(OutputArtifactsDir)\EMU7800.bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinArtifacts->'$(ArtifactsPath)\EMU7800.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
   <Target Name="ZipSrc" DependsOnTargets="CopySource">
-    <ZipDirectory SourceDirectory="$(OutputArtifactsDir)\EMU7800.src"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.src.zip"
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.src"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.src.zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipRoms">
-    <MakeDir Directories="$(OutputArtifactsDir)\EMU7800.bin\ROMS" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.bin\ROMS" />
     <ZipDirectory SourceDirectory=".\lib\roms\Bios78"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\Bios78.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\Bios78.zip"
                   Overwrite="true"
                   />
     <ZipDirectory SourceDirectory=".\lib\roms\Atari"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\Atari.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\Atari.zip"
                   Overwrite="true"
                   />
     <ZipDirectory SourceDirectory=".\lib\roms\Activision"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\Activision.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\Activision.zip"
                   Overwrite="true"
                   />
     <ZipDirectory SourceDirectory=".\lib\roms\HomeBrews"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\HomeBrews.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\HomeBrews.zip"
                   Overwrite="true"
                   />
     <ZipDirectory SourceDirectory=".\lib\roms\Imagic"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\Imagic.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\Imagic.zip"
                   Overwrite="true"
                   />
     <ZipDirectory SourceDirectory=".\lib\roms\Other"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin\ROMS\Other.zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin\ROMS\Other.zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBin" DependsOnTargets="CopyBin;ZipRoms">
-    <ZipDirectory SourceDirectory="$(OutputArtifactsDir)\EMU7800.bin"
-                  DestinationFile="$(OutputArtifactsDir)\EMU7800.bin.$(Emu7800Version).zip"
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin.$(Emu7800Version).zip"
                   Overwrite="true"
                   />
   </Target>

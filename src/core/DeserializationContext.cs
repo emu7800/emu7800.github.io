@@ -45,17 +45,18 @@ public class DeserializationContext
     public byte[] ReadBytes()
     {
         var count = _binaryReader.ReadInt32();
-        if (count <= 0)
-            return [];
-        if (count > 0x40000)
-            throw new Emu7800SerializationException("Byte array length too large");
-        return _binaryReader.ReadBytes(count);
+        return count switch
+        {
+            <= 0 => [],
+            <= 0x40000 => _binaryReader.ReadBytes(count),
+            _ => throw new Emu7800SerializationException("Byte array length too large")
+        };
     }
 
     public byte[] ReadExpectedBytes(params int[] expectedSizes)
     {
         var count = _binaryReader.ReadInt32();
-        if (!expectedSizes.Any(t => t == count))
+        if (expectedSizes.All(t => t != count))
             throw new Emu7800SerializationException("Byte array length incorrect");
         return _binaryReader.ReadBytes(count);
     }
@@ -92,7 +93,7 @@ public class DeserializationContext
         var bytes = ReadExpectedBytes(expectedSizes);
         var booleans = new bool[bytes.Length];
         for (var i = 0; i < bytes.Length; i++)
-            booleans[i] = (bytes[i] != 0);
+            booleans[i] = bytes[i] != 0;
         return booleans;
     }
 
@@ -102,7 +103,7 @@ public class DeserializationContext
         if (magicNumber != 0x78000087)
             throw new Emu7800SerializationException("Magic number not found");
         var version = _binaryReader.ReadInt32();
-        if (!validVersions.Any(t => t == version))
+        if (validVersions.All(t => t != version))
             throw new Emu7800SerializationException("Invalid version number found");
         return version;
     }
@@ -117,7 +118,7 @@ public class DeserializationContext
             "EMU7800.Core." + nameof(Machine2600PAL)  => new Machine2600PAL(this),
             "EMU7800.Core." + nameof(Machine7800NTSC) => new Machine7800NTSC(this),
             "EMU7800.Core." + nameof(Machine7800PAL)  => new Machine7800PAL(this),
-            _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'"),
+            _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'")
         };
 
     public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)

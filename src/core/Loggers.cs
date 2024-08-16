@@ -1,26 +1,25 @@
-﻿namespace EMU7800.Core
+﻿namespace EMU7800.Core;
+
+public class NullLogger : ILogger
 {
-    public class NullLogger : ILogger
-    {
-        public static readonly ILogger Default = new NullLogger();
+    public static readonly ILogger Default = new NullLogger();
 
-        public void WriteLine(string message) {}
+    public void WriteLine(string message) {}
 
-        public void Write(string message) {}
+    public void Write(string message) {}
 
-        private NullLogger() {}
-    }
+    private NullLogger() {}
+}
 
-    public class DebugLogger : ILogger
-    {
-        public static readonly ILogger Default = new DebugLogger();
+public class DebugLogger : ILogger
+{
+    public static readonly ILogger Default = new DebugLogger();
 
-        public void WriteLine(string message)
-            => System.Diagnostics.Debug.WriteLine(message);
+    public void WriteLine(string message)
+        => System.Diagnostics.Debug.WriteLine(message);
 
-        public void Write(string message)
-            => System.Diagnostics.Debug.Write(message);
+    public void Write(string message)
+        => System.Diagnostics.Debug.Write(message);
 
-        private DebugLogger() {}
-    }
+    private DebugLogger() {}
 }

@@ -27,7 +27,7 @@ public sealed class Cart78AB : Cart
         get => ROM[(Bank[addr >> ROM_SHIFT] << ROM_SHIFT) | (addr & ROM_MASK)];
         set
         {
-            if ((addr >> ROM_SHIFT) == 2)
+            if (addr >> ROM_SHIFT == 2)
             {
                 Bank[1] = (value - 1) & 1;
             }

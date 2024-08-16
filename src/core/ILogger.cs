@@ -1,8 +1,7 @@
-﻿namespace EMU7800.Core
+﻿namespace EMU7800.Core;
+
+public interface ILogger
 {
-    public interface ILogger
-    {
-        void WriteLine(string message);
-        void Write(string message);
-    }
+    void WriteLine(string message);
+    void Write(string message);
 }

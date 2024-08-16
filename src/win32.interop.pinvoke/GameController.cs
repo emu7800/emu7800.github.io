@@ -7,7 +7,7 @@ using static System.Console;
 
 namespace EMU7800.Win32.Interop;
 
-public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 };
+public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 }
 
 public class GameController
 {
@@ -28,6 +28,7 @@ public class GameController
 
     static readonly Action<int, MachineInput, bool> ButtonChangedHandlerDefault = (cn, mi, d) => {};
     static readonly Action<int, int, int> PaddlePositionChangedHandlerDefault = (cn, pn, o) => {};
+    static readonly Action<int, int, bool> PaddleButtonChangedHandlerDefault = (cn, pn, d) => {};
     static readonly Action<int, MachineInput> DrivingPositionChangedHandlerDefault = (cn, mi) => {};
 
     readonly int _controllerNo;
@@ -40,16 +41,14 @@ public class GameController
     public string Info => ProductName + (IsDaptor ? $" ({ToDaptorModeStr(_daptorMode)} mode)" : string.Empty);
 
     public bool IsAtariAdaptor
-        => JoystickType == JoystickType.Stelladaptor
-        || JoystickType == JoystickType.Daptor
-        || JoystickType == JoystickType.Daptor2;
+        => JoystickType is JoystickType.Stelladaptor or JoystickType.Daptor or JoystickType.Daptor2;
 
     public bool IsDaptor
-        => JoystickType == JoystickType.Daptor
-        || JoystickType == JoystickType.Daptor2;
+        => JoystickType is JoystickType.Daptor or JoystickType.Daptor2;
 
     public Action<int, MachineInput, bool> ButtonChanged { get; set; } = ButtonChangedHandlerDefault;
     public Action<int, int, int> PaddlePositionChanged { get; set; } = PaddlePositionChangedHandlerDefault;
+    public Action<int, int, bool> PaddleButtonChanged { get; set; } = PaddleButtonChangedHandlerDefault;
     public Action<int, MachineInput> DrivingPositionChanged { get; set; } = DrivingPositionChangedHandlerDefault;
 
     internal void RaiseEventsFromDirectInput()
@@ -65,36 +64,45 @@ public class GameController
 
         if (ButtonChanged != ButtonChangedHandlerDefault)
         {
-            for (int i = 0; i < 0xf; i++)
+            for (var i = 0; i < 0xf; i++)
             {
                 var prevButtonDown = prevState.InterpretJoyButtonDown(i);
                 var currButtonDown = currState.InterpretJoyButtonDown(i);
                 if (prevButtonDown != currButtonDown)
                 {
-                    if (_daptorMode == 1) // 7800 mode
+                    switch (_daptorMode)
                     {
-                        if (i == 2)
-                        {
+                        // 7800 mode
+                        case 1 when i == 2:
                             ButtonChanged(_controllerNo, MachineInput.Fire, currButtonDown);
-                        }
-                        else if (i == 3)
+                            break;
+                        case 1:
                         {
-                            ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
+                            if (i == 3)
+                            {
+                                ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
+                            }
+                            break;
                         }
-                    }
-                    else if (_daptorMode == 2) // keypad mode
-                    {
-                        ButtonChanged(_controllerNo, Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
-                    }
-                    else // 2600/regular mode
-                    {
-                        if (i == 0)
+                        // keypad mode
+                        case 2:
+                            ButtonChanged(_controllerNo, Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
+                            break;
+                        // 2600/regular mode
+                        default:
                         {
-                            ButtonChanged(_controllerNo, MachineInput.Fire, currButtonDown);
-                        }
-                        else if (i == 1)
-                        {
-                            ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
+                            switch (i)
+                            {
+                                case 0:
+                                    ButtonChanged(_controllerNo, MachineInput.Fire, currButtonDown);
+                                    PaddleButtonChanged(_controllerNo, i, currButtonDown);
+                                    break;
+                                case 1:
+                                    ButtonChanged(_controllerNo, MachineInput.Fire2, currButtonDown);
+                                    PaddleButtonChanged(_controllerNo, i, currButtonDown);
+                                    break;
+                            }
+                            break;
                         }
                     }
                 }
@@ -129,37 +137,44 @@ public class GameController
             }
         }
 
-        if (JoystickType == JoystickType.Stelladaptor || JoystickType == JoystickType.Daptor || JoystickType == JoystickType.Daptor2)
+        switch (JoystickType)
         {
-            if (DrivingPositionChanged != DrivingPositionChangedHandlerDefault)
+            case JoystickType.Stelladaptor or JoystickType.Daptor or JoystickType.Daptor2:
             {
-                var prevPos = prevState.InterpretStelladaptorDrivingPosition();
-                var currPos = currState.InterpretStelladaptorDrivingPosition();
-                if (prevPos != currPos)
+                if (DrivingPositionChanged != DrivingPositionChangedHandlerDefault)
                 {
-                    DrivingPositionChanged(_controllerNo, StelladaptorDrivingMachineInputMapping[currPos & 3]);
-                }
-            }
-
-            if (PaddlePositionChanged != PaddlePositionChangedHandlerDefault)
-            {
-                var prevPos = prevState.InterpretStelladaptorPaddlePosition(0);
-                var currPos = currState.InterpretStelladaptorPaddlePosition(0);
-                if (prevPos != currPos)
-                {
-                    // 1 MOhm resistance range
-                    var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
-                    PaddlePositionChanged(_controllerNo, 0, ohms);
+                    var prevPos = prevState.InterpretStelladaptorDrivingPosition();
+                    var currPos = currState.InterpretStelladaptorDrivingPosition();
+                    if (prevPos != currPos)
+                    {
+                        DrivingPositionChanged(_controllerNo, StelladaptorDrivingMachineInputMapping[currPos & 3]);
+                    }
                 }
 
-                prevPos = prevState.InterpretStelladaptorPaddlePosition(1);
-                currPos = currState.InterpretStelladaptorPaddlePosition(1);
-                if (prevPos != currPos)
+                if (PaddlePositionChanged != PaddlePositionChangedHandlerDefault)
                 {
-                    // 1 MOhm resistance range
-                    var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
-                    PaddlePositionChanged(_controllerNo, 1, ohms);
+                    var prevPos = prevState.InterpretStelladaptorPaddlePosition(0);
+                    var currPos = currState.InterpretStelladaptorPaddlePosition(0);
+                    if (prevPos != currPos)
+                    {
+                        // 1 MOhm resistance range
+                        var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
+                        PaddlePositionChanged(_controllerNo, 0, ohms);
+                    }
+
+                    prevPos = prevState.InterpretStelladaptorPaddlePosition(1);
+                    currPos = currState.InterpretStelladaptorPaddlePosition(1);
+                    if (prevPos != currPos)
+                    {
+                        // 1 MOhm resistance range
+                        var ohms = (AXISRANGE - currPos) * 1000000 / (AXISRANGE << 1);
+                        PaddlePositionChanged(_controllerNo, 1, ohms);
+                    }
                 }
+
+                // TODO: find paddle buttons and raise PattleButtonChanged(controllerNo, paddleNo, down)
+
+                break;
             }
         }
     }
@@ -170,19 +185,20 @@ public class GameController
 
         if (ButtonChanged != ButtonChangedHandlerDefault)
         {
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 var prevButton = prevState.InterpretButtonDown(i);
                 var currButton = currState.InterpretButtonDown(i);
                 if (prevButton != currButton)
                 {
-                    if (i == 0)
+                    switch (i)
                     {
-                        ButtonChanged(_controllerNo, MachineInput.Fire, currButton);
-                    }
-                    else if (i == 1)
-                    {
-                        ButtonChanged(_controllerNo, MachineInput.Fire2, currButton);
+                        case 0:
+                            ButtonChanged(_controllerNo, MachineInput.Fire, currButton);
+                            break;
+                        case 1:
+                            ButtonChanged(_controllerNo, MachineInput.Fire2, currButton);
+                            break;
                     }
                 }
             }

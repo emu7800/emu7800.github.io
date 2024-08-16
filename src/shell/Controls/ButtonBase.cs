@@ -3,123 +3,120 @@
 using EMU7800.Win32.Interop;
 using System;
 
-namespace EMU7800.D2D.Shell
+namespace EMU7800.D2D.Shell;
+
+public abstract class ButtonBase : ControlBase
 {
-    public abstract class ButtonBase : ControlBase
+    static readonly EventArgs DefaultEventArgs = EventArgs.Empty;
+    static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
+
+    #region Fields
+
+    D2D_RECT_F _boundingRect;
+
+    #endregion
+
+    public event EventHandler<EventArgs> Pressed = DefaultEventHandler;
+    public event EventHandler<EventArgs> Released = DefaultEventHandler;
+    public event EventHandler<EventArgs> Clicked = DefaultEventHandler;
+
+    public bool IsPressed => IsPressedByPointerId >= 0;
+
+    #region ControlBase Overrides
+
+    public override void LocationChanged()
     {
-        static readonly EventArgs DefaultEventArgs = new();
-        static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
+        base.LocationChanged();
+        _boundingRect = ComputeBoundingRectangle();
+    }
 
-        #region Fields
+    public override void SizeChanged()
+    {
+        base.SizeChanged();
+        _boundingRect = ComputeBoundingRectangle();
+    }
 
-        D2D_RECT_F _boundingRect;
-
-        #endregion
-
-        public event EventHandler<EventArgs> Pressed = DefaultEventHandler;
-        public event EventHandler<EventArgs> Released = DefaultEventHandler;
-        public event EventHandler<EventArgs> Clicked = DefaultEventHandler;
-
-        public bool IsPressed
+    public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
+    {
+        if (IsInBounds(x, y, _boundingRect))
         {
-            get => IsPressedByPointerId >= 0;
-        }
-
-        #region ControlBase Overrides
-
-        public override void LocationChanged()
-        {
-            base.LocationChanged();
-            _boundingRect = ComputeBoundingRectangle();
-        }
-
-        public override void SizeChanged()
-        {
-            base.SizeChanged();
-            _boundingRect = ComputeBoundingRectangle();
-        }
-
-        public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
-        {
-            if (IsInBounds(x, y, _boundingRect))
+            if (!IsMouseOver)
             {
-                if (!IsMouseOver)
-                {
-                    IsMouseOverPointerId = pointerId;
-                }
-            }
-            else
-            {
-                if (IsMouseOver && IsMouseOverPointerId == pointerId)
-                {
-                    IsMouseOverPointerId = -1;
-                }
+                IsMouseOverPointerId = pointerId;
             }
         }
-
-        public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
+        else
         {
             if (IsMouseOver && IsMouseOverPointerId == pointerId)
             {
                 IsMouseOverPointerId = -1;
             }
+        }
+    }
 
-            if (IsInBounds(x, y, _boundingRect))
+    public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
+    {
+        if (IsMouseOver && IsMouseOverPointerId == pointerId)
+        {
+            IsMouseOverPointerId = -1;
+        }
+
+        if (IsInBounds(x, y, _boundingRect))
+        {
+            switch (down)
             {
-                if (down && !IsPressed)
-                {
+                case true when !IsPressed:
                     IsPressedByPointerId = pointerId;
                     OnPressed();
-                }
-                else if (!down && IsPressed && IsPressedByPointerId == pointerId)
-                {
+                    break;
+                case false when IsPressed && IsPressedByPointerId == pointerId:
                     IsPressedByPointerId = -1;
                     IsMouseOverPointerId = -1;
                     OnReleased();
                     OnClicked();
-                }
-            }
-            else if (IsPressed && IsPressedByPointerId == pointerId)
-            {
-                IsPressedByPointerId = -1;
-                IsMouseOverPointerId = -1;
-                OnReleased();
+                    break;
             }
         }
-
-        #endregion
-
-        #region IDisposable Members
-
-        protected override void Dispose(bool disposing)
+        else if (IsPressed && IsPressedByPointerId == pointerId)
         {
-            if (disposing)
-            {
-                Pressed = DefaultEventHandler;
-                Released = DefaultEventHandler;
-                Clicked = DefaultEventHandler;
-            }
-            base.Dispose(disposing);
+            IsPressedByPointerId = -1;
+            IsMouseOverPointerId = -1;
+            OnReleased();
         }
-
-        #endregion
-
-        protected int IsPressedByPointerId { get; set; } = -1;
-
-        protected virtual D2D_RECT_F ComputeBoundingRectangle()
-            => new(Location, Size);
-
-        #region Helpers
-
-        void OnClicked()
-            => Clicked(this, DefaultEventArgs);
-
-        void OnPressed()
-            => Pressed(this, DefaultEventArgs);
-
-        void OnReleased()
-            => Released(this, DefaultEventArgs);
-
-        #endregion
     }
+
+    #endregion
+
+    #region IDisposable Members
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Pressed = DefaultEventHandler;
+            Released = DefaultEventHandler;
+            Clicked = DefaultEventHandler;
+        }
+        base.Dispose(disposing);
+    }
+
+    #endregion
+
+    protected int IsPressedByPointerId { get; set; } = -1;
+
+    protected virtual D2D_RECT_F ComputeBoundingRectangle()
+        => new(Location, Size);
+
+    #region Helpers
+
+    void OnClicked()
+        => Clicked(this, DefaultEventArgs);
+
+    void OnPressed()
+        => Pressed(this, DefaultEventArgs);
+
+    void OnReleased()
+        => Released(this, DefaultEventArgs);
+
+    #endregion
 }

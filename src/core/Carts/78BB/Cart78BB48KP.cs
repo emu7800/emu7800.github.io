@@ -45,7 +45,7 @@ public sealed class Cart78BB48KP : Cart78BB
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(M);
+        _pokeySound = new(M);
     }
 
     public override void StartFrame()

@@ -24,8 +24,8 @@ public enum MachineType
     A7800PAL,
     A7800PALbios,
     A7800PALhsc,
-    A7800PALxm,
-};
+    A7800PALxm
+}
 
 public static class MachineTypeUtil
 {

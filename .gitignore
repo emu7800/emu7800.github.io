@@ -159,3 +159,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 artifacts/
+.idea/

@@ -135,7 +135,7 @@ public sealed class GamePage : PageBase
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
             TextAlignment = DWriteTextAlignment.Center,
-            Text = string.Empty,
+            Text = string.Empty
         };
         _hud_buttonFpsMinus = new MinusButton();
         _hud_buttonFpsPlus = new PlusButton();
@@ -286,7 +286,7 @@ public sealed class GamePage : PageBase
         _labelInfoText.Location = new(0, size.Height / 2);
         _labelInfoText.Size = new(size.Width, 200);
 
-        var hudx = size.Width / 2 - (6 * HudButtonWidth + 5 * HudGapX + HudGapX) / 2;
+        var hudx = size.Width / 2.0f - (6.0f * HudButtonWidth + 5.0f * HudGapX + HudGapX) / 2.0f;
 
         _hud_buttonPower.Location = new(hudx, HudStartY);
         _hud_buttonColor.Location = _hud_buttonPower.ToRightOf(HudGapX, 0);
@@ -396,7 +396,7 @@ public sealed class GamePage : PageBase
                 ChangeCurrentKeyboardPlayerNo(4);
                 break;
             case KeyboardKey.Q:
-                if (down || !GameControllers.Controllers[0].IsAtariAdaptor)
+                if (down)
                     return;
                 var swapped = _gameControl.SwapLeftControllerPaddles();
                 PostInfoText($"P1/P2 paddles {(swapped ? "" : "un")}swapped");
@@ -408,7 +408,7 @@ public sealed class GamePage : PageBase
                 PostInfoText($"Input jacks {(swapped ? "" : "un")}swapped");
                 break;
             case KeyboardKey.E:
-                if (down || !GameControllers.Controllers[1].IsAtariAdaptor)
+                if (down)
                     return;
                 swapped = _gameControl.SwapRightControllerPaddles();
                 PostInfoText($"P3/P4 paddles {(swapped ? "" : "un")}swapped");
@@ -527,11 +527,6 @@ public sealed class GamePage : PageBase
         }
     }
 #endif
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
 
     #endregion
 

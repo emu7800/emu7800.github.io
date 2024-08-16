@@ -98,45 +98,21 @@ public class FontRenderer
         for (var i = 0; i < text.Length; i++)
         {
             var c = textchars[i];
-            uint fdata;
-
-            switch (c)
+            var fdata = c switch
             {
-                case '/':
-                case '\\':
-                    fdata = 0x0122448;
-                    break;
-                case '(':
-                    fdata = 0x2488842;
-                    break;
-                case ')':
-                    fdata = 0x4211124;
-                    break;
-                case '.':
-                    fdata = 0x0000066;
-                    break;
-                case ':':
-                    fdata = 0x0660660;
-                    break;
-                case '-':
-                    fdata = 0x0007000;
-                    break;
-                default:
-                    if (c >= 'A' && c <= 'Z')
-                    {
-                        fdata = AlphaFontData[c - 'A'];
-                    }
-                    else if (c >= '0' && c <= '9')
-                    {
-                        fdata = DigitFontData[c - '0'];
-                    }
-                    else
-                    {
-                        fdata = 0;
-                    }
-                    break;
-            }
-
+                '/' or '\\' => (uint)0x0122448,
+                '(' => (uint)0x2488842,
+                ')' => (uint)0x4211124,
+                '.' => (uint)0x0000066,
+                ':' => (uint)0x0660660,
+                '-' => (uint)0x0007000,
+                _   => c switch
+                {
+                    >= 'A' and <= 'Z' => AlphaFontData[c - 'A'],
+                    >= '0' and <= '9' => DigitFontData[c - '0'],
+                    _ => 0
+                },
+            };
             var ypos = 8;
             for (var j = 0; j < 32; j++)
             {

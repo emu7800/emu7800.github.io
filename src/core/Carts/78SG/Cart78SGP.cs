@@ -41,7 +41,7 @@ public sealed class Cart78SGP : Cart
             return bankNo switch
             {
                 1 => _pokeySound.Read(addr),
-                _ => ROM[(_bank[bankNo] << ROM_SHIFT) | (addr & ROM_MASK)],
+                _ => ROM[(_bank[bankNo] << ROM_SHIFT) | (addr & ROM_MASK)]
             };
         }
         set
@@ -67,7 +67,7 @@ public sealed class Cart78SGP : Cart
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(M);
+        _pokeySound = new(M);
     }
 
     public override void StartFrame()

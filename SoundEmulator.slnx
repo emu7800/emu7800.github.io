@@ -1,4 +1,15 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Build.proj" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="index.html" />
+    <File Path="LICENSE.TXT" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="src\core\EMU7800.Core.csproj" />
   <Project Path="src\tools\SoundEmulator\EMU7800.SoundEmulator.csproj" />
 </Solution>

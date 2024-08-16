@@ -30,7 +30,7 @@ public static partial class RomPropertiesService
     const string ReferenceRepositoryCsvHeader
         = "Title,Manufacturer,Author,Qualifier,Year,ModelNo,Rarity,CartType,MachineType,LController,RController,MD5,HelpUri";
 
-    readonly static Regex _regexMd5KeyType = CompiledMd5RegEx();
+    static readonly Regex _regexMd5KeyType = CompiledMd5RegEx();
 
     [GeneratedRegex("^([0-9a-f]{32,32})$", RegexOptions.IgnoreCase | RegexOptions.Singleline, "en-US")]
     private static partial Regex CompiledMd5RegEx();
@@ -39,7 +39,7 @@ public static partial class RomPropertiesService
 
     public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> romPropertiesCsv)
         => VerifyReferenceRepositoryCsvHeader(romPropertiesCsv)
-            .Select(csv => Split(csv, 13))
+            .Select(Split)
             .Select(sl => new GameProgramInfo
             {
                 MD5          = sl[CsvColumnMD5],
@@ -63,13 +63,26 @@ public static partial class RomPropertiesService
     #region Helpers
 
     static IEnumerable<string> VerifyReferenceRepositoryCsvHeader(IEnumerable<string> romPropertiesCsv)
-        => romPropertiesCsv.Take(1).First() == ReferenceRepositoryCsvHeader
-            ? romPropertiesCsv
-            : Enumerable.Empty<string>();
-
-    static string[] Split(string line, int columnLimit = 13)
     {
-        var output = new string[columnLimit];
+        var seenFirstLine = false;
+        foreach (var csvLine in romPropertiesCsv)
+        {
+            if (!seenFirstLine)
+            {
+                if (csvLine != ReferenceRepositoryCsvHeader)
+                {
+                    yield break;
+                }
+                seenFirstLine = true;
+                continue;
+            }
+            yield return csvLine;
+        }
+    }
+
+    static string[] Split(string line)
+    {
+        var output = new string[13];
         var pos = 0;
         var len = 0;
         var i = 0;

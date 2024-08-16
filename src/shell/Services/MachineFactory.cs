@@ -108,14 +108,14 @@ public class MachineFactory
     static IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
         => DatastoreService.ImportedSpecialBinaryInfo
             .Where(sbi => MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsNTSC(gameProgramInfo.MachineType)
-                            && (sbi.Type == SpecialBinaryType.Bios7800Ntsc || sbi.Type == SpecialBinaryType.Bios7800NtscAlternate)
+                            && sbi.Type is SpecialBinaryType.Bios7800Ntsc or SpecialBinaryType.Bios7800NtscAlternate
                        || MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsPAL(gameProgramInfo.MachineType)
                             && sbi.Type == SpecialBinaryType.Bios7800Pal);
 
     static Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
         => specialBinaryInfoSet
             .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
-            .Where(b => b.Length == 4096 || b.Length == 16384)
+            .Where(b => b.Length is 4096 or 16384)
             .Take(1)
             .Select(b => new Bios7800(b))
             .FirstOrDefault() ?? Bios7800.Default;

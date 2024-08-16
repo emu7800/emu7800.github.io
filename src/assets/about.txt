@@ -1,15 +1,15 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward-compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Fixed recently broken lightgun movement. Updated to .NET8 AOT/native for improved performance. Added support for XM and corrected high score cart. Implemented the 7800 pause key. Improved support for newest 7800 homebrews. Added recently-discovered 2600 prototypes.
+WHATS NEW—Updated to .NET9 AOT/native for improved performance. Many minor fixes. Added support for XM and corrected high score cart. Implemented the 7800 pause key. Improved support for newest 7800 homebrews.
 
 BASIC OPERATION—Several classic games are included to jump start your experience! Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 
 GAME CONTROLLERS—Supports up to two (2) DirectInput8 joystick devices, including USB adapters that facilitate use of the original Atari controllers (e.g., 2600-daptor, 2600-daptor II.) The keyboard and mouse are also usable for game control. Some specific tips:
 
 - Xbox controllers for Windows can be used to navigate game selection (dpad, back, start, and left/right shoulder buttons for select/reset)
-- Use keys F1-F4 to direct the keyboard input to the respective player number
+- Use keys F1-F4 to direct the keyboard/mouse input to the respective player number
 - Use the W key to swap input jacks, the Q key to swap P1/P2 paddles, the E key to swap P3/P4 paddles
-- Only mouse input is mapped to the Lightgun controller
+- Mouse input is mapped to the Lightgun and Paddles
 - Number pad keys are mapped to the Atari Keypad controller
 - The H key toggles the Heads Up Display (HUD) during gameplay
 - Left and right fire buttons are mapped to the Z/X keys respectively

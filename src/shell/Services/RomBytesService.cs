@@ -1,4 +1,4 @@
-// © Mike Murphy
+// ï¿½ Mike Murphy
 
 using EMU7800.Core;
 using EMU7800.Services.Dto;
@@ -37,7 +37,7 @@ public class RomBytesService
 
     public static bool IsA78Format(byte[] bytes)
     {
-        if (bytes == null || bytes.Length < A78FILE_HEADER_SIZE)
+        if (bytes.Length < A78FILE_HEADER_SIZE)
         {
             return false;
         }
@@ -62,7 +62,7 @@ public class RomBytesService
 
     public static GameProgramInfo ToGameProgramInfoFromA78Format(byte[] bytes)
     {
-        if (bytes == null || bytes.Length < 0x40)
+        if (bytes.Length < 0x40)
             bytes = new byte[0x40];
 
         var version  = bytes[A78VERSION];
@@ -112,7 +112,7 @@ public class RomBytesService
     }
 
     public static string ToMD5Key(byte[] bytes)
-        => ToHex(MD5.ComputeHash(RemoveA78HeaderIfNecessary(bytes ?? [])));
+        => ToHex(MD5.ComputeHash(RemoveA78HeaderIfNecessary(bytes)));
 
     public static SpecialBinaryType ToSpecialBinaryType(string md5key)
     {
@@ -137,7 +137,7 @@ public class RomBytesService
              8192 => CartType.A8K,
             16384 => CartType.A16K,
             32768 => CartType.A32K,
-            _     => CartType.Unknown,
+            _     => CartType.Unknown
         }
         : MachineTypeUtil.Is7800(machineType) ? romByteCount switch
         {
@@ -145,14 +145,16 @@ public class RomBytesService
             16384 => CartType.A7816,
             32768 => CartType.A7832,
             49152 => CartType.A7848,
-            _     => CartType.Unknown,
+            _     => CartType.Unknown
         }
         : CartType.Unknown;
 
     public static void DumpBin(string path, Action<string> printLineFn)
     {
-        printLineFn(@$"
-File: {path}");
+        printLineFn($"""
+
+                     File: {path}
+                     """);
 
         byte[] bytes;
         try
@@ -170,33 +172,39 @@ File: {path}");
         if (isA78Format)
         {
             var gpi = ToGameProgramInfoFromA78Format(bytes);
-            printLineFn(@$"
-A78 : Title           : {gpi.Title}
-      MachineType     : {MachineTypeUtil.ToString(gpi.MachineType)}
-      CartType        : {CartTypeUtil.ToString(gpi.CartType)} ({CartTypeUtil.ToCartTypeWordString(gpi.CartType)})
-      Left Controller : {ControllerUtil.ToString(gpi.LController)}
-      Right Controller: {ControllerUtil.ToString(gpi.RController)}
-      Header Version  : {ToHex(bytes[A78VERSION])}
-      TV HSC XM       : {ToHex(bytes[A78TVTYPE])} {ToHex(bytes[A78SAVEDATA])} {ToHex(bytes[A78XMREQ])}
-      Cart Type       : {ToHex(bytes[A78CARTTYPE+1])} {ToHex(bytes[A78CARTTYPE])}
-              pokeyAt4k={(bytes[A78CARTTYPE+1] & (1 << 0)) != 0}
-              superGame={(bytes[A78CARTTYPE+1] & (1 << 1)) != 0}
-       superGameRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 2)) != 0}
-                romAt4k={(bytes[A78CARTTYPE+1] & (1 << 3)) != 0}
-                bankset={(bytes[A78CARTTYPE+1] & (1 << 4)) != 0}
-             banksetram={(bytes[A78CARTTYPE+1] & (1 << 5)) != 0}
-            pokeyAt0450={(bytes[A78CARTTYPE+1] & (1 << 6)) != 0}
-          mirrorRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 7)) != 0}
-");
+            printLineFn($"""
+
+                         A78 : Title           : {gpi.Title}
+                               MachineType     : {MachineTypeUtil.ToString(gpi.MachineType)}
+                               CartType        : {CartTypeUtil.ToString(gpi.CartType)} ({CartTypeUtil.ToCartTypeWordString(gpi.CartType)})
+                               Left Controller : {ControllerUtil.ToString(gpi.LController)}
+                               Right Controller: {ControllerUtil.ToString(gpi.RController)}
+                               Header Version  : {ToHexByte(bytes[A78VERSION])}
+                               TV HSC XM       : {ToHexByte(bytes[A78TVTYPE])} {ToHexByte(bytes[A78SAVEDATA])} {ToHexByte(bytes[A78XMREQ])}
+                               Cart Type       : {ToHexByte(bytes[A78CARTTYPE+1])} {ToHexByte(bytes[A78CARTTYPE])}
+                                       pokeyAt4k={(bytes[A78CARTTYPE+1] & (1 << 0)) != 0}
+                                       superGame={(bytes[A78CARTTYPE+1] & (1 << 1)) != 0}
+                                superGameRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 2)) != 0}
+                                         romAt4k={(bytes[A78CARTTYPE+1] & (1 << 3)) != 0}
+                                         bankset={(bytes[A78CARTTYPE+1] & (1 << 4)) != 0}
+                                      banksetram={(bytes[A78CARTTYPE+1] & (1 << 5)) != 0}
+                                     pokeyAt0450={(bytes[A78CARTTYPE+1] & (1 << 6)) != 0}
+                                   mirrorRamAt4k={(bytes[A78CARTTYPE+1] & (1 << 7)) != 0}
+
+                         """);
         }
 
         var rawBytes = RemoveA78HeaderIfNecessary(bytes);
         var md5 = ToMD5Key(rawBytes);
 
-        printLineFn(@$"
-MD5 : {md5}
-Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)}");
-        static string ToHex(byte b) => "$" + b.ToString("X2");
+        printLineFn($"""
+
+                     MD5 : {md5}
+                     Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)}
+                     """);
+        return;
+
+        static string ToHexByte(byte b) => "$" + b.ToString("X2");
     }
 
     #region Helpers
@@ -237,22 +245,20 @@ Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)
             return pokeyAt4k ? CartType.A78SGP : CartType.A78SG;  // supergame
         }
 
-        if (cartSize <= 0x2000)
-            return CartType.A7808;
-        if (cartSize <= 0x4000)
-            return CartType.A7816;
-        if (cartSize <= 0x8000)
-            return pokeyAt0450 ? CartType.A7832PL : pokeyAt4k ? CartType.A7832P : CartType.A7832;
-        if (cartSize <= 0xC000)
-            return CartType.A7848;
-
-        return CartType.Unknown;
+        return cartSize switch
+        {
+            <= 0x2000 => CartType.A7808,
+            <= 0x4000 => CartType.A7816,
+            <= 0x8000 => pokeyAt0450 ? CartType.A7832PL : pokeyAt4k ? CartType.A7832P : CartType.A7832,
+            <= 0xC000 => CartType.A7848,
+            _ => CartType.Unknown
+        };
     }
 
     static uint[] CreateHexStringLookupTable()
     {
         var result = new uint[0x100];
-        for (int i = 0; i < result.Length; i++)
+        for (var i = 0; i < result.Length; i++)
         {
             var s = i.ToString("x2");
             result[i] = s[0] + ((uint)s[1] << 0x10);

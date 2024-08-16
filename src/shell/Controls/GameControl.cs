@@ -18,9 +18,9 @@ public sealed class GameControl : ControlBase
     ReadOnlyMemory<uint> _darkerPalette  = ReadOnlyMemory<uint>.Empty;
     ReadOnlyMemory<uint> _currentPalette = ReadOnlyMemory<uint>.Empty;
 
-    readonly static object _dynamicBitmapLocker = new();
-    readonly static Memory<byte> _dynamicBitmapData = new(new byte[4 * 320 * 230]);
-    readonly static D2D_SIZE_U _dynamicBitmapDataSize = new(320, 230);
+    static readonly System.Threading.Lock _dynamicBitmapLocker = new();
+    static readonly Memory<byte> _dynamicBitmapData = new(new byte[4 * 320 * 230]);
+    static readonly D2D_SIZE_U _dynamicBitmapDataSize = new(320, 230);
     IFrameRenderer _frameRenderer = new FrameRendererDefault();
     D2DBitmapInterpolationMode _dynamicBitmapInterpolationMode = D2DBitmapInterpolationMode.NearestNeighbor;
     DynamicBitmap _dynamicBitmap = DynamicBitmap.Default;
@@ -32,8 +32,8 @@ public sealed class GameControl : ControlBase
 
     static readonly InputAdapterNull _defaultInputAdapter = new();
     readonly IInputAdapter[] _inputAdapters = [_defaultInputAdapter, _defaultInputAdapter];
-    readonly int[] _playerJackMapping = [0, 1, 0, 1];
-    readonly int[] _paddleSwaps = [0, 1, 2, 3];
+    readonly int[] _jackSwaps = [0, 1];
+    readonly int[] _paddleSwaps = [0, 1, 0, 1];
     int _currentKeyboardPlayerNo;
 
     Task _workerTask = Task.CompletedTask;
@@ -47,20 +47,11 @@ public sealed class GameControl : ControlBase
 
     #endregion
 
-    public bool IsGameBWConsoleSwitchSet
-    {
-        get => _inputState.IsGameBWConsoleSwitchSet;
-    }
+    public bool IsGameBWConsoleSwitchSet => _inputState.IsGameBWConsoleSwitchSet;
 
-    public bool IsLeftDifficultyAConsoleSwitchSet
-    {
-        get => _inputState.IsLeftDifficultyAConsoleSwitchSet;
-    }
+    public bool IsLeftDifficultyAConsoleSwitchSet => _inputState.IsLeftDifficultyAConsoleSwitchSet;
 
-    public bool IsRightDifficultyAConsoleSwitchSet
-    {
-        get => _inputState.IsRightDifficultyAConsoleSwitchSet;
-    }
+    public bool IsRightDifficultyAConsoleSwitchSet => _inputState.IsRightDifficultyAConsoleSwitchSet;
 
     public bool IsPaused
     {
@@ -91,11 +82,9 @@ public sealed class GameControl : ControlBase
     public bool IsAntiAliasOn
     {
         get => _dynamicBitmapInterpolationMode == D2DBitmapInterpolationMode.Linear;
-        set
-        {
-            _dynamicBitmapInterpolationMode
-                = value ? D2DBitmapInterpolationMode.Linear : D2DBitmapInterpolationMode.NearestNeighbor;
-        }
+        set => _dynamicBitmapInterpolationMode = value
+            ? D2DBitmapInterpolationMode.Linear
+            : D2DBitmapInterpolationMode.NearestNeighbor;
     }
 
     public int CurrentFrameRate { get; private set; }
@@ -174,22 +163,19 @@ public sealed class GameControl : ControlBase
 
     public bool SwapJacks()
     {
-        for (var pi = 0; pi < 4; pi++)
-        {
-            _playerJackMapping[pi] ^= 1;
-        }
-        return _playerJackMapping[0] == 1;
+        (_jackSwaps[0], _jackSwaps[1]) = (_jackSwaps[1], _jackSwaps[0]);
+        return _jackSwaps[0] == 1;
     }
 
     public bool SwapLeftControllerPaddles()
     {
-        (_paddleSwaps[1], _paddleSwaps[0]) = (_paddleSwaps[0], _paddleSwaps[1]);
+        (_paddleSwaps[0], _paddleSwaps[1]) = (_paddleSwaps[1], _paddleSwaps[0]);
         return _paddleSwaps[0] == 1;
     }
 
     public bool SwapRightControllerPaddles()
     {
-        (_paddleSwaps[3], _paddleSwaps[2]) = (_paddleSwaps[2], _paddleSwaps[3]);
+        (_paddleSwaps[2], _paddleSwaps[3]) = (_paddleSwaps[3], _paddleSwaps[2]);
         return _paddleSwaps[2] == 3;
     }
 
@@ -198,47 +184,54 @@ public sealed class GameControl : ControlBase
         _inputState.RaiseInput(_currentKeyboardPlayerNo, machineInput, down);
     }
 
-    public void PaddleButtonChanged(int playerNo, bool down)
-    {
-        var swappedPlayerNo = _paddleSwaps[playerNo & 3];
-        _inputAdapters[_playerJackMapping[swappedPlayerNo]].JoystickChanged(swappedPlayerNo, MachineInput.Fire, down);
-    }
-
     #region ControlBase Overrides
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
     {
-        _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].KeyboardKeyPressed(_currentKeyboardPlayerNo, key, down);
+        _inputAdapters[_jackSwaps[_currentKeyboardPlayerNo & 1]].KeyboardKeyPressed(_currentKeyboardPlayerNo, key, down);
     }
 
     public override void MouseMoved(int pointerId, int x, int y, int dx, int dy)
     {
-        _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].MouseMoved(_currentKeyboardPlayerNo, x, y, dx, dy);
+        _inputAdapters[_jackSwaps[_currentKeyboardPlayerNo & 1]].MouseMoved(_currentKeyboardPlayerNo, x, y, dx, dy);
     }
 
     public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
     {
-        _inputAdapters[_playerJackMapping[_currentKeyboardPlayerNo]].MouseButtonChanged(_currentKeyboardPlayerNo, x, y, down, IsInTouchMode);
+        _inputAdapters[_jackSwaps[_currentKeyboardPlayerNo & 1]].MouseButtonChanged(_currentKeyboardPlayerNo, x, y, down, IsInTouchMode);
     }
 
     public override void ControllerButtonChanged(int controllerNo, MachineInput machineInput, bool down)
     {
-        var playerNo = controllerNo;
-        _inputAdapters[_playerJackMapping[playerNo & 3]].JoystickChanged(playerNo, machineInput, down);
-        _inputAdapters[_playerJackMapping[playerNo & 3]].ProLineJoystickChanged(playerNo, machineInput, down);
+        controllerNo &= 1;
+        var jackNo = _jackSwaps[controllerNo];
+        var playerNo = jackNo;
+        _inputAdapters[jackNo].JoystickChanged(playerNo, machineInput, down);
+        _inputAdapters[jackNo].ProLineJoystickChanged(playerNo, machineInput, down);
     }
 
     public override void PaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
     {
-        var playerNo = (controllerNo << 1) + paddleNo;
-        var swappedPlayerNo = _paddleSwaps[playerNo & 3];
-        _inputAdapters[_playerJackMapping[swappedPlayerNo]].PaddleChanged(swappedPlayerNo, ohms);
+        controllerNo &= 1;
+        var jackNo = _jackSwaps[controllerNo];
+        var playerNo = (jackNo << 1) | _paddleSwaps[(jackNo << 1) | paddleNo & 1];
+        _inputAdapters[jackNo].PaddleChanged(playerNo, ohms);
+    }
+
+    public override void PaddleButtonChanged(int controllerNo, int paddleNo, bool down)
+    {
+        controllerNo &= 1;
+        var jackNo = _jackSwaps[controllerNo];
+        var playerNo = (jackNo << 1) | _paddleSwaps[(jackNo << 1) | paddleNo & 1];
+        _inputAdapters[jackNo].PaddleButtonChanged(playerNo, down);
     }
 
     public override void DrivingPositionChanged(int controllerNo, MachineInput machineInput)
     {
-        var playerNo = controllerNo;
-        _inputAdapters[_playerJackMapping[playerNo & 3]].DrivingPaddleChanged(playerNo, machineInput);
+        controllerNo &= 1;
+        var jackNo = _jackSwaps[controllerNo];
+        var playerNo = jackNo;
+        _inputAdapters[jackNo].DrivingPaddleChanged(playerNo, machineInput);
     }
 
     public override void LocationChanged()
@@ -301,12 +294,12 @@ public sealed class GameControl : ControlBase
 
     void Run(object? state)
     {
-        if (state == null)
+        if (state is not Tuple<ImportedGameProgramInfo, bool> typedState)
+        {
             return;
+        }
 
-        var args = (Tuple<ImportedGameProgramInfo, bool>)state;
-        var importedGameProgramInfo = args.Item1;
-        var startFresh = args.Item2;
+        var (importedGameProgramInfo, startFresh) = typedState;
 
         var machineStateInfo = MachineStateInfo.Default;
 
@@ -343,26 +336,12 @@ public sealed class GameControl : ControlBase
         _inputAdapters[0] = ToInputAdapter(machineStateInfo, 0);
         _inputAdapters[1] = ToInputAdapter(machineStateInfo, 1);
 
-        var pi = 0;
-        if (machine.InputState.LeftControllerJack == Controller.Paddles)
-        {
-            _playerJackMapping[pi++] = 0;
-            _playerJackMapping[pi++] = 0;
-        }
-        else if (machine.InputState.LeftControllerJack != Controller.None)
-        {
-            _playerJackMapping[pi++] = 0;
-        }
-
-        if (machine.InputState.RightControllerJack == Controller.Paddles)
-        {
-            _playerJackMapping[pi++] = 1;
-            _playerJackMapping[pi] = 1;
-        }
-        else if (machine.InputState.RightControllerJack != Controller.None)
-        {
-            _playerJackMapping[pi] = 1;
-        }
+        _jackSwaps[0] = 0;
+        _jackSwaps[1] = 1;
+        _paddleSwaps[0] = 0;
+        _paddleSwaps[1] = 1;
+        _paddleSwaps[2] = 0;
+        _paddleSwaps[3] = 1;
 
         InitializePalettes(machine.Palette);
         _currentPalette = _normalPalette;
@@ -400,10 +379,13 @@ public sealed class GameControl : ControlBase
                     _proposedFrameRate = 1000 / i;
                     break;
                 }
-                if (_proposedFrameRate > 60)
-                    _proposedFrameRate = 60;
-                else if (_proposedFrameRate < 4)
-                    _proposedFrameRate = 4;
+
+                _proposedFrameRate = _proposedFrameRate switch
+                {
+                    > 60 => 60,
+                    < 4 => 4,
+                    _ => _proposedFrameRate
+                };
 
                 if (CurrentFrameRate > _proposedFrameRate)
                     _frameRateChangeNeeded = true;
@@ -426,13 +408,14 @@ public sealed class GameControl : ControlBase
             }
 
             var buffersQueued = AudioDevice.CountBuffersQueued();
-            long adjustment = 0;
-            if (buffersQueued < 0 || _soundOff || _paused)
-                adjustment = 0;
-            else if (buffersQueued < 2)
-                adjustment = -(ticksPerFrame >> 1);
-            else if (buffersQueued > 4)
-                adjustment = ticksPerFrame >> 1;
+            var adjustment = buffersQueued < 0 || _soundOff || _paused
+                ? 0
+                : buffersQueued switch
+                {
+                    < 2 => -(ticksPerFrame >> 1),
+                    > 4 => ticksPerFrame >> 1,
+                    _ => 0
+                };
             endTick += adjustment;
 
             if (!_paused)
@@ -499,13 +482,12 @@ public sealed class GameControl : ControlBase
             var endTick = startTick + ticksPerFrame;
 
             var buffersQueued = AudioDevice.CountBuffersQueued();
-            long adjustment = 0;
-            if (buffersQueued < 0)
-                adjustment = 0;
-            else if (buffersQueued < 2)
-                adjustment = -(ticksPerFrame >> 1);
-            else if (buffersQueued > 4)
-                adjustment = ticksPerFrame >> 1;
+            var adjustment = buffersQueued switch
+            {
+                < 2 => -(ticksPerFrame >> 1),
+                > 4 => ticksPerFrame >> 1,
+                _  => 0
+            };
             endTick += adjustment;
 
             if (!_soundOff)
@@ -544,24 +526,20 @@ public sealed class GameControl : ControlBase
 
     IInputAdapter ToInputAdapter(MachineStateInfo machineState, int jackNo)
     {
-        IInputAdapter inputAdapter = (ToController(machineState, jackNo)) switch
+        var controller = (jackNo & 1) == 0 ? machineState.Machine.InputState.LeftControllerJack : machineState.Machine.InputState.RightControllerJack;
+        IInputAdapter inputAdapter = controller switch
         {
-            Controller.Joystick or Controller.BoosterGrip => new InputAdapterJoystick(_inputState, jackNo),
-            Controller.ProLineJoystick => new InputAdapterProlineJoystick(_inputState, jackNo),
-            Controller.Keypad          => new InputAdapterKeypad(_inputState, jackNo),
-            Controller.Paddles         => new InputAdapterPaddle(_inputState, jackNo),
-            Controller.Driving         => new InputAdapterDrivingPaddle(_inputState, jackNo),
-            Controller.Lightgun        => new InputAdapterLightgun(_inputState, jackNo, machineState.Machine.FirstScanline, machineState.GameProgramInfo.MachineType),
-            _                          => _defaultInputAdapter,
+            Controller.Joystick or Controller.BoosterGrip => new InputAdapterJoystick(_inputState),
+            Controller.ProLineJoystick => new InputAdapterProlineJoystick(_inputState),
+            Controller.Keypad   => new InputAdapterKeypad(_inputState),
+            Controller.Paddles  => new InputAdapterPaddle(_inputState),
+            Controller.Driving  => new InputAdapterDrivingPaddle(_inputState),
+            Controller.Lightgun => new InputAdapterLightgun(_inputState, machineState.Machine.FirstScanline, machineState.GameProgramInfo.MachineType),
+            _                   => _defaultInputAdapter
         };
         inputAdapter.ScreenResized(Location, Size);
         return inputAdapter;
     }
-
-    static Controller ToController(MachineStateInfo machineState, int jackNo)
-        => (jackNo & 1) == 0
-            ? machineState.Machine.InputState.LeftControllerJack
-            : machineState.Machine.InputState.RightControllerJack;
 
     void InitializePalettes(ReadOnlyMemory<uint> sourcePalette)
     {

@@ -85,37 +85,16 @@ public static class GameControllers
     #region Helpers
 
     static JoystickType JoystickTypeFrom(string name)
-    {
-        if (name == "Stelladaptor 2600-to-USB Interface")
+        => name switch
         {
-            return JoystickType.Stelladaptor;
-        }
-        else if (name == "2600-daptor")
-        {
-            return JoystickType.Daptor;
-        }
-        else if (name == "2600-daptor II")
-        {
-            return JoystickType.Daptor2;
-        }
-        else if (name == "Controller (XBOX 360 For Windows)"
-             ||  name == "Controller (Xbox 360 Wireless Receiver for Windows)")
-        {
-            return JoystickType.XInput;
-        }
-        else if (name.Contains("XBOX", StringComparison.OrdinalIgnoreCase))
-        {
-            return JoystickType.XInput;
-        }
-        else if (name.Length > 0)
-        {
-            return JoystickType.Usb;
-        }
-        else
-        {
-            return JoystickType.XInput;
-        }
-    }
+            "Stelladaptor 2600-to-USB Interface" => JoystickType.Stelladaptor,
+            "2600-daptor" => JoystickType.Daptor,
+            "2600-daptor II" => JoystickType.Daptor2,
+            "Controller (XBOX 360 For Windows)" or "Controller (Xbox 360 Wireless Receiver for Windows)" => JoystickType.XInput,
+            _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
+                    ? JoystickType.XInput
+                    : name.Length > 0 ? JoystickType.Usb : JoystickType.XInput
+        };
 
     #endregion
 }

@@ -2,12 +2,11 @@
 
 using System;
 
-namespace EMU7800.D2D.Shell
+namespace EMU7800.D2D.Shell;
+
+public sealed class FrameRendererDefault : IFrameRenderer
 {
-    public sealed class FrameRendererDefault : IFrameRenderer
+    public void UpdateDynamicBitmapData(ReadOnlySpan<uint> palette, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
     {
-        public void UpdateDynamicBitmapData(ReadOnlySpan<uint> palette, ReadOnlySpan<byte> inputBuffer, Span<byte> outputBuffer)
-        {
-        }
     }
 }

@@ -1,6 +1,19 @@
-<Project>
+﻿<Project>
   <!-- See https://aka.ms/dotnet/msbuild/customize for more details on customizing your build -->
   <PropertyGroup>
     <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+    <AssemblyVersion>5.5.0.0</AssemblyVersion>
+    <Authors>Mike Murphy</Authors>
+    <Copyright>© 2012-2024 Mike Murphy (mike@emu7800.net)</Copyright>
+    <Description>An Atari 2600/7800 .NET-based Emulator</Description>
+    <Emu7800Version>5.5.0</Emu7800Version>
+    <FileVersion>5.5.0.0</FileVersion>
+    <LangVersion>13.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <TargetFramework>net9.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 </Project>

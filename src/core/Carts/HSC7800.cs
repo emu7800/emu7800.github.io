@@ -59,11 +59,11 @@ public sealed class HSC7800 : Cart
 
     public override bool Map()
     {
-        M?.Mem.Map(0x1000, 0x800, this);
-        M?.Mem.Map(0x3000, 0x1000, this);
-        if (M != null && !M.Mem.Map(Cart))
+        M.Mem.Map(0x1000, 0x800, this);
+        M.Mem.Map(0x3000, 0x1000, this);
+        if (!M.Mem.Map(Cart))
         {
-            M?.Mem.Map(0x4000, 0xc000, Cart);
+            M.Mem.Map(0x4000, 0xc000, Cart);
         }
         return true;
     }

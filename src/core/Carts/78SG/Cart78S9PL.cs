@@ -43,7 +43,7 @@ public sealed class Cart78S9PL : Cart
                     _pokeySound.Update(addr, value);
                     break;
                 default:
-                    if ((addr >> ROM_SHIFT) == 2)
+                    if (addr >> ROM_SHIFT == 2)
                     {
                         Bank[2] = (value & 7) + 1;
                     }
@@ -57,7 +57,7 @@ public sealed class Cart78S9PL : Cart
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(m);
+        _pokeySound = new(m);
     }
 
     public override void StartFrame()
@@ -71,8 +71,8 @@ public sealed class Cart78S9PL : Cart
 
     public override bool Map()
     {
-        M?.Mem.Map(0x0440, 0x40, this);
-        M?.Mem.Map(0x4000, 0xc000, this);
+        M.Mem.Map(0x0440, 0x40, this);
+        M.Mem.Map(0x4000, 0xc000, this);
         return true;
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace EMU7800.SoundEmulator;
@@ -35,45 +36,22 @@ public class InputTapeReader
 
     static byte[] ParseLine(string line)
     {
-        const int byteCount = 16;
-        var parsedLine = Array.Empty<byte>();
-        var isDigitMode = false;
-        var currentIndex = -1;
-
-        for (var i = 0; i < line.Length && currentIndex < byteCount; i++)
+        var trimmedLine = line.Trim();
+        if (trimmedLine.Length == 0 || trimmedLine[0] == ';')
         {
-            var ch = line[i];
-            var isDigit = (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
+            return [];
+        }
 
-            if (i == 0)
-            {
-                if (!isDigit)
-                    break;
-                parsedLine = new byte[byteCount];
-            }
-            if (isDigitMode)
-            {
-                if (!isDigit)
-                    isDigitMode = false;
-            }
-            else if (isDigit)
-            {
-                isDigitMode = true;
-                currentIndex++;
-            }
-            if (!isDigitMode || parsedLine.Length == 0)
-                continue;
+        var parsedLine = new byte[16];
 
-            byte val = 0;
-            if (ch >= '0' && ch <= '9')
-                val = (byte)(ch - '0');
-            else if (ch >= 'a' && ch <= 'f')
-                val = (byte) ((ch - 'a') + 0xa);
-            else if (ch >= 'A' && ch <= 'F')
-                val = (byte)((ch - 'A') + 0xa);
+        var splitTrimmedLine = trimmedLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-            parsedLine[currentIndex] <<= 4;
-            parsedLine[currentIndex] |= val;
+        for (var i = 0; i < parsedLine.Length && i < splitTrimmedLine.Length; i++)
+        {
+            if (byte.TryParse(splitTrimmedLine[i], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var byteVal))
+            {
+                parsedLine[i] = byteVal;
+            }
         }
 
         return parsedLine;

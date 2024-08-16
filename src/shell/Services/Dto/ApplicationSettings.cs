@@ -1,10 +1,9 @@
-// © Mike Murphy
+// Â© Mike Murphy
 
-namespace EMU7800.Services.Dto
+namespace EMU7800.Services.Dto;
+
+public record ApplicationSettings
 {
-    public record ApplicationSettings
-    {
-        public bool ShowTouchControls { get; set; }
-        public int TouchControlSeparation { get; set; }
-    }
+    public bool ShowTouchControls { get; set; }
+    public int TouchControlSeparation { get; set; }
 }

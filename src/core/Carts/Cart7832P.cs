@@ -49,7 +49,7 @@ public sealed class Cart7832P : Cart
     public override void Attach(MachineBase m)
     {
         base.Attach(m);
-        _pokeySound = new PokeySound(m);
+        _pokeySound = new(m);
     }
 
     public override void StartFrame()
@@ -63,7 +63,7 @@ public sealed class Cart7832P : Cart
 
     public override bool Map()
     {
-        M?.Mem.Map(0x4000, 0xc000, this);
+        M.Mem.Map(0x4000, 0xc000, this);
         return true;
     }
 

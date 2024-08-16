@@ -1,20 +1,18 @@
-// © Mike Murphy
+﻿// © Mike Murphy
 
 using EMU7800.Core;
 using EMU7800.Win32.Interop;
 
 namespace EMU7800.D2D.Shell;
 
-public sealed class InputAdapterDrivingPaddle(InputState inputState, int jackNo) : IInputAdapter
+public sealed class InputAdapterDrivingPaddle(InputState inputState) : IInputAdapter
 {
     static readonly MachineInput[] _mapping = [MachineInput.Driving0, MachineInput.Driving1, MachineInput.Driving2, MachineInput.Driving3];
+    static readonly int RotCounterRate = (int)System.Diagnostics.Stopwatch.Frequency / 10;
+    readonly int[] _direction = new int[2];
+    readonly int[] _curGrayCode = new int[2];
 
-    readonly InputState _inputState = inputState;
-    readonly int _jackNo = jackNo;
-    readonly int _rotCounterRate = (int)System.Diagnostics.Stopwatch.Frequency / 10;
-
-    int _direction, _rotCounter, _curGrayCode;
-    bool _emulationOff;
+    int _rotCounter;
 
     public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
     {
@@ -27,13 +25,13 @@ public sealed class InputAdapterDrivingPaddle(InputState inputState, int jackNo)
             case MachineInput.Fire:
             case MachineInput.Fire2:
             case MachineInput.Up:
-                _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
+                inputState.RaiseInput(playerNo, MachineInput.Fire, down);
                 break;
             case MachineInput.Left:
-                _direction += down ? -1 : 1;
+                _direction[playerNo] = down ? -1 : 0;
                 break;
             case MachineInput.Right:
-                _direction += down ? 1 : -1;
+                _direction[playerNo] = down ? 1 : 0;
                 break;
         }
     }
@@ -46,10 +44,13 @@ public sealed class InputAdapterDrivingPaddle(InputState inputState, int jackNo)
     {
     }
 
+    public void PaddleButtonChanged(int playerNo, bool down)
+    {
+    }
+
     public void DrivingPaddleChanged(int playerNo, MachineInput machineInput)
     {
-        _emulationOff = true;
-        _inputState.RaiseInput(_jackNo, machineInput, true);
+        inputState.RaiseInput(playerNo, machineInput, true);
     }
 
     public void KeyboardKeyPressed(int playerNo, KeyboardKey key, bool down)
@@ -59,13 +60,13 @@ public sealed class InputAdapterDrivingPaddle(InputState inputState, int jackNo)
             case KeyboardKey.X:
             case KeyboardKey.Z:
             case KeyboardKey.Up:
-                _inputState.RaiseInput(_jackNo, MachineInput.Fire, down);
+                inputState.RaiseInput(playerNo, MachineInput.Fire, down);
                 break;
             case KeyboardKey.Left:
-                _direction += down ? -1 : 1;
+                _direction[playerNo] = down ? -1 : 0;
                 break;
             case KeyboardKey.Right:
-                _direction += down ? 1 : -1;
+                _direction[playerNo] = down ? 1 : 0;
                 break;
         }
     }
@@ -80,20 +81,19 @@ public sealed class InputAdapterDrivingPaddle(InputState inputState, int jackNo)
 
     public void Update(TimerDevice td)
     {
-        if (_emulationOff)
-            return;
-
         _rotCounter -= td.DeltaTicks;
-        if (_rotCounter > 0)
-            return;
-        _rotCounter += _rotCounterRate;
-
-        if (_direction == 0)
-            return;
-
-        _curGrayCode += _direction;
-        _curGrayCode &= 3;
-
-        _inputState.RaiseInput(_jackNo, _mapping[_curGrayCode], true);
+        if (_rotCounter <= 0)
+        {
+            _rotCounter += RotCounterRate;
+            for (var playerNo = 0; playerNo < 2; playerNo++)
+            {
+                if (_direction[playerNo] != 0)
+                {
+                    _curGrayCode[playerNo] += _direction[playerNo];
+                    _curGrayCode[playerNo] &= 3;
+                    inputState.RaiseInput(playerNo, _mapping[_curGrayCode[playerNo]], true);
+                }
+            }
+        }
     }
 }

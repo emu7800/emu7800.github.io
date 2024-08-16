@@ -131,7 +131,7 @@ public sealed class PokeySound
             // If the 2 least significant bits of SKCTL are 0, the random number generator is disabled (return all 1s.)
             // Ballblazer music relies on this.
             RANDOM => (_skctl & SKCTL_RESET) == 0 ? (byte)0xff : (byte)_random.Next(0xff),
-            _      => 0,
+            _      => 0
         };
     }
 
@@ -187,8 +187,8 @@ public sealed class PokeySound
                 break;
             case AUDCTL:
                 _audctl = data;
-                _poly17Size = ((_audctl & AUDCTL_POLY9) != 0) ? POLY9_SIZE : POLY17_SIZE;
-                _baseMultiplier = ((_audctl & AUDCTL_CLOCK_15) != 0) ? DIV_15 : DIV_64;
+                _poly17Size = (_audctl & AUDCTL_POLY9) != 0 ? POLY9_SIZE : POLY17_SIZE;
+                _baseMultiplier = (_audctl & AUDCTL_CLOCK_15) != 0 ? DIV_15 : DIV_64;
                 ResetChannel1();
                 ResetChannel2();
                 ResetChannel3();
@@ -273,12 +273,12 @@ public sealed class PokeySound
     void RenderSamples(int count)
     {
         const int POKEY_SAMPLE = 4;
-        var poly17Length = (_poly17Size > _poly17.Length ? _poly17.Length : _poly17Size);
+        var poly17Length = _poly17Size > _poly17.Length ? _poly17.Length : _poly17Size;
 
         while (count > 0 && _bufferIndex < M.FrameBuffer.SoundBuffer.Length)
         {
             var nextEvent = POKEY_SAMPLE;
-            var wholeTicksToConsume = (_pokeyTicks >> 8);
+            var wholeTicksToConsume = _pokeyTicks >> 8;
 
             for (var ch = 0; ch < 4; ch++)
             {
@@ -292,7 +292,7 @@ public sealed class PokeySound
             for (var ch = 0; ch < 4; ch++)
                 _divideCount[ch] -= wholeTicksToConsume;
 
-            _pokeyTicks -= (wholeTicksToConsume << 8);
+            _pokeyTicks -= wholeTicksToConsume << 8;
 
             if (nextEvent == POKEY_SAMPLE)
             {
@@ -329,7 +329,7 @@ public sealed class PokeySound
                     _output[nextEvent] = _poly17[_poly17Counter];
             }
 
-            _outvol[nextEvent] = (_output[nextEvent] != 0) ? (byte)(_audc[nextEvent] & AUDC_VOLUME_MASK) : (byte)0;
+            _outvol[nextEvent] = _output[nextEvent] != 0 ? (byte)(_audc[nextEvent] & AUDC_VOLUME_MASK) : (byte)0;
         }
     }
 
@@ -340,7 +340,7 @@ public sealed class PokeySound
 
     void ResetChannel1()
     {
-        var val = ((_audctl & AUDCTL_CH1_179) != 0) ? (_audf[0] + 4) : ((_audf[0] + 1) * _baseMultiplier);
+        var val = (_audctl & AUDCTL_CH1_179) != 0 ? _audf[0] + 4 : (_audf[0] + 1) * _baseMultiplier;
         if (val != _divideMax[0])
         {
             _divideMax[0] = val;
@@ -355,11 +355,11 @@ public sealed class PokeySound
         int val;
         if ((_audctl & AUDCTL_CH1_CH2) != 0)
         {
-            val = ((_audctl & AUDCTL_CH1_179) != 0) ? (_audf[1] * 256 + _audf[0] + 7) : ((_audf[1] * 256 + _audf[0] + 1) * _baseMultiplier);
+            val = (_audctl & AUDCTL_CH1_179) != 0 ? _audf[1] * 256 + _audf[0] + 7 : (_audf[1] * 256 + _audf[0] + 1) * _baseMultiplier;
         }
         else
         {
-            val = ((_audf[1] + 1) * _baseMultiplier);
+            val = (_audf[1] + 1) * _baseMultiplier;
         }
         if (val != _divideMax[1])
         {
@@ -372,7 +372,7 @@ public sealed class PokeySound
 
     void ResetChannel3()
     {
-        var val = ((_audctl & AUDCTL_CH3_179) != 0) ? (_audf[2] + 4) : ((_audf[2] + 1) * _baseMultiplier);
+        var val = (_audctl & AUDCTL_CH3_179) != 0 ? _audf[2] + 4 : (_audf[2] + 1) * _baseMultiplier;
         if (val != _divideMax[2])
         {
             _divideMax[2] = val;
@@ -387,11 +387,11 @@ public sealed class PokeySound
         int val;
         if ((_audctl & AUDCTL_CH3_CH4) != 0)
         {
-            val = ((_audctl & AUDCTL_CH3_179) != 0) ? (_audf[3] * 256 + _audf[2] + 7) : ((_audf[3] * 256 + _audf[2] + 1) * _baseMultiplier);
+            val = (_audctl & AUDCTL_CH3_179) != 0 ? _audf[3] * 256 + _audf[2] + 7 : (_audf[3] * 256 + _audf[2] + 1) * _baseMultiplier;
         }
         else
         {
-            val = ((_audf[3] + 1) * _baseMultiplier);
+            val = (_audf[3] + 1) * _baseMultiplier;
         }
         if (val != _divideMax[3])
         {
@@ -404,7 +404,7 @@ public sealed class PokeySound
 
     void UpdateVolumeSettingsForChannel(int ch)
     {
-        if (((_audc[ch] & AUDC_VOLUME_ONLY) != 0) || ((_audc[ch] & AUDC_VOLUME_MASK) == 0) || (_divideMax[ch] < (_pokeyTicksPerSample >> 8)))
+        if ((_audc[ch] & AUDC_VOLUME_ONLY) != 0 || (_audc[ch] & AUDC_VOLUME_MASK) == 0 || _divideMax[ch] < _pokeyTicksPerSample >> 8)
         {
             _outvol[ch] = (byte)(_audc[ch] & AUDC_VOLUME_MASK);
             _divideCount[ch] = int.MaxValue;

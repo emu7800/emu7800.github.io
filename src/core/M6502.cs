@@ -10,1056 +10,1052 @@ using System;
 
 #pragma warning disable IDE1006 // Naming Styles
 
-namespace EMU7800.Core
+namespace EMU7800.Core;
+
+public sealed class M6502
 {
-    public sealed class M6502
+    public static readonly M6502 Default = new(MachineBase.Default, 1);
+
+    readonly Action[] Opcodes = new Action[0x100];
+
+    const ushort
+        // non-maskable interrupt vector
+        NMI_VEC = 0xfffa,
+        // reset vector
+        RST_VEC = 0xfffc,
+        // interrupt request vector
+        IRQ_VEC = 0xfffe;
+
+    readonly MachineBase M = MachineBase.Default;
+
+    AddressSpace Mem => M.Mem;
+
+    public ulong Clock { get; set; }
+    public int RunClocks { get; set; }
+    public int RunClocksMultiple { get; }
+
+    public bool EmulatorPreemptRequest { get; set; }
+    public bool Jammed { get; set; }
+    public bool IRQInterruptRequest { get; set; }
+    public bool NMIInterruptRequest { get; set; }
+
+    // 16-bit register
+    // program counter
+    public ushort PC { get; set; }
+
+    // 8-bit registers
+    // accumulator
+    public byte A { get; set; }
+    // x index register
+    public byte X { get; set; }
+    // y index register
+    public byte Y { get; set; }
+    // stack pointer
+    public byte S { get; set; }
+    // processor status
+    public byte P { get; set; }
+
+    public void Reset()
     {
-        public static readonly M6502 Default = new(MachineBase.Default, 1);
+        Jammed = false;
 
-        readonly Action[] Opcodes = new Action[0x100];
+        // clear the stack
+        S = 0xff;
 
-        const ushort
-            // non-maskable interrupt vector
-            NMI_VEC = 0xfffa,
-            // reset vector
-            RST_VEC = 0xfffc,
-            // interrupt request vector
-            IRQ_VEC = 0xfffe;
+        fI = fZ = true;
 
-        readonly MachineBase M = MachineBase.Default;
+        // reset the program counter
+        PC = WORD(Mem[RST_VEC], Mem[RST_VEC + 1]);
 
-        AddressSpace Mem => M.Mem;
+        clk(6);
 
-        public ulong Clock { get; set; }
-        public int RunClocks { get; set; }
-        public int RunClocksMultiple { get; }
+        Log($"{this} (PC:${PC:x4}) reset");
+    }
 
-        public bool EmulatorPreemptRequest { get; set; }
-        public bool Jammed { get; set; }
-        public bool IRQInterruptRequest { get; set; }
-        public bool NMIInterruptRequest { get; set; }
+    public override string ToString()
+        => "M6502 CPU";
 
-        // 16-bit register
-        // program counter
-        public ushort PC { get; set; }
+    public void Execute()
+    {
+        EmulatorPreemptRequest = false;
 
-        // 8-bit registers
-        // accumulator
-        public byte A { get; set; }
-        // x index register
-        public byte X { get; set; }
-        // y index register
-        public byte Y { get; set; }
-        // stack pointer
-        public byte S { get; set; }
-        // processor status
-        public byte P { get; set; }
-
-        public void Reset()
+        while (RunClocks > 0 && !EmulatorPreemptRequest && !Jammed)
         {
-            Jammed = false;
-
-            // clear the stack
-            S = 0xff;
-
-            fI = fZ = true;
-
-            // reset the program counter
-            PC = WORD(Mem[RST_VEC], Mem[RST_VEC + 1]);
-
-            clk(6);
-
-            Log($"{this} (PC:${PC:x4}) reset");
-        }
-
-        public override string ToString()
-            => "M6502 CPU";
-
-        public void Execute()
-        {
-            EmulatorPreemptRequest = false;
-
-            while (RunClocks > 0 && !EmulatorPreemptRequest && !Jammed)
+            if (NMIInterruptRequest)
             {
-                if (NMIInterruptRequest)
-                {
-                    InterruptNMI();
-                    NMIInterruptRequest = false;
-                }
-                else if (IRQInterruptRequest)
-                {
-                    InterruptIRQ();
-                    IRQInterruptRequest = false;
-                }
-                else
-                {
-                    Opcodes[Mem[PC++]]();
-                }
+                InterruptNMI();
+                NMIInterruptRequest = false;
+            }
+            else if (IRQInterruptRequest)
+            {
+                InterruptIRQ();
+                IRQInterruptRequest = false;
+            }
+            else
+            {
+                Opcodes[Mem[PC++]]();
             }
         }
+    }
 
-        private M6502()
-        {
-            InstallOpcodes();
+    private M6502()
+    {
+        InstallOpcodes();
 
-            Clock = 0;
-            RunClocks = 0;
-            RunClocksMultiple = 1;
+        Clock = 0;
+        RunClocks = 0;
+        RunClocksMultiple = 1;
 
-            // initialize processor status, bit 5 is always set
-            P = 1 << 5;
-        }
+        // initialize processor status, bit 5 is always set
+        P = 1 << 5;
+    }
 
-        public M6502(MachineBase m, int runClocksMultiple) : this()
-        {
-            if (runClocksMultiple <= 0)
-                throw new ArgumentException("must be greater than zero", nameof(runClocksMultiple));
+    public M6502(MachineBase m, int runClocksMultiple) : this()
+    {
+        if (runClocksMultiple <= 0)
+            throw new ArgumentException("must be greater than zero", nameof(runClocksMultiple));
 
-            M = m;
-            RunClocksMultiple = runClocksMultiple;
-        }
+        M = m;
+        RunClocksMultiple = runClocksMultiple;
+    }
 
-        static byte MSB(ushort u16)
-            => (byte)(u16 >> 8);
+    static byte MSB(ushort u16)
+        => (byte)(u16 >> 8);
 
-        static byte LSB(ushort u16)
-            => (byte)u16;
+    static byte LSB(ushort u16)
+        => (byte)u16;
 
-        static ushort WORD(byte lsb, byte msb)
-            => (ushort)(lsb | msb << 8);
+    static ushort WORD(byte lsb, byte msb)
+        => (ushort)(lsb | msb << 8);
 
-        // Processor Status Flag Bits
-        //
+    // Processor Status Flag Bits
+    //
 
-        // Flag bit setters and getters
-        void Fset(byte flag, bool value)
-            => P = (byte)(value ? P | flag : P & ~flag);
+    // Flag bit setters and getters
+    void Fset(byte flag, bool value)
+        => P = (byte)(value ? P | flag : P & ~flag);
 
-        bool Fget(byte flag)
-            => (P & flag) != 0;
+    bool Fget(byte flag)
+        => (P & flag) != 0;
 
-        // Carry: set if the add produced a carry, if the subtraction
-        //      produced a borrow.  Also used in shift instructions.
-        bool fC
-        {
-            get => Fget(1 << 0);
-            set => Fset(1 << 0, value);
-        }
+    // Carry: set if the add produced a carry, if the subtraction
+    //      produced a borrow.  Also used in shift instructions.
+    bool fC
+    {
+        get => Fget(1 << 0);
+        set => Fset(1 << 0, value);
+    }
 
-        // Zero: set if the result of the last operation was zero
-        bool fZ
-        {
-            get => Fget(1 << 1);
-            set => Fset(1 << 1, value);
-        }
+    // Zero: set if the result of the last operation was zero
+    bool fZ
+    {
+        get => Fget(1 << 1);
+        set => Fset(1 << 1, value);
+    }
 
-        // Irq Disable: set if maskable interrupts are disabled
-        bool fI
-        {
-            get => Fget(1 << 2);
-            set => Fset(1 << 2, value);
-        }
+    // Irq Disable: set if maskable interrupts are disabled
+    bool fI
+    {
+        get => Fget(1 << 2);
+        set => Fset(1 << 2, value);
+    }
 
-        // Decimal Mode: set if decimal mode active
-        bool fD
-        {
-            get => Fget(1 << 3);
-            set => Fset(1 << 3, value);
-        }
+    // Decimal Mode: set if decimal mode active
+    bool fD
+    {
+        get => Fget(1 << 3);
+        set => Fset(1 << 3, value);
+    }
 
-        // Brk: set if an interrupt caused by a BRK instruction,
-        //      reset if caused by an internal interrupt
-        bool fB
-        {
-            set => Fset(1 << 4, value);
-        }
+    // Brk: set if an interrupt caused by a BRK instruction,
+    //      reset if caused by an internal interrupt
+    bool fB
+    {
+        set => Fset(1 << 4, value);
+    }
 
-        // Overflow: set if the addition of two-like-signed numbers
-        //      or the subtraction of two unlike-signed numbers
-        //      produces a result greater than +127 or less than -128.
-        bool fV
-        {
-            get => Fget(1 << 6);
-            set => Fset(1 << 6, value);
-        }
+    // Overflow: set if the addition of two-like-signed numbers
+    //      or the subtraction of two unlike-signed numbers
+    //      produces a result greater than +127 or less than -128.
+    bool fV
+    {
+        get => Fget(1 << 6);
+        set => Fset(1 << 6, value);
+    }
 
-        // Negative: set if bit 7 of the accumulator is set
-        bool fN
-        {
-            get => Fget(1 << 7);
-            set => Fset(1 << 7, value);
-        }
+    // Negative: set if bit 7 of the accumulator is set
+    bool fN
+    {
+        get => Fget(1 << 7);
+        set => Fset(1 << 7, value);
+    }
 
-        void set_fNZ(byte u8)
-        {
-            fN = (u8 & 0x80) != 0;
-            fZ = (u8 & 0xff) == 0;
-        }
+    void set_fNZ(byte u8)
+    {
+        fN = (u8 & 0x80) != 0;
+        fZ = (u8 & 0xff) == 0;
+    }
 
-        byte pull()
-        {
-            S++;
-            return Mem[(ushort)(0x0100 + S)];
-        }
+    byte pull()
+    {
+        S++;
+        return Mem[(ushort)(0x0100 + S)];
+    }
 
-        void push(byte data)
-        {
-            Mem[(ushort)(0x0100 + S)] = data;
-            S--;
-        }
+    void push(byte data)
+    {
+        Mem[(ushort)(0x0100 + S)] = data;
+        S--;
+    }
 
-        void clk(int ticks)
-        {
-            Clock += (ulong)ticks;
-            RunClocks -= ticks * RunClocksMultiple;
-        }
+    void clk(int ticks)
+    {
+        Clock += (ulong)ticks;
+        RunClocks -= ticks * RunClocksMultiple;
+    }
 
-        void InterruptNMI()
+    void InterruptNMI()
+    {
+        push(MSB(PC));
+        push(LSB(PC));
+        fB = false;
+        push(P);
+        fI = true;
+        PC = WORD(Mem[NMI_VEC], Mem[NMI_VEC + 1]);
+        clk(7);
+    }
+
+    void InterruptIRQ()
+    {
+        if (!fI)
         {
             push(MSB(PC));
             push(LSB(PC));
             fB = false;
             push(P);
             fI = true;
-            PC = WORD(Mem[NMI_VEC], Mem[NMI_VEC + 1]);
-            clk(7);
+            PC = WORD(Mem[IRQ_VEC], Mem[IRQ_VEC + 1]);
         }
+        clk(7);
+    }
 
-        void InterruptIRQ()
+    void br(bool cond, ushort ea)
+    {
+        if (cond)
         {
-            if (!fI)
-            {
-                push(MSB(PC));
-                push(LSB(PC));
-                fB = false;
-                push(P);
-                fI = true;
-                PC = WORD(Mem[IRQ_VEC], Mem[IRQ_VEC + 1]);
-            }
-            clk(7);
-        }
-
-        void br(bool cond, ushort ea)
-        {
-            if (cond)
-            {
-                clk( (MSB(PC) == MSB(ea)) ? 1 : 2 );
-                PC = ea;
-            }
-        }
-
-
-        // Relative: Bxx $aa  (branch instructions only)
-        ushort aREL()
-        {
-            var bo = (sbyte)Mem[PC];
-            PC++;
-            return (ushort)(PC + bo);
-        }
-
-        // Zero Page: $aa
-        ushort aZPG()
-            => WORD(Mem[PC++], 0x00);
-
-        // Zero Page Indexed,X: $aa,X
-        ushort aZPX()
-            => WORD((byte)(Mem[PC++] + X), 0x00);
-
-        // Zero Page Indexed,Y: $aa,Y
-        ushort aZPY()
-            => WORD((byte)(Mem[PC++] + Y), 0x00);
-
-        // Absolute: $aaaa
-        ushort aABS()
-        {
-            var lsb = Mem[PC++];
-            var msb = Mem[PC++];
-            return WORD(lsb, msb);
-        }
-
-        // Absolute Indexed,X: $aaaa,X
-        ushort aABX(int eclk)
-        {
-            var ea = aABS();
-            if (LSB(ea) + X > 0xff)
-            {
-                clk(eclk);
-            }
-            return (ushort)(ea + X);
-        }
-
-        // Absolute Indexed,Y: $aaaa,Y
-        ushort aABY(int eclk)
-        {
-            var ea = aABS();
-            if (LSB(ea) + Y > 0xff)
-            {
-                clk(eclk);
-            }
-            return (ushort)(ea + Y);
-        }
-
-        // Indexed Indirect: ($aa,X)
-        ushort aIDX()
-        {
-            var zpa = (byte)(Mem[PC++] + X);
-            var lsb = Mem[zpa++];
-            var msb = Mem[zpa];
-            return WORD(lsb, msb);
-        }
-
-        // Indirect Indexed: ($aa),Y
-        ushort aIDY(int eclk)
-        {
-            var zpa = Mem[PC++];
-            var lsb = Mem[zpa++];
-            var msb = Mem[zpa];
-            if (lsb + Y > 0xff)
-            {
-                clk(eclk);
-            }
-            return (ushort)(WORD(lsb, msb) + Y);
-        }
-
-        // Indirect Absolute: ($aaaa)    (only used by JMP)
-        ushort aIND()
-        {
-            var ea = aABS();
-            var lsb = Mem[ea];
-            ea = WORD((byte)(LSB(ea) + 1), MSB(ea));   // NMOS 6502/7 quirk: does not fetch across page boundaries
-            var msb = Mem[ea];
-            return WORD(lsb, msb);
-        }
-
-        // aACC = Accumulator
-        // aIMM = Immediate
-        // aIMP = Implied
-
-        // ADC: Add with carry
-        void iADC(byte mem)
-        {
-            var c = fC ? 1 : 0;
-            var sum = A + mem + c;
-            fV = (~(A ^ mem) & (A ^ (sum & 0xff)) & 0x80) != 0;
-            if (fD)
-            {
-                // NMOS 6502/7 quirk: The N, V, and Z flags reflect the binary result, not the BCD result
-                var lo = (A & 0xf) + (mem & 0xf) + c;
-                var hi = (A >> 4) + (mem >> 4);
-                if (lo > 9)
-                {
-                    lo += 6;
-                    hi++;
-                }
-                if (hi > 9)
-                {
-                    hi += 6;
-                }
-                A = (byte)((lo & 0xf) | (hi << 4));
-                fC = (hi & 0x10) != 0;
-            }
-            else
-            {
-                A = (byte)sum;
-                fC = (sum & 0x100) != 0;
-            }
-            set_fNZ((byte)sum);
-        }
-
-        // AND: Logical and
-        void iAND(byte mem)
-        {
-            A &= mem;
-            set_fNZ(A);
-        }
-
-        // ASL: Arithmetic shift left: C <- [7][6][5][4][3][2][1][0] <- 0
-        byte iASL(byte mem)
-        {
-            fC = (mem & 0x80) != 0;
-            mem <<= 1;
-            set_fNZ(mem);
-            return mem;
-        }
-
-        // BIT: Bit test
-        void iBIT(byte mem)
-        {
-            fN = (mem & 0x80) != 0;
-            fV = (mem & 0x40) != 0;
-            fZ = (mem & A) == 0;
-        }
-
-        // BRK Force Break  (cause software interrupt)
-        void iBRK()
-        {
-            PC++;
-            fB = true;
-            push(MSB(PC));
-            push(LSB(PC));
-            push(P);
-            fI = true;
-            var lsb = Mem[IRQ_VEC];
-            var msb = Mem[IRQ_VEC+1];
-            PC = WORD(lsb, msb);
-        }
-
-        // CLC: Clear carry flag
-        void iCLC()
-            => fC = false;
-
-        // CLD: Clear decimal mode
-        void iCLD()
-            => fD = false;
-
-        // CLI: Clear interrupt disable */
-        void iCLI()
-            => fI = false;
-
-        // CLV: Clear overflow flag
-        void iCLV()
-            => fV = false;
-
-        // CMP: Compare accumulator
-        void iCMP(byte mem)
-        {
-            fC = A >= mem;
-            set_fNZ((byte)(A - mem));
-        }
-
-        // CPX: Compare index X
-        void iCPX(byte mem)
-        {
-            fC = X >= mem;
-            set_fNZ((byte)(X - mem));
-        }
-
-        // CPY: Compare index Y
-        void iCPY(byte mem)
-        {
-            fC = Y >= mem;
-            set_fNZ((byte)(Y - mem));
-        }
-
-        // DEC: Decrement memory
-        byte iDEC(byte mem)
-        {
-            mem--;
-            set_fNZ(mem);
-            return mem;
-        }
-
-        // DEX: Decrement index x
-        void iDEX()
-        {
-            X--;
-            set_fNZ(X);
-        }
-
-        // DEY: Decrement index y
-        void iDEY()
-        {
-            Y--;
-            set_fNZ(Y);
-        }
-
-        // EOR: Logical exclusive or
-        void iEOR(byte mem)
-        {
-            A ^= mem;
-            set_fNZ(A);
-        }
-
-        // INC: Increment memory
-        byte iINC(byte mem)
-        {
-            mem++;
-            set_fNZ(mem);
-            return mem;
-        }
-
-        // INX: Increment index x
-        void iINX()
-        {
-            X++;
-            set_fNZ(X);
-        }
-
-        // INY: Increment index y
-        void iINY()
-        {
-            Y++;
-            set_fNZ(Y);
-        }
-
-        // JMP Jump to address
-        void iJMP(ushort ea)
-            => PC = ea;
-
-        // JSR Jump to subroutine
-        void iJSR(ushort ea)
-        {
-            PC--;                   // NMOS 6502/7 quirk: iRTS compensates
-            push(MSB(PC));
-            push(LSB(PC));
+            clk(MSB(PC) == MSB(ea) ? 1 : 2);
             PC = ea;
         }
+    }
 
-        // LDA: Load accumulator
-        void iLDA(byte mem)
+
+    // Relative: Bxx $aa  (branch instructions only)
+    ushort aREL()
+    {
+        var bo = (sbyte)Mem[PC];
+        PC++;
+        return (ushort)(PC + bo);
+    }
+
+    // Zero Page: $aa
+    ushort aZPG()
+        => WORD(Mem[PC++], 0x00);
+
+    // Zero Page Indexed,X: $aa,X
+    ushort aZPX()
+        => WORD((byte)(Mem[PC++] + X), 0x00);
+
+    // Zero Page Indexed,Y: $aa,Y
+    ushort aZPY()
+        => WORD((byte)(Mem[PC++] + Y), 0x00);
+
+    // Absolute: $aaaa
+    ushort aABS()
+    {
+        var lsb = Mem[PC++];
+        var msb = Mem[PC++];
+        return WORD(lsb, msb);
+    }
+
+    // Absolute Indexed,X: $aaaa,X
+    ushort aABX(int eclk)
+    {
+        var ea = aABS();
+        if (LSB(ea) + X > 0xff)
         {
-            A = mem;
-            set_fNZ(A);
+            clk(eclk);
         }
+        return (ushort)(ea + X);
+    }
 
-        // LDX: Load index X
-        void iLDX(byte mem)
+    // Absolute Indexed,Y: $aaaa,Y
+    ushort aABY(int eclk)
+    {
+        var ea = aABS();
+        if (LSB(ea) + Y > 0xff)
         {
-            X = mem;
-            set_fNZ(X);
+            clk(eclk);
         }
+        return (ushort)(ea + Y);
+    }
 
-        // LDY: Load index Y
-        void iLDY(byte mem)
+    // Indexed Indirect: ($aa,X)
+    ushort aIDX()
+    {
+        var zpa = (byte)(Mem[PC++] + X);
+        var lsb = Mem[zpa++];
+        var msb = Mem[zpa];
+        return WORD(lsb, msb);
+    }
+
+    // Indirect Indexed: ($aa),Y
+    ushort aIDY(int eclk)
+    {
+        var zpa = Mem[PC++];
+        var lsb = Mem[zpa++];
+        var msb = Mem[zpa];
+        if (lsb + Y > 0xff)
         {
-            Y = mem;
-            set_fNZ(Y);
+            clk(eclk);
         }
+        return (ushort)(WORD(lsb, msb) + Y);
+    }
 
-        // LSR: Logic shift right: 0 -> [7][6][5][4][3][2][1][0] -> C
-        byte iLSR(byte mem)
-        {
-            fC = (mem & 0x01) != 0;
-            mem >>= 1;
-            set_fNZ(mem);
-            return mem;
-        }
+    // Indirect Absolute: ($aaaa)    (only used by JMP)
+    ushort aIND()
+    {
+        var ea = aABS();
+        var lsb = Mem[ea];
+        ea = WORD((byte)(LSB(ea) + 1), MSB(ea));   // NMOS 6502/7 quirk: does not fetch across page boundaries
+        var msb = Mem[ea];
+        return WORD(lsb, msb);
+    }
 
-        // NOP: No operation
-        void iNOP()
+    // aACC = Accumulator
+    // aIMM = Immediate
+    // aIMP = Implied
+
+    // ADC: Add with carry
+    void iADC(byte mem)
+    {
+        var c = fC ? 1 : 0;
+        var sum = A + mem + c;
+        fV = (~(A ^ mem) & (A ^ (sum & 0xff)) & 0x80) != 0;
+        if (fD)
         {
-            if (M.NOPRegisterDumping)
+            // NMOS 6502/7 quirk: The N, V, and Z flags reflect the binary result, not the BCD result
+            var lo = (A & 0xf) + (mem & 0xf) + c;
+            var hi = (A >> 4) + (mem >> 4);
+            if (lo > 9)
             {
-                Log("NOP: " + M6502DASM.GetRegisters(this));
+                lo += 6;
+                hi++;
             }
-        }
-
-        // ORA: Logical inclusive or
-        void iORA(byte mem)
-        {
-            A |= mem;
-            set_fNZ(A);
-        }
-
-        // PHA: Push accumulator
-        void iPHA()
-            => push(A);
-
-        // PHP: Push processor status (flags)
-        void iPHP()
-            => push(P);
-
-        // PLA: Pull accumuator
-        void iPLA()
-        {
-            A = pull();
-            set_fNZ(A);
-        }
-
-        // PLP: Pull processor status (flags)
-        void iPLP()
-        {
-            P = pull();
-            fB = true;
-        }
-
-        // ROL: Rotate left: new C <- [7][6][5][4][3][2][1][0] <- C
-        byte iROL(byte mem)
-        {
-            var d0 = (byte)(fC ? 0x01 : 0x00);
-
-            fC = (mem & 0x80) != 0;
-            mem <<= 1;
-            mem |= d0;
-            set_fNZ(mem);
-            return mem;
-        }
-
-        // ROR: Rotate right: C -> [7][6][5][4][3][2][1][0] -> new C
-        byte iROR(byte mem)
-        {
-            var d7 = (byte)(fC ? 0x80 : 0x00);
-
-            fC = (mem & 0x01) != 0;
-            mem >>= 1;
-            mem |= d7;
-            set_fNZ(mem);
-            return mem;
-        }
-
-        // RTI: Return from interrupt
-        void iRTI()
-        {
-            P = pull();
-            var lsb = pull();
-            var msb = pull();
-            PC = WORD(lsb, msb);
-            fB = true;
-        }
-
-        // RTS: Return from subroutine
-        void iRTS()
-        {
-            var lsb = pull();
-            var msb = pull();
-            PC = WORD(lsb, msb);
-            PC++;                   // NMOS 6502/7 quirk: iJSR compensates
-        }
-
-        // SBC: Subtract with carry (borrow)
-        void iSBC(byte mem)
-        {
-            var c = fC ? 0 : 1;
-            var sum = A - mem - c;
-            fV = ((A ^ mem) & (A ^ (sum & 0xff)) & 0x80) != 0;
-            if (fD)
+            if (hi > 9)
             {
-                // NMOS 6502/7 quirk: The N, V, and Z flags reflect the binary result, not the BCD result
-                var lo = (A & 0xf) - (mem & 0xf) - c;
-                var hi = (A >> 4) - (mem >> 4);
-                if ((lo & 0x10) != 0)
-                {
-                    lo -= 6;
-                    hi--;
-                }
-                if ((hi & 0x10) != 0)
-                {
-                    hi -= 6;
-                }
-                A = (byte)((lo & 0xf) | (hi << 4));
+                hi += 6;
             }
-            else
+            A = (byte)((lo & 0xf) | (hi << 4));
+            fC = (hi & 0x10) != 0;
+        }
+        else
+        {
+            A = (byte)sum;
+            fC = (sum & 0x100) != 0;
+        }
+        set_fNZ((byte)sum);
+    }
+
+    // AND: Logical and
+    void iAND(byte mem)
+    {
+        A &= mem;
+        set_fNZ(A);
+    }
+
+    // ASL: Arithmetic shift left: C <- [7][6][5][4][3][2][1][0] <- 0
+    byte iASL(byte mem)
+    {
+        fC = (mem & 0x80) != 0;
+        mem <<= 1;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // BIT: Bit test
+    void iBIT(byte mem)
+    {
+        fN = (mem & 0x80) != 0;
+        fV = (mem & 0x40) != 0;
+        fZ = (mem & A) == 0;
+    }
+
+    // BRK Force Break  (cause software interrupt)
+    void iBRK()
+    {
+        PC++;
+        fB = true;
+        push(MSB(PC));
+        push(LSB(PC));
+        push(P);
+        fI = true;
+        var lsb = Mem[IRQ_VEC];
+        var msb = Mem[IRQ_VEC+1];
+        PC = WORD(lsb, msb);
+    }
+
+    // CLC: Clear carry flag
+    void iCLC()
+        => fC = false;
+
+    // CLD: Clear decimal mode
+    void iCLD()
+        => fD = false;
+
+    // CLI: Clear interrupt disable */
+    void iCLI()
+        => fI = false;
+
+    // CLV: Clear overflow flag
+    void iCLV()
+        => fV = false;
+
+    // CMP: Compare accumulator
+    void iCMP(byte mem)
+    {
+        fC = A >= mem;
+        set_fNZ((byte)(A - mem));
+    }
+
+    // CPX: Compare index X
+    void iCPX(byte mem)
+    {
+        fC = X >= mem;
+        set_fNZ((byte)(X - mem));
+    }
+
+    // CPY: Compare index Y
+    void iCPY(byte mem)
+    {
+        fC = Y >= mem;
+        set_fNZ((byte)(Y - mem));
+    }
+
+    // DEC: Decrement memory
+    byte iDEC(byte mem)
+    {
+        mem--;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // DEX: Decrement index x
+    void iDEX()
+    {
+        X--;
+        set_fNZ(X);
+    }
+
+    // DEY: Decrement index y
+    void iDEY()
+    {
+        Y--;
+        set_fNZ(Y);
+    }
+
+    // EOR: Logical exclusive or
+    void iEOR(byte mem)
+    {
+        A ^= mem;
+        set_fNZ(A);
+    }
+
+    // INC: Increment memory
+    byte iINC(byte mem)
+    {
+        mem++;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // INX: Increment index x
+    void iINX()
+    {
+        X++;
+        set_fNZ(X);
+    }
+
+    // INY: Increment index y
+    void iINY()
+    {
+        Y++;
+        set_fNZ(Y);
+    }
+
+    // JMP Jump to address
+    void iJMP(ushort ea)
+        => PC = ea;
+
+    // JSR Jump to subroutine
+    void iJSR(ushort ea)
+    {
+        PC--;                   // NMOS 6502/7 quirk: iRTS compensates
+        push(MSB(PC));
+        push(LSB(PC));
+        PC = ea;
+    }
+
+    // LDA: Load accumulator
+    void iLDA(byte mem)
+    {
+        A = mem;
+        set_fNZ(A);
+    }
+
+    // LDX: Load index X
+    void iLDX(byte mem)
+    {
+        X = mem;
+        set_fNZ(X);
+    }
+
+    // LDY: Load index Y
+    void iLDY(byte mem)
+    {
+        Y = mem;
+        set_fNZ(Y);
+    }
+
+    // LSR: Logic shift right: 0 -> [7][6][5][4][3][2][1][0] -> C
+    byte iLSR(byte mem)
+    {
+        fC = (mem & 0x01) != 0;
+        mem >>= 1;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // NOP: No operation
+    void iNOP()
+    {
+        if (M.NOPRegisterDumping)
+        {
+            Log("NOP: " + M6502DASM.GetRegisters(this));
+        }
+    }
+
+    // ORA: Logical inclusive or
+    void iORA(byte mem)
+    {
+        A |= mem;
+        set_fNZ(A);
+    }
+
+    // PHA: Push accumulator
+    void iPHA()
+        => push(A);
+
+    // PHP: Push processor status (flags)
+    void iPHP()
+        => push(P);
+
+    // PLA: Pull accumuator
+    void iPLA()
+    {
+        A = pull();
+        set_fNZ(A);
+    }
+
+    // PLP: Pull processor status (flags)
+    void iPLP()
+    {
+        P = pull();
+        fB = true;
+    }
+
+    // ROL: Rotate left: new C <- [7][6][5][4][3][2][1][0] <- C
+    byte iROL(byte mem)
+    {
+        var d0 = (byte)(fC ? 0x01 : 0x00);
+
+        fC = (mem & 0x80) != 0;
+        mem <<= 1;
+        mem |= d0;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // ROR: Rotate right: C -> [7][6][5][4][3][2][1][0] -> new C
+    byte iROR(byte mem)
+    {
+        var d7 = (byte)(fC ? 0x80 : 0x00);
+
+        fC = (mem & 0x01) != 0;
+        mem >>= 1;
+        mem |= d7;
+        set_fNZ(mem);
+        return mem;
+    }
+
+    // RTI: Return from interrupt
+    void iRTI()
+    {
+        P = pull();
+        var lsb = pull();
+        var msb = pull();
+        PC = WORD(lsb, msb);
+        fB = true;
+    }
+
+    // RTS: Return from subroutine
+    void iRTS()
+    {
+        var lsb = pull();
+        var msb = pull();
+        PC = WORD(lsb, msb);
+        PC++;                   // NMOS 6502/7 quirk: iJSR compensates
+    }
+
+    // SBC: Subtract with carry (borrow)
+    void iSBC(byte mem)
+    {
+        var c = fC ? 0 : 1;
+        var sum = A - mem - c;
+        fV = ((A ^ mem) & (A ^ (sum & 0xff)) & 0x80) != 0;
+        if (fD)
+        {
+            // NMOS 6502/7 quirk: The N, V, and Z flags reflect the binary result, not the BCD result
+            var lo = (A & 0xf) - (mem & 0xf) - c;
+            var hi = (A >> 4) - (mem >> 4);
+            if ((lo & 0x10) != 0)
             {
-                A = (byte)sum;
+                lo -= 6;
+                hi--;
             }
-            fC = (sum & 0x100) == 0;
-            set_fNZ((byte)sum);
+            if ((hi & 0x10) != 0)
+            {
+                hi -= 6;
+            }
+            A = (byte)((lo & 0xf) | (hi << 4));
         }
-
-        // SEC: Set carry flag
-        void iSEC()
-            => fC = true;
-
-        // SED: Set decimal mode
-        void iSED()
-            => fD = true;
-
-        // SEI: Set interrupt disable
-        void iSEI()
-            => fI = true;
-
-        // STA: Store accumulator
-        byte iSTA()
-            => A;
-
-        // STX: Store index X
-        byte iSTX()
-            => X;
-
-        // STY: Store index Y
-        byte iSTY()
-            => Y;
-
-        // TAX: Transfer accumlator to index X
-        void iTAX()
+        else
         {
-            X = A;
-            set_fNZ(X);
+            A = (byte)sum;
         }
+        fC = (sum & 0x100) == 0;
+        set_fNZ((byte)sum);
+    }
 
-        // TAY: Transfer accumlator to index Y
-        void iTAY()
-        {
-            Y = A;
-            set_fNZ(Y);
-        }
+    // SEC: Set carry flag
+    void iSEC()
+        => fC = true;
 
-        // TSX: Transfer stack to index X
-        void iTSX()
-        {
-            X = S;
-            set_fNZ(X);
-        }
+    // SED: Set decimal mode
+    void iSED()
+        => fD = true;
 
-        // TXA: Transfer index X to accumlator
-        void iTXA()
-        {
-            A = X;
-            set_fNZ(A);
-        }
+    // SEI: Set interrupt disable
+    void iSEI()
+        => fI = true;
 
-        // TXS: Transfer index X to stack
-        void iTXS()
-        {
-            S = X;
-            // No flags set..!  Weird, huh?
-        }
+    // STA: Store accumulator
+    byte iSTA()
+        => A;
 
-        // TYA: Transfer index Y to accumulator
-        void iTYA()
-        {
-            A = Y;
-            set_fNZ(A);
-        }
+    // STX: Store index X
+    byte iSTX()
+        => X;
+
+    // STY: Store index Y
+    byte iSTY()
+        => Y;
+
+    // TAX: Transfer accumlator to index X
+    void iTAX()
+    {
+        X = A;
+        set_fNZ(X);
+    }
+
+    // TAY: Transfer accumlator to index Y
+    void iTAY()
+    {
+        Y = A;
+        set_fNZ(Y);
+    }
+
+    // TSX: Transfer stack to index X
+    void iTSX()
+    {
+        X = S;
+        set_fNZ(X);
+    }
+
+    // TXA: Transfer index X to accumlator
+    void iTXA()
+    {
+        A = X;
+        set_fNZ(A);
+    }
+
+    // TXS: Transfer index X to stack
+    void iTXS()
+    {
+        S = X;
+        // No flags set..!  Weird, huh?
+    }
+
+    // TYA: Transfer index Y to accumulator
+    void iTYA()
+    {
+        A = Y;
+        set_fNZ(A);
+    }
+
+    // Illegal opcodes
+
+    // KIL: Jam the processor
+    void iKIL()
+    {
+        Jammed = true;
+        Log($"{this}: Processor jammed!");
+    }
+
+    // LAX: Load accumulator and index x
+    void iLAX(byte mem)
+    {
+        A = X = mem;
+        set_fNZ(A);
+    }
+
+    // ISB: Increment and subtract with carry
+    void iISB(byte mem)
+    {
+        mem++;
+        iSBC(mem);
+    }
+
+    // RLA: Rotate left and logical and accumulator
+    // new C <- [7][6][5][4][3][2][1][0] <- C
+    void iRLA(byte mem)
+    {
+        var d0 = (byte)(fC ? 0x01 : 0x00);
+
+        fC = (mem & 0x80) != 0;
+        mem <<= 1;
+        mem |= d0;
+
+        A &= mem;
+        set_fNZ(A);
+    }
+
+    // SAX: logical and accumulator with index X and store
+    byte iSAX()
+        => (byte)(A & X);
+
+    // ALR (ASR)
+    void iALR(byte mem)
+    {
+        iAND(mem);
+        iLSR(mem);
+    }
+
+    // ANC (ANC2)
+    void iANC(byte mem)
+    {
+        iAND(mem);
+        fC = (A & 0x80) != 0;
+    }
+
+    void InstallOpcodes()
+    {
+        ushort EA;
+
+        Opcodes[0x65] = () => { EA = aZPG();  clk(3); iADC(Mem[EA]); };
+        Opcodes[0x75] = () => { EA = aZPX();  clk(4); iADC(Mem[EA]); };
+        Opcodes[0x61] = () => { EA = aIDX();  clk(6); iADC(Mem[EA]); };
+        Opcodes[0x71] = () => { EA = aIDY(1); clk(5); iADC(Mem[EA]); };
+        Opcodes[0x79] = () => { EA = aABY(1); clk(4); iADC(Mem[EA]); };
+        Opcodes[0x6d] = () => { EA = aABS();  clk(4); iADC(Mem[EA]); };
+        Opcodes[0x7d] = () => { EA = aABX(1); clk(4); iADC(Mem[EA]); };
+        Opcodes[0x69] = () => { /*aIMM*/      clk(2); iADC(Mem[PC++]); };
+
+        Opcodes[0x25] = () => { EA = aZPG();  clk(3); iAND(Mem[EA]); }; // may be 2 clk
+        Opcodes[0x35] = () => { EA = aZPX();  clk(4); iAND(Mem[EA]); }; // may be 3 clk
+        Opcodes[0x21] = () => { EA = aIDX();  clk(6); iAND(Mem[EA]); };
+        Opcodes[0x31] = () => { EA = aIDY(1); clk(5); iAND(Mem[EA]); };
+        Opcodes[0x2d] = () => { EA = aABS();  clk(4); iAND(Mem[EA]); };
+        Opcodes[0x39] = () => { EA = aABY(1); clk(4); iAND(Mem[EA]); };
+        Opcodes[0x3d] = () => { EA = aABX(1); clk(4); iAND(Mem[EA]); };
+        Opcodes[0x29] = () => {    /*aIMM*/   clk(2); iAND(Mem[PC++]); };
+
+        Opcodes[0x06] = () => { EA = aZPG();  clk(5); Mem[EA] = iASL(Mem[EA]); };
+        Opcodes[0x16] = () => { EA = aZPX();  clk(6); Mem[EA] = iASL(Mem[EA]); };
+        Opcodes[0x0e] = () => { EA = aABS();  clk(6); Mem[EA] = iASL(Mem[EA]); };
+        Opcodes[0x1e] = () => { EA = aABX(0); clk(7); Mem[EA] = iASL(Mem[EA]); };
+        Opcodes[0x0a] = () => {    /*aACC*/   clk(2);       A = iASL(A); };
+
+        Opcodes[0x24] = () => { EA = aZPG();  clk(3); iBIT(Mem[EA]); };
+        Opcodes[0x2c] = () => { EA = aABS();  clk(4); iBIT(Mem[EA]); };
+
+        Opcodes[0x10] = () => { EA = aREL();  clk(2); br(!fN, EA); /* BPL */ };
+        Opcodes[0x30] = () => { EA = aREL();  clk(2); br( fN, EA); /* BMI */ };
+        Opcodes[0x50] = () => { EA = aREL();  clk(2); br(!fV, EA); /* BVC */ };
+        Opcodes[0x70] = () => { EA = aREL();  clk(2); br( fV, EA); /* BVS */ };
+        Opcodes[0x90] = () => { EA = aREL();  clk(2); br(!fC, EA); /* BCC */ };
+        Opcodes[0xb0] = () => { EA = aREL();  clk(2); br( fC, EA); /* BCS */ };
+        Opcodes[0xd0] = () => { EA = aREL();  clk(2); br(!fZ, EA); /* BNE */ };
+        Opcodes[0xf0] = () => { EA = aREL();  clk(2); br( fZ, EA); /* BEQ */ };
+
+        Opcodes[0x00] = () => {    /*aIMP*/   clk(7); iBRK(); };
+
+        Opcodes[0x18] = () => {    /*aIMP*/   clk(2); iCLC(); };
+
+        Opcodes[0xd8] = () => {    /*aIMP*/   clk(2); iCLD(); };
+
+        Opcodes[0x58] = () => {    /*aIMP*/   clk(2); iCLI(); };
+
+        Opcodes[0xb8] = () => {    /*aIMP*/   clk(2); iCLV(); };
+
+        Opcodes[0xc5] = () => { EA = aZPG();  clk(3); iCMP(Mem[EA]); };
+        Opcodes[0xd5] = () => { EA = aZPX();  clk(4); iCMP(Mem[EA]); };
+        Opcodes[0xc1] = () => { EA = aIDX();  clk(6); iCMP(Mem[EA]); };
+        Opcodes[0xd1] = () => { EA = aIDY(1); clk(5); iCMP(Mem[EA]); };
+        Opcodes[0xcd] = () => { EA = aABS();  clk(4); iCMP(Mem[EA]); };
+        Opcodes[0xdd] = () => { EA = aABX(1); clk(4); iCMP(Mem[EA]); };
+        Opcodes[0xd9] = () => { EA = aABY(1); clk(4); iCMP(Mem[EA]); };
+        Opcodes[0xc9] = () => { /*aIMM*/      clk(2); iCMP(Mem[PC++]); };
+
+        Opcodes[0xe4] = () => { EA = aZPG();  clk(3); iCPX(Mem[EA]); };
+        Opcodes[0xec] = () => { EA = aABS();  clk(4); iCPX(Mem[EA]); };
+        Opcodes[0xe0] = () => { /*aIMM*/      clk(2); iCPX(Mem[PC++]); };
+
+        Opcodes[0xc4] = () => { EA = aZPG();  clk(3); iCPY(Mem[EA]); };
+        Opcodes[0xcc] = () => { EA = aABS();  clk(4); iCPY(Mem[EA]); };
+        Opcodes[0xc0] = () => { /*aIMM*/      clk(2); iCPY(Mem[PC++]); };
+
+        Opcodes[0xc6] = () => { EA = aZPG();  clk(5); Mem[EA] = iDEC(Mem[EA]); };
+        Opcodes[0xd6] = () => { EA = aZPX();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
+        Opcodes[0xce] = () => { EA = aABS();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
+        Opcodes[0xde] = () => { EA = aABX(0); clk(7); Mem[EA] = iDEC(Mem[EA]); };
+
+        Opcodes[0xca] = () => {    /*aIMP*/   clk(2); iDEX(); };
+
+        Opcodes[0x88] = () => {    /*aIMP*/   clk(2); iDEY(); };
+
+        Opcodes[0x45] = () => { EA = aZPG();  clk(3); iEOR(Mem[EA]); };
+        Opcodes[0x55] = () => { EA = aZPX();  clk(4); iEOR(Mem[EA]); };
+        Opcodes[0x41] = () => { EA = aIDX();  clk(6); iEOR(Mem[EA]); };
+        Opcodes[0x51] = () => { EA = aIDY(1); clk(5); iEOR(Mem[EA]); };
+        Opcodes[0x4d] = () => { EA = aABS();  clk(4); iEOR(Mem[EA]); };
+        Opcodes[0x5d] = () => { EA = aABX(1); clk(4); iEOR(Mem[EA]); };
+        Opcodes[0x59] = () => { EA = aABY(1); clk(4); iEOR(Mem[EA]); };
+        Opcodes[0x49] = () => {    /*aIMM*/   clk(2); iEOR(Mem[PC++]); };
+
+        Opcodes[0xe6] = () => { EA = aZPG();  clk(5); Mem[EA] = iINC(Mem[EA]); };
+        Opcodes[0xf6] = () => { EA = aZPX();  clk(6); Mem[EA] = iINC(Mem[EA]); };
+        Opcodes[0xee] = () => { EA = aABS();  clk(6); Mem[EA] = iINC(Mem[EA]); };
+        Opcodes[0xfe] = () => { EA = aABX(0); clk(7); Mem[EA] = iINC(Mem[EA]); };
+
+        Opcodes[0xe8] = () => {    /*aIMP*/   clk(2); iINX(); };
+
+        Opcodes[0xc8] = () => {    /*aIMP*/   clk(2); iINY(); };
+
+        Opcodes[0xa5] = () => { EA = aZPG();  clk(3); iLDA(Mem[EA]); };
+        Opcodes[0xb5] = () => { EA = aZPX();  clk(4); iLDA(Mem[EA]); };
+        Opcodes[0xa1] = () => { EA = aIDX();  clk(6); iLDA(Mem[EA]); };
+        Opcodes[0xb1] = () => { EA = aIDY(1); clk(5); iLDA(Mem[EA]); };
+        Opcodes[0xad] = () => { EA = aABS();  clk(4); iLDA(Mem[EA]); };
+        Opcodes[0xbd] = () => { EA = aABX(1); clk(4); iLDA(Mem[EA]); };
+        Opcodes[0xb9] = () => { EA = aABY(1); clk(4); iLDA(Mem[EA]); };
+        Opcodes[0xa9] = () => {    /*aIMM*/   clk(2); iLDA(Mem[PC++]); };
+
+        Opcodes[0xa6] = () => { EA = aZPG();  clk(3); iLDX(Mem[EA]); };
+        Opcodes[0xb6] = () => { EA = aZPY();  clk(4); iLDX(Mem[EA]); };
+        Opcodes[0xae] = () => { EA = aABS();  clk(4); iLDX(Mem[EA]); };
+        Opcodes[0xbe] = () => { EA = aABY(1); clk(4); iLDX(Mem[EA]); };
+        Opcodes[0xa2] = () => {    /*aIMM*/   clk(2); iLDX(Mem[PC++]); };
+
+        Opcodes[0xa4] = () => { EA = aZPG();  clk(3); iLDY(Mem[EA]); };
+        Opcodes[0xb4] = () => { EA = aZPX();  clk(4); iLDY(Mem[EA]); };
+        Opcodes[0xac] = () => { EA = aABS();  clk(4); iLDY(Mem[EA]); };
+        Opcodes[0xbc] = () => { EA = aABX(1); clk(4); iLDY(Mem[EA]); };
+        Opcodes[0xa0] = () => {    /*aIMM*/   clk(2); iLDY(Mem[PC++]); };
+
+        Opcodes[0x46] = () => { EA = aZPG();  clk(5); Mem[EA] = iLSR(Mem[EA]); };
+        Opcodes[0x56] = () => { EA = aZPX();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
+        Opcodes[0x4e] = () => { EA = aABS();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
+        Opcodes[0x5e] = () => { EA = aABX(0); clk(7); Mem[EA] = iLSR(Mem[EA]); };
+        Opcodes[0x4a] = () => {    /*aACC*/   clk(2);       A = iLSR(A); };
+
+        Opcodes[0x4c] = () => { EA = aABS();  clk(3); iJMP(EA); };
+        Opcodes[0x6c] = () => { EA = aIND();  clk(5); iJMP(EA); };
+
+        Opcodes[0x20] = () => { EA = aABS();  clk(6); iJSR(EA); };
+
+        Opcodes[0xea] = () => {    /*aIMP*/   clk(2); iNOP(); };
+
+        Opcodes[0x05] = () => { EA = aZPG();  clk(3); iORA(Mem[EA]); }; // may be 2 clk
+        Opcodes[0x15] = () => { EA = aZPX();  clk(4); iORA(Mem[EA]); }; // may be 3 clk
+        Opcodes[0x01] = () => { EA = aIDX();  clk(6); iORA(Mem[EA]); };
+        Opcodes[0x11] = () => { EA = aIDY(1); clk(5); iORA(Mem[EA]); };
+        Opcodes[0x0d] = () => { EA = aABS();  clk(4); iORA(Mem[EA]); };
+        Opcodes[0x1d] = () => { EA = aABX(1); clk(4); iORA(Mem[EA]); };
+        Opcodes[0x19] = () => { EA = aABY(1); clk(4); iORA(Mem[EA]); };
+        Opcodes[0x09] = () => {    /*aIMM*/   clk(2); iORA(Mem[PC++]); };
+
+        Opcodes[0x48] = () => {    /*aIMP*/   clk(3); iPHA(); };
+
+        Opcodes[0x68] = () => {    /*aIMP*/   clk(4); iPLA(); };
+
+        Opcodes[0x08] = () => {    /*aIMP*/   clk(3); iPHP(); };
+
+        Opcodes[0x28] = () => {    /*aIMP*/   clk(4); iPLP(); };
+
+        Opcodes[0x26] = () => { EA = aZPG();  clk(5); Mem[EA] = iROL(Mem[EA]); };
+        Opcodes[0x36] = () => { EA = aZPX();  clk(6); Mem[EA] = iROL(Mem[EA]); };
+        Opcodes[0x2e] = () => { EA = aABS();  clk(6); Mem[EA] = iROL(Mem[EA]); };
+        Opcodes[0x3e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROL(Mem[EA]); };
+        Opcodes[0x2a] = () => {    /*aACC*/   clk(2);       A = iROL(A);       };
+
+        Opcodes[0x66] = () => { EA = aZPG();  clk(5); Mem[EA] = iROR(Mem[EA]); };
+        Opcodes[0x76] = () => { EA = aZPX();  clk(6); Mem[EA] = iROR(Mem[EA]); };
+        Opcodes[0x6e] = () => { EA = aABS();  clk(6); Mem[EA] = iROR(Mem[EA]); };
+        Opcodes[0x7e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROR(Mem[EA]); };
+        Opcodes[0x6a] = () => {    /*aACC*/   clk(2);       A = iROR(A); };
+
+        Opcodes[0x40] = () => {    /*aIMP*/   clk(6); iRTI(); };
+
+        Opcodes[0x60] = () => {    /*aIMP*/   clk(6); iRTS(); };
+
+        Opcodes[0xe5] = () => { EA = aZPG();  clk(3); iSBC(Mem[EA]); };
+        Opcodes[0xf5] = () => { EA = aZPX();  clk(4); iSBC(Mem[EA]); };
+        Opcodes[0xe1] = () => { EA = aIDX();  clk(6); iSBC(Mem[EA]); };
+        Opcodes[0xf1] = () => { EA = aIDY(1); clk(5); iSBC(Mem[EA]); };
+        Opcodes[0xed] = () => { EA = aABS();  clk(4); iSBC(Mem[EA]); };
+        Opcodes[0xfd] = () => { EA = aABX(1); clk(4); iSBC(Mem[EA]); };
+        Opcodes[0xf9] = () => { EA = aABY(1); clk(4); iSBC(Mem[EA]); };
+        Opcodes[0xe9] = () => {    /*aIMM*/   clk(2); iSBC(Mem[PC++]); };
+
+        Opcodes[0x38] = () => {    /*aIMP*/   clk(2); iSEC(); };
+
+        Opcodes[0xf8] = () => {    /*aIMP*/   clk(2); iSED(); };
+
+        Opcodes[0x78] = () => {    /*aIMP*/   clk(2); iSEI(); };
+
+        Opcodes[0x85] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTA(); };
+        Opcodes[0x95] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTA(); };
+        Opcodes[0x81] = () => { EA = aIDX();  clk(6); Mem[EA] = iSTA(); };
+        Opcodes[0x91] = () => { EA = aIDY(0); clk(6); Mem[EA] = iSTA(); };
+        Opcodes[0x8d] = () => { EA = aABS();  clk(4); Mem[EA] = iSTA(); };
+        Opcodes[0x99] = () => { EA = aABY(0); clk(5); Mem[EA] = iSTA(); };
+        Opcodes[0x9d] = () => { EA = aABX(0); clk(5); Mem[EA] = iSTA(); };
+
+        Opcodes[0x86] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTX(); };
+        Opcodes[0x96] = () => { EA = aZPY();  clk(4); Mem[EA] = iSTX(); };
+        Opcodes[0x8e] = () => { EA = aABS();  clk(4); Mem[EA] = iSTX(); };
+
+        Opcodes[0x84] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTY(); };
+        Opcodes[0x94] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTY(); };
+        Opcodes[0x8c] = () => { EA = aABS();  clk(4); Mem[EA] = iSTY(); };
+
+        Opcodes[0xaa] = () => {    /*aIMP*/   clk(2); iTAX(); };
+
+        Opcodes[0xa8] = () => {    /*aIMP*/   clk(2); iTAY(); };
+
+        Opcodes[0xba] = () => {    /*aIMP*/   clk(2); iTSX(); };
+
+        Opcodes[0x8a] = () => {    /*aIMP*/   clk(2); iTXA(); };
+
+        Opcodes[0x9a] = () => {    /*aIMP*/   clk(2); iTXS(); };
+
+        Opcodes[0x98] = () => {    /*aIMP*/   clk(2); iTYA(); };
 
         // Illegal opcodes
 
-        // KIL: Jam the processor
-        void iKIL()
+        // DOP (SKB) - no operation, double NOP, skip byte - required for Medieval Mayhem
+        Opcodes[0x04] = () => { clk(3); PC++; iNOP(); };
+
+        // ALR (ASR) - required for Popeye and Ghost n' Goblins
+        Opcodes[0x4b] = () => {    /*aIMM*/   clk(2); iALR(Mem[PC++]); };
+
+        // ANC - required for Popeye and Ghost n' Goblins
+        Opcodes[0x0b] = () => {    /*aIMM*/   clk(2); iANC(Mem[PC++]); };
+        Opcodes[0x2b] = Opcodes[0x0b];
+
+        foreach (var opCode in new ushort[] { 0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72, 0x92, 0xb2, 0xd2, 0xf2 })
         {
-            Jammed = true;
-            Log($"{this}: Processor jammed!");
+            Opcodes[opCode] = () => { clk(2); iKIL(); };
         }
-
-        // LAX: Load accumulator and index x
-        void iLAX(byte mem)
+        Opcodes[0x3f] = () => { EA = aABX(0); clk(4); iRLA(Mem[EA]); };
+        Opcodes[0xa7] = () => { EA = aZPX();  clk(3); iLAX(Mem[EA]); };
+        Opcodes[0xb3] = () => { EA = aIDY(0); clk(6); iLAX(Mem[EA]); };
+        Opcodes[0xef] = () => { EA = aABS();  clk(6); iISB(Mem[EA]); };
+        Opcodes[0x0c] = () => { EA = aABS();  clk(2); iNOP(); };
+        foreach (var opCode in new ushort[] { 0x1c, 0x3c, 0x5c, 0x7c, 0x9c, 0xdc, 0xfc })
         {
-            A = X = mem;
-            set_fNZ(A);
+            Opcodes[opCode] = () => { EA = aABX(0); clk(2); iNOP(); };
         }
+        Opcodes[0x83] = () => { EA = aIDX();  clk(6); Mem[EA] = iSAX(); };
+        Opcodes[0x87] = () => { EA = aZPG();  clk(3); Mem[EA] = iSAX(); };
+        Opcodes[0x8f] = () => { EA = aABS();  clk(4); Mem[EA] = iSAX(); };
+        Opcodes[0x97] = () => { EA = aZPY();  clk(4); Mem[EA] = iSAX(); };
+        Opcodes[0xa3] = () => { EA = aIDX();  clk(6); iLAX(Mem[EA]); };
+        Opcodes[0xb7] = () => { EA = aZPY();  clk(4); iLAX(Mem[EA]); };
+        Opcodes[0xaf] = () => { EA = aABS();  clk(5); iLAX(Mem[EA]); };
+        Opcodes[0xbf] = () => { EA = aABY(0); clk(6); iLAX(Mem[EA]); };
+        Opcodes[0xff] = () => { EA = aABX(0); clk(7); iISB(Mem[EA]); };
 
-        // ISB: Increment and subtract with carry
-        void iISB(byte mem)
+        for (var i=0; i < Opcodes.Length; i++)
         {
-            mem++;
-            iSBC(mem);
+            Opcodes[i] ??= () => Log($"{this}:**UNKNOWN OPCODE: ${Mem[(ushort)(PC - 1)]:x2} at ${PC - 1:x4}\n");
         }
-
-        // RLA: Rotate left and logical and accumulator
-        // new C <- [7][6][5][4][3][2][1][0] <- C
-        void iRLA(byte mem)
-        {
-            var d0 = (byte)(fC ? 0x01 : 0x00);
-
-            fC = (mem & 0x80) != 0;
-            mem <<= 1;
-            mem |= d0;
-
-            A &= mem;
-            set_fNZ(A);
-        }
-
-        // SAX: logical and accumulator with index X and store
-        byte iSAX()
-            => (byte)(A & X);
-
-        // ALR (ASR)
-        void iALR(byte mem)
-        {
-            iAND(mem);
-            iLSR(mem);
-        }
-
-        // ANC (ANC2)
-        void iANC(byte mem)
-        {
-            iAND(mem);
-            fC = (A & 0x80) != 0;
-        }
-
-        void InstallOpcodes()
-        {
-            ushort EA;
-
-            Opcodes[0x65] = () => { EA = aZPG();  clk(3); iADC(Mem[EA]); };
-            Opcodes[0x75] = () => { EA = aZPX();  clk(4); iADC(Mem[EA]); };
-            Opcodes[0x61] = () => { EA = aIDX();  clk(6); iADC(Mem[EA]); };
-            Opcodes[0x71] = () => { EA = aIDY(1); clk(5); iADC(Mem[EA]); };
-            Opcodes[0x79] = () => { EA = aABY(1); clk(4); iADC(Mem[EA]); };
-            Opcodes[0x6d] = () => { EA = aABS();  clk(4); iADC(Mem[EA]); };
-            Opcodes[0x7d] = () => { EA = aABX(1); clk(4); iADC(Mem[EA]); };
-            Opcodes[0x69] = () => { /*aIMM*/      clk(2); iADC(Mem[PC++]); };
-
-            Opcodes[0x25] = () => { EA = aZPG();  clk(3); iAND(Mem[EA]); }; // may be 2 clk
-            Opcodes[0x35] = () => { EA = aZPX();  clk(4); iAND(Mem[EA]); }; // may be 3 clk
-            Opcodes[0x21] = () => { EA = aIDX();  clk(6); iAND(Mem[EA]); };
-            Opcodes[0x31] = () => { EA = aIDY(1); clk(5); iAND(Mem[EA]); };
-            Opcodes[0x2d] = () => { EA = aABS();  clk(4); iAND(Mem[EA]); };
-            Opcodes[0x39] = () => { EA = aABY(1); clk(4); iAND(Mem[EA]); };
-            Opcodes[0x3d] = () => { EA = aABX(1); clk(4); iAND(Mem[EA]); };
-            Opcodes[0x29] = () => {    /*aIMM*/   clk(2); iAND(Mem[PC++]); };
-
-            Opcodes[0x06] = () => { EA = aZPG();  clk(5); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x16] = () => { EA = aZPX();  clk(6); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x0e] = () => { EA = aABS();  clk(6); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x1e] = () => { EA = aABX(0); clk(7); Mem[EA] = iASL(Mem[EA]); };
-            Opcodes[0x0a] = () => {    /*aACC*/   clk(2);       A = iASL(A); };
-
-            Opcodes[0x24] = () => { EA = aZPG();  clk(3); iBIT(Mem[EA]); };
-            Opcodes[0x2c] = () => { EA = aABS();  clk(4); iBIT(Mem[EA]); };
-
-            Opcodes[0x10] = () => { EA = aREL();  clk(2); br(!fN, EA); /* BPL */ };
-            Opcodes[0x30] = () => { EA = aREL();  clk(2); br( fN, EA); /* BMI */ };
-            Opcodes[0x50] = () => { EA = aREL();  clk(2); br(!fV, EA); /* BVC */ };
-            Opcodes[0x70] = () => { EA = aREL();  clk(2); br( fV, EA); /* BVS */ };
-            Opcodes[0x90] = () => { EA = aREL();  clk(2); br(!fC, EA); /* BCC */ };
-            Opcodes[0xb0] = () => { EA = aREL();  clk(2); br( fC, EA); /* BCS */ };
-            Opcodes[0xd0] = () => { EA = aREL();  clk(2); br(!fZ, EA); /* BNE */ };
-            Opcodes[0xf0] = () => { EA = aREL();  clk(2); br( fZ, EA); /* BEQ */ };
-
-            Opcodes[0x00] = () => {    /*aIMP*/   clk(7); iBRK(); };
-
-            Opcodes[0x18] = () => {    /*aIMP*/   clk(2); iCLC(); };
-
-            Opcodes[0xd8] = () => {    /*aIMP*/   clk(2); iCLD(); };
-
-            Opcodes[0x58] = () => {    /*aIMP*/   clk(2); iCLI(); };
-
-            Opcodes[0xb8] = () => {    /*aIMP*/   clk(2); iCLV(); };
-
-            Opcodes[0xc5] = () => { EA = aZPG();  clk(3); iCMP(Mem[EA]); };
-            Opcodes[0xd5] = () => { EA = aZPX();  clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xc1] = () => { EA = aIDX();  clk(6); iCMP(Mem[EA]); };
-            Opcodes[0xd1] = () => { EA = aIDY(1); clk(5); iCMP(Mem[EA]); };
-            Opcodes[0xcd] = () => { EA = aABS();  clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xdd] = () => { EA = aABX(1); clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xd9] = () => { EA = aABY(1); clk(4); iCMP(Mem[EA]); };
-            Opcodes[0xc9] = () => { /*aIMM*/      clk(2); iCMP(Mem[PC++]); };
-
-            Opcodes[0xe4] = () => { EA = aZPG();  clk(3); iCPX(Mem[EA]); };
-            Opcodes[0xec] = () => { EA = aABS();  clk(4); iCPX(Mem[EA]); };
-            Opcodes[0xe0] = () => { /*aIMM*/      clk(2); iCPX(Mem[PC++]); };
-
-            Opcodes[0xc4] = () => { EA = aZPG();  clk(3); iCPY(Mem[EA]); };
-            Opcodes[0xcc] = () => { EA = aABS();  clk(4); iCPY(Mem[EA]); };
-            Opcodes[0xc0] = () => { /*aIMM*/      clk(2); iCPY(Mem[PC++]); };
-
-            Opcodes[0xc6] = () => { EA = aZPG();  clk(5); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xd6] = () => { EA = aZPX();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xce] = () => { EA = aABS();  clk(6); Mem[EA] = iDEC(Mem[EA]); };
-            Opcodes[0xde] = () => { EA = aABX(0); clk(7); Mem[EA] = iDEC(Mem[EA]); };
-
-            Opcodes[0xca] = () => {    /*aIMP*/   clk(2); iDEX(); };
-
-            Opcodes[0x88] = () => {    /*aIMP*/   clk(2); iDEY(); };
-
-            Opcodes[0x45] = () => { EA = aZPG();  clk(3); iEOR(Mem[EA]); };
-            Opcodes[0x55] = () => { EA = aZPX();  clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x41] = () => { EA = aIDX();  clk(6); iEOR(Mem[EA]); };
-            Opcodes[0x51] = () => { EA = aIDY(1); clk(5); iEOR(Mem[EA]); };
-            Opcodes[0x4d] = () => { EA = aABS();  clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x5d] = () => { EA = aABX(1); clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x59] = () => { EA = aABY(1); clk(4); iEOR(Mem[EA]); };
-            Opcodes[0x49] = () => {    /*aIMM*/   clk(2); iEOR(Mem[PC++]); };
-
-            Opcodes[0xe6] = () => { EA = aZPG();  clk(5); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xf6] = () => { EA = aZPX();  clk(6); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xee] = () => { EA = aABS();  clk(6); Mem[EA] = iINC(Mem[EA]); };
-            Opcodes[0xfe] = () => { EA = aABX(0); clk(7); Mem[EA] = iINC(Mem[EA]); };
-
-            Opcodes[0xe8] = () => {    /*aIMP*/   clk(2); iINX(); };
-
-            Opcodes[0xc8] = () => {    /*aIMP*/   clk(2); iINY(); };
-
-            Opcodes[0xa5] = () => { EA = aZPG();  clk(3); iLDA(Mem[EA]); };
-            Opcodes[0xb5] = () => { EA = aZPX();  clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xa1] = () => { EA = aIDX();  clk(6); iLDA(Mem[EA]); };
-            Opcodes[0xb1] = () => { EA = aIDY(1); clk(5); iLDA(Mem[EA]); };
-            Opcodes[0xad] = () => { EA = aABS();  clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xbd] = () => { EA = aABX(1); clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xb9] = () => { EA = aABY(1); clk(4); iLDA(Mem[EA]); };
-            Opcodes[0xa9] = () => {    /*aIMM*/   clk(2); iLDA(Mem[PC++]); };
-
-            Opcodes[0xa6] = () => { EA = aZPG();  clk(3); iLDX(Mem[EA]); };
-            Opcodes[0xb6] = () => { EA = aZPY();  clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xae] = () => { EA = aABS();  clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xbe] = () => { EA = aABY(1); clk(4); iLDX(Mem[EA]); };
-            Opcodes[0xa2] = () => {    /*aIMM*/   clk(2); iLDX(Mem[PC++]); };
-
-            Opcodes[0xa4] = () => { EA = aZPG();  clk(3); iLDY(Mem[EA]); };
-            Opcodes[0xb4] = () => { EA = aZPX();  clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xac] = () => { EA = aABS();  clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xbc] = () => { EA = aABX(1); clk(4); iLDY(Mem[EA]); };
-            Opcodes[0xa0] = () => {    /*aIMM*/   clk(2); iLDY(Mem[PC++]); };
-
-            Opcodes[0x46] = () => { EA = aZPG();  clk(5); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x56] = () => { EA = aZPX();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x4e] = () => { EA = aABS();  clk(6); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x5e] = () => { EA = aABX(0); clk(7); Mem[EA] = iLSR(Mem[EA]); };
-            Opcodes[0x4a] = () => {    /*aACC*/   clk(2);       A = iLSR(A); };
-
-            Opcodes[0x4c] = () => { EA = aABS();  clk(3); iJMP(EA); };
-            Opcodes[0x6c] = () => { EA = aIND();  clk(5); iJMP(EA); };
-
-            Opcodes[0x20] = () => { EA = aABS();  clk(6); iJSR(EA); };
-
-            Opcodes[0xea] = () => {    /*aIMP*/   clk(2); iNOP(); };
-
-            Opcodes[0x05] = () => { EA = aZPG();  clk(3); iORA(Mem[EA]); }; // may be 2 clk
-            Opcodes[0x15] = () => { EA = aZPX();  clk(4); iORA(Mem[EA]); }; // may be 3 clk
-            Opcodes[0x01] = () => { EA = aIDX();  clk(6); iORA(Mem[EA]); };
-            Opcodes[0x11] = () => { EA = aIDY(1); clk(5); iORA(Mem[EA]); };
-            Opcodes[0x0d] = () => { EA = aABS();  clk(4); iORA(Mem[EA]); };
-            Opcodes[0x1d] = () => { EA = aABX(1); clk(4); iORA(Mem[EA]); };
-            Opcodes[0x19] = () => { EA = aABY(1); clk(4); iORA(Mem[EA]); };
-            Opcodes[0x09] = () => {    /*aIMM*/   clk(2); iORA(Mem[PC++]); };
-
-            Opcodes[0x48] = () => {    /*aIMP*/   clk(3); iPHA(); };
-
-            Opcodes[0x68] = () => {    /*aIMP*/   clk(4); iPLA(); };
-
-            Opcodes[0x08] = () => {    /*aIMP*/   clk(3); iPHP(); };
-
-            Opcodes[0x28] = () => {    /*aIMP*/   clk(4); iPLP(); };
-
-            Opcodes[0x26] = () => { EA = aZPG();  clk(5); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x36] = () => { EA = aZPX();  clk(6); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x2e] = () => { EA = aABS();  clk(6); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x3e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROL(Mem[EA]); };
-            Opcodes[0x2a] = () => {    /*aACC*/   clk(2);       A = iROL(A);       };
-
-            Opcodes[0x66] = () => { EA = aZPG();  clk(5); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x76] = () => { EA = aZPX();  clk(6); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x6e] = () => { EA = aABS();  clk(6); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x7e] = () => { EA = aABX(0); clk(7); Mem[EA] = iROR(Mem[EA]); };
-            Opcodes[0x6a] = () => {    /*aACC*/   clk(2);       A = iROR(A); };
-
-            Opcodes[0x40] = () => {    /*aIMP*/   clk(6); iRTI(); };
-
-            Opcodes[0x60] = () => {    /*aIMP*/   clk(6); iRTS(); };
-
-            Opcodes[0xe5] = () => { EA = aZPG();  clk(3); iSBC(Mem[EA]); };
-            Opcodes[0xf5] = () => { EA = aZPX();  clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xe1] = () => { EA = aIDX();  clk(6); iSBC(Mem[EA]); };
-            Opcodes[0xf1] = () => { EA = aIDY(1); clk(5); iSBC(Mem[EA]); };
-            Opcodes[0xed] = () => { EA = aABS();  clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xfd] = () => { EA = aABX(1); clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xf9] = () => { EA = aABY(1); clk(4); iSBC(Mem[EA]); };
-            Opcodes[0xe9] = () => {    /*aIMM*/   clk(2); iSBC(Mem[PC++]); };
-
-            Opcodes[0x38] = () => {    /*aIMP*/   clk(2); iSEC(); };
-
-            Opcodes[0xf8] = () => {    /*aIMP*/   clk(2); iSED(); };
-
-            Opcodes[0x78] = () => {    /*aIMP*/   clk(2); iSEI(); };
-
-            Opcodes[0x85] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTA(); };
-            Opcodes[0x95] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTA(); };
-            Opcodes[0x81] = () => { EA = aIDX();  clk(6); Mem[EA] = iSTA(); };
-            Opcodes[0x91] = () => { EA = aIDY(0); clk(6); Mem[EA] = iSTA(); };
-            Opcodes[0x8d] = () => { EA = aABS();  clk(4); Mem[EA] = iSTA(); };
-            Opcodes[0x99] = () => { EA = aABY(0); clk(5); Mem[EA] = iSTA(); };
-            Opcodes[0x9d] = () => { EA = aABX(0); clk(5); Mem[EA] = iSTA(); };
-
-            Opcodes[0x86] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTX(); };
-            Opcodes[0x96] = () => { EA = aZPY();  clk(4); Mem[EA] = iSTX(); };
-            Opcodes[0x8e] = () => { EA = aABS();  clk(4); Mem[EA] = iSTX(); };
-
-            Opcodes[0x84] = () => { EA = aZPG();  clk(3); Mem[EA] = iSTY(); };
-            Opcodes[0x94] = () => { EA = aZPX();  clk(4); Mem[EA] = iSTY(); };
-            Opcodes[0x8c] = () => { EA = aABS();  clk(4); Mem[EA] = iSTY(); };
-
-            Opcodes[0xaa] = () => {    /*aIMP*/   clk(2); iTAX(); };
-
-            Opcodes[0xa8] = () => {    /*aIMP*/   clk(2); iTAY(); };
-
-            Opcodes[0xba] = () => {    /*aIMP*/   clk(2); iTSX(); };
-
-            Opcodes[0x8a] = () => {    /*aIMP*/   clk(2); iTXA(); };
-
-            Opcodes[0x9a] = () => {    /*aIMP*/   clk(2); iTXS(); };
-
-            Opcodes[0x98] = () => {    /*aIMP*/   clk(2); iTYA(); };
-
-            // Illegal opcodes
-
-            // DOP (SKB) - no operation, double NOP, skip byte - required for Medieval Mayhem
-            Opcodes[0x04] = () => { clk(3); PC++; iNOP(); };
-
-            // ALR (ASR) - required for Popeye and Ghost n' Goblins
-            Opcodes[0x4b] = () => {    /*aIMM*/   clk(2); iALR(Mem[PC++]); };
-
-            // ANC - required for Popeye and Ghost n' Goblins
-            Opcodes[0x0b] = () => {    /*aIMM*/   clk(2); iANC(Mem[PC++]); };
-            Opcodes[0x2b] = Opcodes[0x0b];
-
-            foreach (var opCode in new ushort[] { 0x02, 0x12, 0x22, 0x32, 0x42, 0x52, 0x62, 0x72, 0x92, 0xb2, 0xd2, 0xf2 })
-            {
-                Opcodes[opCode] = () => { clk(2); iKIL(); };
-            }
-            Opcodes[0x3f] = () => { EA = aABX(0); clk(4); iRLA(Mem[EA]); };
-            Opcodes[0xa7] = () => { EA = aZPX();  clk(3); iLAX(Mem[EA]); };
-            Opcodes[0xb3] = () => { EA = aIDY(0); clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xef] = () => { EA = aABS();  clk(6); iISB(Mem[EA]); };
-            Opcodes[0x0c] = () => { EA = aABS();  clk(2); iNOP(); };
-            foreach (var opCode in new ushort[] { 0x1c, 0x3c, 0x5c, 0x7c, 0x9c, 0xdc, 0xfc })
-            {
-                Opcodes[opCode] = () => { EA = aABX(0); clk(2); iNOP(); };
-            }
-            Opcodes[0x83] = () => { EA = aIDX();  clk(6); Mem[EA] = iSAX(); };
-            Opcodes[0x87] = () => { EA = aZPG();  clk(3); Mem[EA] = iSAX(); };
-            Opcodes[0x8f] = () => { EA = aABS();  clk(4); Mem[EA] = iSAX(); };
-            Opcodes[0x97] = () => { EA = aZPY();  clk(4); Mem[EA] = iSAX(); };
-            Opcodes[0xa3] = () => { EA = aIDX();  clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xb7] = () => { EA = aZPY();  clk(4); iLAX(Mem[EA]); };
-            Opcodes[0xaf] = () => { EA = aABS();  clk(5); iLAX(Mem[EA]); };
-            Opcodes[0xbf] = () => { EA = aABY(0); clk(6); iLAX(Mem[EA]); };
-            Opcodes[0xff] = () => { EA = aABX(0); clk(7); iISB(Mem[EA]); };
-
-            for (var i=0; i < Opcodes.Length; i++)
-            {
-                if (Opcodes[i] == null)
-                {
-                    Opcodes[i] = () => Log($"{this}:**UNKNOWN OPCODE: ${Mem[(ushort)(PC - 1)]:x2} at ${PC - 1:x4}\n");
-                }
-            }
-        }
-
-        #region Serialization Members
-
-        public M6502(DeserializationContext input, MachineBase m, int runClocksMultiple) : this(m, runClocksMultiple)
-        {
-            input.CheckVersion(1);
-            Clock = input.ReadUInt64();
-            RunClocks = input.ReadInt32();
-            RunClocksMultiple = input.ReadInt32();
-            EmulatorPreemptRequest = input.ReadBoolean();
-            Jammed = input.ReadBoolean();
-            IRQInterruptRequest = input.ReadBoolean();
-            NMIInterruptRequest = input.ReadBoolean();
-            PC = input.ReadUInt16();
-            A = input.ReadByte();
-            X = input.ReadByte();
-            Y = input.ReadByte();
-            S = input.ReadByte();
-            P = input.ReadByte();
-        }
-
-        public void GetObjectData(SerializationContext output)
-        {
-            output.WriteVersion(1);
-            output.Write(Clock);
-            output.Write(RunClocks);
-            output.Write(RunClocksMultiple);
-            output.Write(EmulatorPreemptRequest);
-            output.Write(Jammed);
-            output.Write(IRQInterruptRequest);
-            output.Write(NMIInterruptRequest);
-            output.Write(PC);
-            output.Write(A);
-            output.Write(X);
-            output.Write(Y);
-            output.Write(S);
-            output.Write(P);
-        }
-
-        #endregion
-
-        #region Helpers
-
-        void Log(string message)
-            => M.Logger.WriteLine(message);
-
-        #endregion
     }
+
+    #region Serialization Members
+
+    public M6502(DeserializationContext input, MachineBase m, int runClocksMultiple) : this(m, runClocksMultiple)
+    {
+        input.CheckVersion(1);
+        Clock = input.ReadUInt64();
+        RunClocks = input.ReadInt32();
+        RunClocksMultiple = input.ReadInt32();
+        EmulatorPreemptRequest = input.ReadBoolean();
+        Jammed = input.ReadBoolean();
+        IRQInterruptRequest = input.ReadBoolean();
+        NMIInterruptRequest = input.ReadBoolean();
+        PC = input.ReadUInt16();
+        A = input.ReadByte();
+        X = input.ReadByte();
+        Y = input.ReadByte();
+        S = input.ReadByte();
+        P = input.ReadByte();
+    }
+
+    public void GetObjectData(SerializationContext output)
+    {
+        output.WriteVersion(1);
+        output.Write(Clock);
+        output.Write(RunClocks);
+        output.Write(RunClocksMultiple);
+        output.Write(EmulatorPreemptRequest);
+        output.Write(Jammed);
+        output.Write(IRQInterruptRequest);
+        output.Write(NMIInterruptRequest);
+        output.Write(PC);
+        output.Write(A);
+        output.Write(X);
+        output.Write(Y);
+        output.Write(S);
+        output.Write(P);
+    }
+
+    #endregion
+
+    #region Helpers
+
+    void Log(string message)
+        => M.Logger.WriteLine(message);
+
+    #endregion
 }

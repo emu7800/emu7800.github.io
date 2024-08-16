@@ -28,11 +28,6 @@ public sealed class CartDPC : Cart
 
     byte _ShiftRegister;
 
-    int Bank
-    {
-        set { BankBaseAddr = (ushort)(value * 0x1000); }
-    }
-
     //
     // Generate a sequence of pseudo-random numbers 255 numbers long
     // by emulating an 8-bit shift register with feedback taps at
@@ -42,20 +37,20 @@ public sealed class CartDPC : Cart
         get
         {
             var a = _ShiftRegister;
-            a &= (1 << 0);
+            a &= 1 << 0;
 
             var x = _ShiftRegister;
-            x &= (1 << 2);
+            x &= 1 << 2;
             x >>= 2;
             a ^= x;
 
             x = _ShiftRegister;
-            x &= (1 << 3);
+            x &= 1 << 3;
             x >>= 3;
             a ^= x;
 
             x = _ShiftRegister;
-            x &= (1 << 4);
+            x &= 1 << 4;
             x >>= 4;
             a ^= x;
 
@@ -65,14 +60,14 @@ public sealed class CartDPC : Cart
 
             return _ShiftRegister;
         }
-        set { _ShiftRegister = value; }
+        set => _ShiftRegister = value;
     }
 
     #region IDevice Members
 
     public override void Reset()
     {
-        Bank = 1;
+        BankBaseAddr = GetBankBaseAddr(1);
         LastSystemClock = 3*M.CPU.Clock;
         FractionalClocks = 0.0;
         ShiftRegister = 1;
@@ -93,7 +88,7 @@ public sealed class CartDPC : Cart
         set
         {
             addr &= 0x0fff;
-            if (addr >= 0x0040 && addr < 0x0080)
+            if (addr is >= 0x0040 and < 0x0080)
             {
                 WritePitfall2Reg(addr, value);
             }
@@ -112,21 +107,19 @@ public sealed class CartDPC : Cart
     public CartDPC(byte[] romBytes)
     {
         LoadRom(romBytes, 0x2800);
-        Bank = 1;
+        BankBaseAddr = GetBankBaseAddr(1);
     }
 
     void UpdateBank(ushort addr)
     {
-        switch(addr)
+        if (addr is >= 0xff8 and <= 0xff9)
         {
-            case 0x0ff8:
-                Bank = 0;
-                break;
-            case 0x0ff9:
-                Bank = 1;
-                break;
+            BankBaseAddr = GetBankBaseAddr(addr - 0xff8);
         }
     }
+
+    static ushort GetBankBaseAddr(int bankNo)
+      => (ushort)(bankNo << 12);  // Multiply by 4096
 
     byte ReadPitfall2Reg(ushort addr)
     {
@@ -191,7 +184,7 @@ public sealed class CartDPC : Cart
         }
 
         // Clock the selected data fetcher's counter if needed
-        if (i < 5 || i >= 5 && MusicMode[i - 5] == false)
+        if (i < 5 || !MusicMode[i - 5])
         {
             Counters[i]--;
             Counters[i] &= 0x07ff;
@@ -205,7 +198,7 @@ public sealed class CartDPC : Cart
         var sysClockDelta = 3*M.CPU.Clock - LastSystemClock;
         LastSystemClock = 3*M.CPU.Clock;
 
-        var OSCclocks = ((15750.0 * sysClockDelta) / 1193191.66666667) + FractionalClocks;
+        var OSCclocks = 15750.0 * sysClockDelta / 1193191.66666667 + FractionalClocks;
 
         var wholeClocks = (int)OSCclocks;
         FractionalClocks = OSCclocks - wholeClocks;
@@ -224,7 +217,7 @@ public sealed class CartDPC : Cart
 
             if (Tops[r] != 0)
             {
-                newLow -= (wholeClocks % top);
+                newLow -= wholeClocks % top;
                 if (newLow < 0)
                 {
                     newLow += top;

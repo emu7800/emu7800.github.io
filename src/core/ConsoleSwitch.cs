@@ -1,12 +1,11 @@
-﻿namespace EMU7800.Core
+﻿namespace EMU7800.Core;
+
+internal enum ConsoleSwitch
 {
-    internal enum ConsoleSwitch
-    {
-        GameReset,
-        GameSelect,
-        GameBW,
-        LeftDifficultyA,
-        RightDifficultyA,
-        Pause = GameBW
-    }
+    GameReset,
+    GameSelect,
+    GameBW,
+    LeftDifficultyA,
+    RightDifficultyA,
+    Pause = GameBW
 }

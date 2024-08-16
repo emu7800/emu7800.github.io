@@ -72,7 +72,7 @@ public class DatastoreService
 
     #region Machine Persistence
 
-    static bool HasPersistedDirBeenScanned = false;
+    static bool HasPersistedDirBeenScanned;
     static Dictionary<string, DateTime> _cachedPersistedDir = [];
 
     public static DateTime PersistedMachineAt(GameProgramInfo gameProgramInfo)
@@ -192,8 +192,8 @@ public class DatastoreService
 
     #region Imported Game Program Info
 
-    static public IEnumerable<ImportedGameProgramInfo> ImportedGameProgramInfo { get; set; } = Array.Empty<ImportedGameProgramInfo>();
-    static public IEnumerable<ImportedSpecialBinaryInfo> ImportedSpecialBinaryInfo { get; set; } = Array.Empty<ImportedSpecialBinaryInfo>();
+    public static IEnumerable<ImportedGameProgramInfo> ImportedGameProgramInfo { get; set; } = Array.Empty<ImportedGameProgramInfo>();
+    public static IEnumerable<ImportedSpecialBinaryInfo> ImportedSpecialBinaryInfo { get; set; } = Array.Empty<ImportedSpecialBinaryInfo>();
 
     #endregion
 
@@ -459,6 +459,8 @@ public class DatastoreService
             }
         }
         while (moveNextResult);
+
+        enumerator.Dispose();
     }
 
     static string[] GetZipPaths(string filepath)
@@ -504,6 +506,8 @@ public class DatastoreService
             }
         }
         while (moveNextResult);
+
+        enumerator.Dispose();
     }
 
     static bool DirectoryExists(string path)

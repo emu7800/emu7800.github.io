@@ -1,4 +1,4 @@
-// © Mike Murphy
+﻿// © Mike Murphy
 
 using EMU7800.Core;
 using System.Linq;
@@ -23,9 +23,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.KeyboardKeyPressed(key, down);
         }
     }
@@ -37,9 +37,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.MouseMoved(pointerId, x, y, dx, dy);
         }
     }
@@ -51,9 +51,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.MouseButtonChanged(pointerId, x, y, down);
         }
     }
@@ -65,9 +65,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.MouseWheelChanged(pointerId, x, y, delta);
         }
     }
@@ -79,9 +79,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.ControllerButtonChanged(controllerNo, input, down);
         }
     }
@@ -93,10 +93,24 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.PaddlePositionChanged(controllerNo, paddleNo, ohms);
+        }
+    }
+
+    public override void PaddleButtonChanged(int controllerNo, int paddleNo, bool down)
+    {
+        if (!IsVisible)
+            return;
+        for (var i = 0; i < _controls.Length; i++)
+        {
+            var control = _controls[i];
+            if (ReferenceEquals(control, Default))
+                break;
+            if (control is { IsVisible: true, IsEnabled: true })
+                control.PaddleButtonChanged(controllerNo, paddleNo, down);
         }
     }
 
@@ -107,9 +121,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.DrivingPositionChanged(controllerNo, input);
         }
     }
@@ -119,7 +133,7 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
             control.LoadResources();
         }
@@ -132,9 +146,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.Update(td);
         }
     }
@@ -146,9 +160,9 @@ public sealed class ControlCollection : ControlBase
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            if (control == Default)
+            if (ReferenceEquals(control, Default))
                 break;
-            if (control.IsVisible && control.IsEnabled)
+            if (control is { IsVisible: true, IsEnabled: true })
                 control.Render();
         }
     }
@@ -167,11 +181,11 @@ public sealed class ControlCollection : ControlBase
 
     public void Add(ControlBase control)
     {
-        if (control == Default)
+        if (ReferenceEquals(control, Default))
             return;
         for (var i = 0; i < _controls.Length; i++)
         {
-            if (_controls[i] != Default)
+            if (!ReferenceEquals(_controls[i], Default))
                 continue;
             _controls[i] = control;
             return;
@@ -182,17 +196,17 @@ public sealed class ControlCollection : ControlBase
 
     public void Remove(ControlBase control)
     {
-        if (control == Default)
+        if (ReferenceEquals(control, Default))
             return;
         for (var i = 0; i < _controls.Length; i++)
         {
-            if (!control.Equals(_controls[i]))
+            if (!ReferenceEquals(control, _controls[i]))
                 continue;
             for (var j = i; j < _controls.Length - 1; j++)
             {
                 var nextControl = _controls[j + 1];
                 _controls[j] = nextControl;
-                if (nextControl == Default)
+                if (ReferenceEquals(nextControl, Default))
                     break;
             }
             break;
@@ -229,7 +243,7 @@ public sealed class ControlCollection : ControlBase
     }
 
     static ControlBase[] CreateEmptyControlsArray(int size)
-        => Enumerable.Range(0, size).Select(i => Default).ToArray();
+        => Enumerable.Range(0, size).Select(_ => Default).ToArray();
 
     #endregion
 }

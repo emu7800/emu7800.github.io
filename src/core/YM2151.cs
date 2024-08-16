@@ -247,7 +247,7 @@ public sealed class YM2151
                         }
                         break;
                     case 0x18: // LFO frequency
-                        _lfo_overflow = (uint)((1 << ((15 - (data >> 4)) + 3)) * (1 << 10));
+                        _lfo_overflow = (uint)((1 << (15 - (data >> 4) + 3)) * (1 << 10));
                         _lfo_counter_add = (uint)(0x10 + (data & 0x0f));
                         break;
                     case 0x19: // PMD (bit 7==1) or AMD (bit 7==0)

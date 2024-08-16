@@ -1,20 +1,15 @@
-// © Mike Murphy
+﻿// © Mike Murphy
 
 using EMU7800.Core;
 using EMU7800.Win32.Interop;
-using static System.Console;
 
 namespace EMU7800.D2D.Shell;
 
-public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInputAdapter
+public sealed class InputAdapterPaddle(InputState inputState) : IInputAdapter
 {
-    readonly InputState _inputState = inputState;
-    readonly int _jackNo = jackNo;
+    readonly int[] _emulationDirection = new int[4];
 
-    readonly int[] _emulationDirection = new int[2];
-    readonly bool[] _emulationOff = new bool[2];
-
-    readonly int[] _currentXPosition = new int[2];
+    readonly int[] _currentXPosition = new int[4];
     int _currentXLocation, _currentXWidth = 1;
     int _startYForPaddleInput;
 
@@ -28,19 +23,6 @@ public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInp
 
     public void JoystickChanged(int playerNo, MachineInput machineInput, bool down)
     {
-        switch (machineInput)
-        {
-            case MachineInput.Fire:
-            case MachineInput.Fire2:
-                _inputState.RaiseInput(ToPaddlePlayerNo(playerNo), MachineInput.Fire, down);
-                break;
-            case MachineInput.Left:
-                _emulationDirection[playerNo & 1] += down ? -1 : 1;
-                break;
-            case MachineInput.Right:
-                _emulationDirection[playerNo & 1] += down ? 1 : -1;
-                break;
-        }
     }
 
     public void ProLineJoystickChanged(int playerNo, MachineInput machineInput, bool down)
@@ -49,12 +31,12 @@ public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInp
 
     public void PaddleChanged(int playerNo, int ohms)
     {
-        if (!_emulationOff[playerNo & 1])
-        {
-            _emulationOff[playerNo & 1] = true;
-            WriteLine("Real paddle input detected, turning off emulated paddle input from mouse movement");
-        }
-        _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), ohms);
+        inputState.RaisePaddleInput(playerNo, ohms);
+    }
+
+    public void PaddleButtonChanged(int playerNo, bool down)
+    {
+        inputState.RaiseInput(playerNo, MachineInput.Fire, down);
     }
 
     public void DrivingPaddleChanged(int playerNo, MachineInput machineInput)
@@ -67,22 +49,19 @@ public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInp
         {
             case KeyboardKey.Z:
             case KeyboardKey.X:
-                _inputState.RaiseInput(ToPaddlePlayerNo(playerNo), MachineInput.Fire, down);
+                inputState.RaiseInput(playerNo, MachineInput.Fire, down);
                 break;
             case KeyboardKey.Left:
-                _emulationDirection[playerNo & 1] += down ? -1 : 1;
+                _emulationDirection[playerNo] = down ? -1 : 0;
                 break;
             case KeyboardKey.Right:
-                _emulationDirection[playerNo & 1] += down ? 1 : -1;
+                _emulationDirection[playerNo] = down ? 1 : 0;
                 break;
         }
     }
 
     public void MouseMoved(int playerNo, int x, int y, int dx, int dy)
     {
-        if (_emulationOff[playerNo & 1])
-            return;
-
         if (y < _startYForPaddleInput)
             return;
 
@@ -92,11 +71,11 @@ public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInp
         else if (tx > _currentXWidth)
             tx = _currentXWidth;
 
-        _currentXPosition[playerNo & 1] = tx;
+        _currentXPosition[playerNo] = tx;
 
-        var ohms = 1000000 * (_currentXWidth - _currentXPosition[playerNo & 1]) / _currentXWidth;
+        var ohms = 1000000 * (_currentXWidth - _currentXPosition[playerNo]) / _currentXWidth;
 
-        _inputState.RaisePaddleInput(ToPaddlePlayerNo(playerNo), ohms);
+        inputState.RaisePaddleInput(playerNo, ohms);
     }
 
     public void MouseButtonChanged(int playerNo, int x, int y, bool down, bool touchMode)
@@ -104,13 +83,28 @@ public sealed class InputAdapterPaddle(InputState inputState, int jackNo) : IInp
         if (touchMode)
             return;
         MouseMoved(playerNo, x, y, 0, 0);
-        _inputState.RaiseInput(ToPaddlePlayerNo(playerNo), MachineInput.Fire, down);
+        inputState.RaiseInput(playerNo, MachineInput.Fire, down);
     }
 
     public void Update(TimerDevice td)
     {
-    }
+        for (var i = 0; i < 4; i++)
+        {
+            if (_emulationDirection[i] == 0)
+                continue;
 
-    int ToPaddlePlayerNo(int playerNo)
-        => (_jackNo << 1) | (playerNo & 1);
+            const int EmulationRotationalVelocity = 1;
+
+            _currentXPosition[i] += (int)(td.DeltaInSeconds * EmulationRotationalVelocity * _currentXWidth * _emulationDirection[i]);
+
+            if (_currentXPosition[i] < 0)
+                _currentXPosition[i] = 0;
+            else if (_currentXPosition[i] > _currentXWidth)
+                _currentXPosition[i] = _currentXWidth;
+
+            var ohms = 1000000 * (_currentXWidth - _currentXPosition[i]) / _currentXWidth;
+
+            inputState.RaisePaddleInput(i, ohms);
+        }
+    }
 }

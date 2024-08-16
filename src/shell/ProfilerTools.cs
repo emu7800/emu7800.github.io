@@ -8,13 +8,12 @@ public class DurationProfiler(Stopwatch stopwatch)
 {
     #region Fields
 
-    readonly Stopwatch _stopwatch = stopwatch;
     long _startTick, _accumulatedBeginEndTicks, _count;
     bool _requestReset = true;
 
     #endregion
 
-    public double AvgMillisecondsPerSample => (_count > 0)
+    public double AvgMillisecondsPerSample => _count > 0
         ? 1000.0 * _accumulatedBeginEndTicks / _count / Stopwatch.Frequency : 0.0;
 
     public void Reset()
@@ -30,13 +29,13 @@ public class DurationProfiler(Stopwatch stopwatch)
             _count = 0;
             _requestReset = false;
         }
-        _startTick = _stopwatch.ElapsedTicks;
+        _startTick = stopwatch.ElapsedTicks;
     }
 
     public void End()
     {
-        var stopwatchElapsedTicks = _stopwatch.ElapsedTicks;
-        _accumulatedBeginEndTicks += (stopwatchElapsedTicks - _startTick);
+        var stopwatchElapsedTicks = stopwatch.ElapsedTicks;
+        _accumulatedBeginEndTicks += stopwatchElapsedTicks - _startTick;
         _startTick = stopwatchElapsedTicks;
         _count++;
     }
@@ -46,7 +45,6 @@ public class RateProfiler(Stopwatch stopwatch)
 {
     #region Fields
 
-    readonly Stopwatch _stopwatch = stopwatch;
     long _startTick;
     bool _requestReset = true;
 
@@ -60,7 +58,7 @@ public class RateProfiler(Stopwatch stopwatch)
         {
             if (SampleCount == 0)
                 return 0.0;
-            var elapsedTicks = _stopwatch.ElapsedTicks - _startTick;
+            var elapsedTicks = stopwatch.ElapsedTicks - _startTick;
             var avgTicksPerCount = elapsedTicks / SampleCount;
             return (double)Stopwatch.Frequency / avgTicksPerCount;
         }
@@ -75,7 +73,7 @@ public class RateProfiler(Stopwatch stopwatch)
     {
         if (_requestReset)
         {
-            _startTick = _stopwatch.ElapsedTicks;
+            _startTick = stopwatch.ElapsedTicks;
             SampleCount = 0;
             _requestReset = false;
         }

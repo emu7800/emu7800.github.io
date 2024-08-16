@@ -55,8 +55,8 @@ public enum CartType
     A78BB128K,
     A78BB128KR,
     A78BB128KRPL,
-    A78BB128KP,
-};
+    A78BB128KP
+}
 
 public static class CartTypeUtil
 {

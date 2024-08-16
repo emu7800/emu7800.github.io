@@ -107,7 +107,7 @@ public static class M6502DASM
 
         for (var i = 0; i < 8; i++)
         {
-            dSB.Append(((cpu.P & (1 << (7 - i))) == 0) ? flags[i] : flags[i + 8]);
+            dSB.Append((cpu.P & (1 << (7 - i))) == 0 ? flags[i] : flags[i + 8]);
         }
         return dSB.ToString();
     }
@@ -169,7 +169,7 @@ public static class M6502DASM
     {
         var num_operands = GetInstructionLength(addrSpace, PC) - 1;
         var PC1 = (ushort)(PC + 1);
-        string addrmodeStr = (AddressingModeMatrix[addrSpace[PC]]) switch
+        var addrmodeStr = AddressingModeMatrix[addrSpace[PC]] switch
         {
             A.REL          => $"${(ushort)(PC + (sbyte)addrSpace[PC1] + 2):x4}",
             A.ZPG or A.ABS => RenderEA(addrSpace, PC1, num_operands),
@@ -179,23 +179,23 @@ public static class M6502DASM
             A.IDY          => "(" + RenderEA(addrSpace, PC1, num_operands) + "),Y",
             A.IND          => "(" + RenderEA(addrSpace, PC1, num_operands) + ")",
             A.IMM          => "#" + RenderEA(addrSpace, PC1, num_operands),
-            _              => string.Empty,// a.IMP, a.ACC
+            _              => string.Empty // a.IMP, a.ACC
         };
         return $"{MnemonicMatrix[addrSpace[PC]]} {addrmodeStr}";
     }
 
     static int GetInstructionLength(AddressSpace addrSpace, ushort PC)
-        => (AddressingModeMatrix[addrSpace[PC]]) switch
+        => AddressingModeMatrix[addrSpace[PC]] switch
         {
             A.ACC or A.IMP => 1,
             A.REL or A.ZPG or A.ZPX or A.ZPY or A.IDX or A.IDY or A.IMM => 2,
-            _ => 3,
+            _ => 3
         };
 
     static string RenderEA(AddressSpace addrSpace, ushort PC, int bytes)
     {
         var lsb = addrSpace[PC];
-        var msb = (bytes == 2) ? addrSpace[(ushort)(PC + 1)] : (byte)0;
+        var msb = bytes == 2 ? addrSpace[(ushort)(PC + 1)] : (byte)0;
         var ea = (ushort)(lsb | (msb << 8));
         return bytes == 1 ? $"${ea:x2}" : $"${ea:x4}";
     }
