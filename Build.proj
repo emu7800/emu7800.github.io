@@ -1,4 +1,4 @@
-<Project DefaultTargets="BuildAll">
+﻿<Project DefaultTargets="BuildAll">
   <Import Project="Directory.Build.Props" />
   <ItemGroup>
     <ProjectToBuild Include="src/EMU7800.Win32.sln">
@@ -77,7 +77,7 @@
   </Target>
   <Target Name="ZipBin" DependsOnTargets="CopyBin;ZipRoms">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.bin.$(Emu7800Version).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>

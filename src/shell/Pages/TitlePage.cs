@@ -39,7 +39,7 @@ public sealed class TitlePage : PageBase
         _buttonAbout = new QuestionMarkButton();
         _labelCopyr = new LabelControl
         {
-            Text = VersionInfo.Copyright,
+            Text = VersionInfo.Author,
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
             TextAlignment = DWriteTextAlignment.Center,
@@ -49,7 +49,7 @@ public sealed class TitlePage : PageBase
 
         _labelVers = new LabelControl
         {
-            Text = $"Version {VersionInfo.Version} {GetBuildConfiguration()}",
+            Text = $"Version {VersionInfo.AssemblyVersion} {GetBuildConfiguration()}",
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
             TextAlignment = DWriteTextAlignment.Center,

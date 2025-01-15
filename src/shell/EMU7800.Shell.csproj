@@ -7,23 +7,4 @@
     <ProjectReference Include="..\core\EMU7800.Core.csproj" />
     <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
-  <Target Name="CodeGen" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <VersionInfoLines>
-        namespace EMU7800%3b
-        public static class VersionInfo
-        {
-        public const string
-        Version     = "$(FileVersion)",
-        Copyright   = "$(Copyright)",
-        Description = "$(Description)"
-        %3b
-        }
-      </VersionInfoLines>
-    </PropertyGroup>
-    <WriteLinesToFile File="$(ArtifactsPath)\obj\VersionInfo.g.cs" Overwrite="true" Lines="$(VersionInfoLines)" />
-    <ItemGroup>
-      <Compile Include="$(ArtifactsPath)\obj\*.g.cs" />
-    </ItemGroup>
-  </Target>
 </Project>
