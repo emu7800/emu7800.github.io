@@ -29,9 +29,6 @@ public sealed class AddressSpace
 
     public int MariaRead { get; set; }
 
-    public override string ToString()
-        => "EMU7800.Core.AddressSpace";
-
     public byte this[ushort addr]
     {
         get

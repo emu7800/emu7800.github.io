@@ -37,7 +37,7 @@ public sealed class GameControl : ControlBase
     int _currentKeyboardPlayerNo;
 
     Task _workerTask = Task.CompletedTask;
-    bool _stopRequested, _paused, _soundOff;
+    bool _stopRequested;
 
     bool _calibrationNeeded, _calibrating, _frameRateChangeNeeded;
     readonly uint[] _frameDurationBuckets = new uint[0x100];
@@ -55,24 +55,24 @@ public sealed class GameControl : ControlBase
 
     public bool IsPaused
     {
-        get => _paused;
+        get => field;
         set
         {
-            if (_paused == value)
+            if (field == value)
                 return;
-            _paused = value;
-            if (!_paused)
+            field = value;
+            if (!field)
                 _calibrationNeeded = true;
         }
     }
 
     public bool IsSoundOn
     {
-        get => !_soundOff;
+        get => field;
         set
         {
-            _soundOff = !value;
-            if (!_soundOff)
+            field = value;
+            if (field)
                 _calibrationNeeded = true;
         }
     }
@@ -322,7 +322,7 @@ public sealed class GameControl : ControlBase
 
         var machine = machineStateInfo.Machine;
 
-        _soundOff = machineStateInfo.SoundOff;
+        IsSoundOn = !machineStateInfo.SoundOff;
 
         _maxFrameRate = machine.FrameHZ;
         CurrentFrameRate = _maxFrameRate;
@@ -346,8 +346,6 @@ public sealed class GameControl : ControlBase
         InitializePalettes(machine.Palette);
         _currentPalette = _normalPalette;
 
-        var frameBuffer = machine.CreateFrameBuffer();
-
         _frameRenderer = ToFrameRenderer(machineStateInfo);
 
         var stopwatch = new Stopwatch();
@@ -363,7 +361,7 @@ public sealed class GameControl : ControlBase
             if (_calibrationNeeded)
             {
                 _calibrationNeeded = false;
-                _calibrating = !_soundOff;
+                _calibrating = IsSoundOn;
             }
 
             if (_calibrating && _frameDurationBucketSamples > 200)
@@ -401,41 +399,39 @@ public sealed class GameControl : ControlBase
                 ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
             }
 
-            if (!_soundOff && AudioDevice.IsClosed)
+            if (IsSoundOn && AudioDevice.IsClosed)
             {
-                var soundFrequency = frameBuffer.SoundBuffer.Length * CurrentFrameRate;
-                AudioDevice.Configure(soundFrequency, frameBuffer.SoundBuffer.Length, 8);
+                var soundFrequency = machine.FrameBuffer.SoundBuffer.Length * CurrentFrameRate;
+                AudioDevice.Configure(soundFrequency, machine.FrameBuffer.SoundBuffer.Length, 8);
             }
 
             var buffersQueued = AudioDevice.CountBuffersQueued();
-            var adjustment = buffersQueued < 0 || _soundOff || _paused
-                ? 0
-                : buffersQueued switch
-                {
-                    < 2 => -(ticksPerFrame >> 1),
-                    > 4 => ticksPerFrame >> 1,
-                    _ => 0
-                };
-            endTick += adjustment;
 
-            if (!_paused)
-                machine.ComputeNextFrame(frameBuffer);
-
-            if (!_soundOff && !_paused)
+            endTick += (ticksPerFrame >> 1) * (buffersQueued < 0 || !IsSoundOn || IsPaused ? 0 : buffersQueued switch
             {
-                AudioDevice.SubmitBuffer(frameBuffer.SoundBuffer.Span);
+                < 2 => -1,
+                > 4 =>  1,
+                _   =>  0
+            });
+
+            if (!IsPaused)
+                machine.ComputeNextFrame();
+
+            if (IsSoundOn && !IsPaused)
+            {
+                AudioDevice.SubmitBuffer(machine.FrameBuffer.SoundBuffer.Span);
             }
 
             lock (_dynamicBitmapLocker)
             {
-                _frameRenderer.UpdateDynamicBitmapData(_currentPalette.Span, frameBuffer.VideoBuffer.Span, _dynamicBitmapData.Span);
+                _frameRenderer.UpdateDynamicBitmapData(_currentPalette.Span, machine.FrameBuffer.VideoBuffer.Span, _dynamicBitmapData.Span);
                 _dynamicBitmapDataUpdated = true;
             }
 
             var elaspedTicks = stopwatch.ElapsedTicks;
 
             var frameMilliseconds = (uint)((elaspedTicks - startTick) / _stopwatchFrequencyInMilliseconds);
-            if (!_soundOff && frameMilliseconds < _frameDurationBuckets.Length)
+            if (IsSoundOn && frameMilliseconds < _frameDurationBuckets.Length)
             {
                 _frameDurationBuckets[frameMilliseconds]++;
                 _frameDurationBucketSamples++;
@@ -457,7 +453,7 @@ public sealed class GameControl : ControlBase
             CurrentPlayerNo   = _currentKeyboardPlayerNo + 1,
             FramesPerSecond   = CurrentFrameRate,
             InterpolationMode = (int)_dynamicBitmapInterpolationMode,
-            SoundOff          = _soundOff
+            SoundOff          = !IsSoundOn
         };
 
         DatastoreService.PersistMachine(machineStateInfo, _dynamicBitmapData);
@@ -482,15 +478,15 @@ public sealed class GameControl : ControlBase
             var endTick = startTick + ticksPerFrame;
 
             var buffersQueued = AudioDevice.CountBuffersQueued();
-            var adjustment = buffersQueued switch
+            var adjustment = (ticksPerFrame >> 1) * buffersQueued switch
             {
-                < 2 => -(ticksPerFrame >> 1),
-                > 4 => ticksPerFrame >> 1,
-                _  => 0
+                < 2 => -1,
+                > 4 =>  1,
+                _   =>  0
             };
             endTick += adjustment;
 
-            if (!_soundOff)
+            if (IsSoundOn)
             {
                 for (var i = 0; i < soundBuffer.Length; i++)
                     soundBuffer.Span[i] = (byte)random.Next(2);
@@ -544,20 +540,21 @@ public sealed class GameControl : ControlBase
     void InitializePalettes(ReadOnlyMemory<uint> sourcePalette)
     {
         _normalPalette = sourcePalette;
+        var darkerPalette = new uint[sourcePalette.Length];
 
         var normalPaletteSpan = _normalPalette.Span;
-        var darkerPalette = new uint[_normalPalette.Length];
+        var darkerPaletteSpan = darkerPalette.AsSpan();
 
         for (var i = 0; i < _normalPalette.Length; i++)
         {
             var color = normalPaletteSpan[i];
-            var r = (color >> 16) & 0xFF;
-            var g = (color >>  8) & 0xFF;
-            var b = (color >>  0) & 0xFF;
+            var r = (color >> 16) & 0xff;
+            var g = (color >>  8) & 0xff;
+            var b = (color >>  0) & 0xff;
             r >>= 1;
             g >>= 1;
             b >>= 1;
-            darkerPalette[i] = b | (g << 8) | (r << 16);
+            darkerPaletteSpan[i] = b | (g << 8) | (r << 16);
         }
 
         _darkerPalette = new ReadOnlyMemory<uint>(darkerPalette);

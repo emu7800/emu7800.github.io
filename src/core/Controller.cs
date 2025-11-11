@@ -52,9 +52,6 @@ public static class ControllerUtil
             _ => string.Empty
         }, plural);
 
-    public static string ToString(Controller controller)
-        => controller.ToString();
-
     public static IEnumerable<Controller> GetAllValues(bool excludeNone = true)
         => Enum.GetValues<Controller>()
             .Where(c => !excludeNone || c != Controller.None);

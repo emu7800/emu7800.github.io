@@ -61,9 +61,6 @@ public sealed class Cart78SGP : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core." + nameof(Cart78SGP);
-
     public override void Attach(MachineBase m)
     {
         base.Attach(m);

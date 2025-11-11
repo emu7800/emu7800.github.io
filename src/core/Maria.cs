@@ -15,6 +15,7 @@
  *
  */
 using System;
+using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
@@ -139,9 +140,6 @@ public sealed class Maria : IDevice
         get => Peek(addr);
         set => Poke(addr, value);
     }
-
-    public override string ToString()
-        => "EMU7800.Core.Maria";
 
     public void StartFrame()
     {
@@ -1059,21 +1057,11 @@ public sealed class Maria : IDevice
 
     void InitializeVisibleScanlineValues(int scanlines)
     {
-        switch (scanlines)
-        {
-            case 262: // NTSC
-                FirstVisibleScanline = 11;
-                LastVisibleScanline = FirstVisibleScanline + 242;
-                _isPal = false;
-                break;
-            case 312: // PAL
-                FirstVisibleScanline = 11;
-                LastVisibleScanline = FirstVisibleScanline + 292;
-                _isPal = true;
-                break;
-            default:
-                throw new ArgumentException("scanlines must be 262 or 312", nameof(scanlines));
-        }
+        ArgumentException.ThrowIf(scanlines is not 262 and not 312, "scanlines must be 262 (NTSC) or 312 (PAL)", nameof(scanlines));
+
+        FirstVisibleScanline = 11;
+        LastVisibleScanline = FirstVisibleScanline + 242 + (scanlines == 312 ? 50 : 0);
+        _isPal = scanlines == 312;
     }
 
     void Log(string message)

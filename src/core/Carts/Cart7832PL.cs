@@ -58,9 +58,6 @@ public sealed class Cart7832PL : Cart
     public override void EndFrame()
         => _pokeySound.EndFrame();
 
-    public override string ToString()
-        => "EMU7800.Core." + nameof(Cart7832PL);
-
     public override bool Map()
     {
         M.Mem.Map(0x0440, 0x40, this);

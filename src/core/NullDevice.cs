@@ -25,7 +25,4 @@ public sealed class NullDevice : IDevice
     }
 
     #endregion
-
-    public override string ToString()
-      => nameof(NullDevice);
 }

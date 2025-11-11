@@ -49,9 +49,6 @@ public sealed class PIA(MachineBase m) : IDevice
 
     #endregion
 
-    public override string ToString()
-        => "PIA/RIOT M6532";
-
     byte Peek(ushort addr)
     {
         if ((addr & 0x200) == 0)

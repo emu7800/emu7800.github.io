@@ -17,20 +17,16 @@
     <File Path="LICENSE.TXT" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="src\assets\EMU7800.Assets.csproj">
-    <Configuration Solution="Profile|*" Project="Debug|*" />
-  </Project>
-  <Project Path="src\core\EMU7800.Core.csproj">
-    <Configuration Solution="Profile|*" Project="Debug|*" />
-  </Project>
-  <Project Path="src\shell\EMU7800.Shell.csproj">
-    <Configuration Solution="Profile|*" Project="Debug|*" />
-  </Project>
-  <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj">
-    <Configuration Solution="Profile|*" Project="Debug|*" />
-  </Project>
+  <Folder Name="/Solution Items/installer/">
+    <File Path="src/tools/Installer/Build.ps1" />
+    <File Path="src/tools/Installer/msiwrapper.xml" />
+    <File Path="src/tools/Installer/setup.iss" />
+  </Folder>
+  <Project Path="src\assets\EMU7800.Assets.csproj" />
+  <Project Path="src\core\EMU7800.Core.csproj" />
+  <Project Path="src\shell\EMU7800.Shell.csproj" />
+  <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   <Project Path="src\win32\EMU7800.csproj">
     <BuildDependency Project="src\assets\EMU7800.Assets.csproj" />
-    <Configuration Solution="Profile|*" Project="Debug|*" />
   </Project>
 </Solution>

@@ -24,9 +24,6 @@ public sealed class Cart78BB52K : Cart78BB
 
     #endregion
 
-    public override string ToString()
-        => GetType().FullName ?? string.Empty;
-
     public override bool Map()
     {
         M.Mem.Map(0x3000, 0xd000, this);

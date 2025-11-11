@@ -55,9 +55,6 @@ public sealed class Cart78S4 : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core.Cart78S4" + (RAM.Length > 0 ? "R" : string.Empty);
-
     public Cart78S4(byte[] romBytes, bool needRAM)
     {
         if (needRAM)

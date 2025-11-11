@@ -7,6 +7,7 @@
  *
  */
 using System;
+using EMU7800.Core.Extensions;
 
 #pragma warning disable IDE1006 // Naming Styles
 
@@ -72,9 +73,6 @@ public sealed class M6502
         Log($"{this} (PC:${PC:x4}) reset");
     }
 
-    public override string ToString()
-        => "M6502 CPU";
-
     public void Execute()
     {
         EmulatorPreemptRequest = false;
@@ -112,8 +110,7 @@ public sealed class M6502
 
     public M6502(MachineBase m, int runClocksMultiple) : this()
     {
-        if (runClocksMultiple <= 0)
-            throw new ArgumentException("must be greater than zero", nameof(runClocksMultiple));
+        ArgumentException.ThrowIf(runClocksMultiple <= 0, "must be greater than zero", nameof(runClocksMultiple));
 
         M = m;
         RunClocksMultiple = runClocksMultiple;

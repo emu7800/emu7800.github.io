@@ -50,9 +50,6 @@ public sealed class CartCBS12K : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core.CartCBS12K";
-
     public CartCBS12K(byte[] romBytes)
     {
         LoadRom(romBytes, 0x3000);

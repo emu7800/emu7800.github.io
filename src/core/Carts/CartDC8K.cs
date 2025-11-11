@@ -24,9 +24,6 @@ public sealed class CartDC8K : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core.CartDC8K";
-
     public CartDC8K(byte[] romBytes)
     {
         LoadRom(romBytes, 0x2000);

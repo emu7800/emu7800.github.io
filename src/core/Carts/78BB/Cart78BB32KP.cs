@@ -41,9 +41,6 @@ public sealed class Cart78BB32KP : Cart78BB
 
     #endregion
 
-    public override string ToString()
-        => GetType().FullName ?? string.Empty;
-
     public override void Attach(MachineBase m)
     {
         base.Attach(m);

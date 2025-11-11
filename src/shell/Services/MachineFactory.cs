@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using EMU7800.Core.Extensions;
 using EMU7800.Services.Dto;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,7 @@ public class MachineFactory
 {
     public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo)
     {
-        if (importedGameProgramInfo.StorageKeySet.Count == 0)
-            throw new ArgumentException("StorageKeysSet is unexpectedly empty.", nameof(importedGameProgramInfo));
+        ArgumentException.ThrowIf(importedGameProgramInfo.StorageKeySet.Count == 0, "StorageKeysSet is unexpectedly empty.", nameof(importedGameProgramInfo));
 
         var romBytes = importedGameProgramInfo.StorageKeySet
             .Select(sk => DatastoreService.GetRomBytes(sk))
@@ -38,16 +38,7 @@ public class MachineFactory
             }
         }
 
-        Cart cart;
-        try
-        {
-            cart = Cart.Create(romBytes, gameProgramInfo.CartType);
-        }
-        catch (Emu7800Exception ex)
-        {
-            Error("MachineFactory.Create: Unable to create Cart: " + ex.Message);
-            return MachineStateInfo.Default;
-        }
+        var cart = Cart.Create(romBytes, gameProgramInfo.CartType);
 
         var bios7800 = Bios7800.Default;
 
@@ -79,17 +70,7 @@ public class MachineFactory
             Info("7800 eXpansion Module " + suffix);
         }
 
-        MachineBase machine;
-        try
-        {
-            machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800,
-                gameProgramInfo.LController, gameProgramInfo.RController, NullLogger.Default);
-        }
-        catch (Emu7800Exception ex)
-        {
-            Error("MachineFactory.Create: Unable to create Machine: " + ex.Message);
-            return MachineStateInfo.Default;
-        }
+        var machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800, gameProgramInfo.LController, gameProgramInfo.RController, NullLogger.Default);
 
         return new()
         {

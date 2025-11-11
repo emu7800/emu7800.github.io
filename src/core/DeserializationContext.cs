@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
@@ -49,15 +51,14 @@ public class DeserializationContext
         {
             <= 0 => [],
             <= 0x40000 => _binaryReader.ReadBytes(count),
-            _ => throw new Emu7800SerializationException("Byte array length too large")
+            _ => throw new SerializationException("Byte array length too large")
         };
     }
 
     public byte[] ReadExpectedBytes(params int[] expectedSizes)
     {
         var count = _binaryReader.ReadInt32();
-        if (expectedSizes.All(t => t != count))
-            throw new Emu7800SerializationException("Byte array length incorrect");
+        SerializationException.ThrowIf(expectedSizes.All(t => t != count), "Byte array length incorrect");
         return _binaryReader.ReadBytes(count);
     }
 
@@ -100,11 +101,9 @@ public class DeserializationContext
     public int CheckVersion(params int[] validVersions)
     {
         var magicNumber = _binaryReader.ReadInt32();
-        if (magicNumber != 0x78000087)
-            throw new Emu7800SerializationException("Magic number not found");
+        SerializationException.ThrowIf(magicNumber != 0x78000087, "Magic number not found");
         var version = _binaryReader.ReadInt32();
-        if (validVersions.All(t => t != version))
-            throw new Emu7800SerializationException("Invalid version number found");
+        SerializationException.ThrowIf(validVersions.All(t => t != version), "Invalid version number found");
         return version;
     }
 
@@ -112,14 +111,14 @@ public class DeserializationContext
         => CreateMachine(_binaryReader.ReadString());
 
     public MachineBase CreateMachine(string typeName)
-        => typeName switch
-        {
-            "EMU7800.Core." + nameof(Machine2600NTSC) => new Machine2600NTSC(this),
-            "EMU7800.Core." + nameof(Machine2600PAL)  => new Machine2600PAL(this),
-            "EMU7800.Core." + nameof(Machine7800NTSC) => new Machine7800NTSC(this),
-            "EMU7800.Core." + nameof(Machine7800PAL)  => new Machine7800PAL(this),
-            _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'")
-        };
+    => typeName.Split('.')[^1] switch
+    {
+        nameof(Machine2600NTSC) => new Machine2600NTSC(this),
+        nameof(Machine2600PAL)  => new Machine2600PAL(this),
+        nameof(Machine7800NTSC) => new Machine7800NTSC(this),
+        nameof(Machine7800PAL)  => new Machine7800PAL(this),
+        _ => throw new SerializationException($"Unable to resolve type name: '{typeName}'")
+    };
 
     public AddressSpace ReadAddressSpace(MachineBase m, int addrSpaceShift, int pageShift)
         => new(this, m, addrSpaceShift, pageShift);
@@ -161,49 +160,49 @@ public class DeserializationContext
         => CreateCart(m, _binaryReader.ReadString());
 
     public Cart CreateCart(MachineBase m, string typeName)
-        => typeName switch
+        => typeName.Split('.')[^1] switch
         {
-            "EMU7800.Core." + nameof(CartA2K)         => new CartA2K(this),
-            "EMU7800.Core." + nameof(CartA4K)         => new CartA4K(this),
-            "EMU7800.Core." + nameof(CartA8K)         => new CartA8K(this),
-            "EMU7800.Core." + nameof(CartA8KR)        => new CartA8KR(this),
-            "EMU7800.Core." + nameof(CartA16K)        => new CartA16K(this),
-            "EMU7800.Core." + nameof(CartA16KR)       => new CartA16KR(this),
-            "EMU7800.Core." + nameof(CartDC8K)        => new CartDC8K(this),
-            "EMU7800.Core." + nameof(CartPB8K)        => new CartPB8K(this),
-            "EMU7800.Core." + nameof(CartTV8K)        => new CartTV8K(this),
-            "EMU7800.Core." + nameof(CartCBS12K)      => new CartCBS12K(this),
-            "EMU7800.Core." + nameof(CartA32K)        => new CartA32K(this),
-            "EMU7800.Core." + nameof(CartA32KR)       => new CartA32KR(this),
-            "EMU7800.Core." + nameof(CartMN16K)       => new CartMN16K(this),
-            "EMU7800.Core." + nameof(CartDPC)         => new CartDPC(this),
-            "EMU7800.Core." + nameof(Cart7808)        => new Cart7808(this),
-            "EMU7800.Core." + nameof(Cart7816)        => new Cart7816(this),
-            "EMU7800.Core." + nameof(Cart7832P)       => new Cart7832P(this, m),
-            "EMU7800.Core." + nameof(Cart7832PL)      => new Cart7832PL(this, m),
-            "EMU7800.Core." + nameof(Cart7832)        => new Cart7832(this),
-            "EMU7800.Core." + nameof(Cart7848)        => new Cart7848(this),
-            "EMU7800.Core." + nameof(Cart78SGP)       => new Cart78SGP(this, m),
-            "EMU7800.Core." + nameof(Cart78SG)        => new Cart78SG(this),
-            "EMU7800.Core." + nameof(Cart78S9)        => new Cart78S9(this),
-            "EMU7800.Core." + nameof(Cart78S9PL)      => new Cart78S9PL(this, m),
-            "EMU7800.Core." + nameof(Cart78S4)        => new Cart78S4(this),
-            "EMU7800.Core." + nameof(Cart78AB)        => new Cart78AB(this),
-            "EMU7800.Core." + nameof(Cart78AC)        => new Cart78AC(this),
-            "EMU7800.Core." + nameof(Cart78BB32K)     => new Cart78BB32K(this),
-            "EMU7800.Core." + nameof(Cart78BB32KP)    => new Cart78BB32KP(this, m),
-            "EMU7800.Core." + nameof(Cart78BB32KRPL)  => new Cart78BB32KRPL(this, m),
-            "EMU7800.Core." + nameof(Cart78BB48K)     => new Cart78BB48K(this),
-            "EMU7800.Core." + nameof(Cart78BB48KP)    => new Cart78BB48KP(this, m),
-            "EMU7800.Core." + nameof(Cart78BB52K)     => new Cart78BB52K(this),
-            "EMU7800.Core." + nameof(Cart78BB52KP)    => new Cart78BB52KP(this, m),
-            "EMU7800.Core." + nameof(Cart78BB128K)    => new Cart78BB128K(this),
-            "EMU7800.Core." + nameof(Cart78BB128KR)   => new Cart78BB128KR(this),
-            "EMU7800.Core." + nameof(Cart78BB128KRPL) => new Cart78BB128KRPL(this, m),
-            "EMU7800.Core." + nameof(Cart78BB128KP)   => new Cart78BB128KP(this, m),
-            "EMU7800.Core." + nameof(HSC7800)         => new HSC7800(this),
-            "EMU7800.Core." + nameof(XM7800)          => new XM7800(this, m),
-            _ => throw new Emu7800SerializationException($"Unable to resolve type name: '{typeName}'")
+            nameof(CartA2K)         => new CartA2K(this),
+            nameof(CartA4K)         => new CartA4K(this),
+            nameof(CartA8K)         => new CartA8K(this),
+            nameof(CartA8KR)        => new CartA8KR(this),
+            nameof(CartA16K)        => new CartA16K(this),
+            nameof(CartA16KR)       => new CartA16KR(this),
+            nameof(CartDC8K)        => new CartDC8K(this),
+            nameof(CartPB8K)        => new CartPB8K(this),
+            nameof(CartTV8K)        => new CartTV8K(this),
+            nameof(CartCBS12K)      => new CartCBS12K(this),
+            nameof(CartA32K)        => new CartA32K(this),
+            nameof(CartA32KR)       => new CartA32KR(this),
+            nameof(CartMN16K)       => new CartMN16K(this),
+            nameof(CartDPC)         => new CartDPC(this),
+            nameof(Cart7808)        => new Cart7808(this),
+            nameof(Cart7816)        => new Cart7816(this),
+            nameof(Cart7832P)       => new Cart7832P(this, m),
+            nameof(Cart7832PL)      => new Cart7832PL(this, m),
+            nameof(Cart7832)        => new Cart7832(this),
+            nameof(Cart7848)        => new Cart7848(this),
+            nameof(Cart78SGP)       => new Cart78SGP(this, m),
+            nameof(Cart78SG)        => new Cart78SG(this),
+            nameof(Cart78S9)        => new Cart78S9(this),
+            nameof(Cart78S9PL)      => new Cart78S9PL(this, m),
+            nameof(Cart78S4)        => new Cart78S4(this),
+            nameof(Cart78AB)        => new Cart78AB(this),
+            nameof(Cart78AC)        => new Cart78AC(this),
+            nameof(Cart78BB32K)     => new Cart78BB32K(this),
+            nameof(Cart78BB32KP)    => new Cart78BB32KP(this, m),
+            nameof(Cart78BB32KRPL)  => new Cart78BB32KRPL(this, m),
+            nameof(Cart78BB48K)     => new Cart78BB48K(this),
+            nameof(Cart78BB48KP)    => new Cart78BB48KP(this, m),
+            nameof(Cart78BB52K)     => new Cart78BB52K(this),
+            nameof(Cart78BB52KP)    => new Cart78BB52KP(this, m),
+            nameof(Cart78BB128K)    => new Cart78BB128K(this),
+            nameof(Cart78BB128KR)   => new Cart78BB128KR(this),
+            nameof(Cart78BB128KRPL) => new Cart78BB128KRPL(this, m),
+            nameof(Cart78BB128KP)   => new Cart78BB128KP(this, m),
+            nameof(HSC7800)         => new HSC7800(this),
+            nameof(XM7800)          => new XM7800(this, m),
+            _ => throw new SerializationException($"Unable to resolve type name: '{typeName}'")
         };
 
     #region Constructors

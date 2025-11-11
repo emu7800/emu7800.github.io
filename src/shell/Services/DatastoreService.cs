@@ -192,8 +192,8 @@ public class DatastoreService
 
     #region Imported Game Program Info
 
-    public static IEnumerable<ImportedGameProgramInfo> ImportedGameProgramInfo { get; set; } = Array.Empty<ImportedGameProgramInfo>();
-    public static IEnumerable<ImportedSpecialBinaryInfo> ImportedSpecialBinaryInfo { get; set; } = Array.Empty<ImportedSpecialBinaryInfo>();
+    public static IEnumerable<ImportedGameProgramInfo> ImportedGameProgramInfo { get; set; } = [];
+    public static IEnumerable<ImportedSpecialBinaryInfo> ImportedSpecialBinaryInfo { get; set; } = [];
 
     #endregion
 
@@ -466,9 +466,7 @@ public class DatastoreService
     static string[] GetZipPaths(string filepath)
     {
         using var za = new ZipArchive(new FileStream(filepath, FileMode.Open), ZipArchiveMode.Read);
-        return za.Entries
-            .Select(entry => $"{filepath}|{entry.FullName}")
-                .ToArray();
+        return [.. za.Entries.Select(entry => $"{filepath}|{entry.FullName}")];
     }
 
     static IEnumerable<string> EnumerateDirectories(string path)

@@ -70,7 +70,6 @@ public class FontRenderer
     /// <param name="yoffset"></param>
     /// <param name="fore"></param>
     /// <param name="back"></param>
-    /// <exception cref="ArgumentNullException">text must be non-null.</exception>
     public static void DrawText(FrameBuffer frameBuffer, string text, int xoffset, int yoffset, byte fore, byte back)
     {
         var textchars = text.ToUpper().ToCharArray();

@@ -49,9 +49,6 @@ public sealed class CartA8KR : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core.CartA8KR";
-
     public CartA8KR(byte[] romBytes)
     {
         LoadRom(romBytes, 0x2000);

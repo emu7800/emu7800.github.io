@@ -48,7 +48,7 @@ public sealed class GamePage : PageBase
 
     public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, bool startFresh = false)
     {
-        _gameProgramInfoViewItem = gameProgramInfoViewItem ?? throw new ArgumentNullException(nameof(gameProgramInfoViewItem));
+        _gameProgramInfoViewItem = gameProgramInfoViewItem;
         _startFreshReq = startFresh;
 
         _settings = DatastoreService.GetSettings();

@@ -1,4 +1,7 @@
-﻿namespace EMU7800.Core;
+﻿using System;
+using EMU7800.Core.Extensions;
+
+namespace EMU7800.Core;
 
 /// <summary>
 /// Atari 7800 Bankset Bankswitched cartridge
@@ -16,10 +19,8 @@ public abstract class Cart78BB : Cart
 
     protected new void LoadRom(byte[] romBytes, int romSize)
     {
-        if (romBytes.Length > romSize || romSize != 0x20000 && romSize != 0x40000)
-        {
-            throw new Emu7800Exception("Unexpected Cart78BB ROM sizing");
-        }
+        ArgumentException.ThrowIf(romBytes.Length > romSize || romSize != 0x20000 && romSize != 0x40000, "Unexpected Cart78BB ROM sizing");
+
         ROM = new byte[romSize];
         var romBytesHalfSize = romBytes.Length >> 1;
         var romHalfSize = romSize >> 1;

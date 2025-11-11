@@ -1,4 +1,5 @@
-﻿using EMU7800.Core;
+﻿using EMU7800;
+using EMU7800.Core;
 using EMU7800.D2D.Shell.Win32;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -23,10 +24,10 @@ if (IsArg0("-rc", "/rc", "-r", "/r"))
         EnvironmentExit(-8);
     }
 
-    var machineType = args.Select(arg => MachineTypeUtil.From(arg)).FirstOrDefault(mt => mt != MachineType.Unknown);
-    var cartType    = args.Select(arg => CartTypeUtil.From(arg)).FirstOrDefault(ct => ct != CartType.Unknown);
-    var lController = args.Select(arg => ControllerUtil.From(arg)).FirstOrDefault(co => co != Controller.None);
-    var rController = args.Select(arg => ControllerUtil.From(arg)).Where(co => co != Controller.None).Skip(1).FirstOrDefault();
+    var machineType = args.Select(MachineTypeUtil.From).FirstOrDefault(mt => mt != MachineType.Unknown);
+    var cartType    = args.Select(CartTypeUtil.From).FirstOrDefault(ct => ct != CartType.Unknown);
+    var lController = args.Select(ControllerUtil.From).FirstOrDefault(co => co != Controller.None);
+    var rController = args.Select(ControllerUtil.From).Where(co => co != Controller.None).Skip(1).FirstOrDefault();
 
     if (machineType != MachineType.Unknown)
     {
@@ -152,7 +153,7 @@ if (IsArg0("-?", "/?", "-h", "/h", "--help"))
     WriteLine($"""
 
                ** EMU7800 **
-               Copyright (c) 2012-2024 Mike Murphy
+               {VersionInfo.Author}
 
                Usage:
                    EMU7800.exe [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
@@ -212,13 +213,13 @@ static bool IsBinOrA78File(FileInfo fi)
     || CiEq(fi.Extension, ".bin");
 
 static IEnumerable<string> GetMachineTypes()
-    => MachineTypeUtil.GetAllValues().Select(mt => $"{MachineTypeUtil.ToString(mt), -13}: {MachineTypeUtil.ToMachineTypeWordString(mt)}");
+    => MachineTypeUtil.GetAllValues().Select(mt => $"{mt, -13}: {MachineTypeUtil.ToMachineTypeWordString(mt)}");
 
 static IEnumerable<string> GetCartTypes()
-    => CartTypeUtil.GetAllValues().Select(ct => $"{CartTypeUtil.ToString(ct), -13}: {CartTypeUtil.ToCartTypeWordString(ct)}");
+    => CartTypeUtil.GetAllValues().Select(ct => $"{ct, -13}: {CartTypeUtil.ToCartTypeWordString(ct)}");
 
 static IEnumerable<string> GetControllers()
-    => ControllerUtil.GetAllValues().Select(ControllerUtil.ToString);
+    => ControllerUtil.GetAllValues().Select(c => c.ToString());
 
 bool IsArg0(params string[] options)
     => args.Length >= 1 && options.Any(opt => CiEq(opt, args[0]));

@@ -20,9 +20,9 @@ internal sealed class MachineSoundEmulator : MachineBase
     public void PokePokey(byte pokeyRegister, byte value)
         => Mem[(ushort)(POKEY_BASE + pokeyRegister)] = value;
 
-    public override void ComputeNextFrame(FrameBuffer frameBuffer)
+    public override void ComputeNextFrame()
     {
-        base.ComputeNextFrame(frameBuffer);
+        base.ComputeNextFrame();
         _tiaSoundDevice.StartFrame();
         _pokeySoundDevice.StartFrame();
         _tiaSoundDevice.EndFrame();

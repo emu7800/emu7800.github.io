@@ -297,13 +297,6 @@ public class InputState
 
     #endregion
 
-    #region Object Overrides
-
-    public override string ToString()
-        => "EMU7800.Core.InputState";
-
-    #endregion
-
     #region Helpers
 
     void SetControllerActionState(int playerNo, ControllerAction action, bool value)

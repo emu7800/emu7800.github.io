@@ -7,7 +7,7 @@
  *
  */
 using System;
-using System.ComponentModel.DataAnnotations;
+using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
@@ -40,8 +40,7 @@ public sealed class Bios7800 : IDevice
 
     public Bios7800(byte[] rom)
     {
-        if (rom is { Length: not 4096 and not 16384 })
-            throw new ArgumentException("ROM size not 4096 or 16384", nameof(rom));
+        ArgumentException.ThrowIf(rom is { Length: not 4096 and not 16384 }, "ROM size not 4096 or 16384", nameof(rom));
 
         ROM = rom;
         Mask = (ushort)ROM.Length;

@@ -10,6 +10,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
@@ -19,16 +20,7 @@ public abstract class MachineBase
 
     #region Fields
 
-    ILogger _Logger = NullLogger.Default;
-    FrameBuffer _FrameBuffer = FrameBuffer.Default;
-
-    bool _MachineHalt;
-    int _FrameHZ;
     readonly int _VisiblePitch, _Scanlines;
-
-    protected Cart Cart { get; set; } = Cart.Default;
-
-    internal FrameBuffer FrameBuffer => _FrameBuffer;
 
     #endregion
 
@@ -50,13 +42,19 @@ public abstract class MachineBase
     public PIA PIA { get; protected set; } = PIA.Default;
 
     /// <summary>
+    /// The current frame buffer.
+    /// </summary>
+    public FrameBuffer FrameBuffer { get; init; }
+
+    /// <summary>
+    /// The game cart inserted into the machine.
+    /// </summary>
+    public Cart Cart { get; protected set; } = Cart.Default;
+
+    /// <summary>
     /// Reports whether the machine has been halted due to an internal condition or error.
     /// </summary>
-    public bool MachineHalt
-    {
-        get => _MachineHalt;
-        internal set => _MachineHalt = value || true;
-    }
+    public bool MachineHalt { get; protected set; }
 
     /// <summary>
     /// The machine input state.
@@ -66,7 +64,7 @@ public abstract class MachineBase
     /// <summary>
     /// The current frame number.
     /// </summary>
-    public long FrameNumber { get; private set; }
+    public long FrameNumber { get; protected set; }
 
     /// <summary>
     /// The first scanline that is visible.
@@ -78,8 +76,8 @@ public abstract class MachineBase
     /// </summary>
     public int FrameHZ
     {
-        get => _FrameHZ < 1 ? 1 : _FrameHZ;
-        set => _FrameHZ = value < 1 ? 1 : value;
+        get => field < 1 ? 1 : field;
+        set => field = value < 1 ? 1 : value;
     }
 
     /// <summary>
@@ -102,8 +100,8 @@ public abstract class MachineBase
     /// </summary>
     public ILogger Logger
     {
-        get => _Logger;
-        set => _Logger = value;
+        get => field ?? NullLogger.Default;
+        set => field = value;
     }
 
     #endregion
@@ -119,7 +117,6 @@ public abstract class MachineBase
     /// <param name="p1">Left controller, optional.</param>
     /// <param name="p2">Right controller, optional.</param>
     /// <param name="logger"></param>
-    /// <exception cref="Emu7800Exception">Specified MachineType is unexpected.</exception>
     public static MachineBase Create(MachineType machineType, Cart cart, Bios7800 bios, Controller p1, Controller p2, ILogger logger)
     {
         MachineBase m =
@@ -127,7 +124,7 @@ public abstract class MachineBase
             MachineTypeUtil.Is2600PAL(machineType)  ? new Machine2600PAL(cart, logger) :
             MachineTypeUtil.Is7800NTSC(machineType) ? new Machine7800NTSC(cart, bios, logger) :
             MachineTypeUtil.Is7800PAL(machineType)  ? new Machine7800PAL(cart, bios, logger) :
-            throw new Emu7800Exception("Unexpected MachineType: " + machineType);
+            throw new ArgumentException("Unexpected MachineType: " + machineType);
 
         m.InputState.LeftControllerJack = p1;
         m.InputState.RightControllerJack = p2;
@@ -141,30 +138,11 @@ public abstract class MachineBase
     /// Deserialize a <see cref="MachineBase"/> from the specified stream.
     /// </summary>
     /// <param name="binaryReader"/>
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="Emu7800SerializationException"/>
+    /// <exception cref="SerializationException"/>
     public static MachineBase Deserialize(BinaryReader binaryReader)
     {
         var context = new DeserializationContext(binaryReader);
-        MachineBase m;
-        try
-        {
-            m = context.ReadMachine();
-        }
-        catch (Emu7800SerializationException)
-        {
-            throw;
-        }
-        catch (TargetInvocationException ex)
-        {
-            // TargetInvocationException wraps exceptions that unwind an Activator.CreateInstance() frame.
-            throw new Emu7800SerializationException("Serialization stream does not describe a valid machine.", ex.InnerException ?? ex);
-        }
-        catch (Exception ex)
-        {
-            throw new Emu7800SerializationException("Serialization stream does not describe a valid machine.", ex);
-        }
-        return m;
+        return context.ReadMachine();
     }
 
     /// <summary>
@@ -174,55 +152,34 @@ public abstract class MachineBase
     {
         Logger.WriteLine($"Machine {this}  reset ({FrameHZ} HZ  {_Scanlines} scanlines)");
         FrameNumber = 0;
-        _MachineHalt = false;
+        MachineHalt = false;
         InputState.ClearAllInput();
     }
 
     /// <summary>
-    /// Computes the next machine frame, updating contents of the provided <see cref="FrameBuffer"/>.
+    /// Computes the next machine frame.
     /// </summary>
-    /// <param name="frameBuffer">The framebuffer to contain the computed output.</param>
-    public virtual void ComputeNextFrame(FrameBuffer frameBuffer)
+    public virtual void ComputeNextFrame()
     {
         if (MachineHalt)
             return;
 
         InputState.CaptureInputState();
 
-        _FrameBuffer = frameBuffer;
-
         FrameNumber++;
 
-        _FrameBuffer.SoundBuffer.Span.Clear();
+        FrameBuffer.SoundBuffer.Span.Clear();
     }
-
-    /// <summary>
-    /// Create a <see cref="FrameBuffer"/> with compatible dimensions for this machine.
-    /// </summary>
-    public FrameBuffer CreateFrameBuffer()
-        => new(_VisiblePitch, _Scanlines);
 
     /// <summary>
     /// Serialize the state of the machine to the specified stream.
     /// </summary>
     /// <param name="binaryWriter"/>
-    /// <exception cref="ArgumentNullException"/>
-    /// <exception cref="Emu7800SerializationException"/>
+    /// <exception cref="SerializationException"/>
     public void Serialize(BinaryWriter binaryWriter)
     {
         var context = new SerializationContext(binaryWriter);
-        try
-        {
-            context.Write(this);
-        }
-        catch (Emu7800SerializationException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new Emu7800SerializationException("Problem serializing specified machine.", ex);
-        }
+        context.Write(this);
     }
 
     #endregion
@@ -231,13 +188,16 @@ public abstract class MachineBase
 
     protected MachineBase(ILogger logger, int scanLines, int firstScanline, int fHZ, int soundSampleFreq, ReadOnlyMemory<uint> palette, int vPitch)
     {
+        ArgumentException.ThrowIf(soundSampleFreq <= 0, "must be a positive integer", nameof(soundSampleFreq));
+
         Logger = logger;
         _Scanlines = scanLines;
         FirstScanline = firstScanline;
         FrameHZ = fHZ;
-        SoundSampleFrequency = soundSampleFreq > 0 ? soundSampleFreq : throw new ArgumentException("must be a positive integer", nameof(soundSampleFreq));
+        SoundSampleFrequency = soundSampleFreq;
         Palette = palette;
         _VisiblePitch = vPitch;
+        FrameBuffer = new(_VisiblePitch, _Scanlines);
     }
 
     #endregion
@@ -246,12 +206,11 @@ public abstract class MachineBase
 
     protected MachineBase(DeserializationContext input, ReadOnlyMemory<uint> palette)
     {
-        if (palette.Length != 0x100)
-            throw new ArgumentException("palette incorrect size, must be 256", nameof(palette));
+        ArgumentException.ThrowIf(palette.Length != 0x100, "palette incorrect size, must be 256", nameof(palette));
 
         input.CheckVersion(1);
-        _MachineHalt = input.ReadBoolean();
-        _FrameHZ = input.ReadInt32();
+        MachineHalt = input.ReadBoolean();
+        FrameHZ = input.ReadInt32();
         _VisiblePitch = input.ReadInt32();
         _Scanlines = input.ReadInt32();
         FirstScanline = input.ReadInt32();
@@ -260,13 +219,14 @@ public abstract class MachineBase
         InputState = input.ReadInputState();
 
         Palette = palette;
+        FrameBuffer = new(_VisiblePitch, _Scanlines);
     }
 
     public virtual void GetObjectData(SerializationContext output)
     {
         output.WriteVersion(1);
-        output.Write(_MachineHalt);
-        output.Write(_FrameHZ);
+        output.Write(MachineHalt);
+        output.Write(FrameHZ);
         output.Write(_VisiblePitch);
         output.Write(_Scanlines);
         output.Write(FirstScanline);
@@ -279,7 +239,5 @@ public abstract class MachineBase
 
     class MachineUnknown() : MachineBase(NullLogger.Default, 100, 1, 1, 1, ReadOnlyMemory<uint>.Empty, 1)
     {
-        public override string ToString()
-            => "EMU7800.Core.MachineUnknown";
     }
 }

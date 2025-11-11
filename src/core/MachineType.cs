@@ -132,9 +132,6 @@ public static class MachineTypeUtil
             _ => false
         };
 
-    public static string ToString(MachineType machineType)
-        => machineType.ToString();
-
     public static MachineType From(string mtStr)
     {
         if (Enum.TryParse<MachineType>(mtStr, true, out var mt)) return mt;

@@ -131,9 +131,6 @@ public sealed class TIA : IDevice
 
     #region Position Counters
 
-    // backing fields for properties--dont reference directly
-    int _HSync, _P0, _P1, _M0, _M1, _BL, _HMoveCounter;
-
     // Horizontal Sync Counter
     // this represents HSync of the last rendered CLK
     // has period of 57 counts, 0-56, at 1/4 CLK (57*4=228 CLK)
@@ -141,8 +138,8 @@ public sealed class TIA : IDevice
     // other movable object counters can be reset out-of-phase with HSync, hence %228 and not %57
     int HSync
     {
-        get => _HSync;
-        set => _HSync = value % 228;
+        get => field;
+        set => field = value % 228;
     }
 
     // determines the difference between HSync and PokeOpHSync
@@ -163,8 +160,8 @@ public sealed class TIA : IDevice
     // indicates where in the HMOVE operation it is
     int HMoveCounter
     {
-        get => _HMoveCounter;
-        set => _HMoveCounter = value < 0 ? -1 : value & 0xf;
+        get => field;
+        set => field = value < 0 ? -1 : value & 0xf;
     }
 
     // true when there is an HMOVE executing on the current scanline
@@ -190,8 +187,8 @@ public sealed class TIA : IDevice
     // can be reset out-of-phase with HSync, hence %160 and not %40
     int P0
     {
-        get => _P0;
-        set => _P0 = value % 160;
+        get => field;
+        set => field = value % 160;
     }
 
     // HMOVE "more motion required" latch
@@ -213,8 +210,8 @@ public sealed class TIA : IDevice
     // Player 1 Horizontal Position Counter (identical to P0)
     int P1
     {
-        get => _P1;
-        set => _P1 = value % 160;
+        get => field;
+        set => field = value % 160;
     }
 
     // HMOVE "more motion required" latch
@@ -237,8 +234,8 @@ public sealed class TIA : IDevice
     // similar to player position counters
     int M0
     {
-        get => _M0;
-        set => _M0 = value % 160;
+        get => field;
+        set => field = value % 160;
     }
 
     // HMOVE "more motion required" latch
@@ -255,8 +252,8 @@ public sealed class TIA : IDevice
     // Missile 1 Horizontal Position Counter (identical to M0)
     int M1
     {
-        get => _M1;
-        set => _M1 = value % 160;
+        get => field;
+        set => field = value % 160;
     }
 
     // HMOVE "more motion required" latch
@@ -274,8 +271,8 @@ public sealed class TIA : IDevice
     // similar to player position counters
     int BL
     {
-        get => _BL;
-        set => _BL = value % 160;
+        get => field;
+        set => field = value % 160;
     }
 
     // HMOVE "more motion required" latch
@@ -335,9 +332,6 @@ public sealed class TIA : IDevice
 
         Log($"{this} reset");
     }
-
-    public override string ToString()
-        => "TIA 1A";
 
     public void StartFrame()
     {

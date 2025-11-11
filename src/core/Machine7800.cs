@@ -47,9 +47,9 @@ public class Machine7800 : MachineBase
         CPU.Reset();
     }
 
-    public override void ComputeNextFrame(FrameBuffer frameBuffer)
+    public override void ComputeNextFrame()
     {
-        base.ComputeNextFrame(frameBuffer);
+        base.ComputeNextFrame();
 
         AssertDebug(!CPU.Jammed);
         AssertDebug(CPU.RunClocks <= 0 && CPU.RunClocks % CPU.RunClocksMultiple == 0);

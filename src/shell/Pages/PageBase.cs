@@ -105,19 +105,6 @@ public abstract class PageBase : IDisposable
 
     #endregion
 
-    #region Object Overrides
-
-    public override bool Equals(object? them)
-        => them != null && _id == ((PageBase)them)._id;
-
-    public override int GetHashCode()
-        => _id;
-
-    public override string ToString()
-        => $"EMU7800.D2D.Shell.PageBase: ID={_id}";
-
-    #endregion
-
     #region Disposable Members
 
     public void Dispose()

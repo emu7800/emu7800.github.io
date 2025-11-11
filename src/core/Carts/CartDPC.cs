@@ -26,8 +26,6 @@ public sealed class CartDPC : Cart
     ulong LastSystemClock;
     double FractionalClocks;
 
-    byte _ShiftRegister;
-
     //
     // Generate a sequence of pseudo-random numbers 255 numbers long
     // by emulating an 8-bit shift register with feedback taps at
@@ -36,31 +34,31 @@ public sealed class CartDPC : Cart
     {
         get
         {
-            var a = _ShiftRegister;
+            var a = field;
             a &= 1 << 0;
 
-            var x = _ShiftRegister;
+            var x = field;
             x &= 1 << 2;
             x >>= 2;
             a ^= x;
 
-            x = _ShiftRegister;
+            x = field;
             x &= 1 << 3;
             x >>= 3;
             a ^= x;
 
-            x = _ShiftRegister;
+            x = field;
             x &= 1 << 4;
             x >>= 4;
             a ^= x;
 
             a <<= 7;
-            _ShiftRegister >>= 1;
-            _ShiftRegister |= a;
+            field >>= 1;
+            field |= a;
 
-            return _ShiftRegister;
+            return field;
         }
-        set => _ShiftRegister = value;
+        set => field = value;
     }
 
     #region IDevice Members
@@ -100,9 +98,6 @@ public sealed class CartDPC : Cart
     }
 
     #endregion
-
-    public override string ToString()
-        => "EMU7800.Core.CartDPC";
 
     public CartDPC(byte[] romBytes)
     {
@@ -308,7 +303,7 @@ public sealed class CartDPC : Cart
         MusicMode = input.ReadBooleans(3);
         LastSystemClock = input.ReadUInt64();
         FractionalClocks = input.ReadDouble();
-        _ShiftRegister = input.ReadByte();
+        ShiftRegister = input.ReadByte();
     }
 
     public override void GetObjectData(SerializationContext output)
@@ -325,7 +320,7 @@ public sealed class CartDPC : Cart
         output.Write(MusicMode);
         output.Write(LastSystemClock);
         output.Write(FractionalClocks);
-        output.Write(_ShiftRegister);
+        output.Write(ShiftRegister);
     }
 
     #endregion

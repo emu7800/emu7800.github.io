@@ -46,7 +46,6 @@ public abstract class Cart : IDevice
     /// </summary>
     /// <param name="romBytes"></param>
     /// <param name="cartType"></param>
-    /// <exception cref="Emu7800Exception">Specified CartType is unexpected.</exception>
     public static Cart Create(byte[] romBytes, CartType cartType)
     {
         if (cartType == CartType.Unknown)
@@ -105,7 +104,7 @@ public abstract class Cart : IDevice
             CartType.A78BB128KR   => new Cart78BB128KR(romBytes),
             CartType.A78BB128KP   => new Cart78BB128KP(romBytes),
             CartType.A78BB128KRPL => new Cart78BB128KRPL(romBytes),
-            _ => throw new Emu7800Exception("Unexpected CartType: " + cartType)
+            _ => throw new ArgumentException("Unexpected CartType: " + cartType)
         };
     }
 
@@ -153,8 +152,5 @@ public abstract class Cart : IDevice
 
         public UnknownCart()
             => ROM = [];
-
-        public override string ToString()
-            => "EMU7800.Core.UnknownCart";
     }
 }

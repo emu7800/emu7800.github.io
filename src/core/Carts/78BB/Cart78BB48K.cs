@@ -24,9 +24,6 @@ public sealed class Cart78BB48K : Cart78BB
 
     #endregion
 
-    public override string ToString()
-        => GetType().FullName ?? string.Empty;
-
     public Cart78BB48K(byte[] romBytes)
     {
         LoadRom(romBytes, ROM_SIZE);

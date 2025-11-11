@@ -175,10 +175,10 @@ public class RomBytesService
             printLineFn($"""
 
                          A78 : Title           : {gpi.Title}
-                               MachineType     : {MachineTypeUtil.ToString(gpi.MachineType)}
-                               CartType        : {CartTypeUtil.ToString(gpi.CartType)} ({CartTypeUtil.ToCartTypeWordString(gpi.CartType)})
-                               Left Controller : {ControllerUtil.ToString(gpi.LController)}
-                               Right Controller: {ControllerUtil.ToString(gpi.RController)}
+                               MachineType     : {gpi.MachineType}
+                               CartType        : {gpi.CartType} ({CartTypeUtil.ToCartTypeWordString(gpi.CartType)})
+                               Left Controller : {gpi.LController}
+                               Right Controller: {gpi.RController}
                                Header Version  : {ToHexByte(bytes[A78VERSION])}
                                TV HSC XM       : {ToHexByte(bytes[A78TVTYPE])} {ToHexByte(bytes[A78SAVEDATA])} {ToHexByte(bytes[A78XMREQ])}
                                Cart Type       : {ToHexByte(bytes[A78CARTTYPE+1])} {ToHexByte(bytes[A78CARTTYPE])}

@@ -31,6 +31,7 @@
 /*****************************************************************************/
 
 using System;
+using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
@@ -231,8 +232,7 @@ public sealed class TIASound
 
     public TIASound(MachineBase m, int cpuClocksPerSample) : this()
     {
-        if (cpuClocksPerSample <= 0)
-            throw new ArgumentException("must be positive", nameof(cpuClocksPerSample));
+        ArgumentException.ThrowIf(cpuClocksPerSample <= 0, "must be positive", nameof(cpuClocksPerSample));
 
         M = m;
         _cpuClocksPerSample = cpuClocksPerSample;

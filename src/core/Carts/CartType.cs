@@ -116,9 +116,6 @@ public static class CartTypeUtil
             _ => string.Empty
         };
 
-    public static string ToString(CartType cartType)
-        => cartType.ToString();
-
     public static IEnumerable<CartType> GetAllValues(bool excludeUnknown = true)
         => Enum.GetValues<CartType>()
             .Where(ct => !excludeUnknown || ct != CartType.Unknown);

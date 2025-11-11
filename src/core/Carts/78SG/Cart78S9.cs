@@ -41,9 +41,6 @@ public sealed class Cart78S9 : Cart
 
     #endregion
 
-    public override string ToString()
-        => "EMU7800.Core." + nameof(Cart78S9);
-
     public Cart78S9(byte[] romBytes)
         => LoadRom(romBytes, ROM_SIZE * 9);
 

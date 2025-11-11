@@ -54,9 +54,6 @@ public sealed class HSC7800 : Cart
     public override void EndFrame()
         => Cart.EndFrame();
 
-    public override string ToString()
-        => "EMU7800.Core." + nameof(HSC7800);
-
     public override bool Map()
     {
         M.Mem.Map(0x1000, 0x800, this);

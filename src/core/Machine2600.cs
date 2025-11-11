@@ -26,9 +26,9 @@ public class Machine2600 : MachineBase
         CPU.Reset();
     }
 
-    public override void ComputeNextFrame(FrameBuffer frameBuffer)
+    public override void ComputeNextFrame()
     {
-        base.ComputeNextFrame(frameBuffer);
+        base.ComputeNextFrame();
         TIA.StartFrame();
         CPU.RunClocks = (FrameBuffer.Scanlines + 3) * 76;
         while (CPU is { RunClocks: > 0, Jammed: false })
