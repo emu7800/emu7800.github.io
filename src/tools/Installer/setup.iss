@@ -36,8 +36,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\..\artifacts\EMU7800.bin\*.*"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\artifacts\EMU7800.bin\ROMS\*.zip"; DestDir: "{app}\ROMS"; Flags: ignoreversion
+Source: "..\..\..\artifacts\EMU7800.win32bin\*.*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\artifacts\EMU7800.win32bin\ROMS\*.zip"; DestDir: "{app}\ROMS"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

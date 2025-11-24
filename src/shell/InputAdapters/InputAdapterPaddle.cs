@@ -1,9 +1,8 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class InputAdapterPaddle(InputState inputState) : IInputAdapter
 {
@@ -13,7 +12,7 @@ public sealed class InputAdapterPaddle(InputState inputState) : IInputAdapter
     int _currentXLocation, _currentXWidth = 1;
     int _startYForPaddleInput;
 
-    public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
+    public void ScreenResized(PointF location, SizeF size)
     {
         _currentXLocation = (int)location.X;
         if (size.Width > 0)

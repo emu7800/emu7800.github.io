@@ -1,10 +1,9 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class PageBackStackHost : IDisposable
 {
@@ -12,7 +11,7 @@ public sealed class PageBackStackHost : IDisposable
 
     PageBase _currentPage = new Nullpage();
     bool _pageChanged;
-    D2D_SIZE_F _size;
+    SizeF _size;
 
     #endregion
 
@@ -41,7 +40,7 @@ public sealed class PageBackStackHost : IDisposable
         _currentPage.OnNavigatingHere();
     }
 
-    public void Resized(D2D_SIZE_F size)
+    public void Resized(SizeF size)
     {
         _size = size;
         _currentPage.Resized(size);

@@ -1,5 +1,5 @@
 // © Mike Murphy
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class Nullpage : PageBase;

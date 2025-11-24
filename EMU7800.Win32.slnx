@@ -4,7 +4,6 @@
     <BuildType Name="Profile" />
     <BuildType Name="Release" />
     <Platform Name="Any CPU" />
-    <Platform Name="x64" />
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -26,7 +25,5 @@
   <Project Path="src\core\EMU7800.Core.csproj" />
   <Project Path="src\shell\EMU7800.Shell.csproj" />
   <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
-  <Project Path="src\win32\EMU7800.csproj">
-    <BuildDependency Project="src\assets\EMU7800.Assets.csproj" />
-  </Project>
+  <Project Path="src\win32\EMU7800.csproj" />
 </Solution>

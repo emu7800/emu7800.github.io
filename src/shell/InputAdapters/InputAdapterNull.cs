@@ -1,13 +1,12 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class InputAdapterNull : IInputAdapter
 {
-    public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
+    public void ScreenResized(PointF location, SizeF size)
     {
     }
 

@@ -1,11 +1,10 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.Win32.Interop;
 using System;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class AboutPage : PageBase
 {
@@ -58,7 +57,7 @@ public sealed class AboutPage : PageBase
         }
     }
 
-    public override void Resized(D2D_SIZE_F size)
+    public override void Resized(SizeF size)
     {
         _textcontrolAbout.Size = new(
             size.Width - _textcontrolAbout.Location.X * 2,
@@ -88,7 +87,7 @@ public sealed class AboutPage : PageBase
     static async Task<string> GetTextAssetAsync(Asset textAsset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(textAsset);
-        return System.Text.Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+        return System.Text.Encoding.UTF8.GetString(bytes.Span);
     }
 
     #endregion

@@ -5,6 +5,7 @@ namespace EMU7800.Assets;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
 
 public static class AssetService
 {
@@ -45,7 +46,7 @@ public static class AssetService
         { Asset.ROMProperties,                              "ROMProperties.csv" }
     };
 
-    public static async Task<byte[]> GetAssetBytesAsync(Asset asset)
+    public static async Task<ReadOnlyMemory<byte>> GetAssetBytesAsync(Asset asset)
     {
         await using var assetStream = GetAssetStream(asset);
         using var output = new MemoryStream();
@@ -57,12 +58,10 @@ public static class AssetService
     {
         using var assetStream = GetAssetStream(asset);
         using var reader = new StreamReader(assetStream);
-        var lines = new List<string>();
         while (!reader.EndOfStream)
         {
-            lines.Add(reader.ReadLine() ?? string.Empty);
+            yield return reader.ReadLine() ?? string.Empty;
         }
-        return lines;
     }
 
     static Stream GetAssetStream(Asset asset)

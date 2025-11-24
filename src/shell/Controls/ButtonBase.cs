@@ -1,9 +1,8 @@
 // © Mike Murphy
 
-using EMU7800.Win32.Interop;
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public abstract class ButtonBase : ControlBase
 {
@@ -12,7 +11,7 @@ public abstract class ButtonBase : ControlBase
 
     #region Fields
 
-    D2D_RECT_F _boundingRect;
+    RectF _boundingRect;
 
     #endregion
 
@@ -104,7 +103,7 @@ public abstract class ButtonBase : ControlBase
 
     protected int IsPressedByPointerId { get; set; } = -1;
 
-    protected virtual D2D_RECT_F ComputeBoundingRectangle()
+    protected virtual RectF ComputeBoundingRectangle()
         => new(Location, Size);
 
     #region Helpers

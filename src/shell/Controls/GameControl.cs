@@ -3,12 +3,11 @@
 using EMU7800.Core;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
-using EMU7800.Win32.Interop;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class GameControl : ControlBase
 {
@@ -20,11 +19,11 @@ public sealed class GameControl : ControlBase
 
     static readonly System.Threading.Lock _dynamicBitmapLocker = new();
     static readonly Memory<byte> _dynamicBitmapData = new(new byte[4 * 320 * 230]);
-    static readonly D2D_SIZE_U _dynamicBitmapDataSize = new(320, 230);
+    static readonly SizeU _dynamicBitmapDataSize = new(320, 230);
     IFrameRenderer _frameRenderer = new FrameRendererDefault();
-    D2DBitmapInterpolationMode _dynamicBitmapInterpolationMode = D2DBitmapInterpolationMode.NearestNeighbor;
+    BitmapInterpolationMode _dynamicBitmapInterpolationMode = BitmapInterpolationMode.NearestNeighbor;
     DynamicBitmap _dynamicBitmap = DynamicBitmap.Default;
-    D2D_RECT_F _dynamicBitmapRect;
+    RectF _dynamicBitmapRect;
     bool _dynamicBitmapDataUpdated;
 
     static readonly InputState _defaultInputState = new();
@@ -81,10 +80,10 @@ public sealed class GameControl : ControlBase
 
     public bool IsAntiAliasOn
     {
-        get => _dynamicBitmapInterpolationMode == D2DBitmapInterpolationMode.Linear;
+        get => _dynamicBitmapInterpolationMode == BitmapInterpolationMode.Linear;
         set => _dynamicBitmapInterpolationMode = value
-            ? D2DBitmapInterpolationMode.Linear
-            : D2DBitmapInterpolationMode.NearestNeighbor;
+            ? BitmapInterpolationMode.Linear
+            : BitmapInterpolationMode.NearestNeighbor;
     }
 
     public int CurrentFrameRate { get; private set; }
@@ -328,7 +327,7 @@ public sealed class GameControl : ControlBase
         CurrentFrameRate = _maxFrameRate;
         ProposeNewFrameRate(machineStateInfo.FramesPerSecond);
 
-        _dynamicBitmapInterpolationMode = (D2DBitmapInterpolationMode)machineStateInfo.InterpolationMode;
+        _dynamicBitmapInterpolationMode = (BitmapInterpolationMode)machineStateInfo.InterpolationMode;
 
         _currentKeyboardPlayerNo = machineStateInfo.CurrentPlayerNo - 1;
         _inputState = machine.InputState;

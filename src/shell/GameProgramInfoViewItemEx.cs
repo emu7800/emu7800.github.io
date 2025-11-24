@@ -1,9 +1,8 @@
 ﻿// © Mike Murphy
 
-using EMU7800.Win32.Interop;
 using EMU7800.Services.Dto;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public class GameProgramInfoViewItemEx
 {

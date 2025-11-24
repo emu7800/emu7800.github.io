@@ -1,18 +1,12 @@
 ﻿// © Mike Murphy
 
-using EMU7800.Win32.Interop;
-
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class LabelControl : ControlBase
 {
     #region Fields
 
     TextLayout _textLayout = TextLayout.Default;
-    string _text = string.Empty, _textFontFamilyName = Styles.NormalFontFamily;
-    int _textFontSize = Styles.NormalFontSize;
-    DWriteTextAlignment _textAlignment = DWriteTextAlignment.Leading;
-    DWriteParaAlignment _paraAlignment = DWriteParaAlignment.Near;
 
     #endregion
 
@@ -20,60 +14,60 @@ public sealed class LabelControl : ControlBase
 
     public string Text
     {
-        get => _text;
+        get => field ?? string.Empty;
         set
         {
-            if (_text == value)
+            if (field == value)
                 return;
-            _text = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
     public string TextFontFamilyName
     {
-        get => _textFontFamilyName;
+        get => field ?? Styles.NormalFontFamily;
         set
         {
-            if (_textFontFamilyName == value)
+            if (field == value)
                 return;
-            _textFontFamilyName = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
     public int TextFontSize
     {
-        get => _textFontSize;
+        get => field;
         set
         {
-            if (_textFontSize == value)
+            if (field == value)
                 return;
-            _textFontSize = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
-    public DWriteTextAlignment TextAlignment
+    public WriteTextAlignment TextAlignment
     {
-        get => _textAlignment;
+        get => field;
         set
         {
-            if (_textAlignment == value)
+            if (field == value)
                 return;
-            _textAlignment = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
-    public DWriteParaAlignment ParagraphAlignment
+    public WriteParaAlignment ParagraphAlignment
     {
-        get => _paraAlignment;
+        get => field;
         set
         {
-            if (_paraAlignment == value)
+            if (field == value)
                 return;
-            _paraAlignment = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
@@ -91,8 +85,10 @@ public sealed class LabelControl : ControlBase
     public override void Render()
     {
         if (_textLayout == TextLayout.Default)
+        {
             CreateResources2();
-        GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
+        }
+        GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
     }
 
     protected override void CreateResources()

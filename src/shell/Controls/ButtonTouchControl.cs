@@ -1,17 +1,16 @@
 // © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.Win32.Interop;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public class ButtonTouchControl : ButtonBase
 {
     #region Fields
 
     readonly Asset _image;
-    readonly D2DSolidColorBrush _mouseOverColor;
+    readonly SolidColorBrush _mouseOverColor;
     StaticBitmap _circleBitmap = StaticBitmap.Default;
     StaticBitmap _imageBitmap = StaticBitmap.Default;
 
@@ -20,7 +19,7 @@ public class ButtonTouchControl : ButtonBase
     public bool ExpandBoundingRectangleHorizontally { get; set; }
     public bool ExpandBoundingRectangleVertically { get; set; }
 
-    protected ButtonTouchControl(Asset image, D2DSolidColorBrush mouseOverColor)
+    protected ButtonTouchControl(Asset image, SolidColorBrush mouseOverColor)
     {
         _image = image;
         _mouseOverColor = mouseOverColor;
@@ -31,7 +30,7 @@ public class ButtonTouchControl : ButtonBase
 
     public override void Render()
     {
-        D2D_RECT_F rect = new(Location, Size);
+        RectF rect = new(Location, Size);
         if (IsPressed)
         {
             GraphicsDevice.FillEllipse(rect, _mouseOverColor);
@@ -56,9 +55,9 @@ public class ButtonTouchControl : ButtonBase
 
     #endregion
 
-    protected override D2D_RECT_F ComputeBoundingRectangle()
+    protected override RectF ComputeBoundingRectangle()
     {
-        D2D_RECT_F rect = new(Location, Size);
+        RectF rect = new(Location, Size);
         if (ExpandBoundingRectangleHorizontally)
         {
             rect.Left -= Size.Width;
@@ -77,7 +76,7 @@ public class ButtonTouchControl : ButtonBase
     static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(asset);
-        return new StaticBitmap(bytes);
+        return new(bytes.Span);
     }
 
     #endregion
@@ -85,35 +84,35 @@ public class ButtonTouchControl : ButtonBase
 
 public class LeftButton : ButtonTouchControl
 {
-    public LeftButton() : base(Asset.appbar_transport_playleft_rest, D2DSolidColorBrush.Green)
+    public LeftButton() : base(Asset.appbar_transport_playleft_rest, SolidColorBrush.Green)
     {
     }
 }
 
 public class RightButton : ButtonTouchControl
 {
-    public RightButton() : base(Asset.appbar_transport_play_rest, D2DSolidColorBrush.Green)
+    public RightButton() : base(Asset.appbar_transport_play_rest, SolidColorBrush.Green)
     {
     }
 }
 
 public class UpButton : ButtonTouchControl
 {
-    public UpButton() : base(Asset.appbar_transport_playup_rest, D2DSolidColorBrush.Green)
+    public UpButton() : base(Asset.appbar_transport_playup_rest, SolidColorBrush.Green)
     {
     }
 }
 
 public class DownButton : ButtonTouchControl
 {
-    public DownButton() : base(Asset.appbar_transport_playdown_rest, D2DSolidColorBrush.Green)
+    public DownButton() : base(Asset.appbar_transport_playdown_rest, SolidColorBrush.Green)
     {
     }
 }
 
 public class FireButton : ButtonTouchControl
 {
-    public FireButton() : base(Asset.appbar_cancel_rest, D2DSolidColorBrush.Red)
+    public FireButton() : base(Asset.appbar_cancel_rest, SolidColorBrush.Red)
     {
     }
 }

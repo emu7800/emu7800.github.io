@@ -2,7 +2,7 @@
 
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class FrameRenderer160 : IFrameRenderer
 {

@@ -1,4 +1,10 @@
 <Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Profile" />
+    <BuildType Name="Release" />
+    <Platform Name="Any CPU" />
+  </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
@@ -10,6 +16,9 @@
     <File Path="LICENSE.TXT" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="src\assets\EMU7800.Assets.csproj" />
   <Project Path="src\core\EMU7800.Core.csproj" />
-  <Project Path="src\tools\SoundEmulator\EMU7800.SoundEmulator.csproj" />
+  <Project Path="src\shell\EMU7800.Shell.csproj" />
+  <Project Path="src\linuxarm.interop.pinvoke\EMU7800.LinuxArm.Interop.PInvoke.csproj" />
+  <Project Path="src\linuxarm\EMU7800.csproj" />
 </Solution>

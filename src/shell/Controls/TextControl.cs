@@ -1,8 +1,6 @@
 ﻿// © Mike Murphy
 
-using EMU7800.Win32.Interop;
-
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class TextControl : ControlBase
 {
@@ -10,48 +8,44 @@ public sealed class TextControl : ControlBase
 
     TextLayout _textLayout = TextLayout.Default;
     int _isMouseDownByPointerId = -1;
-    D2D_RECT_F _bounds;
+    RectF _bounds;
     int _startY, _maxStartY;
     float _scrollbarLength, _scrollbarY;
-
-    string _text = string.Empty;
-    string _textFontFamily = Styles.NormalFontFamily;
-    int _textFontSize = Styles.NormalFontSize;
 
     #endregion
 
     public string Text
     {
-        get => _text;
+        get => field ?? string.Empty;
         set
         {
-            if (_text == value)
+            if (field == value)
                 return;
-            _text = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
     public string TextFontFamilyName
     {
-        get => _textFontFamily;
+        get => field ?? Styles.NormalFontFamily;
         set
         {
-            if (_textFontFamily == value)
+            if (field == value)
                 return;
-            _textFontFamily = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
 
     public int TextFontSize
     {
-        get => _textFontSize;
+        get => field;
         set
         {
-            if (_textFontSize == value)
+            if (field == value)
                 return;
-            _textFontSize = value;
+            field = value;
             SafeDispose(ref _textLayout);
         }
     }
@@ -134,8 +128,8 @@ public sealed class TextControl : ControlBase
                 _maxStartY = 0;
         }
 
-        GraphicsDevice.PushAxisAlignedClip(_bounds, D2DAntiAliasMode.PerPrimitive);
-        GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY), D2DSolidColorBrush.White);
+        GraphicsDevice.PushAxisAlignedClip(_bounds, AntiAliasMode.PerPrimitive);
+        GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY), SolidColorBrush.White);
         GraphicsDevice.PopAxisAlignedClip();
 
         if (_scrollbarY >= 0.0f)
@@ -143,7 +137,7 @@ public sealed class TextControl : ControlBase
                 new(Location.X + Size.Width + 1, Location.Y + _scrollbarY),
                 new(Location.X + Size.Width + 1, Location.Y + _scrollbarY + _scrollbarLength),
                 1.0f,
-                D2DSolidColorBrush.White);
+                SolidColorBrush.White);
     }
 
     protected override void DisposeResources()

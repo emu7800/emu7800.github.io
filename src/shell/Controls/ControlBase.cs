@@ -1,41 +1,30 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public abstract class ControlBase : IDisposable
 {
     public static readonly ControlBase Default = new ControlDefault();
 
-    #region Fields
-
-    static int _nextIdToProvision;
-    readonly int _id = _nextIdToProvision++;
-
-    D2D_POINT_2F _location;
-    D2D_SIZE_F _size;
-
-    #endregion
-
-    public D2D_POINT_2F Location
+    public PointF Location
     {
-        get => _location;
+        get;
         set
         {
-            _location = value;
+            field = value;
             LocationChanged();
         }
     }
 
-    public D2D_SIZE_F Size
+    public SizeF Size
     {
-        get => _size;
+        get;
         set
         {
-            _size = value;
+            field = value;
             SizeChanged();
         }
     }
@@ -45,10 +34,10 @@ public abstract class ControlBase : IDisposable
     public bool IsVisible { get; set; }
     public bool IsEnabled { get; set; }
 
-    public D2D_POINT_2F ToRightOf(int dx, int dy)
+    public PointF ToRightOf(int dx, int dy)
         => new(Location.X + Size.Width + dx, Location.Y + dy);
 
-    public D2D_POINT_2F ToBottomOf(int dx, int dy)
+    public PointF ToBottomOf(int dx, int dy)
         => new(Location.X + dx, Location.Y + Size.Height + dy);
 
     protected ControlBase()
@@ -167,7 +156,7 @@ public abstract class ControlBase : IDisposable
         textLayout = TextLayout.Default;
     }
 
-    protected static bool IsInBounds(int x, int y, D2D_RECT_F bounds)
+    protected static bool IsInBounds(int x, int y, RectF bounds)
     {
         var outOfBounds = x < bounds.Left
             || x > bounds.Right

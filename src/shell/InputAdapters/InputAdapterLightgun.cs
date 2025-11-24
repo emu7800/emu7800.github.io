@@ -1,17 +1,16 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class InputAdapterLightgun(InputState inputState, int startingScanline, MachineType machineType) : IInputAdapter
 {
-    D2D_POINT_2F _location;
-    D2D_SIZE_F _size;
+    PointF _location;
+    SizeF _size;
     float _sfx, _sfy, _tx, _ty;
 
-    public void ScreenResized(D2D_POINT_2F location, D2D_SIZE_F size)
+    public void ScreenResized(PointF location, SizeF size)
     {
         _location = location;
         _size = size;

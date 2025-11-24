@@ -1,4 +1,4 @@
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public static class Styles
 {

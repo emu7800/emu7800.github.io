@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EMU7800;
+namespace EMU7800.Shell;
 
 public static class VersionInfo
 {

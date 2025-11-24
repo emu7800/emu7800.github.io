@@ -2,7 +2,7 @@
 
 using System.Diagnostics;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public class DurationProfiler(Stopwatch stopwatch)
 {

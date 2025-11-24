@@ -2,11 +2,10 @@
 
 using EMU7800.Core;
 using EMU7800.Services;
-using EMU7800.Win32.Interop;
 using System;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class TitlePage : PageBase
 {
@@ -32,8 +31,8 @@ public sealed class TitlePage : PageBase
             Text = "One Moment...",
             TextFontFamilyName = Styles.LargeFontFamily,
             TextFontSize = Styles.LargeFontSize,
-            TextAlignment = DWriteTextAlignment.Center,
-            ParagraphAlignment = DWriteParaAlignment.Center,
+            TextAlignment = WriteTextAlignment.Center,
+            ParagraphAlignment = WriteParaAlignment.Center,
             Size = new(500, 100)
         };
         _buttonAbout = new QuestionMarkButton();
@@ -42,8 +41,8 @@ public sealed class TitlePage : PageBase
             Text = VersionInfo.Author,
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
-            TextAlignment = DWriteTextAlignment.Center,
-            ParagraphAlignment = DWriteParaAlignment.Center,
+            TextAlignment = WriteTextAlignment.Center,
+            ParagraphAlignment = WriteParaAlignment.Center,
             Size = new(500, 20)
         };
 
@@ -52,8 +51,8 @@ public sealed class TitlePage : PageBase
             Text = $"Version {VersionInfo.AssemblyVersion} {GetBuildConfiguration()}",
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
-            TextAlignment = DWriteTextAlignment.Center,
-            ParagraphAlignment = DWriteParaAlignment.Center,
+            TextAlignment = WriteTextAlignment.Center,
+            ParagraphAlignment = WriteParaAlignment.Center,
             Size = new(500, 20)
         };
         Controls.Add(_titleControl, _buttonPlayAtariToday, _labelBusyInit, _buttonAbout, _labelCopyr, _labelVers);
@@ -75,13 +74,13 @@ public sealed class TitlePage : PageBase
         ImportCheckAsync();
     }
 
-    public override void Resized(D2D_SIZE_F size)
+    public override void Resized(SizeF size)
     {
-        D2D_POINT_2F centerPt = new(
+        PointF centerPt = new(
             size.Width / 2,
             size.Height / 2
             );
-        D2D_POINT_2F centerPtPlayButton = new(
+        PointF centerPtPlayButton = new(
             _buttonPlayAtariToday.Size.Width / 2,
             _buttonPlayAtariToday.Size.Height / 2
             );

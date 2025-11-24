@@ -1,10 +1,9 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public abstract class PageBase : IDisposable
 {
@@ -27,7 +26,7 @@ public abstract class PageBase : IDisposable
     {
     }
 
-    public virtual void Resized(D2D_SIZE_F size)
+    public virtual void Resized(SizeF size)
     {
     }
 

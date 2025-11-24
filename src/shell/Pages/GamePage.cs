@@ -3,11 +3,10 @@
 using System;
 using System.Linq;
 using EMU7800.Core;
-using EMU7800.Win32.Interop;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class GamePage : PageBase
 {
@@ -42,7 +41,7 @@ public sealed class GamePage : PageBase
 
     int _backAndSettingsButtonVisibilityCounter;
 
-    D2D_SIZE_F _lastResize;
+    SizeF _lastResize;
 
     #endregion
 
@@ -66,7 +65,7 @@ public sealed class GamePage : PageBase
         {
             TextFontFamilyName = Styles.ExtraLargeFontFamily,
             TextFontSize = Styles.ExtraLargeFontSize,
-            TextAlignment = DWriteTextAlignment.Center,
+            TextAlignment = WriteTextAlignment.Center,
             Text = string.Empty,
             IsVisible = false
         };
@@ -134,7 +133,7 @@ public sealed class GamePage : PageBase
         {
             TextFontFamilyName = Styles.SmallFontFamily,
             TextFontSize = Styles.SmallFontSize,
-            TextAlignment = DWriteTextAlignment.Center,
+            TextAlignment = WriteTextAlignment.Center,
             Text = string.Empty
         };
         _hud_buttonFpsMinus = new MinusButton();
@@ -262,7 +261,7 @@ public sealed class GamePage : PageBase
         _buttonSettings.IsVisible = !_isTooNarrowForHud;
     }
 
-    public override void Resized(D2D_SIZE_F size)
+    public override void Resized(SizeF size)
     {
         base.Resized(size);
 

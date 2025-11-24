@@ -1,8 +1,6 @@
 // © Mike Murphy
 
-using EMU7800.Win32.Interop;
-
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class Button : ButtonBase
 {
@@ -24,18 +22,18 @@ public sealed class Button : ButtonBase
     {
         if (IsPressed)
         {
-            GraphicsDevice.FillRectangle(new(Location, Size), D2DSolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.Black);
+            GraphicsDevice.FillRectangle(new RectF(Location, Size), SolidColorBrush.White);
+            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.Black);
         }
         else if (IsMouseOver)
         {
-            GraphicsDevice.DrawRectangle(new(Location, Size), 2.0f, D2DSolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
+            GraphicsDevice.DrawRectangle(new RectF(Location, Size), 2.0f, SolidColorBrush.White);
+            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
         }
         else
         {
-            GraphicsDevice.DrawRectangle(new(Location, Size), 1.0f, D2DSolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, D2DSolidColorBrush.White);
+            GraphicsDevice.DrawRectangle(new RectF(Location, Size), 1.0f, SolidColorBrush.White);
+            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
         }
     }
 
@@ -43,8 +41,8 @@ public sealed class Button : ButtonBase
     {
         base.CreateResources();
         _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
-        _textLayout.SetTextAlignment(DWriteTextAlignment.Center);
-        _textLayout.SetParagraphAlignment(DWriteParaAlignment.Center);
+        _textLayout.SetTextAlignment(WriteTextAlignment.Center);
+        _textLayout.SetParagraphAlignment(WriteParaAlignment.Center);
     }
 
     protected override void DisposeResources()

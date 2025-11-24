@@ -3,11 +3,10 @@
 using EMU7800.Assets;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
-using EMU7800.Win32.Interop;
 using System;
 using System.Linq;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class GameProgramSelectionControl : ControlBase
 {
@@ -33,8 +32,8 @@ public sealed class GameProgramSelectionControl : ControlBase
         GapForCollectionTitle = 50f,
         GapBetweenCollections = 50f;
 
-    readonly D2D_SIZE_F _itemSize = new(ITEM_WIDTH, ITEM_HEIGHT);
-    readonly D2D_SIZE_F _iconSize = new(ICON_WIDTH, ICON_HEIGHT);
+    readonly SizeF _itemSize = new(ITEM_WIDTH, ITEM_HEIGHT);
+    readonly SizeF _iconSize = new(ICON_WIDTH, ICON_HEIGHT);
 
     float _scrollXLeftMostBoundary, _scrollXRightMostBoundary, _scrollXAcceleration;
 
@@ -47,8 +46,8 @@ public sealed class GameProgramSelectionControl : ControlBase
     int _focusCandidateCollectionIndex, _focusCandidateCollectionItemIndex;
 
     ScrollColumnInfo[] _scrollColumnInfoSet = [];
-    D2D_RECT_F _gameProgramViewItemCollectionsRect;
-    D2D_RECT_F _clipRect;
+    RectF _gameProgramViewItemCollectionsRect;
+    RectF _clipRect;
 
     bool _reinitializeAtNextUpdate, _initializeAtNextUpdate = true;
 
@@ -67,9 +66,7 @@ public sealed class GameProgramSelectionControl : ControlBase
 
     public void BindTo(GameProgramInfoViewItemCollection[] gameProgramInfoViewItemCollection)
     {
-        _scrollColumnInfoSet = Enumerable.Range(0, gameProgramInfoViewItemCollection.Length)
-            .Select(i => ToScrollColumnInfo(gameProgramInfoViewItemCollection[i]))
-                .ToArray();
+        _scrollColumnInfoSet = [.. Enumerable.Range(0, gameProgramInfoViewItemCollection.Length).Select(i => ToScrollColumnInfo(gameProgramInfoViewItemCollection[i]))];
 
         _reinitializeAtNextUpdate = true;
     }
@@ -309,8 +306,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                     GraphicsDevice.Draw(
                         gpivic.NameTextLayout,
                         new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height),
-                        D2DSolidColorBrush.White
-                        );
+                        SolidColorBrush.White);
                 }
 
                 if (itemRect.Right < Location.X || itemRect.Left > Location.X + Size.Width
@@ -319,7 +315,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                 if (itemRect.Bottom < Location.Y)
                     continue;
 
-                GraphicsDevice.PushAxisAlignedClip(_clipRect, D2DAntiAliasMode.Aliased);
+                GraphicsDevice.PushAxisAlignedClip(_clipRect, AntiAliasMode.Aliased);
 
                 var iconRect = ToIconRect(i, j);
                 TranslateRect(ref iconRect, i);
@@ -350,35 +346,35 @@ public sealed class GameProgramSelectionControl : ControlBase
                 var itemRectHeight = itemRect.Bottom - itemRect.Top;
                 var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
                 var textYStart = itemRect.Top + itemRectHeight / 2 - totalTextHeight / 2;
-                D2D_POINT_2F textTitleLocation = new(itemRect.Left + 64, textYStart);
-                D2D_POINT_2F textSubTitleLocation = new(itemRect.Left + 64, textYStart + gpivi.TitleTextLayout.Height);
+                PointF textTitleLocation = new(itemRect.Left + 64, textYStart);
+                PointF textSubTitleLocation = new(itemRect.Left + 64, textYStart + gpivi.TitleTextLayout.Height);
 
                 if (i == _focusedCollectionIndex && j == _focusedCollectionItemIndex)
                 {
                     if (_itemDown)
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRestInverted : _playRestInverted;
-                        GraphicsDevice.FillRectangle(iconRect, D2DSolidColorBrush.White);
+                        GraphicsDevice.FillRectangle(iconRect, SolidColorBrush.White);
                         GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
+                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
+                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
                     }
                     else
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
                         GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
-                        GraphicsDevice.DrawRectangle(iconRect, 5.0f, D2DSolidColorBrush.White);
+                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
+                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
+                        GraphicsDevice.DrawRectangle(iconRect, 5.0f, SolidColorBrush.White);
                     }
                 }
                 else
                 {
                     var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
                     GraphicsDevice.Draw(bitmap, iconRect);
-                    GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, D2DSolidColorBrush.White);
-                    GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, D2DSolidColorBrush.Gray);
-                    GraphicsDevice.DrawRectangle(iconRect, 1.0f, D2DSolidColorBrush.White);
+                    GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
+                    GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
+                    GraphicsDevice.DrawRectangle(iconRect, 1.0f, SolidColorBrush.White);
                 }
 
                 GraphicsDevice.PopAxisAlignedClip();
@@ -395,10 +391,10 @@ public sealed class GameProgramSelectionControl : ControlBase
         var pauseRestBytes         = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
         var pauseRestInvertedBytes = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
-        _playRest = new StaticBitmap(playRestBytes);
-        _playRestInverted = new StaticBitmap(playRestInvertedBytes);
-        _pauseRest = new StaticBitmap(pauseRestBytes);
-        _pauseRestInverted = new StaticBitmap(pauseRestInvertedBytes);
+        _playRest = new(playRestBytes.Span);
+        _playRestInverted = new(playRestInvertedBytes.Span);
+        _pauseRest = new(pauseRestBytes.Span);
+        _pauseRestInverted = new(pauseRestInvertedBytes.Span);
     }
 
     protected override void DisposeResources()
@@ -495,8 +491,8 @@ public sealed class GameProgramSelectionControl : ControlBase
 
     void ComputeClipRect()
     {
-        D2D_POINT_2F location = new(Location.X, Location.Y + GapForCollectionTitle);
-        D2D_SIZE_F size = new(Size.Width, Size.Height - GapForCollectionTitle);
+        PointF location = new(Location.X, Location.Y + GapForCollectionTitle);
+        SizeF size = new(Size.Width, Size.Height - GapForCollectionTitle);
         _clipRect = new(location, size);
     }
 
@@ -534,21 +530,21 @@ public sealed class GameProgramSelectionControl : ControlBase
             _scrollXLeftMostBoundary = _scrollXRightMostBoundary;
     }
 
-    D2D_RECT_F ToItemRect(int i, int j)
+    RectF ToItemRect(int i, int j)
     {
         var x = i * (ITEM_WIDTH + GapBetweenCollections);
         var y = j * ITEM_HEIGHT;
         return new(new(x, y), _itemSize);
     }
 
-    D2D_RECT_F ToIconRect(int i, int j)
+    RectF ToIconRect(int i, int j)
     {
         var x = i * (ITEM_WIDTH + GapBetweenCollections);
         var y = j * ITEM_HEIGHT;
         return new(new(x + ICON_DX, y + ICON_DY), _iconSize);
     }
 
-    void TranslateRect(ref D2D_RECT_F sourceRect, int collectionIndex)
+    void TranslateRect(ref RectF sourceRect, int collectionIndex)
     {
         var gpvic = _scrollColumnInfoSet[collectionIndex];
         var translationVector = Add(_gameProgramViewItemCollectionsRect.ToLocation(), gpvic.CollectionRect.ToLocation());
@@ -558,7 +554,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         sourceRect.Bottom += translationVector.Y;
     }
 
-    static D2D_POINT_2F Add(D2D_POINT_2F a, D2D_POINT_2F b)
+    static PointF Add(PointF a, PointF b)
         => new(a.X + b.X, a.Y + b.Y);
 
     float ExtractHorizontalKineticEnergyFromCollections(float timeDeltaInSeconds)
@@ -610,9 +606,9 @@ public sealed class GameProgramSelectionControl : ControlBase
     }
 
     // return tuple: (collection index, collection item index, is inside icon rectangle?)
-    (int, int, bool) ToCollectionIndexes(D2D_POINT_2F mousePointerLocation)
+    (int, int, bool) ToCollectionIndexes(PointF mousePointerLocation)
     {
-        D2D_POINT_2F pt = new(mousePointerLocation);
+        PointF pt = new(mousePointerLocation);
         Sub(ref pt, new(_gameProgramViewItemCollectionsRect));
         if (pt.X < 0)
             return (-1, -1, false);
@@ -635,13 +631,13 @@ public sealed class GameProgramSelectionControl : ControlBase
         return (i, j, insideIconRect);
     }
 
-    static void Sub(ref D2D_POINT_2F a, float x, float y)
+    static void Sub(ref PointF a, float x, float y)
     {
         a.X -= x;
         a.Y -= y;
     }
 
-    static void Sub(ref D2D_POINT_2F a, D2D_POINT_2F b)
+    static void Sub(ref PointF a, PointF b)
     {
         a.X -= b.X;
         a.Y -= b.Y;
@@ -668,7 +664,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         => new()
         {
             Name = gpvic.Name,
-            GameProgramInfoViewItemSet = gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx).ToArray()
+            GameProgramInfoViewItemSet = [.. gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx)]
         };
 
     static GameProgramInfoViewItemEx ToGameProgramInfoViewItemEx(GameProgramInfoViewItem gpvi)

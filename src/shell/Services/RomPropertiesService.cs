@@ -38,7 +38,7 @@ public static partial class RomPropertiesService
     #endregion
 
     public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> romPropertiesCsv)
-        => VerifyReferenceRepositoryCsvHeader(romPropertiesCsv)
+        => [.. VerifyReferenceRepositoryCsvHeader(romPropertiesCsv)
             .Select(Split)
             .Select(sl => new GameProgramInfo
             {
@@ -56,8 +56,7 @@ public static partial class RomPropertiesService
                 ModelNo      = sl[CsvColumnModelNo],
                 Rarity       = sl[CsvColumnRarity]
             })
-            .Where(gpi => IsMD5(gpi.MD5))
-            .ToList()
+            .Where(gpi => IsMD5(gpi.MD5))]
             ;
 
     #region Helpers

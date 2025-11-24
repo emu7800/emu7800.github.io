@@ -1,5 +1,5 @@
 ﻿# EMU7800
-> Mike Murphy (mike@emu7800.net) - 11/11/2025
+> Mike Murphy (mike@emu7800.net) - 12/31/2025
 
 EMU7800 was originally completed in 2003 as a .NET programming exercise.
 It continues to be maintained to the present day as a non-commercial endeavor.
@@ -18,7 +18,6 @@ To build, the following tools are needed:
 
 To execute the build, run the following from a command-prompt at the root of the source directory (where this README is found):
 ```
-dotnet restore -r win-x64 ./EMU7800.Win32.slnx
-dotnet msbuild ./Build.proj /tl
+dotnet msbuild ./Build.proj
 ```
 This will build and drop everything under a newly created subdirectory ```artifacts\```.

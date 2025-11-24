@@ -1,9 +1,8 @@
 // © Mike Murphy
 
-using EMU7800.Win32.Interop;
 using System.Linq;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class NumberControl : ControlBase
 {
@@ -15,7 +14,7 @@ public sealed class NumberControl : ControlBase
 
     public string TextFontFamilyName { get; set; }
     public int TextFontSize { get; set; }
-    public D2DSolidColorBrush Color { get; set; }
+    public SolidColorBrush Color { get; set; }
 
     public int Value { get; set; }
     public int Radix { get; set; }
@@ -23,10 +22,10 @@ public sealed class NumberControl : ControlBase
 
     public NumberControl()
     {
-        _textlayoutDigits = Enumerable.Range(0, 10).Select(_ => TextLayout.Default).ToArray();
+        _textlayoutDigits = [.. Enumerable.Range(0, 10).Select(_ => TextLayout.Default)];
         TextFontFamilyName = Styles.NormalFontFamily;
         TextFontSize = Styles.NormalFontSize;
-        Color = D2DSolidColorBrush.White;
+        Color = SolidColorBrush.White;
         UseComma = true;
     }
 
@@ -36,7 +35,7 @@ public sealed class NumberControl : ControlBase
     {
         base.Render();
 
-        D2D_POINT_2F location = new(Location.X + Size.Width, Location.Y);
+        PointF location = new(Location.X + Size.Width, Location.Y);
 
         var val = Value;
         var rad = Radix;
@@ -75,18 +74,8 @@ public sealed class NumberControl : ControlBase
             if (_textlayoutDigits[i].Width > _maxDigitWidth)
                 _maxDigitWidth = _textlayoutDigits[i].Width;
         }
-        _textlayoutRadix = new TextLayout(
-            TextFontFamilyName,
-            TextFontSize,
-            ".",
-            100, 100
-            );
-        _textlayoutComma = new TextLayout(
-            TextFontFamilyName,
-            TextFontSize,
-            ",",
-            100, 100
-            );
+        _textlayoutRadix = new TextLayout(TextFontFamilyName, TextFontSize, ".", 100, 100);
+        _textlayoutComma = new TextLayout(TextFontFamilyName, TextFontSize, ",", 100, 100);
     }
 
     protected override void DisposeResources()
@@ -106,12 +95,7 @@ public sealed class NumberControl : ControlBase
 
     void CreateDigitTextLayout(int i)
     {
-        _textlayoutDigits[i] = new TextLayout(
-            TextFontFamilyName,
-            TextFontSize,
-            i.ToString(System.Globalization.CultureInfo.InvariantCulture),
-            100, 100
-            );
+        _textlayoutDigits[i] = new TextLayout(TextFontFamilyName, TextFontSize, i.ToString(System.Globalization.CultureInfo.InvariantCulture), 100, 100);
     }
 
     #endregion

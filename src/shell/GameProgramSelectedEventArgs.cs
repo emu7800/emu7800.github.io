@@ -3,7 +3,7 @@
 using EMU7800.Services.Dto;
 using System;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public class GameProgramSelectedEventArgs(GameProgramInfoViewItem gpivi) : EventArgs
 {

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../core/EMU7800.Core.csproj" />
+  <Project Path="SoundEmulator/EMU7800.SoundEmulator.csproj" />
+</Solution>

@@ -1,17 +1,16 @@
 // © Mike Murphy
 
 using EMU7800.Assets;
-using EMU7800.Win32.Interop;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public class ButtonCircleImage : ButtonBase
 {
     #region Fields
 
     readonly Asset _image, _imageInverted;
-    readonly D2DSolidColorBrush _mouseOverColor;
+    readonly SolidColorBrush _mouseOverColor;
     StaticBitmap _circleBitmap = StaticBitmap.Default;
     StaticBitmap _circleInvertedBitmap = StaticBitmap.Default;
     StaticBitmap _imageBitmap = StaticBitmap.Default;
@@ -19,7 +18,7 @@ public class ButtonCircleImage : ButtonBase
 
     #endregion
 
-    protected ButtonCircleImage(Asset image, Asset imageInverted, D2DSolidColorBrush mouseOverColor)
+    protected ButtonCircleImage(Asset image, Asset imageInverted, SolidColorBrush mouseOverColor)
     {
         _image = image;
         _imageInverted = imageInverted;
@@ -31,11 +30,11 @@ public class ButtonCircleImage : ButtonBase
 
     public override void Render()
     {
-        D2D_RECT_F rect = new(Location, Size);
+        RectF rect = new(Location, Size);
 
         if (IsPressed)
         {
-            GraphicsDevice.FillEllipse(rect, D2DSolidColorBrush.White);
+            GraphicsDevice.FillEllipse(rect, SolidColorBrush.White);
             GraphicsDevice.Draw(_circleInvertedBitmap, rect);
             GraphicsDevice.Draw(_imageInvertedBitmap, rect);
         }
@@ -75,70 +74,73 @@ public class ButtonCircleImage : ButtonBase
     #region Helpers
 
     static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
-        => new(await AssetService.GetAssetBytesAsync(asset));
+    {
+        var bytes = await AssetService.GetAssetBytesAsync(asset);
+        return new(bytes.Span);
+    }
 
     #endregion
 }
 
 public class BackButton : ButtonCircleImage
 {
-    public BackButton() : base(Asset.appbar_back_rest, Asset.appbar_back_rest_inverted, D2DSolidColorBrush.Red)
+    public BackButton() : base(Asset.appbar_back_rest, Asset.appbar_back_rest_inverted, SolidColorBrush.Red)
     {
     }
 }
 
 public class NextButton : ButtonCircleImage
 {
-    public NextButton() : base(Asset.appbar_next_rest, Asset.appbar_next_rest_inverted, D2DSolidColorBrush.Green)
+    public NextButton() : base(Asset.appbar_next_rest, Asset.appbar_next_rest_inverted, SolidColorBrush.Green)
     {
     }
 }
 
 public class QuestionMarkButton : ButtonCircleImage
 {
-    public QuestionMarkButton() : base(Asset.appbar_questionmark_rest, Asset.appbar_questionmark_rest_inverted, D2DSolidColorBrush.Blue)
+    public QuestionMarkButton() : base(Asset.appbar_questionmark_rest, Asset.appbar_questionmark_rest_inverted, SolidColorBrush.Blue)
     {
     }
 }
 
 public class SearchButton : ButtonCircleImage
 {
-    public SearchButton() : base(Asset.appbar_feature_search_rest, Asset.appbar_feature_search_rest_inverted, D2DSolidColorBrush.Blue)
+    public SearchButton() : base(Asset.appbar_feature_search_rest, Asset.appbar_feature_search_rest_inverted, SolidColorBrush.Blue)
     {
     }
 }
 
 public class SettingsButton : ButtonCircleImage
 {
-    public SettingsButton() : base(Asset.appbar_feature_settings_rest, Asset.appbar_feature_settings_rest_inverted, D2DSolidColorBrush.Blue)
+    public SettingsButton() : base(Asset.appbar_feature_settings_rest, Asset.appbar_feature_settings_rest_inverted, SolidColorBrush.Blue)
     {
     }
 }
 
 public class CheckButton : ButtonCircleImage
 {
-    public CheckButton() : base(Asset.appbar_check_rest, Asset.appbar_check_rest_inverted, D2DSolidColorBrush.Green)
+    public CheckButton() : base(Asset.appbar_check_rest, Asset.appbar_check_rest_inverted, SolidColorBrush.Green)
     {
     }
 }
 
 public class CancelButton : ButtonCircleImage
 {
-    public CancelButton() : base(Asset.appbar_cancel_rest, Asset.appbar_cancel_rest_inverted, D2DSolidColorBrush.Red)
+    public CancelButton() : base(Asset.appbar_cancel_rest, Asset.appbar_cancel_rest_inverted, SolidColorBrush.Red)
     {
     }
 }
 
 public class PlusButton : ButtonCircleImage
 {
-    public PlusButton() : base(Asset.appbar_add_rest, Asset.appbar_add_rest_inverted, D2DSolidColorBrush.Green)
+    public PlusButton() : base(Asset.appbar_add_rest, Asset.appbar_add_rest_inverted, SolidColorBrush.Green)
     {
     }
 }
 
 public class MinusButton : ButtonCircleImage
 {
-    public MinusButton() : base(Asset.appbar_minus_rest, Asset.appbar_minus_rest_inverted, D2DSolidColorBrush.Red)
+    public MinusButton() : base(Asset.appbar_minus_rest, Asset.appbar_minus_rest_inverted, SolidColorBrush.Red)
     {
     }
 }

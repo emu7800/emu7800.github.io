@@ -1,8 +1,7 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Shell;
 using System;
-using static EMU7800.Win32.Interop.Win32NativeMethods;
-using static System.Console;
 
 namespace EMU7800.Win32.Interop;
 
@@ -21,31 +20,26 @@ public static class Win32Window
 
     public static void Run(bool startMaximized = true)
     {
+        hWnd = Win32NativeMethods.Win32_CreateWindow();
+        if (hWnd == IntPtr.Zero)
+            return;
+
+        AudioDevice.DriverFactory     = AudioDeviceWinmmDriver.Factory;
+        DynamicBitmap.DriverFactory   = DynamicBitmapD2DDriver.Factory;
+        StaticBitmap.DriverFactory    = StaticBitmapD2DDriver.Factory;
+        TextFormat.DriverFactory      = TextFormatD2DDriver.Factory;
+        TextLayout.DriverFactory      = TextLayoutD2DDriver.Factory;
+        GraphicsDevice.DriverFactory  = () => GraphicsDeviceD2DDriver.Factory(hWnd);
+        GameControllers.DriverFactory = () => GameControllersDInputXInputDriver.Factory(hWnd);
+
         Resized += (w, h) => GraphicsDevice.Resize(new(w, h));
 
-        hWnd = Win32_CreateWindow();
-        WriteLine($"Win32 initialized: hWnd=0x{hWnd:x8}");
+        GraphicsDevice.Initialize();
+        GameControllers.Initialize();
 
-        if (hWnd == IntPtr.Zero)
-        {
-            WriteLine("Win32 initialization failure");
-            return;
-        }
-
-        var hr = GraphicsDevice.Initialize(hWnd);
-        WriteLine($"D2D initialized: HR=0x{hr:x8}");
-
-        GameControllers.Initialize(hWnd);
-
-        WriteLine("Win32 processing events...");
-        Win32_ProcessEvents(hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
-        WriteLine("Win32 processing events completed");
-
-        WriteLine("Shutting down game controllers, D2D, Win32...");
+        Win32NativeMethods.Win32_ProcessEvents(hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
 
         GameControllers.Shutdown();
         GraphicsDevice.Shutdown();
-
-        WriteLine("Done");
     }
 }

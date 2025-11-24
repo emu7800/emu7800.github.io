@@ -2,12 +2,11 @@
 
 using EMU7800.Services;
 using EMU7800.Services.Dto;
-using EMU7800.Win32.Interop;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EMU7800.D2D.Shell;
+namespace EMU7800.Shell;
 
 public sealed class GameProgramSelectionPage : PageBase
 {
@@ -54,7 +53,7 @@ public sealed class GameProgramSelectionPage : PageBase
         GetGameProgramInfoViewItemCollectionsAsync();
     }
 
-    public override void Resized(D2D_SIZE_F size)
+    public override void Resized(SizeF size)
     {
         _gameProgramSelectionControl.Size = new(size.Width, size.Height - 100);
     }
@@ -86,8 +85,7 @@ public sealed class GameProgramSelectionPage : PageBase
     }
 
     static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
-        => GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo)
-            .ToArray();
+        => [.. GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo)];
 
     #endregion
 }

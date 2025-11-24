@@ -1,62 +1,129 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using EMU7800.Shell;
 
 namespace EMU7800.Win32.Interop;
 
-public enum D2DSolidColorBrush { Black, Red, Orange, Yellow, Green, Blue, Gray, White }
-public enum D2DAntiAliasMode { PerPrimitive, Aliased }
-public enum D2DBitmapInterpolationMode { NearestNeighbor, Linear }
-public enum DWriteTextAlignment { Leading, Trailing, Center }
-public enum DWriteParaAlignment { Near, Far, Center }
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct D2DSolidColorBrush
+{
+    private readonly int _value;
+
+    private D2DSolidColorBrush(int value) => _value = value;
+    public static implicit operator D2DSolidColorBrush(SolidColorBrush b) => b switch
+    {
+        SolidColorBrush.Black  => new(0),
+        SolidColorBrush.Red    => new(1),
+        SolidColorBrush.Orange => new(2),
+        SolidColorBrush.Yellow => new(3),
+        SolidColorBrush.Green  => new(4),
+        SolidColorBrush.Blue   => new(5),
+        SolidColorBrush.Gray   => new(6),
+        SolidColorBrush.White  => new(7),
+        _ => new(0)
+    };
+    public static implicit operator int(D2DSolidColorBrush b) => b._value;
+}
 
 [StructLayout(LayoutKind.Sequential)]
-public struct D2D_RECT_F
+internal readonly struct D2DAntiAliasMode
+{
+    private readonly int _value;
+
+    private D2DAntiAliasMode(int value) => _value = value;
+    public static implicit operator D2DAntiAliasMode(AntiAliasMode m) => m switch
+    {
+        AntiAliasMode.PerPrimitive => new(0),
+        AntiAliasMode.Aliased      => new(1),
+        _ => new(0)
+    };
+    public static implicit operator int(D2DAntiAliasMode m) => m._value;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct D2DBitmapInterpolationMode
+{
+    private readonly int _value;
+
+    private D2DBitmapInterpolationMode(int value) => _value = value;
+    public static implicit operator D2DBitmapInterpolationMode(BitmapInterpolationMode m) => m switch
+    {
+        BitmapInterpolationMode.NearestNeighbor => new(0),
+        BitmapInterpolationMode.Linear          => new(1),
+        _ => new(0)
+    };
+    public static implicit operator int(D2DBitmapInterpolationMode m) => m._value;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct DWriteTextAlignment
+{
+    private readonly int _value;
+
+    private DWriteTextAlignment(int value) => _value = value;
+    public static implicit operator DWriteTextAlignment(WriteTextAlignment a) => a switch
+    {
+        WriteTextAlignment.Leading  => new(0),
+        WriteTextAlignment.Trailing => new(1),
+        WriteTextAlignment.Center   => new(2),
+        _ => new(0)
+    };
+    public static implicit operator int(DWriteTextAlignment a) => a._value;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct DWriteParaAlignment
+{
+    private readonly int _value;
+
+    private DWriteParaAlignment(int value) => _value = value;
+    public static implicit operator DWriteParaAlignment(WriteParaAlignment a) => a switch
+    {
+        WriteParaAlignment.Near   => new(0),
+        WriteParaAlignment.Far    => new(1),
+        WriteParaAlignment.Center => new(2),
+        _ => new(0)
+    };
+    public static implicit operator int(DWriteParaAlignment a) => a._value;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+internal struct D2D_RECT_F
 {
     public float Left;
     public float Top;
     public float Right;
     public float Bottom;
-
-    public readonly D2D_POINT_2F ToLocation()
-        => new(this);
-    public readonly D2D_SIZE_F ToSize()
-        => new(this);
-    public D2D_RECT_F(float left, float top, float right, float bottom)
-        => (Left, Top, Right, Bottom) = (left, top, right, bottom);
-    public D2D_RECT_F(D2D_POINT_2F point, D2D_SIZE_F size)
-        => (Left, Top, Right, Bottom) = (point.X, point.Y, point.X + size.Width, point.Y + size.Height);
+    public static implicit operator D2D_RECT_F(RectF r) => new() { Left = r.Left, Top = r.Top, Right = r.Right, Bottom = r.Bottom };
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct D2D_SIZE_F
+internal struct D2D_SIZE_F
 {
     public float Width;
     public float Height;
-
-    public D2D_SIZE_F(float w, float h) => (Width, Height) = (w, h);
-    public D2D_SIZE_F(D2D_RECT_F drect) => (Width, Height) = (drect.Right - drect.Left, drect.Bottom - drect.Top);
+    public static implicit operator D2D_SIZE_F(SizeF s) => new() { Width = s.Width, Height = s.Height };
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct D2D_SIZE_U
+internal partial struct D2D_SIZE_U
 {
     public uint Width;
     public uint Height;
+}
 
-    public D2D_SIZE_U(uint w, uint h) => (Width, Height) = (w, h);
-    public D2D_SIZE_U(int w, int h) => (Width, Height) = ((uint)w, (uint)h);
+internal partial struct D2D_SIZE_U
+{
+    public static implicit operator D2D_SIZE_U(SizeU s) => new() { Width = s.Width, Height = s.Height };
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct D2D_POINT_2F
+internal struct D2D_POINT_2F
 {
     public float X;
     public float Y;
-
-    public D2D_POINT_2F(float x, float y) => (X, Y) = (x, y);
-    public D2D_POINT_2F(D2D_RECT_F drect) => (X, Y) = (drect.Left, drect.Top);
-    public D2D_POINT_2F(D2D_POINT_2F dpt) => (X, Y) = (dpt.X, dpt.Y);
+    public static implicit operator D2D_POINT_2F(PointF pt) => new() { X = pt.X, Y = pt.Y };
 }
 
 [StructLayout(LayoutKind.Sequential)]
