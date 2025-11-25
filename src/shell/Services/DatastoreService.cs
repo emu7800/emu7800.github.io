@@ -27,20 +27,30 @@ public class DatastoreService
             {
                 var saveFolder = field;
 
-                // For backward compatibility, use legacy folder if it already exists. Remove sometime in the future when this location is no longer used.
+                const string SavedGamesFolderName = ".emu7800savedgames";
+                var preferredSaveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), SavedGamesFolderName);
+
+                // For backward compatibility, use legacy folder if it exists and the preferred folder does not.
+                // Remove sometime in the future when this location is no longer used.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    var legacySaveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800");
-                    if (Directory.Exists(legacySaveFolder))
+                    if (Directory.Exists(preferredSaveFolder))
                     {
-                        saveFolder = legacySaveFolder;
+                        saveFolder = preferredSaveFolder;
+                    }
+                    else
+                    {
+                        var legacySaveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800");
+                        if (Directory.Exists(legacySaveFolder))
+                        {
+                            saveFolder = legacySaveFolder;
+                        }
                     }
                 }
 
                 if (string.IsNullOrEmpty(saveFolder))
                 {
-                    const string SavedGamesFolderName = ".emu7800savedgames";
-                    saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), SavedGamesFolderName);
+                    saveFolder = preferredSaveFolder;
                     if (!CreateFolderIfNeeded(saveFolder))
                     {
                         saveFolder = Path.Combine(Path.GetTempPath(), SavedGamesFolderName);
