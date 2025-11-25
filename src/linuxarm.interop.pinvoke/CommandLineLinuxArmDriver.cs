@@ -17,14 +17,14 @@ public sealed partial class CommandLineLinuxArmDriver : ICommandLineDriver
     {
         //using var app = new Win32App();
         //app.Run(startMaximized);
-        Console.WriteLine($"[Start(startMaximized={startMaximized})");
+        Console.WriteLine($"[Start(startMaximized={startMaximized})]");
     }
 
     public void StartGameProgram(GameProgramInfoViewItem gpivi)
     {
         //using var app = new Win32App(gpivi);
         //app.Run();
-        Console.WriteLine($"[StartGameProgram({gpivi.Title})");
+        Console.WriteLine($"[StartGameProgram({gpivi.Title})]");
     }
 
     #endregion

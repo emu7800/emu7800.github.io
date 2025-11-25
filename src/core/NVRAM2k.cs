@@ -6,14 +6,29 @@
  * Copyright © 2023 Mike Murphy
  *
  */
+using System;
+
 namespace EMU7800.Core;
 
 public sealed class NVRAM2k : IDevice
 {
-    public static readonly NVRAM2k Default = new(string.Empty);
+    public static Func<string, int, ReadOnlyMemory<byte>> ReadNVRAMBytes { get; set; } = (_, count) => new byte[count];
+    public static Action<string, ReadOnlyMemory<byte>> WriteNVRAMBytes { get; set; } = (_, _) => {};
 
-    readonly byte[] NVRAM = new byte[NVRAM_SIZE];
     readonly string _fileName;
+
+    byte[] NVRAM
+    {
+        get
+        {
+            if (field.Length == 0)
+            {
+                field = ReadNVRAMBytes(_fileName, NVRAM_SIZE).ToArray();
+            }
+            return field;
+        }
+        set;
+    } = [];
 
     #region IDevice
 
@@ -40,7 +55,6 @@ public sealed class NVRAM2k : IDevice
     public NVRAM2k(string fileName)
     {
         _fileName = fileName;
-        LoadNVRAM();
     }
 
     #endregion
@@ -51,61 +65,14 @@ public sealed class NVRAM2k : IDevice
     {
         input.CheckVersion(1);
         _fileName = input.ReadString();
-        LoadNVRAM();
     }
 
     public void GetObjectData(SerializationContext output)
     {
         output.WriteVersion(1);
         output.Write(_fileName);
-        SaveNVRAM();
+        WriteNVRAMBytes(_fileName, NVRAM);
     }
-
-    #endregion
-
-    #region Helpers
-
-    void LoadNVRAM()
-    {
-        if (string.IsNullOrWhiteSpace(_fileName))
-            return;
-
-        var dir = ToNVRAMDir();
-        var path = System.IO.Path.Combine(dir, _fileName);
-        try
-        {
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read);
-            using var br = new System.IO.BinaryReader(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            var bytes = br.ReadBytes(NVRAM_SIZE);
-            System.Buffer.BlockCopy(bytes, 0, NVRAM, 0, NVRAM_SIZE);
-        }
-        catch
-        {
-        }
-    }
-
-    void SaveNVRAM()
-    {
-        if (string.IsNullOrWhiteSpace(_fileName))
-            return;
-
-        var dir = ToNVRAMDir();
-        var path = System.IO.Path.Combine(dir, _fileName);
-        try
-        {
-            System.IO.Directory.CreateDirectory(dir);
-            using var fs = System.IO.File.Open(path, System.IO.FileMode.Create, System.IO.FileAccess.Write);
-            using var bw = new System.IO.BinaryWriter(fs, System.Text.Encoding.UTF8, leaveOpen: true);
-            bw.Write(NVRAM);
-            bw.Flush();
-        }
-        catch
-        {
-        }
-    }
-
-    static string ToNVRAMDir()
-        => System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800", "nvram");
 
     #endregion
 }

@@ -7,15 +7,60 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace EMU7800.Services;
 
 public class DatastoreService
 {
-    #region Fields
+    #region BasePaths
 
-    static string SaveGamesEmu7800Folder = string.Empty;
+    static string AppBaseFolder
+      => AppDomain.CurrentDomain.BaseDirectory;
+
+    static string SaveGamesEmu7800Folder
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(field))
+            {
+                var saveFolder = field;
+
+                // For backward compatibility, use legacy folder if it already exists. Remove sometime in the future when this location is no longer used.
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var legacySaveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800");
+                    if (Directory.Exists(legacySaveFolder))
+                    {
+                        saveFolder = legacySaveFolder;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(saveFolder))
+                {
+                    const string SavedGamesFolderName = ".emu7800savedgames";
+                    saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), SavedGamesFolderName);
+                    if (!CreateFolderIfNeeded(saveFolder))
+                    {
+                        saveFolder = Path.Combine(Path.GetTempPath(), SavedGamesFolderName);
+                        if (!CreateFolderIfNeeded(saveFolder))
+                        {
+                            saveFolder = Path.Combine(AppBaseFolder, SavedGamesFolderName);
+                            if (!CreateFolderIfNeeded(saveFolder))
+                            {
+                                Error($"Unable to find/create {SavedGamesFolderName} folder.");
+                            }
+                        }
+                    }
+                }
+
+                field = saveFolder;
+                Console.WriteLine("Using SavedGames folder: " + saveFolder);
+            }
+            return field;
+        }
+    }
 
     #endregion
 
@@ -23,10 +68,8 @@ public class DatastoreService
 
     public static IEnumerable<string> QueryROMSFolder()
     {
-        EnsureSaveGamesEmu7800FolderExists();
-        var q1 = QueryForRomCandidates(SaveGamesEmu7800Folder);
-        var q2 = QueryForRomCandidates(AppDomain.CurrentDomain.BaseDirectory);
-        return q1.Concat(q2);
+        var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
+        return [..QueryForRomCandidates(folder), ..QueryForRomCandidates(AppBaseFolder)];
     }
 
     public static byte[] GetRomBytes(string path)
@@ -90,10 +133,13 @@ public class DatastoreService
 
     public static void PersistMachine(MachineStateInfo machineStateInfo, ReadOnlyMemory<byte> screenshotData)
     {
-        EnsurePersistedGameProgramsFolderExists();
+        var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
 
         var pssName = ToPersistedStateStorageName(machineStateInfo.GameProgramInfo);
-        var pssPath = ToPersistedStateStoragePath(pssName);
+        var pssPath = Path.Combine(folder, pssName);
+
+        NVRAM2k.ReadNVRAMBytes  = ReadNVRAMBytes;
+        NVRAM2k.WriteNVRAMBytes = WriteNVRAMBytes;
 
         try
         {
@@ -116,7 +162,7 @@ public class DatastoreService
         }
 
         var sssName = ToScreenshotStorageName(machineStateInfo.GameProgramInfo);
-        var sssPath = ToPersistedStateStoragePath(sssName);
+        var sssPath = Path.Combine(folder, sssName);
 
         // data is 320w x 230h, BGR32 pixel format, width should scale x4
 
@@ -140,11 +186,11 @@ public class DatastoreService
 
     public static void PurgePersistedMachine(GameProgramInfo gameProgramInfo)
     {
-        var pssName = ToPersistedStateStorageName(gameProgramInfo);
-        var pssPath = ToPersistedStateStoragePath(pssName);
+        var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
 
-        var sssName = ToScreenshotStorageName(gameProgramInfo);
-        var sssPath = ToPersistedStateStoragePath(sssName);
+        var pssName = ToPersistedStateStorageName(gameProgramInfo);
+        var pssPath = Path.Combine(folder, pssName);
+        var sssPath = Path.Combine(folder, ToScreenshotStorageName(gameProgramInfo));
 
         try { File.Delete(pssPath); } catch (Exception ex) { Error($"PurgePersistedMachine: Unable to delete: {pssPath}: " + ToString(ex)); }
         try { File.Delete(sssPath); } catch (Exception ex) { Error($"PurgePersistedMachine: Unable to delete: {sssPath}: " + ToString(ex)); }
@@ -154,11 +200,12 @@ public class DatastoreService
 
     public static MachineStateInfo RestoreMachine(GameProgramInfo gameProgramInfo)
     {
-        EnsurePersistedGameProgramsFolderExists();
+        var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
 
-        var name = ToPersistedStateStorageName(gameProgramInfo);
-        var path = ToPersistedStateStoragePath(name);
+        NVRAM2k.ReadNVRAMBytes  = ReadNVRAMBytes;
+        NVRAM2k.WriteNVRAMBytes = WriteNVRAMBytes;
 
+        var path = Path.Combine(folder, ToPersistedStateStorageName(gameProgramInfo));
         try
         {
             using var stream = new FileStream(path, FileMode.Open);
@@ -166,18 +213,22 @@ public class DatastoreService
             var version = br.ReadInt32();
             var machineStateInfo = new MachineStateInfo
             {
-                FramesPerSecond = br.ReadInt32(),
-                SoundOff = br.ReadBoolean(),
-                CurrentPlayerNo = br.ReadInt32(),
+                FramesPerSecond   = br.ReadInt32(),
+                SoundOff          = br.ReadBoolean(),
+                CurrentPlayerNo   = br.ReadInt32(),
                 InterpolationMode = (version > 1) ? br.ReadInt32() : 0,
-                Machine = MachineBase.Deserialize(br),
-                GameProgramInfo = gameProgramInfo
+                Machine           = MachineBase.Deserialize(br),
+                GameProgramInfo   = gameProgramInfo
             };
             if (machineStateInfo.FramesPerSecond == 0)
             {
                 machineStateInfo = machineStateInfo with { FramesPerSecond = machineStateInfo.Machine.FrameHZ };
             }
             return machineStateInfo;
+        }
+        catch (FileNotFoundException)
+        {
+            return MachineStateInfo.Default;
         }
         catch (Exception ex)
         {
@@ -201,9 +252,9 @@ public class DatastoreService
 
     public static ApplicationSettings GetSettings()
     {
-        EnsureSaveGamesEmu7800FolderExists();
+        var folder = SaveGamesEmu7800Folder;
 
-        var path = ToLocalUserDataStoragePath(ApplicationSettingsName);
+        var path = Path.Combine(folder, ApplicationSettingsName);
         try
         {
             using var stream = new FileStream(path, FileMode.Open);
@@ -230,9 +281,9 @@ public class DatastoreService
 
     public static void SaveSettings(ApplicationSettings settings)
     {
-        EnsureSaveGamesEmu7800FolderExists();
+        var folder = SaveGamesEmu7800Folder;
 
-        var path = ToLocalUserDataStoragePath(ApplicationSettingsName);
+        var path = Path.Combine(folder, ApplicationSettingsName);
         try
         {
             using var stream = new FileStream(path, FileMode.Create);
@@ -256,14 +307,9 @@ public class DatastoreService
 
     public static void DumpCrashReport(Exception ex)
     {
-        if (string.IsNullOrWhiteSpace(SaveGamesEmu7800Folder))
-            return;
+        var folder = SaveGamesEmu7800Folder;
 
-        var filename = $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt";
-        var path = ToLocalUserDataStoragePath(filename);
-        if (string.IsNullOrWhiteSpace(path))
-            return;
-
+        var path = Path.Combine(folder, $"EMU7800_CRASH_REPORT_{Guid.NewGuid()}.txt");
         try
         {
             File.WriteAllText(path, ex.ToString());
@@ -281,10 +327,7 @@ public class DatastoreService
 
     const string
         PersistedGameProgramsName = "PersistedGamePrograms",
-        ApplicationSettingsName = "Settings.emusettings";
-
-    static string ToLocalUserDataStoragePath(string fileName)
-        => Path.Combine(SaveGamesEmu7800Folder, fileName);
+        ApplicationSettingsName   = "Settings.emusettings";
 
     static string ToPersistedStateStorageName(GameProgramInfo gameProgramInfo, int saveSlot = 0)
     {
@@ -300,23 +343,10 @@ public class DatastoreService
         return EscapeFileNameChars(fileName);
     }
 
-    static string ToPersistedStateStoragePath(string name)
-        => Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName, name);
-
-    static void EnsurePersistedGameProgramsFolderExists()
-    {
-        EnsureSaveGamesEmu7800FolderExists();
-        var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
-        if (!DirectoryExists(folder))
-        {
-            DirectoryCreateDirectory(folder);
-        }
-    }
-
     static Dictionary<string, DateTime> GetFilesFromPersistedGameProgramsDir()
     {
-        EnsurePersistedGameProgramsFolderExists();
         var folder = Path.Combine(SaveGamesEmu7800Folder, PersistedGameProgramsName);
+
         FileInfo[] files;
         try
         {
@@ -333,15 +363,42 @@ public class DatastoreService
                     .ToDictionary(kvp => kvp.Name, kvp => kvp.LastWriteTimeUtc);
     }
 
-    static void EnsureSaveGamesEmu7800FolderExists()
+    static ReadOnlyMemory<byte> ReadNVRAMBytes(string fileName, int count)
     {
-        if (SaveGamesEmu7800Folder.Length == 0)
+        var folder = SaveGamesEmu7800Folder;
+
+        var path = Path.Combine(folder, "nvram", fileName);
+        try
         {
-            SaveGamesEmu7800Folder = Path.Combine(EnvironmentGetFolderPath(Environment.SpecialFolder.UserProfile), "Saved Games", "EMU7800");
+            using var fs = File.Open(path, FileMode.Open, FileAccess.Read);
+            using var br = new BinaryReader(fs, Encoding.UTF8, leaveOpen: true);
+            return br.ReadBytes(count);
         }
-        if (!DirectoryExists(SaveGamesEmu7800Folder))
+        catch (Exception ex)
         {
-            DirectoryCreateDirectory(SaveGamesEmu7800Folder);
+            if (ex is not FileNotFoundException or DirectoryNotFoundException)
+            {
+                Error("Unable to read NVRAM: " + ToString(ex));
+            }
+            return new byte[count];
+        }
+    }
+
+    static void WriteNVRAMBytes(string fileName, ReadOnlyMemory<byte> nvramBytes)
+    {
+        var folder = SaveGamesEmu7800Folder;
+
+        var path = Path.Combine(folder, "nvram", fileName);
+        try
+        {
+            using var fs = File.Open(path, FileMode.Create, FileAccess.Write);
+            using var bw = new BinaryWriter(fs, Encoding.UTF8, leaveOpen: true);
+            bw.Write(nvramBytes.Span);
+            bw.Flush();
+        }
+        catch (Exception ex)
+        {
+            Error("Unable to write NVRAM: " + ToString(ex));
         }
     }
 
@@ -395,7 +452,7 @@ public class DatastoreService
             var dir = stack.Pop();
             foreach (var filepath in EnumerateFiles(dir))
                 yield return filepath;
-            foreach (var dirpath in EnumerateDirectories(dir))
+            foreach (var dirpath in EnumerateFolders(dir))
                 stack.Push(dirpath);
         }
     }
@@ -412,6 +469,7 @@ public class DatastoreService
         {
             if (IsCriticalException(ex))
                 throw;
+            Error("Unable to enumerate files: " + ToString(ex));
             var enumerable = Enumerable.Empty<string>();
             enumerator = enumerable.GetEnumerator();
         }
@@ -427,6 +485,7 @@ public class DatastoreService
             {
                 if (IsCriticalException(ex))
                     throw;
+                Error("Unable to continue to enumerate files: " + ToString(ex));
                 moveNextResult = false;
             }
             if (!moveNextResult)
@@ -452,6 +511,7 @@ public class DatastoreService
                 {
                     if (IsCriticalException(ex))
                         throw;
+                    Error("Unable to read zip archive: " + ToString(ex));
                     zipPathList = [];
                 }
                 foreach (var zippath in zipPathList)
@@ -469,7 +529,7 @@ public class DatastoreService
         return [.. za.Entries.Select(entry => $"{filepath}|{entry.FullName}")];
     }
 
-    static IEnumerable<string> EnumerateDirectories(string path)
+    static IEnumerable<string> EnumerateFolders(string path)
     {
         IEnumerator<string> enumerator;
         try
@@ -481,6 +541,7 @@ public class DatastoreService
         {
             if (IsCriticalException(ex))
                 throw;
+            Error("Unable to enumerate folder: " + ToString(ex));
             var enumerable = Enumerable.Empty<string>();
             enumerator = enumerable.GetEnumerator();
         }
@@ -496,6 +557,7 @@ public class DatastoreService
             {
                 if (IsCriticalException(ex))
                     throw;
+                Error("Unable to continue to enumerate folder: " + ToString(ex));
                 moveNextResult = false;
             }
             if (moveNextResult)
@@ -508,21 +570,7 @@ public class DatastoreService
         enumerator.Dispose();
     }
 
-    static bool DirectoryExists(string path)
-    {
-        try
-        {
-            return Directory.Exists(path);
-        }
-        catch (Exception ex)
-        {
-            if (IsCriticalException(ex))
-                throw;
-            return false;
-        }
-    }
-
-    static void DirectoryCreateDirectory(string path)
+    static bool CreateFolderIfNeeded(string path)
     {
         try
         {
@@ -532,22 +580,10 @@ public class DatastoreService
         {
             if (IsCriticalException(ex))
                 throw;
-            Error("Unable to create directory: " + ToString(ex));
+            Error("Unable to create folder: " + ToString(ex));
+            return false;
         }
-    }
-
-    static string EnvironmentGetFolderPath(Environment.SpecialFolder specialFolder)
-    {
-        try
-        {
-            return Environment.GetFolderPath(specialFolder);
-        }
-        catch (Exception ex)
-        {
-            if (IsCriticalException(ex))
-                throw;
-            return string.Empty;
-        }
+        return true;
     }
 
     static void Error(string message)
