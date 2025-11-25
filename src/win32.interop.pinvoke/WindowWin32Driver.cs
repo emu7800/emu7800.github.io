@@ -5,20 +5,14 @@ using System;
 
 namespace EMU7800.Win32.Interop;
 
-public static class Win32Window
+public sealed class WindowWin32Driver : IWindowDriver
 {
-    static IntPtr hWnd;
+    public static WindowWin32Driver Factory() => new();
+    WindowWin32Driver() {}
 
-    public static Action<ushort, bool> KeyboardKeyPressed { get; set; } = (vk, d) => { };
-    public static Action<int, int, int, int> MouseMoved { get; set; } = (x, y, dx, dy) => { };
-    public static Action<int, int, bool> MouseButtonChanged { get; set; } = (x, y, down) => { };
-    public static Action<int, int, int> MouseWheelChanged { get; set; } = (x, y, delta) => { };
-    public static Action LURCycle { get; set; } = () => { };
-    public static Action<bool> VisibilityChanged { get; set; } = iv => { };
-    public static Action<int, int> Resized { get; set; } = (w, h) => { };
-    public static Action DeviceChanged { get; set; } = () => { };
+    IntPtr hWnd;
 
-    public static void Run(bool startMaximized = true)
+    public void StartWindowAndProcessEvents(bool startMaximized)
     {
         hWnd = Win32NativeMethods.Win32_CreateWindow();
         if (hWnd == IntPtr.Zero)
@@ -31,8 +25,6 @@ public static class Win32Window
         TextLayout.DriverFactory      = TextLayoutD2DDriver.Factory;
         GraphicsDevice.DriverFactory  = () => GraphicsDeviceD2DDriver.Factory(hWnd);
         GameControllers.DriverFactory = () => GameControllersDInputXInputDriver.Factory(hWnd);
-
-        Resized += (w, h) => GraphicsDevice.Resize(new(w, h));
 
         GraphicsDevice.Initialize();
         GameControllers.Initialize();

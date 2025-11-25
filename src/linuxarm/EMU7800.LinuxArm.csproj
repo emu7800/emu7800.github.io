@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>EMU7800</AssemblyName>
+    <RuntimeIdentifier>linux-arm</RuntimeIdentifier>
+    <PublishAot>false</PublishAot>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>true</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <StackTraceSupport>false</StackTraceSupport>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
+    <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
+  </ItemGroup>
+  <!--
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(TargetDir)" />
+  </Target>
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(PublishDir)" />
+  </Target>
+  -->
+</Project>

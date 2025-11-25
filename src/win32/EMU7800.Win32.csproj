@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
-    <PublishAot>false</PublishAot>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>EMU7800</AssemblyName>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
+    <PublishAot>true</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
@@ -12,15 +14,13 @@
     <StackTraceSupport>false</StackTraceSupport>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\linuxarm.interop.pinvoke\EMU7800.LinuxArm.Interop.PInvoke.csproj" />
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
+    <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
-  <!--
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(TargetDir)" />
   </Target>
   <Target Name="PostPublish" AfterTargets="Publish">
     <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(PublishDir)" />
   </Target>
-  -->
 </Project>

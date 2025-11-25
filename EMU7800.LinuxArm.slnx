@@ -19,6 +19,6 @@
   <Project Path="src\assets\EMU7800.Assets.csproj" />
   <Project Path="src\core\EMU7800.Core.csproj" />
   <Project Path="src\shell\EMU7800.Shell.csproj" />
-  <Project Path="src\linuxarm.interop.pinvoke\EMU7800.LinuxArm.Interop.PInvoke.csproj" />
-  <Project Path="src\linuxarm\EMU7800.csproj" />
+  <Project Path="src\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
+  <Project Path="src\linuxarm\EMU7800.LinuxArm.csproj" />
 </Solution>

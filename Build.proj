@@ -2,7 +2,8 @@
   <Import Project="Directory.Build.Props" />
   <ItemGroup>
     <ProjectToBuild Include="EMU7800.Win32.slnx"/>
-	<ProjectToBuild Include="EMU7800.LinuxArm.slnx"/>
+    <ProjectToBuild Include="EMU7800.WinSDL3.slnx"/>
+    <ProjectToBuild Include="EMU7800.LinuxArm.slnx"/>
     <ProjectToBuild Include="EMU7800.LinuxArm64.slnx"/>
   </ItemGroup>
   <ItemGroup>
@@ -26,19 +27,27 @@
   </Target>
   <Target Name="CopyBin" DependsOnTargets="Publish;ZipRoms">
     <ItemGroup>
-      <Win32BinArtifacts      Include="$(ArtifactsPath)\publish\EMU7800\release_win-x64\**\*"
-                              Exclude="**\ref\**;**\*.runtimeconfig.dev.json;**\*.exp;**\*.ilk;**\*.lib;**\*.pdb;**\*.iobj;**\*.ipdb" />
-      <LinuxArmBinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800\release_linux-arm\**\*" /> 
-      <LinuxArm64BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800\release_linux-arm64\**\*" />
+      <Win32BinArtifacts      Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*" />
+      <WinSDL3BinArtifacts    Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*" />
+      <LinuxArmBinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*" />
+      <LinuxArm64BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*" />
       <RomArtifacts           Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin;$(ArtifactsPath)\EMU7800.linuxarmbin;$(ArtifactsPath)\EMU7800.linuxarm64bin" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin;$(ArtifactsPath)\EMU7800.winsdl3bin;$(ArtifactsPath)\EMU7800.linuxarmbin;$(ArtifactsPath)\EMU7800.linuxarm64bin" />
     <Copy SourceFiles="@(Win32BinArtifacts)"
           DestinationFiles="@(Win32BinArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
           DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(WinSDL3BinArtifacts)"
+          DestinationFiles="@(WinSDL3BinArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(LinuxArmBinArtifacts)"
@@ -97,6 +106,12 @@
                   Overwrite="true"
                   />
   </Target>
+  <Target Name="ZipWinSDL3Bin" DependsOnTargets="CopyBin">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.winsdl3bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
+  </Target>
   <Target Name="ZipLinuxArmBin" DependsOnTargets="CopyBin">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarmbin"
                   DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion).zip"
@@ -112,7 +127,7 @@
   <Target Name="BuildWin32Installer" DependsOnTargets="ZipWin32Bin">
     <Exec Command="pwsh.exe .\src\tools\Installer\Build.ps1" />
   </Target>
-  <Target Name="BuildAll" DependsOnTargets="BuildWin32Installer;ZipLinuxArmBin;ZipLinuxArm64Bin">
+  <Target Name="BuildAll" DependsOnTargets="BuildWin32Installer;ZipWinSDL3Bin;ZipLinuxArmBin;ZipLinuxArm64Bin">
     <RemoveDir Directories="$(ArtifactsPath)\ROMS;$(ArtifactsPath)\bin;$(ArtifactsPath)\obj;$(ArtifactsPath)\publish" />
   </Target>
 </Project>

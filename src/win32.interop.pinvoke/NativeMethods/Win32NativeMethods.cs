@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -226,12 +227,12 @@ internal static unsafe partial class Win32NativeMethods
             case WM_SIZE:
                 var w = (int)(lParam & 0xffff);
                 var h = (int)((lParam >> 16) & 0xffff);
-                Win32Window.Resized(w, h);
+                Window.OnResized(w, h);
                 return 0;
 
             case WM_PAINT:
                 ValidateRect(hWnd, IntPtr.Zero);
-                Win32Window.LURCycle();
+                Window.OnIterate();
                 return 0;
 
             case WM_GETMINMAXINFO:
@@ -295,31 +296,31 @@ internal static unsafe partial class Win32NativeMethods
                         (last_x, last_y) = (x, y);
                     }
 
-                    Win32Window.MouseMoved(x, y, dx, dy);
+                    Window.OnMouseMoved(x, y, dx, dy);
 
                     if ((raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
                     {
                         var delta = (short)raw->data.mouse.usButtonData;
-                        Win32Window.MouseWheelChanged(x, y, delta);
+                        Window.OnMouseWheelChanged(x, y, delta);
                     }
 
                     if ((raw->data.mouse.ulButtons & (RI_MOUSE_LEFT_BUTTON_DOWN | RI_MOUSE_LEFT_BUTTON_UP)) != 0)
                     {
                         var down = (raw->data.mouse.ulButtons & RI_MOUSE_LEFT_BUTTON_DOWN) != 0;
-                        Win32Window.MouseButtonChanged(x, y, down);
+                        Window.OnMouseButtonChanged(x, y, down);
                     }
                 }
                 else if (raw->header.dwType == RIM_TYPEKEYBOARD)
                 {
                     var down = raw->data.keyboard.Message == WM_KEYDOWN || raw->data.keyboard.Message == WM_SYSKEYDOWN;
-                    Win32Window.KeyboardKeyPressed(raw->data.keyboard.VKey, down);
+                    Window.OnKeyboardKeyPressed(raw->data.keyboard.VKey, down);
                 }
                 return 0;
 
             case WM_DEVICECHANGE:
                 if (wParam == DBT_DEVNODES_CHANGED)
                 {
-                    Win32Window.DeviceChanged();
+                    Window.OnDeviceChanged();
                 }
                 return 0;
         }
@@ -373,7 +374,7 @@ internal static unsafe partial class Win32NativeMethods
                 if (isVisible)
                 {
                     isVisible = false;
-                    Win32Window.VisibilityChanged(isVisible);
+                    Window.OnVisibilityChanged(isVisible);
                 }
             }
             else
@@ -381,7 +382,7 @@ internal static unsafe partial class Win32NativeMethods
                 if (!isVisible)
                 {
                     isVisible = true;
-                    Win32Window.VisibilityChanged(isVisible);
+                    Window.OnVisibilityChanged(isVisible);
                 }
             }
 
@@ -400,7 +401,7 @@ internal static unsafe partial class Win32NativeMethods
             }
             else
             {
-                Win32Window.LURCycle();
+                Window.OnIterate();
             }
         }
     }

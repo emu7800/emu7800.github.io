@@ -48,16 +48,16 @@ public sealed class GameController
     public bool IsDaptor
       => JoystickType is JoystickType.Daptor or JoystickType.Daptor2;
 
-    public Action<int, MachineInput, bool> ButtonChanged { get; set; } = ButtonChangedHandlerDefault;
-    public Action<int, int, int> PaddlePositionChanged { get; set; } = PaddlePositionChangedHandlerDefault;
-    public Action<int, int, bool> PaddleButtonChanged { get; set; } = PaddleButtonChangedHandlerDefault;
-    public Action<int, MachineInput> DrivingPositionChanged { get; set; } = DrivingPositionChangedHandlerDefault;
+    public Action<int, MachineInput, bool> ButtonChanged { get; set; } = Window.OnButtonChanged;
+    public Action<int, int, int> PaddlePositionChanged { get; set; } = Window.OnPaddlePositionChanged;
+    public Action<int, int, bool> PaddleButtonChanged { get; set; } = Window.OnPaddleButtonChanged;
+    public Action<int, MachineInput> DrivingPositionChanged { get; set; } = Window.OnDrivingPositionChanged;
 
     #region Constructors
 
     GameController() {}
     public GameController(int controllerNo)
-        => ControllerNo = controllerNo;
+      => ControllerNo = controllerNo;
 
     #endregion
 }

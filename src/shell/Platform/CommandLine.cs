@@ -31,6 +31,11 @@ public sealed class EmptyCommandLineDriver : ICommandLineDriver
 
 public static class CommandLine
 {
+    static CommandLine()
+    {
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+    }
+
     public static Func<ICommandLineDriver> DriverFactory { get; set; } = () => EmptyCommandLineDriver.Default;
 
     static ICommandLineDriver _driver = EmptyCommandLineDriver.Default;
@@ -261,4 +266,12 @@ public static class CommandLine
 
     static bool CiEq(string a, string b)
         => string.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0;
+
+    static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.ExceptionObject is Exception ex)
+        {
+            DatastoreService.DumpCrashReport(ex);
+        }
+    }
 }

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <RuntimeIdentifier>linux-arm</RuntimeIdentifier>
+    <AssemblyName>EMU7800</AssemblyName>
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
     <PublishAot>false</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
@@ -12,7 +13,7 @@
     <StackTraceSupport>false</StackTraceSupport>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\linuxarm.interop.pinvoke\EMU7800.LinuxArm.Interop.PInvoke.csproj" />
+    <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
   </ItemGroup>
   <!--

@@ -20,5 +20,5 @@
   <Project Path="src\core\EMU7800.Core.csproj" />
   <Project Path="src\shell\EMU7800.Shell.csproj" />
   <Project Path="src\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
-  <Project Path="src\linuxarm64\EMU7800.LinuxArm64.csproj" />
+  <Project Path="src\winsdl3\EMU7800.WinSDL3.csproj" />
 </Solution>

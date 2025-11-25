@@ -2,12 +2,12 @@
 using EMU7800.Shell;
 using System.Runtime.InteropServices;
 
-namespace EMU7800.Win32.Interop;
+namespace EMU7800.SDL3.Interop;
 
-public sealed partial class CommandLineWin32Driver : ICommandLineDriver
+public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
 {
-    public static CommandLineWin32Driver Factory() => new();
-    CommandLineWin32Driver() {}
+    public static CommandLineWinSDL3Driver Factory() => new();
+    CommandLineWinSDL3Driver() { }
 
     #region ICommandLineDriver Members
 
@@ -25,13 +25,13 @@ public sealed partial class CommandLineWin32Driver : ICommandLineDriver
 
     public void Start(bool startMaximized)
     {
-        Window.DriverFactory = WindowWin32Driver.Factory;
+        Window.DriverFactory = WindowSDL3Driver.Factory;
         Window.Start(startMaximized);
     }
 
     public void StartGameProgram(GameProgramInfoViewItem gpivi)
     {
-        Window.DriverFactory = WindowWin32Driver.Factory;
+        Window.DriverFactory = WindowSDL3Driver.Factory;
         Window.Start(true, gpivi);
     }
 
