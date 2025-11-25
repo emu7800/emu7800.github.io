@@ -100,7 +100,7 @@ public static class CommandLine
             else
             {
                 var gpiviList = GameProgramLibraryService.GetGameProgramInfoViewItems(romPath);
-                if (gpiviList.Any())
+                if (gpiviList.Count > 0)
                 {
                     _driver.StartGameProgram(gpiviList.First());
                 }
@@ -136,9 +136,9 @@ public static class CommandLine
 
             foreach (var path in romPaths)
             {
-                RomBytesService.DumpBin(path, (message) => Console.WriteLine(message));
+                RomBytesService.DumpBin(path, Console.WriteLine);
                 var gpiList = GameProgramLibraryService.GetGameProgramInfos(path);
-                Console.WriteLine(gpiList.Any()
+                Console.WriteLine(gpiList.Count > 0
                           ? """
 
                     Found matching entries in ROMProperties.csv database:
@@ -181,7 +181,7 @@ public static class CommandLine
 
             Console.WriteLine($"""
 
-               ** EMU7800 **
+               ** EMU7800 {VersionInfo.AssemblyVersion} **
                {VersionInfo.Author}
 
                Usage:
@@ -191,7 +191,7 @@ public static class CommandLine
                -r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
                -d <path>     : Dump Game Program information
                -c            : Run Game Program selection menu with new console window (Windows only)
-               (none)        : Run Game Program selection menu without console window
+               (none)        : Run Game Program selection menu
                -?            : This help
 
                MachineTypes:

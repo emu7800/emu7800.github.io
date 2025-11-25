@@ -11,7 +11,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyVersion>5.6.0.0</AssemblyVersion> <!-- search/replace '5.6.0' to update -->
+    <AssemblyVersion>5.7.0.0</AssemblyVersion> <!-- search/replace '5.7.0' to update -->
     <Author>© 2012-2025 Mike Murphy (mike@emu7800.net)</Author> <!-- search/replace '2012-2025' to update -->
     <Description>An Atari 2600/7800 .NET-based Emulator</Description>
   </PropertyGroup>
