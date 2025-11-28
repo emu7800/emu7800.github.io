@@ -1,10 +1,10 @@
 ﻿<Project DefaultTargets="BuildAll">
   <Import Project="Directory.Build.Props" />
   <ItemGroup>
-    <ProjectToBuild Include="EMU7800.Win32.slnx"/>
-    <ProjectToBuild Include="EMU7800.WinSDL3.slnx"/>
-    <ProjectToBuild Include="EMU7800.LinuxArm.slnx"/>
-    <ProjectToBuild Include="EMU7800.LinuxArm64.slnx"/>
+    <ProjectToBuild Include="src\win32\EMU7800.Win32.csproj"/>
+    <ProjectToBuild Include="src\winsdl3\EMU7800.WinSDL3.csproj"/>
+    <ProjectToBuild Include="src\linuxarm\EMU7800.LinuxArm.csproj"/>
+    <ProjectToBuild Include="src\linuxarm64\EMU7800.LinuxArm64.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
@@ -12,7 +12,7 @@
   <Target Name="Clean">
     <!--MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />-->
 	<Exec Command="dotnet clean %(ProjectToBuild.Identity)"/>
-    <RemoveDir Directories="$(ArtifactsPath);src\win32\bin;src\linuxarm\bin;src\linuxarm64\bin" />
+    <RemoveDir Directories="$(ArtifactsPath)" />
   </Target>
   <Target Name="Publish" DependsOnTargets="Clean">
     <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
