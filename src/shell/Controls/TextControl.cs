@@ -6,7 +6,7 @@ public sealed class TextControl : ControlBase
 {
     #region Fields
 
-    TextLayout _textLayout = TextLayout.Default;
+    TextLayout _textLayout = TextLayout.Empty;
     int _isMouseDownByPointerId = -1;
     RectF _bounds;
     int _startY, _maxStartY;
@@ -104,7 +104,7 @@ public sealed class TextControl : ControlBase
 
     public override void Update(TimerDevice td)
     {
-        if (_textLayout == TextLayout.Default)
+        if (_textLayout == TextLayout.Empty)
             return;
 
         if (_startY > 0)
@@ -120,9 +120,9 @@ public sealed class TextControl : ControlBase
 
     public override void Render()
     {
-        if (_textLayout == TextLayout.Default)
+        if (_textLayout == TextLayout.Empty)
         {
-            _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue);
+            _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue, WriteParaAlignment.Near, WriteTextAlignment.Leading);
             _maxStartY = (int)(Size.Height - _textLayout.Height);
             if (_maxStartY >= 0)
                 _maxStartY = 0;

@@ -7,8 +7,8 @@ namespace EMU7800.Shell;
 public sealed class NumberControl : ControlBase
 {
     readonly TextLayout[] _textlayoutDigits;
-    TextLayout _textlayoutRadix = TextLayout.Default;
-    TextLayout _textlayoutComma = TextLayout.Default;
+    TextLayout _textlayoutRadix = TextLayout.Empty;
+    TextLayout _textlayoutComma = TextLayout.Empty;
 
     float _maxDigitWidth;
 
@@ -22,7 +22,7 @@ public sealed class NumberControl : ControlBase
 
     public NumberControl()
     {
-        _textlayoutDigits = [.. Enumerable.Range(0, 10).Select(_ => TextLayout.Default)];
+        _textlayoutDigits = [.. Enumerable.Range(0, 10).Select(_ => TextLayout.Empty)];
         TextFontFamilyName = Styles.NormalFontFamily;
         TextFontSize = Styles.NormalFontSize;
         Color = SolidColorBrush.White;
@@ -74,8 +74,8 @@ public sealed class NumberControl : ControlBase
             if (_textlayoutDigits[i].Width > _maxDigitWidth)
                 _maxDigitWidth = _textlayoutDigits[i].Width;
         }
-        _textlayoutRadix = new TextLayout(TextFontFamilyName, TextFontSize, ".", 100, 100);
-        _textlayoutComma = new TextLayout(TextFontFamilyName, TextFontSize, ",", 100, 100);
+        _textlayoutRadix = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ".", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+        _textlayoutComma = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ",", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading);
     }
 
     protected override void DisposeResources()
@@ -95,7 +95,7 @@ public sealed class NumberControl : ControlBase
 
     void CreateDigitTextLayout(int i)
     {
-        _textlayoutDigits[i] = new TextLayout(TextFontFamilyName, TextFontSize, i.ToString(System.Globalization.CultureInfo.InvariantCulture), 100, 100);
+        _textlayoutDigits[i] = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, i.ToString(System.Globalization.CultureInfo.InvariantCulture), 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading);
     }
 
     #endregion

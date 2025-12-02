@@ -7,7 +7,7 @@ namespace EMU7800.SDL3.Interop;
 public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
 {
     public static CommandLineWinSDL3Driver Factory() => new();
-    CommandLineWinSDL3Driver() { }
+    CommandLineWinSDL3Driver() {}
 
     #region ICommandLineDriver Members
 

@@ -6,14 +6,20 @@ public interface IGraphicsDeviceDriver
 {
     int EC { get; }
     void BeginDraw();
-    void DrawEllipse(RectF drect, float strokeWidth, SolidColorBrush brush);
-    void DrawLine(PointF dp0, PointF dp1, float strokeWidth, SolidColorBrush brush);
-    void DrawRectangle(RectF drect, float strokeWidth, SolidColorBrush brush);
+    DynamicBitmap CreateDynamicBitmap(SizeU size);
+    StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data);
+    TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment);
+    void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode);
+    void Draw(StaticBitmap bitmap, RectF rect);
+    void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush);
+    void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush);
+    void DrawLine(PointF p0, PointF p1, float strokeWidth, SolidColorBrush brush);
+    void DrawRectangle(RectF rect, float strokeWidth, SolidColorBrush brush);
     int EndDraw();
-    void FillEllipse(RectF drect, SolidColorBrush brush);
-    void FillRectangle(RectF drect, SolidColorBrush brush);
+    void FillEllipse(RectF rect, SolidColorBrush brush);
+    void FillRectangle(RectF rect, SolidColorBrush brush);
     void PopAxisAlignedClip();
-    void PushAxisAlignedClip(RectF drect, AntiAliasMode antiAliasMode);
+    void PushAxisAlignedClip(RectF rect, AntiAliasMode antiAliasMode);
     void Resize(SizeU usize);
     void SetAntiAliasMode(AntiAliasMode antiAliasMode);
     void Shutdown();
@@ -28,14 +34,20 @@ public sealed class EmptyGraphicsDeviceDriver : IGraphicsDeviceDriver
 
     public int EC { get; }
     public void BeginDraw() {}
-    public void DrawEllipse(RectF drect, float strokeWidth, SolidColorBrush brush) {}
-    public void DrawLine(PointF dp0, PointF dp1, float strokeWidth, SolidColorBrush brush) {}
-    public void DrawRectangle(RectF drect, float strokeWidth, SolidColorBrush brush) {}
+    public DynamicBitmap CreateDynamicBitmap(SizeU size) => DynamicBitmap.Empty;
+    public StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data) => StaticBitmap.Empty;
+    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment) => TextLayout.Empty;
+    public void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode) {}
+    public void Draw(StaticBitmap bitmap, RectF rect) {}
+    public void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush) {}
+    public void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush) {}
+    public void DrawLine(PointF p0, PointF p1, float strokeWidth, SolidColorBrush brush) {}
+    public void DrawRectangle(RectF rect, float strokeWidth, SolidColorBrush brush) {}
     public int EndDraw() => -1;
-    public void FillEllipse(RectF drect, SolidColorBrush brush) {}
-    public void FillRectangle(RectF drect, SolidColorBrush brush) {}
+    public void FillEllipse(RectF rect, SolidColorBrush brush) {}
+    public void FillRectangle(RectF rect, SolidColorBrush brush) {}
     public void PopAxisAlignedClip() {}
-    public void PushAxisAlignedClip(RectF drect, AntiAliasMode antiAliasMode) {}
+    public void PushAxisAlignedClip(RectF rect, AntiAliasMode antiAliasMode) {}
     public void Resize(SizeU usize) {}
     public void SetAntiAliasMode(AntiAliasMode antiAliasMode) {}
     public void Shutdown() {}
@@ -57,41 +69,47 @@ public static class GraphicsDevice
     public static void BeginDraw()
       => _driver.BeginDraw();
 
+    public static DynamicBitmap CreateDynamicBitmap(SizeU size)
+      => _driver.CreateDynamicBitmap(size);
+
+    public static StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data)
+      => _driver.CreateStaticBitmap(data);
+
+    public static TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment)
+      => _driver.CreateTextLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment);
+
+    public static void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode)
+      => _driver.Draw(bitmap, rect, interpolationMode);
+
+    public static void Draw(StaticBitmap bitmap, RectF rect)
+      => _driver.Draw(bitmap, rect);
+
     public static void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush)
-      => textLayout.Draw(location, brush);
+      => _driver.Draw(textLayout, location, brush);
 
-    public static void Draw(TextFormat textFormat, string text, RectF drect, SolidColorBrush brush)
-      => textFormat.Draw(text, drect, brush);
+    public static void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush)
+      => _driver.DrawEllipse(rect, strokeWidth, brush);
 
-    public static void Draw(StaticBitmap bitmap, RectF drect)
-      => bitmap.Draw(drect);
+    public static void DrawLine(PointF p0, PointF p1, float strokeWidth, SolidColorBrush brush)
+      => _driver.DrawLine(p0, p1, strokeWidth, brush);
 
-    public static void Draw(DynamicBitmap bitmap, RectF drect, BitmapInterpolationMode interpolationMode)
-      => bitmap.Draw(drect, interpolationMode);
-
-    public static void DrawEllipse(RectF drect, float strokeWidth, SolidColorBrush brush)
-      => _driver.DrawEllipse(drect, strokeWidth, brush);
-
-    public static void DrawLine(PointF dp0, PointF dp1, float strokeWidth, SolidColorBrush brush)
-      => _driver.DrawLine(dp0, dp1, strokeWidth, brush);
-
-    public static void DrawRectangle(RectF drect, float strokeWidth, SolidColorBrush brush)
-      => _driver.DrawRectangle(drect, strokeWidth, brush);
+    public static void DrawRectangle(RectF rect, float strokeWidth, SolidColorBrush brush)
+      => _driver.DrawRectangle(rect, strokeWidth, brush);
 
     public static int EndDraw()
       => _driver.EndDraw();
 
-    public static void FillEllipse(RectF drect, SolidColorBrush brush)
-      => _driver.FillEllipse(drect, brush);
+    public static void FillEllipse(RectF rect, SolidColorBrush brush)
+      => _driver.FillEllipse(rect, brush);
 
-    public static void FillRectangle(RectF drect, SolidColorBrush brush)
-      => _driver.FillRectangle(drect, brush);
+    public static void FillRectangle(RectF rect, SolidColorBrush brush)
+      => _driver.FillRectangle(rect, brush);
 
     public static void PopAxisAlignedClip()
       => _driver.PopAxisAlignedClip();
 
-    public static void PushAxisAlignedClip(RectF drect, AntiAliasMode antiAliasMode)
-      => _driver.PushAxisAlignedClip(drect, antiAliasMode);
+    public static void PushAxisAlignedClip(RectF rect, AntiAliasMode antiAliasMode)
+      => _driver.PushAxisAlignedClip(rect, antiAliasMode);
 
     public static void Resize(SizeU usize)
       => _driver.Resize(usize);

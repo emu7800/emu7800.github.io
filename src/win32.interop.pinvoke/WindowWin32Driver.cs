@@ -19,10 +19,6 @@ public sealed class WindowWin32Driver : IWindowDriver
             return;
 
         AudioDevice.DriverFactory     = AudioDeviceWinmmDriver.Factory;
-        DynamicBitmap.DriverFactory   = DynamicBitmapD2DDriver.Factory;
-        StaticBitmap.DriverFactory    = StaticBitmapD2DDriver.Factory;
-        TextFormat.DriverFactory      = TextFormatD2DDriver.Factory;
-        TextLayout.DriverFactory      = TextLayoutD2DDriver.Factory;
         GraphicsDevice.DriverFactory  = () => GraphicsDeviceD2DDriver.Factory(hWnd);
         GameControllers.DriverFactory = () => GameControllersDInputXInputDriver.Factory(hWnd);
 

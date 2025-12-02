@@ -186,11 +186,11 @@ public static class CommandLine
 
             Console.WriteLine($"""
 
-               ** EMU7800 {VersionInfo.AssemblyVersion} **
+               ** {VersionInfo.EMU7800} {VersionInfo.AssemblyVersion} **
                {VersionInfo.Author}
 
                Usage:
-                   EMU7800.exe [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
+                   {VersionInfo.ExecutableName} [<option> <filename|path> [MachineType [CartType [LController [RController]]]]]
 
                Options:
                -r <filename> : Try launching Game Program using specified machine configuration or .a78 header info

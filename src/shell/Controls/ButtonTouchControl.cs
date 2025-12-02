@@ -11,8 +11,8 @@ public class ButtonTouchControl : ButtonBase
 
     readonly Asset _image;
     readonly SolidColorBrush _mouseOverColor;
-    StaticBitmap _circleBitmap = StaticBitmap.Default;
-    StaticBitmap _imageBitmap = StaticBitmap.Default;
+    StaticBitmap _circleBitmap = StaticBitmap.Empty;
+    StaticBitmap _imageBitmap = StaticBitmap.Empty;
 
     #endregion
 
@@ -76,7 +76,7 @@ public class ButtonTouchControl : ButtonBase
     static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(asset);
-        return new(bytes.Span);
+        return GraphicsDevice.CreateStaticBitmap(bytes.Span);
     }
 
     #endregion

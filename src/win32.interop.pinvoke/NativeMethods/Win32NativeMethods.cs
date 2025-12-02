@@ -188,10 +188,6 @@ internal static unsafe partial class Win32NativeMethods
         D2D_DPI = 96.0f
         ;
 
-    const string
-        EMU7800 = "EMU7800"
-        ;
-
     static readonly WndProc WndProcDelegate = WndProc;
     static int lpdSize, dpiForSystem, last_x, last_y;
     static IntPtr lpd;
@@ -337,8 +333,8 @@ internal static unsafe partial class Win32NativeMethods
             hInstance     = -1,
             lpfnWndProc   = Marshal.GetFunctionPointerForDelegate(WndProcDelegate),
             hCursor       = LoadCursor(IntPtr.Zero, IDC_ARROW),
-            hIcon         = ExtractAssociatedIcon(IntPtr.Zero, new StringBuilder("EMU7800.exe"), out _),
-            lpszClassName = EMU7800,
+            hIcon         = ExtractAssociatedIcon(IntPtr.Zero, new StringBuilder(VersionInfo.ExecutableName), out _),
+            lpszClassName = VersionInfo.EMU7800,
             lpszMenuName  = null
         };
 
@@ -356,7 +352,7 @@ internal static unsafe partial class Win32NativeMethods
         var posX = (desktopWidth  >> 1) - (windowWidth  >> 1);
         var posY = (desktopHeight >> 1) - (windowHeight >> 1);
 
-         return CreateWindowEx(0, EMU7800, EMU7800, WS_OVERLAPPEDWINDOW,
+         return CreateWindowEx(0, VersionInfo.EMU7800, VersionInfo.EMU7800, WS_OVERLAPPEDWINDOW,
             posX, posY, windowWidth, windowHeight, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
     }
 

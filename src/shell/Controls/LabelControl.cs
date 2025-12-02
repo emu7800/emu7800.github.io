@@ -6,7 +6,7 @@ public sealed class LabelControl : ControlBase
 {
     #region Fields
 
-    TextLayout _textLayout = TextLayout.Default;
+    TextLayout _textLayout = TextLayout.Empty;
 
     #endregion
 
@@ -84,7 +84,7 @@ public sealed class LabelControl : ControlBase
 
     public override void Render()
     {
-        if (_textLayout == TextLayout.Default)
+        if (_textLayout == TextLayout.Empty)
         {
             CreateResources2();
         }
@@ -109,9 +109,7 @@ public sealed class LabelControl : ControlBase
 
     void CreateResources2()
     {
-        _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
-        _textLayout.SetTextAlignment(TextAlignment);
-        _textLayout.SetParagraphAlignment(ParagraphAlignment);
+        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, ParagraphAlignment, TextAlignment);
     }
 
     #endregion

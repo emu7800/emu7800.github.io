@@ -14,10 +14,10 @@ public sealed class GameProgramSelectionControl : ControlBase
 
     #region Fields
 
-    StaticBitmap _playRest          = StaticBitmap.Default;
-    StaticBitmap _playRestInverted  = StaticBitmap.Default;
-    StaticBitmap _pauseRest         = StaticBitmap.Default;
-    StaticBitmap _pauseRestInverted = StaticBitmap.Default;
+    StaticBitmap _playRest          = StaticBitmap.Empty;
+    StaticBitmap _playRestInverted  = StaticBitmap.Empty;
+    StaticBitmap _pauseRest         = StaticBitmap.Empty;
+    StaticBitmap _pauseRestInverted = StaticBitmap.Empty;
 
     const float
         EPILSON               = 1e-6f,
@@ -299,10 +299,8 @@ public sealed class GameProgramSelectionControl : ControlBase
 
                 if (j == 0)
                 {
-                    if (gpivic.NameTextLayout == TextLayout.Default)
-                        gpivic.NameTextLayout = new TextLayout(Styles.LargeFontFamily, Styles.LargeFontSize,
-                            gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT
-                            );
+                    if (gpivic.NameTextLayout == TextLayout.Empty)
+                        gpivic.NameTextLayout = GraphicsDevice.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize, gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
                     GraphicsDevice.Draw(
                         gpivic.NameTextLayout,
                         new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height),
@@ -334,14 +332,10 @@ public sealed class GameProgramSelectionControl : ControlBase
 
                 var gpivi = gpivic.GameProgramInfoViewItemSet[j];
 
-                if (gpivi.TitleTextLayout == TextLayout.Default)
-                    gpivi.TitleTextLayout = new TextLayout(Styles.NormalFontFamily, Styles.NormalFontSize,
-                        gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT
-                        );
-                if (gpivi.SubTitleTextLayout == TextLayout.Default)
-                    gpivi.SubTitleTextLayout = new TextLayout(Styles.SmallFontFamily, Styles.SmallFontSize,
-                        gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT
-                        );
+                if (gpivi.TitleTextLayout == TextLayout.Empty)
+                    gpivi.TitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+                if (gpivi.SubTitleTextLayout == TextLayout.Empty)
+                    gpivi.SubTitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize, gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
 
                 var itemRectHeight = itemRect.Bottom - itemRect.Top;
                 var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
@@ -391,10 +385,10 @@ public sealed class GameProgramSelectionControl : ControlBase
         var pauseRestBytes         = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
         var pauseRestInvertedBytes = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
-        _playRest = new(playRestBytes.Span);
-        _playRestInverted = new(playRestInvertedBytes.Span);
-        _pauseRest = new(pauseRestBytes.Span);
-        _pauseRestInverted = new(pauseRestInvertedBytes.Span);
+        _playRest          = GraphicsDevice.CreateStaticBitmap(playRestBytes.Span);
+        _playRestInverted  = GraphicsDevice.CreateStaticBitmap(playRestInvertedBytes.Span);
+        _pauseRest         = GraphicsDevice.CreateStaticBitmap(pauseRestBytes.Span);
+        _pauseRestInverted = GraphicsDevice.CreateStaticBitmap(pauseRestInvertedBytes.Span);
     }
 
     protected override void DisposeResources()
@@ -407,20 +401,20 @@ public sealed class GameProgramSelectionControl : ControlBase
         foreach (var sci in _scrollColumnInfoSet)
         {
             var ntl = sci.GameProgramInfoViewItemCollection.NameTextLayout;
-            if (ntl != TextLayout.Default)
+            if (ntl != TextLayout.Empty)
                 ntl.Dispose();
-            sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayout.Default;
+            sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayout.Empty;
 
             foreach (var gpivi in sci.GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet)
             {
                 var ttl = gpivi.TitleTextLayout;
                 var sttl = gpivi.SubTitleTextLayout;
-                if (ttl != TextLayout.Default)
+                if (ttl != TextLayout.Empty)
                     ttl.Dispose();
-                if (sttl != TextLayout.Default)
+                if (sttl != TextLayout.Empty)
                     sttl.Dispose();
-                gpivi.TitleTextLayout = TextLayout.Default;
-                gpivi.SubTitleTextLayout = TextLayout.Default;
+                gpivi.TitleTextLayout = TextLayout.Empty;
+                gpivi.SubTitleTextLayout = TextLayout.Empty;
             }
         }
 

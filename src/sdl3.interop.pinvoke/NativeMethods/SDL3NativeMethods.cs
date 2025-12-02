@@ -723,6 +723,7 @@ internal static unsafe partial class SDL3
         public int y;
         public int w;
         public int h;
+        public static implicit operator SDL_Rect(Shell.RectF r) => new() { x = (int)r.Left, y = (int)r.Top, w = (int)r.Right - (int)r.Left, h = (int)r.Bottom - (int)r.Top };
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -732,6 +733,7 @@ internal static unsafe partial class SDL3
         public float y;
         public float w;
         public float h;
+        public static implicit operator SDL_FRect(Shell.RectF r) => new() { x = r.Left, y = r.Top, w = r.Right - r.Left, h = r.Bottom - r.Top };
     }
 
     [LibraryImport(SDL3DllName)]
@@ -887,6 +889,10 @@ internal static unsafe partial class SDL3
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* SDL_LoadBMP_IO(IntPtr src, SDLBool closeio);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDL_Surface* SDL_LoadPNG_IO(IntPtr src, SDLBool closeio);
 
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4290,26 +4296,18 @@ internal static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_init.h
 
-    public const string SDL_PROP_APP_METADATA_NAME_STRING = "SDL.app.metadata.name";
-    public const string SDL_PROP_APP_METADATA_VERSION_STRING = "SDL.app.metadata.version";
-    public const string SDL_PROP_APP_METADATA_IDENTIFIER_STRING = "SDL.app.metadata.identifier";
-    public const string SDL_PROP_APP_METADATA_CREATOR_STRING = "SDL.app.metadata.creator";
-    public const string SDL_PROP_APP_METADATA_COPYRIGHT_STRING = "SDL.app.metadata.copyright";
-    public const string SDL_PROP_APP_METADATA_URL_STRING = "SDL.app.metadata.url";
-    public const string SDL_PROP_APP_METADATA_TYPE_STRING = "SDL.app.metadata.type";
-
     [Flags]
     public enum SDL_InitFlags : uint
     {
-        SDL_INIT_TIMER = 0x1,
-        SDL_INIT_AUDIO = 0x10,
-        SDL_INIT_VIDEO = 0x20,
+        SDL_INIT_TIMER    = 0x1,
+        SDL_INIT_AUDIO    = 0x10,
+        SDL_INIT_VIDEO    = 0x20,
         SDL_INIT_JOYSTICK = 0x200,
-        SDL_INIT_HAPTIC = 0x1000,
-        SDL_INIT_GAMEPAD = 0x2000,
-        SDL_INIT_EVENTS = 0x4000,
-        SDL_INIT_SENSOR = 0x08000,
-        SDL_INIT_CAMERA = 0x10000,
+        SDL_INIT_HAPTIC   = 0x1000,
+        SDL_INIT_GAMEPAD  = 0x2000,
+        SDL_INIT_EVENTS   = 0x4000,
+        SDL_INIT_SENSOR   = 0x08000,
+        SDL_INIT_CAMERA   = 0x10000,
     }
 
     public enum SDL_AppResult
@@ -4596,17 +4594,17 @@ internal static unsafe partial class SDL3
 
     public enum SDL_TextureAccess
     {
-        SDL_TEXTUREACCESS_STATIC = 0,
+        SDL_TEXTUREACCESS_STATIC    = 0,
         SDL_TEXTUREACCESS_STREAMING = 1,
-        SDL_TEXTUREACCESS_TARGET = 2,
+        SDL_TEXTUREACCESS_TARGET    = 2,
     }
 
     public enum SDL_RendererLogicalPresentation
     {
-        SDL_LOGICAL_PRESENTATION_DISABLED = 0,
-        SDL_LOGICAL_PRESENTATION_STRETCH = 1,
-        SDL_LOGICAL_PRESENTATION_LETTERBOX = 2,
-        SDL_LOGICAL_PRESENTATION_OVERSCAN = 3,
+        SDL_LOGICAL_PRESENTATION_DISABLED      = 0,
+        SDL_LOGICAL_PRESENTATION_STRETCH       = 1,
+        SDL_LOGICAL_PRESENTATION_LETTERBOX     = 2,
+        SDL_LOGICAL_PRESENTATION_OVERSCAN      = 3,
         SDL_LOGICAL_PRESENTATION_INTEGER_SCALE = 4,
     }
 
@@ -4988,6 +4986,54 @@ internal static unsafe partial class SDL3
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetRevision();
 
+    // /usr/local/include/SDL3/SDL_timer.h
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial ulong SDL_GetTicks();
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial ulong SDL_GetTicksNS();
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial ulong SDL_GetPerformanceCounter();
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial ulong SDL_GetPerformanceFrequency();
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void SDL_Delay(uint ms);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void SDL_DelayNS(ulong ns);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void SDL_DelayPrecise(ulong ns);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate uint SDL_TimerCallback(IntPtr userdata, uint timerID, uint interval);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial uint SDL_AddTimer(uint interval, SDL_TimerCallback callback, IntPtr userdata);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate ulong SDL_NSTimerCallback(IntPtr userdata, uint timerID, ulong interval);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial uint SDL_AddTimerNS(ulong interval, SDL_NSTimerCallback callback, IntPtr userdata);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDLBool SDL_RemoveTimer(uint id);
+
     // /usr/local/include/SDL3/SDL_main.h
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -5008,4 +5054,10 @@ internal static unsafe partial class SDL3
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_GDKSuspendComplete();
+
+    // /usr/local/include/SDL3/SDL_iostream.h
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial IntPtr SDL_IOFromConstMem(ReadOnlySpan<byte> mem, nint size);
 }

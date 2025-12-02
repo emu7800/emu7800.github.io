@@ -228,7 +228,7 @@ internal unsafe partial class Direct2DNativeMethods
     #region StaticBitmap Methods
 
     [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
-    internal static partial int Direct2D_CreateStaticBitmap(byte* data, int len, ref IntPtr ppBitmap);
+    internal static partial int Direct2D_CreateStaticBitmap(ReadOnlySpan<byte> data, int len, ref IntPtr ppBitmap);
 
     [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
     internal static partial void Direct2D_DrawStaticBitmap(IntPtr pBitmap, D2D_RECT_F drect);
@@ -244,7 +244,7 @@ internal unsafe partial class Direct2DNativeMethods
     internal static partial int Direct2D_CreateDynamicBitmap(D2D_SIZE_U bsize, ref IntPtr ppBitmap);
 
     [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
-    internal static partial void Direct2D_LoadDynamicBitmapFromMemory(IntPtr pBitmap, byte* data, int expectedPitch);
+    internal static partial void Direct2D_LoadDynamicBitmapFromMemory(IntPtr pBitmap, ReadOnlySpan<byte> data, int expectedPitch);
 
     [LibraryImport("EMU7800.Win32.Interop.dll"), SuppressUnmanagedCodeSecurity]
     internal static partial void Direct2D_DrawDynamicBitmap(IntPtr pBitmap, D2D_RECT_F drect, D2DBitmapInterpolationMode interpolationMode);

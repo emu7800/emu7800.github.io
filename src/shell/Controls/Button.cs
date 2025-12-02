@@ -4,7 +4,7 @@ namespace EMU7800.Shell;
 
 public sealed class Button : ButtonBase
 {
-    TextLayout _textLayout = TextLayout.Default;
+    TextLayout _textLayout = TextLayout.Empty;
 
     public string Text { get; set; } = string.Empty;
     public string TextFontFamilyName { get; set; } = string.Empty;
@@ -40,9 +40,7 @@ public sealed class Button : ButtonBase
     protected override void CreateResources()
     {
         base.CreateResources();
-        _textLayout = new TextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height);
-        _textLayout.SetTextAlignment(WriteTextAlignment.Center);
-        _textLayout.SetParagraphAlignment(WriteParaAlignment.Center);
+        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center);
     }
 
     protected override void DisposeResources()

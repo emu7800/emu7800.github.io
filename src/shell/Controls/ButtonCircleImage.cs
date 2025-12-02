@@ -11,10 +11,10 @@ public class ButtonCircleImage : ButtonBase
 
     readonly Asset _image, _imageInverted;
     readonly SolidColorBrush _mouseOverColor;
-    StaticBitmap _circleBitmap = StaticBitmap.Default;
-    StaticBitmap _circleInvertedBitmap = StaticBitmap.Default;
-    StaticBitmap _imageBitmap = StaticBitmap.Default;
-    StaticBitmap _imageInvertedBitmap = StaticBitmap.Default;
+    StaticBitmap _circleBitmap = StaticBitmap.Empty;
+    StaticBitmap _circleInvertedBitmap = StaticBitmap.Empty;
+    StaticBitmap _imageBitmap = StaticBitmap.Empty;
+    StaticBitmap _imageInvertedBitmap = StaticBitmap.Empty;
 
     #endregion
 
@@ -76,7 +76,7 @@ public class ButtonCircleImage : ButtonBase
     static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(asset);
-        return new(bytes.Span);
+        return GraphicsDevice.CreateStaticBitmap(bytes.Span);
     }
 
     #endregion

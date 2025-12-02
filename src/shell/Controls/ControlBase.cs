@@ -134,26 +134,26 @@ public abstract class ControlBase : IDisposable
 
     protected static void SafeDispose(ref StaticBitmap bitmap)
     {
-        if (bitmap == StaticBitmap.Default)
+        if (bitmap == StaticBitmap.Empty)
             return;
         bitmap.Dispose();
-        bitmap = StaticBitmap.Default;
+        bitmap = StaticBitmap.Empty;
     }
 
     protected static void SafeDispose(ref DynamicBitmap bitmap)
     {
-        if (bitmap == DynamicBitmap.Default)
+        if (bitmap == DynamicBitmap.Empty)
             return;
         bitmap.Dispose();
-        bitmap = DynamicBitmap.Default;
+        bitmap = DynamicBitmap.Empty;
     }
 
     protected static void SafeDispose(ref TextLayout textLayout)
     {
-        if (textLayout == TextLayout.Default)
+        if (textLayout == TextLayout.Empty)
             return;
         textLayout.Dispose();
-        textLayout = TextLayout.Default;
+        textLayout = TextLayout.Empty;
     }
 
     protected static bool IsInBounds(int x, int y, RectF bounds)

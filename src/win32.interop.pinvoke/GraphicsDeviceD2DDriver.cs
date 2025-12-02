@@ -2,6 +2,7 @@
 
 using EMU7800.Shell;
 using System;
+using System.Collections.Generic;
 
 namespace EMU7800.Win32.Interop;
 
@@ -10,11 +11,41 @@ public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
     public static GraphicsDeviceD2DDriver Factory(IntPtr hWnd) => new(hWnd);
     GraphicsDeviceD2DDriver() {}
 
+    readonly static List<IDisposable> Disposables = [];
+
     #region IGraphicsDeviceDriver Members
 
     public int EC { get; private set; }
     public void BeginDraw()
       => Direct2DNativeMethods.Direct2D_BeginDraw();
+
+    public DynamicBitmap CreateDynamicBitmap(SizeU size)
+    {
+        var bitmap = new DynamicD2DBitmap(size);
+        Disposables.Add(bitmap);
+        return bitmap;
+    }
+
+    public StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data)
+    {
+        var bitmap = new StaticD2DBitmap(data);
+        Disposables.Add(bitmap);
+        return bitmap;
+    }
+
+    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment)
+    {
+        var textLayout = new TextD2DLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment);
+        Disposables.Add(textLayout);
+        return textLayout;
+    }
+
+    public void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode)
+      => bitmap.Draw(rect, interpolationMode);
+    public void Draw(StaticBitmap bitmap, RectF rect)
+      => bitmap.Draw(rect);
+    public void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush)
+      => textLayout.Draw(location, brush);
     public void DrawEllipse(RectF drect, float strokeWidth, SolidColorBrush brush)
       => Direct2DNativeMethods.Direct2D_DrawEllipse(drect, strokeWidth, brush);
     public void DrawLine(PointF dp0, PointF dp1, float strokeWidth, SolidColorBrush brush)
@@ -35,8 +66,17 @@ public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
       => Direct2DNativeMethods.Direct2D_Resize(usize);
     public void SetAntiAliasMode(AntiAliasMode antiAliasMode)
       => Direct2DNativeMethods.Direct2D_SetAntiAliasMode(antiAliasMode);
+
     public void Shutdown()
-      => Direct2DNativeMethods.Direct2D_Shutdown();
+    {
+        foreach (var disposable in Disposables)
+        {
+            disposable.Dispose();
+        }
+        Disposables.Clear();
+
+        Direct2DNativeMethods.Direct2D_Shutdown();
+    }
 
     #endregion
 

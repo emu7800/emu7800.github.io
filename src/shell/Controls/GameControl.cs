@@ -22,7 +22,7 @@ public sealed class GameControl : ControlBase
     static readonly SizeU _dynamicBitmapDataSize = new(320, 230);
     IFrameRenderer _frameRenderer = new FrameRendererDefault();
     BitmapInterpolationMode _dynamicBitmapInterpolationMode = BitmapInterpolationMode.NearestNeighbor;
-    DynamicBitmap _dynamicBitmap = DynamicBitmap.Default;
+    DynamicBitmap _dynamicBitmap = DynamicBitmap.Empty;
     RectF _dynamicBitmapRect;
     bool _dynamicBitmapDataUpdated;
 
@@ -257,9 +257,9 @@ public sealed class GameControl : ControlBase
     {
         lock (_dynamicBitmapLocker)
         {
-            if (_dynamicBitmap == DynamicBitmap.Default)
+            if (_dynamicBitmap == DynamicBitmap.Empty)
             {
-                _dynamicBitmap = new DynamicBitmap(_dynamicBitmapDataSize);
+                _dynamicBitmap = GraphicsDevice.CreateDynamicBitmap(_dynamicBitmapDataSize);
                 _dynamicBitmap.Load(_dynamicBitmapData.Span);
             }
             else if (_dynamicBitmapDataUpdated)

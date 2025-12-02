@@ -5,9 +5,12 @@ namespace EMU7800.SDL3.Interop;
 
 public sealed class AudioDeviceSDL3Driver : IAudioDeviceDriver
 {
-    public int EC { get; }
-
     public static AudioDeviceSDL3Driver Factory() => new();
+    AudioDeviceSDL3Driver() {}
+
+    #region IAudioDeviceDriver Members
+
+    public int EC { get; }
 
     public void Close()
     {
@@ -15,22 +18,16 @@ public sealed class AudioDeviceSDL3Driver : IAudioDeviceDriver
 
     public int GetBuffersQueued()
     {
-        return -1;
+        return 0;
     }
 
     public void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
     {
-        var count = SDL3.SDL_GetNumAudioDrivers();
-        for (var i = 0; i < count; i++)
-        {
-            var name = SDL3.SDL_GetAudioDriver(i);
-            Console.WriteLine("SDL Audio Driver: " + name);
-        }
     }
 
     public void SubmitBuffer(ReadOnlySpan<byte> buffer)
     {
     }
 
-    AudioDeviceSDL3Driver() { }
+    #endregion
 }

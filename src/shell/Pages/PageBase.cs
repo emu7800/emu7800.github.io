@@ -9,13 +9,6 @@ public abstract class PageBase : IDisposable
 {
     public static readonly PageBase Default = new PageDefault();
 
-    #region Fields
-
-    static int _nextIdToProvision;
-    readonly int _id = _nextIdToProvision++;
-
-    #endregion
-
     protected readonly ControlCollection Controls = new();
 
     public virtual void OnNavigatingHere()
