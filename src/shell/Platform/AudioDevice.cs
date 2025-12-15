@@ -2,48 +2,21 @@
 
 namespace EMU7800.Shell;
 
-public interface IAudioDeviceDriver
+public sealed class AudioDevice
 {
-    public int EC { get; }
-    void Close();
-    int GetBuffersQueued();
-    void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength);
-    void SubmitBuffer(ReadOnlySpan<byte> buffer);
-}
+    readonly IAudioDeviceDriver _driver;
 
-public sealed class EmptyAudioDeviceDriver : IAudioDeviceDriver
-{
-    public static readonly EmptyAudioDeviceDriver Default = new();
-    EmptyAudioDeviceDriver() {}
+    public int Frequency { get; private set; }
+    public int BufferPayloadSizeInBytes { get; private set; }
+    public int QueueLength { get; private set; }
+    public bool IsOpened { get; private set; }
+    public bool IsClosed => !IsOpened;
+    public int EC => _driver.EC;
 
-    #region IAudioDeviceDriver Members
-
-    public int EC { get; }
-    public void Close() {}
-    public int GetBuffersQueued() => 0;
-    public void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength) {}
-    public void SubmitBuffer(ReadOnlySpan<byte> buffer) {}
-
-    #endregion
-}
-
-public static class AudioDevice
-{
-    public static Func<IAudioDeviceDriver> DriverFactory { get; set; } = () => EmptyAudioDeviceDriver.Default;
-
-    static IAudioDeviceDriver _driver = EmptyAudioDeviceDriver.Default;
-
-    public static int Frequency { get; private set; }
-    public static int BufferPayloadSizeInBytes { get; private set; }
-    public static int QueueLength { get; private set; }
-    public static bool IsOpened { get; private set; }
-    public static bool IsClosed => !IsOpened;
-    public static int EC => _driver.EC;
-
-    public static int CountBuffersQueued()
+    public int CountBuffersQueued()
       => IsOpened ? _driver.GetBuffersQueued() : -1;
 
-    public static void SubmitBuffer(ReadOnlySpan<byte> buffer)
+    public void SubmitBuffer(ReadOnlySpan<byte> buffer)
     {
         if (buffer.Length < BufferPayloadSizeInBytes)
             throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
@@ -60,7 +33,7 @@ public static class AudioDevice
         }
     }
 
-    public static void Close()
+    public void Close()
     {
         if (IsOpened)
         {
@@ -69,7 +42,7 @@ public static class AudioDevice
         }
     }
 
-    public static void Configure(int frequency, int bufferSizeInBytes, int queueLength)
+    public void Configure(int frequency, int bufferSizeInBytes, int queueLength)
     {
         if (frequency < 0)
         {
@@ -98,7 +71,14 @@ public static class AudioDevice
         Frequency = frequency;
         BufferPayloadSizeInBytes = bufferSizeInBytes;
         QueueLength = queueLength;
-
-        _driver = DriverFactory();
     }
+
+    #region Constructors
+
+    #pragma warning disable IDE0290
+
+    public AudioDevice(IAudioDeviceDriver driver)
+      => _driver = driver;
+
+    #endregion
 }

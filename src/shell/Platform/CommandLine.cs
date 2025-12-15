@@ -1,6 +1,5 @@
 ﻿using EMU7800.Core;
 using EMU7800.Services;
-using EMU7800.Services.Dto;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,13 +7,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace EMU7800.Shell;
-
-public interface ICommandLineDriver
-{
-    void AttachConsole(bool allocNewConsole = false);
-    void Start(bool startMaximized);
-    void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized);
-}
 
 public static class CommandLine
 {

@@ -280,7 +280,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         }
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
 #if PROFILE
         var rect = new RectF { Left = _lastWheelX - 5, Right = _lastWheelX + 5, Bottom = _lastWheelY + 5, Top = _lastWheelY - 5 };
@@ -300,8 +300,8 @@ public sealed class GameProgramSelectionControl : ControlBase
                 if (j == 0)
                 {
                     if (gpivic.NameTextLayout == TextLayout.Empty)
-                        gpivic.NameTextLayout = GraphicsDevice.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize, gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
-                    GraphicsDevice.Draw(
+                        gpivic.NameTextLayout = graphicsDevice.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize, gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
+                    graphicsDevice.Draw(
                         gpivic.NameTextLayout,
                         new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height));
                 }
@@ -312,7 +312,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                 if (itemRect.Bottom < Location.Y)
                     continue;
 
-                GraphicsDevice.PushAxisAlignedClip(_clipRect, AntiAliasMode.Aliased);
+                graphicsDevice.PushAxisAlignedClip(_clipRect, AntiAliasMode.Aliased);
 
                 var iconRect = ToIconRect(i, j);
                 TranslateRect(ref iconRect, i);
@@ -332,9 +332,9 @@ public sealed class GameProgramSelectionControl : ControlBase
                 var gpivi = gpivic.GameProgramInfoViewItemSet[j];
 
                 if (gpivi.TitleTextLayout == TextLayout.Empty)
-                    gpivi.TitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
+                    gpivi.TitleTextLayout = graphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
                 if (gpivi.SubTitleTextLayout == TextLayout.Empty)
-                    gpivi.SubTitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize, gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.Gray);
+                    gpivi.SubTitleTextLayout = graphicsDevice.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize, gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.Gray);
 
                 var itemRectHeight = itemRect.Bottom - itemRect.Top;
                 var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
@@ -347,47 +347,47 @@ public sealed class GameProgramSelectionControl : ControlBase
                     if (_itemDown)
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRestInverted : _playRestInverted;
-                        GraphicsDevice.FillRectangle(iconRect, SolidColorBrush.White);
-                        GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
+                        graphicsDevice.FillRectangle(iconRect, SolidColorBrush.White);
+                        graphicsDevice.Draw(bitmap, iconRect);
+                        graphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                        graphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
                     }
                     else
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
-                        GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
-                        GraphicsDevice.DrawRectangle(iconRect, 5.0f, SolidColorBrush.White);
+                        graphicsDevice.Draw(bitmap, iconRect);
+                        graphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                        graphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
+                        graphicsDevice.DrawRectangle(iconRect, 5.0f, SolidColorBrush.White);
                     }
                 }
                 else
                 {
                     var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
-                    GraphicsDevice.Draw(bitmap, iconRect);
-                    GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
-                    GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
-                    GraphicsDevice.DrawRectangle(iconRect, 1.0f, SolidColorBrush.White);
+                    graphicsDevice.Draw(bitmap, iconRect);
+                    graphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                    graphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
+                    graphicsDevice.DrawRectangle(iconRect, 1.0f, SolidColorBrush.White);
                 }
 
-                GraphicsDevice.PopAxisAlignedClip();
+                graphicsDevice.PopAxisAlignedClip();
             }
         }
     }
 
-    protected override async void CreateResources()
+    protected override async void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        base.CreateResources();
+        base.CreateResources(graphicsDevice);
 
         var playRestBytes          = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest);
         var playRestInvertedBytes  = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_play_rest_inverted);
         var pauseRestBytes         = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest);
         var pauseRestInvertedBytes = await AssetService.GetAssetBytesAsync(Asset.appbar_transport_pause_rest_inverted);
 
-        _playRest          = GraphicsDevice.CreateStaticBitmap(playRestBytes.Span);
-        _playRestInverted  = GraphicsDevice.CreateStaticBitmap(playRestInvertedBytes.Span);
-        _pauseRest         = GraphicsDevice.CreateStaticBitmap(pauseRestBytes.Span);
-        _pauseRestInverted = GraphicsDevice.CreateStaticBitmap(pauseRestInvertedBytes.Span);
+        _playRest          = graphicsDevice.CreateStaticBitmap(playRestBytes.Span);
+        _playRestInverted  = graphicsDevice.CreateStaticBitmap(playRestInvertedBytes.Span);
+        _pauseRest         = graphicsDevice.CreateStaticBitmap(pauseRestBytes.Span);
+        _pauseRestInverted = graphicsDevice.CreateStaticBitmap(pauseRestInvertedBytes.Span);
     }
 
     protected override void DisposeResources()

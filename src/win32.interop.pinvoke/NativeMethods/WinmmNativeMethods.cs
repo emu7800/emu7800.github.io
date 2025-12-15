@@ -14,11 +14,12 @@ namespace EMU7800.Win32.Interop;
 
 internal static unsafe partial class WinmmNativeMethods
 {
-    static IntPtr Hwo;
-    static IntPtr Storage = IntPtr.Zero;
-    static int StorageSize;
-    static int SoundFrameSize;
-    static int QueueLen;
+    const int ChannelLimit = 10;
+    static readonly IntPtr[] Index       = new nint[ChannelLimit];
+    static readonly IntPtr[] Storage     = new nint[ChannelLimit];
+    static readonly int[] StorageSize    = new int[ChannelLimit];
+    static readonly int[] SoundFrameSize = new int[ChannelLimit];
+    static readonly int[] QueueLen       = new int[ChannelLimit];
 
     const uint WHDR_DONE = 0x00000001;  // WAVEHDR done flag
 
@@ -47,12 +48,8 @@ internal static unsafe partial class WinmmNativeMethods
         internal uint* reserved;        // reserved for driver
     }
 
-    internal static int Open(int freq, int soundFrameSize, int queueLen)
+    internal static IntPtr Open(int freq, int soundFrameSize, int queueLen, out int mmResult)
     {
-        QueueLen = queueLen & 0x3f;
-        if (QueueLen < 2)
-            QueueLen = 2;
-
         WAVEFORMATEX wfx;
         wfx.wFormatTag = 1; // WAVE_FORMAT_PCM
         wfx.nChannels = 1;
@@ -62,79 +59,95 @@ internal static unsafe partial class WinmmNativeMethods
         wfx.nBlockAlign = 1;
         wfx.cbSize = 0;
 
-        Hwo = IntPtr.Zero;
-        int mmResult;
-        fixed (IntPtr* phwo = &Hwo)
+        var hwo = IntPtr.Zero;
+
+        const uint WAVE_MAPPER = unchecked((uint)-1);
+        mmResult = waveOutOpen(&hwo, WAVE_MAPPER, &wfx, IntPtr.Zero, IntPtr.Zero, 0);
+
+        if (mmResult != 0)
+            return IntPtr.Zero;
+
+        int i;
+        for (i = 0; i < Index.Length && Index[i] != IntPtr.Zero; i++);
+
+        if (i < Index.Length)
         {
-            const uint WAVE_MAPPER = unchecked((uint) -1);
-            mmResult = waveOutOpen(phwo, WAVE_MAPPER, &wfx, IntPtr.Zero, IntPtr.Zero, 0);
+            queueLen &= 0x3f;
+            if (queueLen < 2)
+                queueLen = 2;
+
+            Index[i] = hwo;
+            QueueLen[i] = queueLen;
+            SoundFrameSize[i] = soundFrameSize;
+            StorageSize[i] = queueLen * (sizeof(WAVEHDR) + soundFrameSize);
+            Storage[i] = Marshal.AllocHGlobal(StorageSize[i]);
+
+            var ptr = (byte*)Storage[i];
+            for (var j = 0; j < queueLen; j++)
+            {
+                var waveHdr = (WAVEHDR*)ptr;
+                waveHdr->dwFlags = WHDR_DONE;
+                ptr += sizeof(WAVEHDR);
+                ptr += SoundFrameSize[i];
+            }
         }
 
-        if (!mmResult.Equals(0))
-            return mmResult;
-
-        SoundFrameSize = soundFrameSize;
-        StorageSize = QueueLen * (sizeof(WAVEHDR) + SoundFrameSize);
-        Storage = Marshal.AllocHGlobal(StorageSize);
-        var ptr = (byte*)Storage;
-        for (var i = 0; i < QueueLen; i++)
-        {
-            var waveHdr = (WAVEHDR*)ptr;
-            waveHdr->dwFlags = WHDR_DONE;
-            ptr += sizeof(WAVEHDR);
-            ptr += SoundFrameSize;
-        }
-
-        return 0;
+        return hwo;
     }
 
-    internal static int SetVolume(int left, int right)
+    internal static int SetVolume(IntPtr hwo, int left, int right)
     {
         var uLeft = (uint)left;
         var uRight = (uint)right;
         var nVolume = (uLeft & 0xffff) | ((uRight & 0xffff) << 16);
-        return waveOutSetVolume(Hwo, nVolume);
+        return waveOutSetVolume(hwo, nVolume);
     }
 
-    internal static int SetVolume(uint nVolume)
+    internal static int SetVolume(IntPtr hwo, uint nVolume)
     {
-        return waveOutSetVolume(Hwo, nVolume);
+        return waveOutSetVolume(hwo, nVolume);
     }
 
-    internal static int GetVolume()
+    internal static int GetVolume(IntPtr hwo)
     {
         uint nVolume;
-        _ = waveOutGetVolume(Hwo, &nVolume);
+        _ = waveOutGetVolume(hwo, &nVolume);
         return (int)nVolume;
     }
 
-    internal static int Enqueue(ReadOnlySpan<byte> buffer)
+    internal static int Enqueue(IntPtr hwo, ReadOnlySpan<byte> buffer)
     {
-        if (buffer.Length < SoundFrameSize)
-            throw new ApplicationException("Bad enqueue request: buffer length is not at least " + SoundFrameSize);
+        int i;
+        for (i = 0; i < Index.Length && Index[i] != hwo; i++);
+
+        if (i >=  Index.Length)
+            return -1;
+
+        if (buffer.Length < SoundFrameSize[i])
+            throw new ApplicationException("Bad enqueue request: buffer length is not at least " + SoundFrameSize[i]);
 
         var queued = false;
         var usedBuffers = 0;
 
-        var ptr = (byte*)Storage;
-        for (var i = 0; i < QueueLen; i++, ptr += sizeof(WAVEHDR) + SoundFrameSize)
+        var ptr = (byte*)Storage[i];
+        for (var j = 0; j < QueueLen[i]; j++, ptr += sizeof(WAVEHDR) + SoundFrameSize[i])
         {
             var waveHdr = (WAVEHDR*)ptr;
             if ((waveHdr->dwFlags & WHDR_DONE) == WHDR_DONE)
             {
                 if (queued)
                     continue;
-                _ = waveOutUnprepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
-                waveHdr->dwBufferLength = (uint)SoundFrameSize;
+                _ = waveOutUnprepareHeader(hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                waveHdr->dwBufferLength = (uint)SoundFrameSize[i];
                 waveHdr->dwFlags = 0;
                 waveHdr->lpData = ptr + sizeof(WAVEHDR);
-                for (var j = 0; j < buffer.Length; j++)
+                for (var k = 0; k < buffer.Length; k++)
                 {
                     // convert to WAV format
-                    waveHdr->lpData[j] = (byte)(buffer[j] | 0x80);
+                    waveHdr->lpData[k] = (byte)(buffer[k] | 0x80);
                 }
-                _ = waveOutPrepareHeader(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
-                _ = waveOutWrite(Hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                _ = waveOutPrepareHeader(hwo, waveHdr, (uint)sizeof(WAVEHDR));
+                _ = waveOutWrite(hwo, waveHdr, (uint)sizeof(WAVEHDR));
                 queued = true;
                 continue;
             }
@@ -144,15 +157,21 @@ internal static unsafe partial class WinmmNativeMethods
         return queued ? usedBuffers : -1;
     }
 
-    internal static int GetBuffersQueued()
+    internal static int GetBuffersQueued(IntPtr hwo)
     {
-        if (Hwo == IntPtr.Zero)
+        if (hwo == IntPtr.Zero)
+            return -1;
+
+        int i;
+        for (i = 0; i < Index.Length && Index[i] != hwo; i++);
+
+        if (i >= Index.Length)
             return -1;
 
         var queued = 0;
 
-        var ptr = (byte*)Storage;
-        for (var i = 0; i < QueueLen; i++, ptr += sizeof(WAVEHDR) + SoundFrameSize)
+        var ptr = (byte*)Storage[i];
+        for (var j = 0; j < QueueLen[i]; j++, ptr += sizeof(WAVEHDR) + SoundFrameSize[i])
         {
             var waveHdr = (WAVEHDR*)ptr;
             if ((waveHdr->dwFlags & WHDR_DONE) != WHDR_DONE)
@@ -164,15 +183,22 @@ internal static unsafe partial class WinmmNativeMethods
         return queued;
     }
 
-    internal static void Close()
+    internal static void Close(IntPtr hwo)
     {
         if (Storage.Equals(IntPtr.Zero))
             return;
 
-        _ = waveOutReset(Hwo);
-        _ = waveOutClose(Hwo);
-        Marshal.FreeHGlobal(Storage);
-        Storage = IntPtr.Zero;
+        int i;
+        for (i = 0; i < Index.Length && Index[i] != hwo; i++);
+
+        if (i >= Index.Length)
+            return;
+
+        _ = waveOutReset(hwo);
+        _ = waveOutClose(hwo);
+
+        Marshal.FreeHGlobal(Storage[i]);
+        Index[i] = Storage[i] = IntPtr.Zero;
     }
 
     [LibraryImport("winmm.dll"), SuppressUnmanagedCodeSecurity]

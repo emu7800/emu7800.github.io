@@ -5,25 +5,38 @@ using System;
 
 namespace EMU7800.Win32.Interop;
 
-public static class WindowWin32Driver
+public sealed class WindowWin32Driver
 {
-    static IntPtr hWnd;
+    public Window Window { get; private set; }
+    public GraphicsDeviceD2DDriver GraphicsDevice { get; private set; }
+    public GameControllersDInputXInputDriver GameControllers { get; private set; }
+    public AudioDeviceWinmmDriver AudioDevice { get; private set; }
 
-    public static void StartWindowAndProcessEvents(bool startMaximized)
+    readonly IntPtr _hWnd;
+
+    public void ProcessEvents(bool startMaximized)
     {
-        hWnd = Win32NativeMethods.Win32_CreateWindow();
-        if (hWnd == IntPtr.Zero)
+        if (_hWnd == IntPtr.Zero)
             return;
 
-        AudioDevice.DriverFactory     = AudioDeviceWinmmDriver.Factory;
-        GameControllers.DriverFactory = () => GameControllersDInputXInputDriver.Factory(hWnd);
-
-        GraphicsDevice.Initialize(new GraphicsDeviceD2DDriver(hWnd));
         GameControllers.Initialize();
 
-        Win32NativeMethods.Win32_ProcessEvents(hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
+        Win32NativeMethods.Win32_ProcessEvents(this, _hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
 
         GameControllers.Shutdown();
+        AudioDevice.Close();
         GraphicsDevice.Shutdown();
+    }
+
+    public WindowWin32Driver(Window window)
+    {
+        Window = window;
+        _hWnd = Win32NativeMethods.Win32_CreateWindow();
+        GraphicsDevice = new GraphicsDeviceD2DDriver(_hWnd);
+        GameControllers = new GameControllersDInputXInputDriver(_hWnd, window);
+        AudioDevice = new();
+
+        window.OnAudioChanged(AudioDevice);
+        window.OnControllersChanged(GameControllers);
     }
 }

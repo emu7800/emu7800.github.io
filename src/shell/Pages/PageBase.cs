@@ -23,6 +23,16 @@ public abstract class PageBase : IDisposable
     {
     }
 
+    public virtual void AudioChanged(IAudioDeviceDriver audioDevice)
+    {
+        Controls.AudioChanged(audioDevice);
+    }
+
+    public virtual void ControllersChanged(IGameControllersDriver gameControllers)
+    {
+        Controls.ControllersChanged(gameControllers);
+    }
+
     public virtual void KeyboardKeyPressed(KeyboardKey key, bool down)
     {
         Controls.KeyboardKeyPressed(key, down);
@@ -63,9 +73,9 @@ public abstract class PageBase : IDisposable
         Controls.DrivingPositionChanged(controllerNo, input);
     }
 
-    public virtual void LoadResources()
+    public virtual void LoadResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        Controls.LoadResources();
+        Controls.LoadResources(graphicsDevice);
     }
 
     public virtual void Update(TimerDevice td)
@@ -73,9 +83,9 @@ public abstract class PageBase : IDisposable
         Controls.Update(td);
     }
 
-    public virtual void Render()
+    public virtual void Render(IGraphicsDeviceDriver graphicsDevice)
     {
-        Controls.Render();
+        Controls.Render(graphicsDevice);
     }
 
     #region PageStateService Accessors

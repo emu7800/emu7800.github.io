@@ -13,6 +13,9 @@ public sealed class PageBackStackHost : IDisposable
     bool _pageChanged;
     SizeF _size;
 
+    IAudioDeviceDriver _audioDevice = EmptyAudioDeviceDriver.Default;
+    IGameControllersDriver _gameControllers = EmptyGameControllersDriver.Default;
+
     #endregion
 
     public void StartOfCycle()
@@ -23,6 +26,8 @@ public sealed class PageBackStackHost : IDisposable
             _currentPage = PageBackStackStateService.GetPendingPage();
             _currentPage.OnNavigatingHere();
             _currentPage.Resized(_size);
+            _currentPage.AudioChanged(_audioDevice);
+            _currentPage.ControllersChanged(_gameControllers);
             _pageChanged = true;
         }
 
@@ -44,6 +49,16 @@ public sealed class PageBackStackHost : IDisposable
     {
         _size = size;
         _currentPage.Resized(size);
+    }
+
+    public void AudioChanged(IAudioDeviceDriver audioDevice)
+    {
+        _audioDevice = audioDevice;
+    }
+
+    public void ControllersChanged(IGameControllersDriver gameControllers)
+    {
+        _gameControllers = gameControllers;
     }
 
     public void KeyboardKeyPressed(KeyboardKey key, bool down)
@@ -86,9 +101,9 @@ public sealed class PageBackStackHost : IDisposable
         _currentPage.DrivingPositionChanged(controllerNo, input);
     }
 
-    public void LoadResources()
+    public void LoadResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        _currentPage.LoadResources();
+        _currentPage.LoadResources(graphicsDevice);
     }
 
     public void Update(TimerDevice td)
@@ -96,14 +111,14 @@ public sealed class PageBackStackHost : IDisposable
         _currentPage.Update(td);
     }
 
-    public void Render()
+    public void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         if (_pageChanged)
         {
-            _currentPage.LoadResources();
+            _currentPage.LoadResources(graphicsDevice);
             _pageChanged = false;
         }
-        _currentPage.Render();
+        _currentPage.Render(graphicsDevice);
     }
 
     #region Constructors

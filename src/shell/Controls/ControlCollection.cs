@@ -16,6 +16,24 @@ public sealed class ControlCollection : ControlBase
 
     #region ControlBase Overrides
 
+    public override void AudioChanged(IAudioDeviceDriver audioDevice)
+    {
+        for (var i = 0; i < _controls.Length; i++)
+        {
+            var control = _controls[i];
+            control.AudioChanged(audioDevice);
+        }
+    }
+
+    public override void ControllersChanged(IGameControllersDriver gameControllers)
+    {
+        for (var i = 0; i < _controls.Length; i++)
+        {
+            var control = _controls[i];
+            control.ControllersChanged(gameControllers);
+        }
+    }
+
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
     {
         if (!IsVisible)
@@ -128,14 +146,14 @@ public sealed class ControlCollection : ControlBase
         }
     }
 
-    public override void LoadResources()
+    public override void LoadResources(IGraphicsDeviceDriver graphicsDevice)
     {
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
             if (ReferenceEquals(control, Default))
                 break;
-            control.LoadResources();
+            control.LoadResources(graphicsDevice);
         }
     }
 
@@ -153,7 +171,7 @@ public sealed class ControlCollection : ControlBase
         }
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         if (!IsVisible)
             return;
@@ -163,7 +181,7 @@ public sealed class ControlCollection : ControlBase
             if (ReferenceEquals(control, Default))
                 break;
             if (control is { IsVisible: true, IsEnabled: true })
-                control.Render();
+                control.Render(graphicsDevice);
         }
     }
 

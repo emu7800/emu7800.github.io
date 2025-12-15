@@ -1,14 +1,12 @@
-﻿using EMU7800.Services.Dto;
-using EMU7800.Shell;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
+public sealed partial class CommandLineWinSDL3Driver : CommandLineSDL3Driver
 {
     #region ICommandLineDriver Members
 
-    public void AttachConsole(bool allocNewConsole)
+    public override void AttachConsole(bool allocNewConsole)
     {
         if (allocNewConsole)
         {
@@ -18,17 +16,6 @@ public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
         {
             AttachConsole(-1);
         }
-    }
-
-    public void Start(bool startMaximized)
-    {
-        WindowSDL3Driver.StartWindowAndProcessEvents(startMaximized);
-    }
-
-    public void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized)
-    {
-        Window.ReplaceStartPage(gpivi);
-        WindowSDL3Driver.StartWindowAndProcessEvents(startMaximized);
     }
 
     #endregion

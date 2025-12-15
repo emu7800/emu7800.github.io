@@ -8,12 +8,10 @@ namespace EMU7800.Win32.Interop;
 
 public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
 {
-    public static GameControllersDInputXInputDriver Factory(IntPtr hWnd) => new(hWnd);
-    GameControllersDInputXInputDriver() {}
-
     #region Fields
 
     readonly IntPtr _hWnd;
+    readonly Window _window;
 
     #endregion
 
@@ -27,7 +25,7 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
 
         DirectInputNativeMethods.Initialize(_hWnd, out var joystickNames);
 
-        Controllers = [new(0), new(1)];
+        Controllers = [new(0, _window), new(1, _window)];
 
         for (var i = 0; i < Controllers.Length; i++)
         {
@@ -92,10 +90,8 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
 
     #region Constructors
 
-    public GameControllersDInputXInputDriver(IntPtr hWnd)
-    {
-        _hWnd = hWnd;
-    }
+    public GameControllersDInputXInputDriver(IntPtr hWnd, Window window)
+      => (_hWnd, _window) = (hWnd, window);
 
     #endregion
 

@@ -31,32 +31,32 @@ public sealed class TitleControl : ControlBase
         _subTitleTextLocation = new(Location.X + 25, Location.Y + 70);
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
-        GraphicsDevice.Draw(_appicon, _appiconRect);
-        GraphicsDevice.Draw(_titleTextLayout, _titleTextLocation);
-        GraphicsDevice.Draw(_subTitleTextLayout, _subTitleTextLocation);
+        graphicsDevice.Draw(_appicon, _appiconRect);
+        graphicsDevice.Draw(_titleTextLayout, _titleTextLocation);
+        graphicsDevice.Draw(_subTitleTextLayout, _subTitleTextLocation);
     }
 
-    protected override async void CreateResources()
+    protected override async void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
         // As a convention, GraphicsDevice draw operations accept null objects without throwing to accommodate
         // late arriving artifacts that can occur with async methods such as this.
         // It turns out this is the most holistically-elegant means to accommodate async operations.
-        base.CreateResources();
-        _titleTextLayout = GraphicsDevice.CreateTextLayout(
+        base.CreateResources(graphicsDevice);
+        _titleTextLayout = graphicsDevice.CreateTextLayout(
             Styles.TitleFontFamily,
             Styles.TitleFontSize,
             "EMU7800",
             300, 64,
             WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
-        _subTitleTextLayout = GraphicsDevice.CreateTextLayout(
+        _subTitleTextLayout = graphicsDevice.CreateTextLayout(
             Styles.SubTitleFontFamily,
             Styles.SubTitleFontSize,
             "Classic Atari 2600 and 7800 games",
             300, 64,
             WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
-        _appicon = await CreateStaticBitmapAsync(Asset.appicon_128x128);
+        _appicon = await CreateStaticBitmapAsync(graphicsDevice, Asset.appicon_128x128);
     }
 
     protected override void DisposeResources()
@@ -69,9 +69,9 @@ public sealed class TitleControl : ControlBase
 
     #endregion
 
-    static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
+    static async Task<StaticBitmap> CreateStaticBitmapAsync(IGraphicsDeviceDriver graphicsDevice, Asset asset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(asset);
-        return GraphicsDevice.CreateStaticBitmap(bytes.Span);
+        return graphicsDevice.CreateStaticBitmap(bytes.Span);
     }
 }

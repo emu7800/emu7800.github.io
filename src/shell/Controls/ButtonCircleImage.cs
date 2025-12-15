@@ -28,36 +28,36 @@ public class ButtonCircleImage : ButtonBase
 
     #region ControlBase Overrides
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         RectF rect = new(Location, Size);
 
         if (IsPressed)
         {
-            GraphicsDevice.FillEllipse(rect, SolidColorBrush.White);
-            GraphicsDevice.Draw(_circleInvertedBitmap, rect);
-            GraphicsDevice.Draw(_imageInvertedBitmap, rect);
+            graphicsDevice.FillEllipse(rect, SolidColorBrush.White);
+            graphicsDevice.Draw(_circleInvertedBitmap, rect);
+            graphicsDevice.Draw(_imageInvertedBitmap, rect);
         }
         else if (IsMouseOver)
         {
-            GraphicsDevice.FillEllipse(rect, _mouseOverColor);
-            GraphicsDevice.Draw(_circleBitmap, rect);
-            GraphicsDevice.Draw(_imageBitmap, rect);
+            graphicsDevice.FillEllipse(rect, _mouseOverColor);
+            graphicsDevice.Draw(_circleBitmap, rect);
+            graphicsDevice.Draw(_imageBitmap, rect);
         }
         else
         {
-            GraphicsDevice.Draw(_circleBitmap, rect);
-            GraphicsDevice.Draw(_imageBitmap, rect);
+            graphicsDevice.Draw(_circleBitmap, rect);
+            graphicsDevice.Draw(_imageBitmap, rect);
         }
     }
 
-    protected override async void CreateResources()
+    protected override async void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        base.CreateResources();
-        _circleBitmap = await CreateStaticBitmapAsync(Asset.appbar_basecircle_rest);
-        _circleInvertedBitmap = await CreateStaticBitmapAsync(Asset.appbar_basecircle_rest_inverted);
-        _imageBitmap = await CreateStaticBitmapAsync(_image);
-        _imageInvertedBitmap = await CreateStaticBitmapAsync(_imageInverted);
+        base.CreateResources(graphicsDevice);
+        _circleBitmap = await CreateStaticBitmapAsync(graphicsDevice, Asset.appbar_basecircle_rest);
+        _circleInvertedBitmap = await CreateStaticBitmapAsync(graphicsDevice, Asset.appbar_basecircle_rest_inverted);
+        _imageBitmap = await CreateStaticBitmapAsync(graphicsDevice, _image);
+        _imageInvertedBitmap = await CreateStaticBitmapAsync(graphicsDevice,_imageInverted);
     }
 
     protected override void DisposeResources()
@@ -73,10 +73,10 @@ public class ButtonCircleImage : ButtonBase
 
     #region Helpers
 
-    static async Task<StaticBitmap> CreateStaticBitmapAsync(Asset asset)
+    static async Task<StaticBitmap> CreateStaticBitmapAsync(IGraphicsDeviceDriver graphicsDevice, Asset asset)
     {
         var bytes = await AssetService.GetAssetBytesAsync(asset);
-        return GraphicsDevice.CreateStaticBitmap(bytes.Span);
+        return graphicsDevice.CreateStaticBitmap(bytes.Span);
     }
 
     #endregion

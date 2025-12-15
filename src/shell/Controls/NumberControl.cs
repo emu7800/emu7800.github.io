@@ -24,9 +24,9 @@ public sealed class NumberControl : ControlBase
 
     #region ControlBase Overrides
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
-        base.Render();
+        base.Render(graphicsDevice);
 
         PointF location = new(Location.X + Size.Width, Location.Y);
 
@@ -39,18 +39,18 @@ public sealed class NumberControl : ControlBase
             if (rad == 0 && rad != Radix)
             {
                 location.X -= _textlayoutRadix.Width;
-                GraphicsDevice.Draw(_textlayoutRadix, location);
+                graphicsDevice.Draw(_textlayoutRadix, location);
             }
             else if (UseComma && cma++ == 3)
             {
                 location.X -= _textlayoutComma.Width;
-                GraphicsDevice.Draw(_textlayoutComma, location);
+                graphicsDevice.Draw(_textlayoutComma, location);
                 cma = 0;
             }
             else
             {
                 location.X -= _maxDigitWidth;
-                GraphicsDevice.Draw(_textlayoutDigits[val % 10], location);
+                graphicsDevice.Draw(_textlayoutDigits[val % 10], location);
                 val /= 10;
                 if (val == 0)
                     break;
@@ -59,16 +59,16 @@ public sealed class NumberControl : ControlBase
         }
     }
 
-    protected override void CreateResources()
+    protected override void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
         for (var i = 0; i < _textlayoutDigits.Length; i++)
         {
-            CreateDigitTextLayout(i);
+            CreateDigitTextLayout(graphicsDevice, i);
             if (_textlayoutDigits[i].Width > _maxDigitWidth)
                 _maxDigitWidth = _textlayoutDigits[i].Width;
         }
-        _textlayoutRadix = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ".", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
-        _textlayoutComma = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ",", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
+        _textlayoutRadix = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ".", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
+        _textlayoutComma = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, ",", 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
     }
 
     protected override void DisposeResources()
@@ -86,9 +86,9 @@ public sealed class NumberControl : ControlBase
 
     #region Helpers
 
-    void CreateDigitTextLayout(int i)
+    void CreateDigitTextLayout(IGraphicsDeviceDriver graphicsDevice, int i)
     {
-        _textlayoutDigits[i] = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, i.ToString(System.Globalization.CultureInfo.InvariantCulture), 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
+        _textlayoutDigits[i] = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, i.ToString(System.Globalization.CultureInfo.InvariantCulture), 100, 100, WriteParaAlignment.Near, WriteTextAlignment.Leading, Color);
     }
 
     #endregion

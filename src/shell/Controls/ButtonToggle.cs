@@ -29,30 +29,30 @@ public sealed class ButtonToggle : ButtonBase
 
     #region ControlBase Overrides
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         if (IsPressed || IsChecked)
         {
-            GraphicsDevice.FillRectangle(new(Location, Size), SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayoutBlack, Location);
+            graphicsDevice.FillRectangle(new(Location, Size), SolidColorBrush.White);
+            graphicsDevice.Draw(_textLayoutBlack, Location);
         }
         else if (IsMouseOver)
         {
-            GraphicsDevice.DrawRectangle(new(Location, Size), 2.0f, SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayoutWhite, Location);
+            graphicsDevice.DrawRectangle(new(Location, Size), 2.0f, SolidColorBrush.White);
+            graphicsDevice.Draw(_textLayoutWhite, Location);
         }
         else
         {
-            GraphicsDevice.DrawRectangle(new(Location, Size), 1.0f, SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayoutWhite, Location);
+            graphicsDevice.DrawRectangle(new(Location, Size), 1.0f, SolidColorBrush.White);
+            graphicsDevice.Draw(_textLayoutWhite, Location);
         }
     }
 
-    protected override void CreateResources()
+    protected override void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        base.CreateResources();
-        _textLayoutBlack = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.Black);
-        _textLayoutWhite = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.White);
+        base.CreateResources(graphicsDevice);
+        _textLayoutBlack = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.Black);
+        _textLayoutWhite = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.White);
     }
 
     protected override void DisposeResources()

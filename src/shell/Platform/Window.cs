@@ -5,61 +5,48 @@ using EMU7800.Services.Dto;
 
 namespace EMU7800.Shell;
 
-public static class Window
+public sealed class Window
 {
     #region Fields
 
-    static readonly TimerDevice _timerDevice = new();
-    static readonly bool[] _lastKeyInput = new bool[0x100];
+    readonly TimerDevice _timerDevice = new();
+    readonly bool[] _lastKeyInput = new bool[0x100];
 
-    static PageBackStackHost _pageBackStack = new(new TitlePage());
-    static bool _resourcesLoaded;
+    readonly PageBackStackHost _pageBackStack;
+    bool _resourcesLoaded;
 
     #endregion
 
-    public static void ReplaceStartPage(PageBase startPage)
-    {
-        _pageBackStack = new PageBackStackHost(startPage);
-    }
-
-    public static void ReplaceStartPage(GameProgramInfoViewItem gpivi)
-      => ReplaceStartPage(new GamePage(gpivi, true));
-
-    #region Callbacks
-
-    public static void OnButtonChanged(int controllerNo, MachineInput input, bool down)
+    public void OnButtonChanged(int controllerNo, MachineInput input, bool down)
       => _pageBackStack.ControllerButtonChanged(controllerNo, input, down);
 
-    public static void OnDeviceChanged()
-      => GameControllers.Initialize();
-
-    public static void OnDrivingPositionChanged(int controllerNo, MachineInput input)
+    public void OnDrivingPositionChanged(int controllerNo, MachineInput input)
       => _pageBackStack.DrivingPositionChanged(controllerNo, input);
 
-    public static void OnIterate()
+    public void OnIterate(IGraphicsDeviceDriver graphicsDevice, IGameControllersDriver gameControllers)
     {
         _pageBackStack.StartOfCycle();
 
         if (!_resourcesLoaded)
         {
-            _pageBackStack.LoadResources();
+            _pageBackStack.LoadResources(graphicsDevice);
             _resourcesLoaded = true;
         }
 
-        GameControllers.Poll();
+        gameControllers.Poll();
 
         _pageBackStack.Update(_timerDevice);
 
-        GraphicsDevice.BeginDraw();
+        graphicsDevice.BeginDraw();
 
-        _pageBackStack.Render();
+        _pageBackStack.Render(graphicsDevice);
 
-        GraphicsDevice.EndDraw();
+        graphicsDevice.EndDraw();
 
         _timerDevice.Update();
     }
 
-    public static void OnKeyboardKeyPressed(ushort vkey, bool down)
+    public void OnKeyboardKeyPressed(ushort vkey, bool down)
     {
         var lastDown = _lastKeyInput[vkey & 0xff];
         if (down == lastDown)
@@ -68,28 +55,28 @@ public static class Window
         _pageBackStack.KeyboardKeyPressed((KeyboardKey)vkey, down);
     }
 
-    public static void OnMouseButtonChanged(int x, int y, bool down)
+    public void OnMouseButtonChanged(int x, int y, bool down)
       => _pageBackStack.MouseButtonChanged(0, x, y, down);
 
-    public static void OnMouseMoved(int x, int y, int dx, int dy)
+    public void OnMouseMoved(int x, int y, int dx, int dy)
       => _pageBackStack.MouseMoved(0, x, y, dx, dy);
 
-    public static void OnMouseWheelChanged(int x, int y, int delta)
+    public void OnMouseWheelChanged(int x, int y, int delta)
       => _pageBackStack.MouseWheelChanged(0, x, y, delta);
 
-    public static void OnPaddleButtonChanged(int controllerNo, int paddleNo, bool down)
+    public void OnPaddleButtonChanged(int controllerNo, int paddleNo, bool down)
       => _pageBackStack.PaddleButtonChanged(controllerNo, paddleNo, down);
 
-    public static void OnPaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
+    public void OnPaddlePositionChanged(int controllerNo, int paddleNo, int ohms)
       => _pageBackStack.PaddlePositionChanged(controllerNo, paddleNo, ohms);
 
-    public static void OnResized(int w, int h)
+    public void OnResized(IGraphicsDeviceDriver graphicsDevice, int w, int h)
     {
-        GraphicsDevice.Resize(new(w, h));
+        graphicsDevice.Resize(new(w, h));
         _pageBackStack.Resized(new(w, h));
     }
 
-    public static void OnVisibilityChanged(bool isVisible)
+    public void OnVisibilityChanged(bool isVisible)
     {
         if (isVisible)
         {
@@ -100,6 +87,23 @@ public static class Window
             _pageBackStack.OnNavigatingAway();
         }
     }
+
+    public void OnAudioChanged(IAudioDeviceDriver audioDevice)
+      => _pageBackStack.AudioChanged(audioDevice);
+
+    public void OnControllersChanged(IGameControllersDriver gameControllers)
+      => _pageBackStack.ControllersChanged(gameControllers);
+
+    #region Constructors
+
+    public Window()
+      => _pageBackStack = new(new TitlePage());
+
+    public Window(PageBase startPage)
+      => _pageBackStack = new PageBackStackHost(startPage);
+
+    public Window(GameProgramInfoViewItem gpivi)
+      : this(new GamePage(gpivi, true)) {}
 
     #endregion
 }

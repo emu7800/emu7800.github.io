@@ -43,6 +43,8 @@ public sealed class GamePage : PageBase
 
     SizeF _lastResize;
 
+    IGameControllersDriver _gameControllers = EmptyGameControllersDriver.Default;
+
     #endregion
 
     public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, bool startFresh = false)
@@ -341,6 +343,11 @@ public sealed class GamePage : PageBase
         _buffersQueuedRect = new(Struct.ToPointF(35, size.Height - 50), Struct.ToSizeF(25, 25));
         _numbercontrolRefreshRate.Location = new(size.Width, size.Height - 50);
 #endif
+    }
+
+    public override void ControllersChanged(IGameControllersDriver gameControllers)
+    {
+        _gameControllers = gameControllers;
     }
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
@@ -643,15 +650,15 @@ public sealed class GamePage : PageBase
         _infoTextVisibilityTimer = 2.0f;
     }
 
-    static string BuildControllersTextForHud()
-        => string.Join("; ", Enumerable.Range(0, GameControllers.Controllers.Length)
+    string BuildControllersTextForHud()
+      => string.Join("; ", Enumerable.Range(0, _gameControllers.Controllers.Length)
             .Select(i => new
             {
-                P = i + 1,
-                C = GameControllers.Controllers[i].Info
+                PlayerNo = i + 1,
+                ControllerInfo = _gameControllers.Controllers[i].Info
             })
-            .Where(r => !string.IsNullOrWhiteSpace(r.C))
-            .Select(r => $"P{r.P}: {r.C}"));
+            .Where(r => !string.IsNullOrWhiteSpace(r.ControllerInfo))
+            .Select(r => $"P{r.PlayerNo}: {r.ControllerInfo}"));
 
     void ResetBackAndSettingsButtonVisibilityCounter()
     {

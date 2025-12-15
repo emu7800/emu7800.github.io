@@ -118,22 +118,22 @@ public sealed class TextControl : ControlBase
             : -1;
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         if (_textLayout == TextLayout.Empty)
         {
-            _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
+            _textLayout = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
             _maxStartY = (int)(Size.Height - _textLayout.Height);
             if (_maxStartY >= 0)
                 _maxStartY = 0;
         }
 
-        GraphicsDevice.PushAxisAlignedClip(_bounds, AntiAliasMode.PerPrimitive);
-        GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY));
-        GraphicsDevice.PopAxisAlignedClip();
+        graphicsDevice.PushAxisAlignedClip(_bounds, AntiAliasMode.PerPrimitive);
+        graphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY));
+        graphicsDevice.PopAxisAlignedClip();
 
         if (_scrollbarY >= 0.0f)
-            GraphicsDevice.DrawLine(
+            graphicsDevice.DrawLine(
                 new(Location.X + Size.Width + 1, Location.Y + _scrollbarY),
                 new(Location.X + Size.Width + 1, Location.Y + _scrollbarY + _scrollbarLength),
                 1.0f,

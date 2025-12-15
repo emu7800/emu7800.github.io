@@ -2,6 +2,7 @@
 
 using EMU7800.Shell;
 using System;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -221,14 +222,20 @@ internal static unsafe partial class Win32NativeMethods
                 return 0;
 
             case WM_SIZE:
-                var w = (int)(lParam & 0xffff);
-                var h = (int)((lParam >> 16) & 0xffff);
-                Window.OnResized(w, h);
+                {
+                    var w = (int)(lParam & 0xffff);
+                    var h = (int)((lParam >> 16) & 0xffff);
+                    if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                        wg.Window.OnResized(wg.GraphicsDevice, w, h);
+                }
                 return 0;
 
             case WM_PAINT:
                 ValidateRect(hWnd, IntPtr.Zero);
-                Window.OnIterate();
+                {
+                    if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                        wg.Window.OnIterate(wg.GraphicsDevice, wg.GameControllers);
+                }
                 return 0;
 
             case WM_GETMINMAXINFO:
@@ -292,31 +299,44 @@ internal static unsafe partial class Win32NativeMethods
                         (last_x, last_y) = (x, y);
                     }
 
-                    Window.OnMouseMoved(x, y, dx, dy);
+                    {
+                        if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                            wg.Window.OnMouseMoved(x, y, dx, dy);
+                    }
 
                     if ((raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL) != 0)
                     {
-                        var delta = (short)raw->data.mouse.usButtonData;
-                        Window.OnMouseWheelChanged(x, y, delta);
+                        {
+                            var delta = (short)raw->data.mouse.usButtonData;
+                            if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                                wg.Window.OnMouseWheelChanged(x, y, delta);
+                        }
                     }
 
                     if ((raw->data.mouse.ulButtons & (RI_MOUSE_LEFT_BUTTON_DOWN | RI_MOUSE_LEFT_BUTTON_UP)) != 0)
                     {
-                        var down = (raw->data.mouse.ulButtons & RI_MOUSE_LEFT_BUTTON_DOWN) != 0;
-                        Window.OnMouseButtonChanged(x, y, down);
+                        {
+                            var down = (raw->data.mouse.ulButtons & RI_MOUSE_LEFT_BUTTON_DOWN) != 0;
+                            if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                                wg.Window.OnMouseButtonChanged(x, y, down);
+                        }
                     }
                 }
                 else if (raw->header.dwType == RIM_TYPEKEYBOARD)
                 {
-                    var down = raw->data.keyboard.Message == WM_KEYDOWN || raw->data.keyboard.Message == WM_SYSKEYDOWN;
-                    Window.OnKeyboardKeyPressed(raw->data.keyboard.VKey, down);
+                    {
+                        var down = raw->data.keyboard.Message == WM_KEYDOWN || raw->data.keyboard.Message == WM_SYSKEYDOWN;
+                        if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                            wg.Window.OnKeyboardKeyPressed(raw->data.keyboard.VKey, down);
+                    }
                 }
                 return 0;
 
             case WM_DEVICECHANGE:
                 if (wParam == DBT_DEVNODES_CHANGED)
                 {
-                    Window.OnDeviceChanged();
+                    if (RegisteredWindows.TryGetValue(hWnd, out var wg))
+                        wg.GameControllers.Initialize();
                 }
                 return 0;
         }
@@ -356,8 +376,10 @@ internal static unsafe partial class Win32NativeMethods
             posX, posY, windowWidth, windowHeight, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
     }
 
-    public static void Win32_ProcessEvents(IntPtr hWnd, int nCmdShow)
+    public static void Win32_ProcessEvents(WindowWin32Driver wg, IntPtr hWnd, int nCmdShow)
     {
+        RegisteredWindows.TryAdd(hWnd, wg);
+
         ShowWindow(hWnd, nCmdShow);
         UpdateWindow(hWnd);
 
@@ -370,7 +392,7 @@ internal static unsafe partial class Win32NativeMethods
                 if (isVisible)
                 {
                     isVisible = false;
-                    Window.OnVisibilityChanged(isVisible);
+                    wg.Window.OnVisibilityChanged(isVisible);
                 }
             }
             else
@@ -378,7 +400,7 @@ internal static unsafe partial class Win32NativeMethods
                 if (!isVisible)
                 {
                     isVisible = true;
-                    Window.OnVisibilityChanged(isVisible);
+                    wg.Window.OnVisibilityChanged(isVisible);
                 }
             }
 
@@ -397,10 +419,14 @@ internal static unsafe partial class Win32NativeMethods
             }
             else
             {
-                Window.OnIterate();
+                wg.Window.OnIterate(wg.GraphicsDevice, wg.GameControllers);
             }
         }
+
+        RegisteredWindows.TryRemove(hWnd, out var _);
     }
+
+    static readonly ConcurrentDictionary<IntPtr, WindowWin32Driver> RegisteredWindows = [];
 
     #pragma warning disable SYSLIB1054
     #pragma warning disable CA2101

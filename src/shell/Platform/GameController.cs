@@ -29,6 +29,8 @@ public sealed class GameController
     public static readonly Action<int, int, bool> PaddleButtonChangedHandlerDefault = (cn, pn, d) => {};
     public static readonly Action<int, MachineInput> DrivingPositionChangedHandlerDefault = (cn, mi) => {};
 
+    readonly Window _window;
+
     public int ControllerNo { get; init; }
     public int DaptorMode { get; set; }
     public string DaptorModeStr => DaptorMode switch
@@ -48,16 +50,15 @@ public sealed class GameController
     public bool IsDaptor
       => JoystickType is JoystickType.Daptor or JoystickType.Daptor2;
 
-    public Action<int, MachineInput, bool> ButtonChanged { get; set; } = Window.OnButtonChanged;
-    public Action<int, int, int> PaddlePositionChanged { get; set; } = Window.OnPaddlePositionChanged;
-    public Action<int, int, bool> PaddleButtonChanged { get; set; } = Window.OnPaddleButtonChanged;
-    public Action<int, MachineInput> DrivingPositionChanged { get; set; } = Window.OnDrivingPositionChanged;
+    public Action<int, MachineInput, bool> ButtonChanged => _window.OnButtonChanged;
+    public Action<int, int, int> PaddlePositionChanged => _window.OnPaddlePositionChanged;
+    public Action<int, int, bool> PaddleButtonChanged => _window.OnPaddleButtonChanged;
+    public Action<int, MachineInput> DrivingPositionChanged => _window.OnDrivingPositionChanged;
 
     #region Constructors
 
-    GameController() {}
-    public GameController(int controllerNo)
-      => ControllerNo = controllerNo;
+    public GameController(int controllerNo, Window window)
+      => (ControllerNo, _window) = (controllerNo, window);
 
     #endregion
 }

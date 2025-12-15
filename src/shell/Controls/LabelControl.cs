@@ -82,19 +82,19 @@ public sealed class LabelControl : ControlBase
         SafeDispose(ref _textLayout);
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         if (_textLayout == TextLayout.Empty)
         {
-            CreateResources2();
+            CreateResources2(graphicsDevice);
         }
-        GraphicsDevice.Draw(_textLayout, Location);
+        graphicsDevice.Draw(_textLayout, Location);
     }
 
-    protected override void CreateResources()
+    protected override void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
-        base.CreateResources();
-        CreateResources2();
+        base.CreateResources(graphicsDevice);
+        CreateResources2(graphicsDevice);
     }
 
     protected override void DisposeResources()
@@ -107,9 +107,9 @@ public sealed class LabelControl : ControlBase
 
     #region Helpers
 
-    void CreateResources2()
+    void CreateResources2(IGraphicsDeviceDriver graphicsDevice)
     {
-        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, ParagraphAlignment, TextAlignment, SolidColorBrush.White);
+        _textLayout = graphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, ParagraphAlignment, TextAlignment, SolidColorBrush.White);
     }
 
     #endregion

@@ -44,6 +44,8 @@ public sealed class GameControl : ControlBase
     uint _frameDurationBucketSamples;
     int _proposedFrameRate, _maxFrameRate = 60;
 
+    volatile IAudioDeviceDriver _audioDevice = EmptyAudioDeviceDriver.Default;
+
     #endregion
 
     public bool IsGameBWConsoleSwitchSet => _inputState.IsGameBWConsoleSwitchSet;
@@ -185,6 +187,11 @@ public sealed class GameControl : ControlBase
 
     #region ControlBase Overrides
 
+    public override void AudioChanged(IAudioDeviceDriver audioDevice)
+    {
+        _audioDevice = audioDevice;
+    }
+
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
     {
         _inputAdapters[_jackSwaps[_currentKeyboardPlayerNo & 1]].KeyboardKeyPressed(_currentKeyboardPlayerNo, key, down);
@@ -253,13 +260,13 @@ public sealed class GameControl : ControlBase
         _inputAdapters[1].Update(td);
     }
 
-    public override void Render()
+    public override void Render(IGraphicsDeviceDriver graphicsDevice)
     {
         lock (_dynamicBitmapLocker)
         {
             if (_dynamicBitmap == DynamicBitmap.Empty)
             {
-                _dynamicBitmap = GraphicsDevice.CreateDynamicBitmap(_dynamicBitmapDataSize);
+                _dynamicBitmap = graphicsDevice.CreateDynamicBitmap(_dynamicBitmapDataSize);
                 _dynamicBitmap.Load(_dynamicBitmapData.Span);
             }
             else if (_dynamicBitmapDataUpdated)
@@ -269,7 +276,7 @@ public sealed class GameControl : ControlBase
             _dynamicBitmapDataUpdated = false;
         }
 
-        GraphicsDevice.Draw(_dynamicBitmap, _dynamicBitmapRect, _dynamicBitmapInterpolationMode);
+        graphicsDevice.Draw(_dynamicBitmap, _dynamicBitmapRect, _dynamicBitmapInterpolationMode);
     }
 
     protected override void Dispose(bool disposing)
@@ -352,6 +359,8 @@ public sealed class GameControl : ControlBase
 
         long ticksPerFrame = 0;
 
+        var audio = new AudioDevice(_audioDevice);
+
         while (!_stopRequested)
         {
             var startTick = stopwatch.ElapsedTicks;
@@ -391,20 +400,20 @@ public sealed class GameControl : ControlBase
             if (_frameRateChangeNeeded)
             {
                 _frameRateChangeNeeded = false;
-                AudioDevice.Close();
+                audio.Close();
                 if (_proposedFrameRate > CurrentFrameRate)
                     _calibrationNeeded = true;
                 CurrentFrameRate = _proposedFrameRate;
                 ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
             }
 
-            if (IsSoundOn && AudioDevice.IsClosed)
+            if (IsSoundOn && audio.IsClosed)
             {
                 var soundFrequency = machine.FrameBuffer.SoundBuffer.Length * CurrentFrameRate;
-                AudioDevice.Configure(soundFrequency, machine.FrameBuffer.SoundBuffer.Length, 8);
+                audio.Configure(soundFrequency, machine.FrameBuffer.SoundBuffer.Length, 8);
             }
 
-            var buffersQueued = AudioDevice.CountBuffersQueued();
+            var buffersQueued = audio.CountBuffersQueued();
 
             endTick += (ticksPerFrame >> 1) * (buffersQueued < 0 || !IsSoundOn || IsPaused ? 0 : buffersQueued switch
             {
@@ -418,7 +427,7 @@ public sealed class GameControl : ControlBase
 
             if (IsSoundOn && !IsPaused)
             {
-                AudioDevice.SubmitBuffer(machine.FrameBuffer.SoundBuffer.Span);
+                audio.SubmitBuffer(machine.FrameBuffer.SoundBuffer.Span);
             }
 
             lock (_dynamicBitmapLocker)
@@ -445,7 +454,7 @@ public sealed class GameControl : ControlBase
             }
         }
 
-        AudioDevice.Close();
+        audio.Close();
 
         machineStateInfo = machineStateInfo with
         {
@@ -466,7 +475,8 @@ public sealed class GameControl : ControlBase
         var soundBuffer = new Memory<byte>(new byte[524]);
         var soundFrequency = soundBuffer.Length * CurrentFrameRate;
         var ticksPerFrame = Stopwatch.Frequency / CurrentFrameRate;
-        AudioDevice.Configure(soundFrequency, soundBuffer.Length, 8);
+        var audio = new AudioDevice(_audioDevice);
+        audio.Configure(soundFrequency, soundBuffer.Length, 8);
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -476,7 +486,7 @@ public sealed class GameControl : ControlBase
             var startTick = stopwatch.ElapsedTicks;
             var endTick = startTick + ticksPerFrame;
 
-            var buffersQueued = AudioDevice.CountBuffersQueued();
+            var buffersQueued = audio.CountBuffersQueued();
             var adjustment = (ticksPerFrame >> 1) * buffersQueued switch
             {
                 < 2 => -1,
@@ -489,7 +499,7 @@ public sealed class GameControl : ControlBase
             {
                 for (var i = 0; i < soundBuffer.Length; i++)
                     soundBuffer.Span[i] = (byte)random.Next(2);
-                AudioDevice.SubmitBuffer(soundBuffer.Span);
+                audio.SubmitBuffer(soundBuffer.Span);
             }
 
             lock (_dynamicBitmapLocker)
@@ -511,7 +521,7 @@ public sealed class GameControl : ControlBase
             }
         }
 
-        AudioDevice.Close();
+        audio.Close();
     }
 
     static IFrameRenderer ToFrameRenderer(MachineStateInfo machineStateInfo)

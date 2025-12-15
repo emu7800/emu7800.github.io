@@ -2,49 +2,80 @@
 
 using EMU7800.Shell;
 using System;
-
+using System.Collections.Concurrent;
+using System.Threading;
 using static EMU7800.SDL3.Interop.SDL3;
 
 namespace EMU7800.SDL3.Interop;
 
-public static class WindowSDL3Driver
+public sealed class WindowSDL3Driver
 {
-    static float ScaleFactor = 1f;
-    static bool StartMaximized;
+    static readonly ConcurrentDictionary<IntPtr, WindowSDL3Driver> RegisteredWindows = [];
+    static readonly ConcurrentQueue<IntPtr> PendingIds = [];
+    static int _nextId;
 
-    public static unsafe void StartWindowAndProcessEvents(bool startMaximized)
+    public Window Window { get; init; }
+    public GraphicsDeviceSDL3Driver GraphicsDevice { get; init; }
+    public IGameControllersDriver GameControllers { get; init; }
+    public IAudioDeviceDriver AudioDevice { get; init; }
+
+    public unsafe void ProcessEvents()
     {
-        StartMaximized = startMaximized;
+        IntPtr id = Interlocked.Increment(ref _nextId);
 
-        AudioDevice.DriverFactory     = AudioDeviceSDL3Driver.Factory;
-        GameControllers.DriverFactory = GameControllersSDL3InputDriver.Factory;
+        PendingIds.Enqueue(id);
+        RegisteredWindows.TryAdd(id, this);
 
         SDL_EnterAppMainCallbacks(0, IntPtr.Zero, AppInit, AppIterate, AppEvent, AppQuit);
     }
 
-    static unsafe SDL_AppResult AppInit(IntPtr _, int argc, IntPtr argv)
+    public WindowSDL3Driver(Window window, bool startMaximized)
+    {
+        Window = window;
+        GraphicsDevice = new GraphicsDeviceSDL3Driver(startMaximized);
+        GameControllers = EmptyGameControllersDriver.Default;
+        AudioDevice = EmptyAudioDeviceDriver.Default;
+
+        window.OnAudioChanged(AudioDevice);
+        window.OnControllersChanged(GameControllers);
+    }
+
+    static unsafe SDL_AppResult AppInit(IntPtr ppAppState, int argc, IntPtr argv)
     {
         Console.WriteLine($"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
 
         SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
 
-        var driver = new GraphicsDeviceSDL3Driver(StartMaximized);
-        ScaleFactor = driver.ScaleFactor;
+        if (!PendingIds.TryDequeue(out var id) || !RegisteredWindows.TryGetValue(id, out var wd))
+        {
+            return SDL_AppResult.SDL_APP_FAILURE;
+        }
 
-        GraphicsDevice.Initialize(driver);
-        GameControllers.Initialize();
+        *(void**)ppAppState = (void*)id;
 
-        return GraphicsDevice.EC == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
+        wd.GameControllers.Initialize();
+
+        return wd.GraphicsDevice.EC == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
     }
 
-    static unsafe SDL_AppResult AppIterate(IntPtr _)
+    static unsafe SDL_AppResult AppIterate(IntPtr pAppState)
     {
-        Window.OnIterate();
+        if (!RegisteredWindows.TryGetValue(pAppState, out var wd))
+        {
+            return SDL_AppResult.SDL_APP_FAILURE;
+        }
+
+        wd.Window.OnIterate(wd.GraphicsDevice, wd.GameControllers);
+
         return SDL_AppResult.SDL_APP_CONTINUE;
     }
 
-    static unsafe SDL_AppResult AppEvent(IntPtr _, SDL_Event* pEvt)
+    static unsafe SDL_AppResult AppEvent(IntPtr pAppState, SDL_Event* pEvt)
     {
+        if (!RegisteredWindows.TryGetValue(pAppState, out var wd))
+        {
+            return SDL_AppResult.SDL_APP_FAILURE;
+        }
 
         switch ((SDL_EventType)pEvt->type)
         {
@@ -52,39 +83,42 @@ public static class WindowSDL3Driver
                 return SDL_AppResult.SDL_APP_SUCCESS;
             case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
                 {
-                    var w = (int)(pEvt->window.data1 / ScaleFactor);
-                    var h = (int)(pEvt->window.data2 / ScaleFactor);
-                    Window.OnResized(w, h);
+                    var w = (int)(pEvt->window.data1 / wd.GraphicsDevice.ScaleFactor);
+                    var h = (int)(pEvt->window.data2 / wd.GraphicsDevice.ScaleFactor);
+                    wd.Window.OnResized(wd.GraphicsDevice, w, h);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
                 {
-                    var x = (int)(pEvt->motion.x / ScaleFactor);
-                    var y = (int)(pEvt->motion.y / ScaleFactor);
-                    Window.OnMouseMoved(x, y, (int)pEvt->motion.xrel, (int)pEvt->motion.yrel);
+                    var x = (int)(pEvt->motion.x / wd.GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->motion.y / wd.GraphicsDevice.ScaleFactor);
+                    wd.Window.OnMouseMoved(x, y, (int)pEvt->motion.xrel, (int)pEvt->motion.yrel);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
                 {
-                    var x = (int)(pEvt->button.x / ScaleFactor);
-                    var y = (int)(pEvt->button.y / ScaleFactor);
-                    Window.OnMouseButtonChanged(x, y, pEvt->button.down);
+                    var x = (int)(pEvt->button.x / wd.GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->button.y / wd.GraphicsDevice.ScaleFactor);
+                    wd.Window.OnMouseButtonChanged(x, y, pEvt->button.down);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
                 {
-                    var x = (int)(pEvt->wheel.mouse_x / ScaleFactor);
-                    var y = (int)(pEvt->wheel.mouse_y / ScaleFactor);
+                    var x = (int)(pEvt->wheel.mouse_x / wd.GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->wheel.mouse_y / wd.GraphicsDevice.ScaleFactor);
                     var delta = (int)(120 * pEvt->wheel.y);
-                    Window.OnMouseWheelChanged(x, y, delta);
+                    wd.Window.OnMouseWheelChanged(x, y, delta);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_KEY_DOWN:
             case SDL_EventType.SDL_EVENT_KEY_UP:
-                Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
+                {
+                    wd.Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
+                }
                 break;
         }
+
         return SDL_AppResult.SDL_APP_CONTINUE;
     }
 
@@ -134,9 +168,13 @@ public static class WindowSDL3Driver
           _                                     => KeyboardKey.None
       };
 
-    static unsafe void AppQuit(IntPtr _, SDL_AppResult result)
+    static unsafe void AppQuit(IntPtr pAppState, SDL_AppResult result)
     {
-        GameControllers.Shutdown();
-        GraphicsDevice.Shutdown();
+        if (RegisteredWindows.TryRemove(pAppState, out var wd))
+        {
+            wd.GraphicsDevice.Shutdown();
+            wd.GameControllers.Shutdown();
+            wd.AudioDevice.Close();
+        }
     }
 }

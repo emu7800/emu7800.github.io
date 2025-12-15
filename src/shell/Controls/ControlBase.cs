@@ -88,21 +88,29 @@ public abstract class ControlBase : IDisposable
     {
     }
 
-    public virtual void LoadResources()
+    public virtual void AudioChanged(IAudioDeviceDriver audioDevice)
+    {
+    }
+
+    public virtual void ControllersChanged(IGameControllersDriver gameControllers)
+    {
+    }
+
+    public virtual void LoadResources(IGraphicsDeviceDriver graphicsDevice)
     {
         DisposeResources();
-        CreateResources();
+        CreateResources(graphicsDevice);
     }
 
     public virtual void Update(TimerDevice td)
     {
     }
 
-    public virtual void Render()
+    public virtual void Render(IGraphicsDeviceDriver graphicsDevice)
     {
     }
 
-    protected virtual void CreateResources()
+    protected virtual void CreateResources(IGraphicsDeviceDriver graphicsDevice)
     {
     }
 
