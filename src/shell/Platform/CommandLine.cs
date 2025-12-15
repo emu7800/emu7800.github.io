@@ -12,21 +12,8 @@ namespace EMU7800.Shell;
 public interface ICommandLineDriver
 {
     void AttachConsole(bool allocNewConsole = false);
-    void Start(bool startMaximized = true);
-    void StartGameProgram(GameProgramInfoViewItem gpivi);
-}
-
-public sealed class EmptyCommandLineDriver : ICommandLineDriver
-{
-    public static readonly EmptyCommandLineDriver Default = new();
-    EmptyCommandLineDriver() {}
-
-    #region ICommandLineDriver Members
-    public void AttachConsole(bool allocNewConsole = false) {}
-    public void Start(bool startMaximized = true) {}
-    public void StartGameProgram(GameProgramInfoViewItem gpivi) {}
-
-    #endregion
+    void Start(bool startMaximized);
+    void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized);
 }
 
 public static class CommandLine
@@ -36,17 +23,11 @@ public static class CommandLine
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
     }
 
-    public static Func<ICommandLineDriver> DriverFactory { get; set; } = () => EmptyCommandLineDriver.Default;
-
-    static ICommandLineDriver _driver = EmptyCommandLineDriver.Default;
-
-    public static void Run(string[] args)
+    public static void Run(ICommandLineDriver driver, string[] args)
     {
-        _driver = DriverFactory();
-
         if (IsArg0(args, ["-r", "/r"]))
         {
-            _driver.AttachConsole();
+            driver.AttachConsole();
 
             var romPath = args.Length > 1 ? args[1] : string.Empty;
             if (string.IsNullOrWhiteSpace(romPath) || !File.Exists(romPath))
@@ -100,14 +81,14 @@ public static class CommandLine
                     Console.WriteLine("Unknown MachineType: " + machineType);
                     Environment.Exit(-8);
                 }
-                _driver.StartGameProgram(new(machineType, cartType, lController, rController, romPath));
+                driver.StartGameProgram(new(machineType, cartType, lController, rController, romPath), false);
             }
             else
             {
                 var gpiviList = GameProgramLibraryService.GetGameProgramInfoViewItems(romPath);
                 if (gpiviList.Count > 0)
                 {
-                    _driver.StartGameProgram(gpiviList.First());
+                    driver.StartGameProgram(gpiviList.First(), false);
                 }
                 else
                 {
@@ -115,7 +96,7 @@ public static class CommandLine
                     if (RomBytesService.IsA78Format(bytes))
                     {
                         var gpi = RomBytesService.ToGameProgramInfoFromA78Format(bytes);
-                        _driver.StartGameProgram(new(gpi, string.Empty, romPath));
+                        driver.StartGameProgram(new(gpi, string.Empty, romPath), false);
                     }
                     else
                     {
@@ -130,7 +111,7 @@ public static class CommandLine
 
         if (IsArg0(args, ["-d", "/d"]))
         {
-            _driver.AttachConsole();
+            driver.AttachConsole();
 
             var romPath = args.Length > 1 ? args[1] : string.Empty;
             var romPaths = string.IsNullOrEmpty(romPath)
@@ -182,7 +163,7 @@ public static class CommandLine
 
         if (IsArg0(args, ["-?", "/?", "-h", "/h", "--help"]))
         {
-            _driver.AttachConsole();
+            driver.AttachConsole();
 
             Console.WriteLine($"""
 
@@ -216,9 +197,9 @@ public static class CommandLine
         {
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-            _driver.AttachConsole(isWindows);
+            driver.AttachConsole(isWindows);
 
-            _driver.Start(false);
+            driver.Start(false);
 
             if (isWindows)
             {
@@ -234,14 +215,14 @@ public static class CommandLine
 
         if (args.Length == 0)
         {
-            _driver.AttachConsole();
+            driver.AttachConsole();
 
-            _driver.Start();
+            driver.Start(false);
 
             Environment.Exit(0);
         }
 
-        _driver.AttachConsole();
+        driver.AttachConsole();
 
         Console.WriteLine($"Unknown option: {args[0]}");
 

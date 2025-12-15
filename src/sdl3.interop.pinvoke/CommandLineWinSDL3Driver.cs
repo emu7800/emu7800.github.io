@@ -6,9 +6,6 @@ namespace EMU7800.SDL3.Interop;
 
 public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
 {
-    public static CommandLineWinSDL3Driver Factory() => new();
-    CommandLineWinSDL3Driver() {}
-
     #region ICommandLineDriver Members
 
     public void AttachConsole(bool allocNewConsole)
@@ -25,15 +22,20 @@ public sealed partial class CommandLineWinSDL3Driver : ICommandLineDriver
 
     public void Start(bool startMaximized)
     {
-        Window.DriverFactory = WindowSDL3Driver.Factory;
-        Window.Start(startMaximized);
+        WindowSDL3Driver.StartWindowAndProcessEvents(startMaximized);
     }
 
-    public void StartGameProgram(GameProgramInfoViewItem gpivi)
+    public void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized)
     {
-        Window.DriverFactory = WindowSDL3Driver.Factory;
-        Window.Start(true, gpivi);
+        Window.ReplaceStartPage(gpivi);
+        WindowSDL3Driver.StartWindowAndProcessEvents(startMaximized);
     }
+
+    #endregion
+
+    #region Constructors
+
+    public CommandLineWinSDL3Driver() {}
 
     #endregion
 

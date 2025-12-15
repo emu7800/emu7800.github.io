@@ -122,14 +122,14 @@ public sealed class TextControl : ControlBase
     {
         if (_textLayout == TextLayout.Empty)
         {
-            _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+            _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, int.MaxValue, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
             _maxStartY = (int)(Size.Height - _textLayout.Height);
             if (_maxStartY >= 0)
                 _maxStartY = 0;
         }
 
         GraphicsDevice.PushAxisAlignedClip(_bounds, AntiAliasMode.PerPrimitive);
-        GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY), SolidColorBrush.White);
+        GraphicsDevice.Draw(_textLayout, new(Location.X, Location.Y + _startY));
         GraphicsDevice.PopAxisAlignedClip();
 
         if (_scrollbarY >= 0.0f)

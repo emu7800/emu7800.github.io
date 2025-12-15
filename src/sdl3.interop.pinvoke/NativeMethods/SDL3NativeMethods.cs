@@ -18,7 +18,7 @@ internal static unsafe partial class SDL3
         /// </summary>
         /// <returns>A managed string.</returns>
         internal static string ConvertToManaged(byte* unmanaged)
-            => Marshal.PtrToStringUTF8((IntPtr)unmanaged) ?? string.Empty;
+          => Marshal.PtrToStringUTF8((IntPtr)unmanaged) ?? string.Empty;
     }
 
     // Custom marshaller for caller-owned strings returned by SDL.
@@ -30,13 +30,13 @@ internal static unsafe partial class SDL3
         /// </summary>
         /// <returns>A managed string.</returns>
         internal static string ConvertToManaged(byte* unmanaged)
-            => Marshal.PtrToStringUTF8((IntPtr)unmanaged) ?? string.Empty;
+          => Marshal.PtrToStringUTF8((IntPtr)unmanaged) ?? string.Empty;
 
         /// <summary>
         /// Free the memory for a specified unmanaged string.
         /// </summary>
         internal static void Free(byte* unmanaged)
-            => SDL_free((IntPtr) unmanaged);
+          => SDL_free((IntPtr) unmanaged);
     }
 
     // Taken from https://github.com/ppy/SDL3-CS
@@ -60,7 +60,10 @@ internal static unsafe partial class SDL3
         public override int GetHashCode() => _value.GetHashCode();
     }
 
-    const string SDL3DllName = "SDL3";
+    const string
+        SDL3DllName      = "SDL3",
+        SDL3DllimageName = "SDL3_image",
+        SDL3DllttfName   = "SDL3_ttf";
 
     // /usr/local/include/SDL3/SDL_stdinc.h
 
@@ -890,9 +893,9 @@ internal static unsafe partial class SDL3
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* SDL_LoadBMP_IO(IntPtr src, SDLBool closeio);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3DllimageName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_LoadPNG_IO(IntPtr src, SDLBool closeio);
+    internal static partial SDL_Surface* IMG_LoadPNG_IO(IntPtr src, SDLBool closeio);
 
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4813,7 +4816,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderClipRect(IntPtr renderer, ref SDL_Rect rect);
+    internal static partial SDLBool SDL_SetRenderClipRect(IntPtr renderer, SDL_Rect* rect);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4901,7 +4904,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderTexture(IntPtr renderer, IntPtr texture, ref SDL_FRect srcrect, ref SDL_FRect dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
+    internal static partial SDLBool SDL_RenderTexture(IntPtr renderer, IntPtr texture, IntPtr srcrect, ref SDL_FRect dstrect);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -5060,4 +5063,34 @@ internal static unsafe partial class SDL3
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_IOFromConstMem(ReadOnlySpan<byte> mem, nint size);
+
+    [LibraryImport(SDL3DllName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDLBool SDL_CloseIO(IntPtr context);
+
+    // ttf
+
+    [LibraryImport(SDL3DllttfName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDLBool TTF_Init();
+
+    [LibraryImport(SDL3DllttfName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDLBool TTF_Quit();
+
+    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial IntPtr TTF_OpenFont(string file, float ptsize);
+
+    [LibraryImport(SDL3DllttfName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial void TTF_CloseFont(IntPtr font);
+
+    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDL_Surface* TTF_RenderText_Blended(IntPtr pFont, string text, UIntPtr length, SDL_Color fg);
+
+    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    internal static partial SDL_Surface* TTF_RenderText_Blended_Wrapped(IntPtr pFont, string text, UIntPtr length, SDL_Color fg, int wrap_width);
 }

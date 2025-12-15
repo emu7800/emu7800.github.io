@@ -6,8 +6,6 @@ namespace EMU7800.Win32.Interop;
 
 public sealed partial class CommandLineWin32Driver : ICommandLineDriver
 {
-    public static CommandLineWin32Driver Factory() => new();
-    CommandLineWin32Driver() {}
 
     #region ICommandLineDriver Members
 
@@ -25,15 +23,20 @@ public sealed partial class CommandLineWin32Driver : ICommandLineDriver
 
     public void Start(bool startMaximized)
     {
-        Window.DriverFactory = WindowWin32Driver.Factory;
-        Window.Start(startMaximized);
+        WindowWin32Driver.StartWindowAndProcessEvents(startMaximized);
     }
 
-    public void StartGameProgram(GameProgramInfoViewItem gpivi)
+    public void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized)
     {
-        Window.DriverFactory = WindowWin32Driver.Factory;
-        Window.Start(true, gpivi);
+        Window.ReplaceStartPage(gpivi);
+        WindowWin32Driver.StartWindowAndProcessEvents(startMaximized);
     }
+
+    #endregion
+
+    #region Constructors
+
+    public CommandLineWin32Driver() {}
 
     #endregion
 

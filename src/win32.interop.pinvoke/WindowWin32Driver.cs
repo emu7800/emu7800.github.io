@@ -5,24 +5,20 @@ using System;
 
 namespace EMU7800.Win32.Interop;
 
-public sealed class WindowWin32Driver : IWindowDriver
+public static class WindowWin32Driver
 {
-    public static WindowWin32Driver Factory() => new();
-    WindowWin32Driver() {}
+    static IntPtr hWnd;
 
-    IntPtr hWnd;
-
-    public void StartWindowAndProcessEvents(bool startMaximized)
+    public static void StartWindowAndProcessEvents(bool startMaximized)
     {
         hWnd = Win32NativeMethods.Win32_CreateWindow();
         if (hWnd == IntPtr.Zero)
             return;
 
         AudioDevice.DriverFactory     = AudioDeviceWinmmDriver.Factory;
-        GraphicsDevice.DriverFactory  = () => GraphicsDeviceD2DDriver.Factory(hWnd);
         GameControllers.DriverFactory = () => GameControllersDInputXInputDriver.Factory(hWnd);
 
-        GraphicsDevice.Initialize();
+        GraphicsDevice.Initialize(new GraphicsDeviceD2DDriver(hWnd));
         GameControllers.Initialize();
 
         Win32NativeMethods.Win32_ProcessEvents(hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);

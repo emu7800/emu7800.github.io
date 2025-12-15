@@ -17,8 +17,8 @@ public sealed class StaticSDL3Bitmap : StaticBitmap
 
     public override void Draw(RectF rect)
     {
-        SDL_FRect drect = rect;
-        SDL_RenderTexture(_hRenderer, _texture, ref drect, ref drect);
+        SDL_FRect srect = rect;
+        SDL_RenderTexture(_hRenderer, _texture, IntPtr.Zero, ref srect);
     }
 
     #region IDispose Members
@@ -48,7 +48,9 @@ public sealed class StaticSDL3Bitmap : StaticBitmap
     public unsafe StaticSDL3Bitmap(IntPtr hRenderer, ReadOnlySpan<byte> data)
     {
         _hRenderer = hRenderer;
-        _surface = (IntPtr)SDL_LoadPNG_IO(SDL_IOFromConstMem(data, data.Length), true);
+        var src = SDL_IOFromConstMem(data, data.Length);
+        _surface = (IntPtr)IMG_LoadPNG_IO(src, true);
+        SDL_CloseIO(src);
         _texture = (IntPtr)SDL_CreateTextureFromSurface(_hRenderer, _surface);
     }
 

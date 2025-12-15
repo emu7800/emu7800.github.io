@@ -19,8 +19,8 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3.dll $(TargetDir)" />
-  </Target>
-  <Target Name="PostPublish" AfterTargets="Publish">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3.dll $(PublishDir)" />
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_ttf.dll $(TargetDir)" />
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_image.dll $(TargetDir)" />
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\msyh.ttc $(TargetDir)" />
   </Target>
 </Project>

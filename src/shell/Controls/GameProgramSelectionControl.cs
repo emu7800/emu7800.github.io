@@ -300,11 +300,10 @@ public sealed class GameProgramSelectionControl : ControlBase
                 if (j == 0)
                 {
                     if (gpivic.NameTextLayout == TextLayout.Empty)
-                        gpivic.NameTextLayout = GraphicsDevice.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize, gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+                        gpivic.NameTextLayout = GraphicsDevice.CreateTextLayout(Styles.LargeFontFamily, Styles.LargeFontSize, gpivic.Name, ITEM_WIDTH, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
                     GraphicsDevice.Draw(
                         gpivic.NameTextLayout,
-                        new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height),
-                        SolidColorBrush.White);
+                        new(itemRect.Left, Location.Y + ITEM_HEIGHT / 2 - gpivic.NameTextLayout.Height));
                 }
 
                 if (itemRect.Right < Location.X || itemRect.Left > Location.X + Size.Width
@@ -333,9 +332,9 @@ public sealed class GameProgramSelectionControl : ControlBase
                 var gpivi = gpivic.GameProgramInfoViewItemSet[j];
 
                 if (gpivi.TitleTextLayout == TextLayout.Empty)
-                    gpivi.TitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+                    gpivi.TitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
                 if (gpivi.SubTitleTextLayout == TextLayout.Empty)
-                    gpivi.SubTitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize, gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading);
+                    gpivi.SubTitleTextLayout = GraphicsDevice.CreateTextLayout(Styles.SmallFontFamily, Styles.SmallFontSize, gpivi.SubTitle, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.Gray);
 
                 var itemRectHeight = itemRect.Bottom - itemRect.Top;
                 var totalTextHeight = gpivi.TitleTextLayout.Height + gpivi.SubTitleTextLayout.Height;
@@ -350,15 +349,15 @@ public sealed class GameProgramSelectionControl : ControlBase
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRestInverted : _playRestInverted;
                         GraphicsDevice.FillRectangle(iconRect, SolidColorBrush.White);
                         GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
+                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
                     }
                     else
                     {
                         var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
                         GraphicsDevice.Draw(bitmap, iconRect);
-                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
-                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
+                        GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                        GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
                         GraphicsDevice.DrawRectangle(iconRect, 5.0f, SolidColorBrush.White);
                     }
                 }
@@ -366,8 +365,8 @@ public sealed class GameProgramSelectionControl : ControlBase
                 {
                     var bitmap = gpivi.ImportedGameProgramInfo.PersistedStateExists ? _pauseRest : _playRest;
                     GraphicsDevice.Draw(bitmap, iconRect);
-                    GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation, SolidColorBrush.White);
-                    GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation, SolidColorBrush.Gray);
+                    GraphicsDevice.Draw(gpivi.TitleTextLayout, textTitleLocation);
+                    GraphicsDevice.Draw(gpivi.SubTitleTextLayout, textSubTitleLocation);
                     GraphicsDevice.DrawRectangle(iconRect, 1.0f, SolidColorBrush.White);
                 }
 

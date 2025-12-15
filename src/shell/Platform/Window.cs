@@ -2,32 +2,11 @@
 
 using EMU7800.Core;
 using EMU7800.Services.Dto;
-using System;
 
 namespace EMU7800.Shell;
 
-public interface IWindowDriver
-{
-    public void StartWindowAndProcessEvents(bool startMaximized);
-}
-
-public sealed class EmptyWindowDriver : IWindowDriver
-{
-    public static readonly EmptyWindowDriver Default = new();
-    EmptyWindowDriver() {}
-
-    #region IWindowDriver Members
-
-    public void StartWindowAndProcessEvents(bool _) {}
-
-    #endregion
-}
-
 public static class Window
 {
-    public static Func<IWindowDriver> DriverFactory { get; set; } = () => EmptyWindowDriver.Default;
-    static IWindowDriver _driver = EmptyWindowDriver.Default;
-
     #region Fields
 
     static readonly TimerDevice _timerDevice = new();
@@ -38,23 +17,13 @@ public static class Window
 
     #endregion
 
-    public static void Start(bool startMaximized)
+    public static void ReplaceStartPage(PageBase startPage)
     {
-        _driver = DriverFactory();
-        _driver.StartWindowAndProcessEvents(startMaximized);
+        _pageBackStack = new PageBackStackHost(startPage);
     }
 
-    public static void Start(bool startMaximized, PageBase? startPage = null)
-    {
-        if (startPage is not null)
-        {
-            _pageBackStack = new PageBackStackHost(startPage);
-        }
-        Start(startMaximized);
-    }
-
-    public static void Start(bool startMaximized, GameProgramInfoViewItem gpivi)
-      => Start(startMaximized, new GamePage(gpivi, true));
+    public static void ReplaceStartPage(GameProgramInfoViewItem gpivi)
+      => ReplaceStartPage(new GamePage(gpivi, true));
 
     #region Callbacks
 

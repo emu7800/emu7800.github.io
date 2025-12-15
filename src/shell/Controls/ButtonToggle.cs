@@ -8,7 +8,8 @@ public sealed class ButtonToggle : ButtonBase
 {
     static readonly EventHandler<EventArgs> DefaultEventHandler = (s, o) => {};
 
-    TextLayout _textLayout = TextLayout.Empty;
+    TextLayout _textLayoutBlack = TextLayout.Empty;
+    TextLayout _textLayoutWhite = TextLayout.Empty;
 
     public string Text { get; set; } = string.Empty;
     public string TextFontFamilyName { get; set; } = string.Empty;
@@ -33,29 +34,31 @@ public sealed class ButtonToggle : ButtonBase
         if (IsPressed || IsChecked)
         {
             GraphicsDevice.FillRectangle(new(Location, Size), SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.Black);
+            GraphicsDevice.Draw(_textLayoutBlack, Location);
         }
         else if (IsMouseOver)
         {
             GraphicsDevice.DrawRectangle(new(Location, Size), 2.0f, SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
+            GraphicsDevice.Draw(_textLayoutWhite, Location);
         }
         else
         {
             GraphicsDevice.DrawRectangle(new(Location, Size), 1.0f, SolidColorBrush.White);
-            GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
+            GraphicsDevice.Draw(_textLayoutWhite, Location);
         }
     }
 
     protected override void CreateResources()
     {
         base.CreateResources();
-        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center);
+        _textLayoutBlack = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.Black);
+        _textLayoutWhite = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, WriteParaAlignment.Center, WriteTextAlignment.Center, SolidColorBrush.White);
     }
 
     protected override void DisposeResources()
     {
-        SafeDispose(ref _textLayout);
+        SafeDispose(ref _textLayoutBlack);
+        SafeDispose(ref _textLayoutWhite);
         base.DisposeResources();
     }
 

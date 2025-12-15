@@ -34,8 +34,8 @@ public sealed class TitleControl : ControlBase
     public override void Render()
     {
         GraphicsDevice.Draw(_appicon, _appiconRect);
-        GraphicsDevice.Draw(_titleTextLayout, _titleTextLocation, SolidColorBrush.White);
-        GraphicsDevice.Draw(_subTitleTextLayout, _subTitleTextLocation, SolidColorBrush.White);
+        GraphicsDevice.Draw(_titleTextLayout, _titleTextLocation);
+        GraphicsDevice.Draw(_subTitleTextLayout, _subTitleTextLocation);
     }
 
     protected override async void CreateResources()
@@ -49,13 +49,13 @@ public sealed class TitleControl : ControlBase
             Styles.TitleFontSize,
             "EMU7800",
             300, 64,
-            WriteParaAlignment.Near, WriteTextAlignment.Leading);
+            WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
         _subTitleTextLayout = GraphicsDevice.CreateTextLayout(
             Styles.SubTitleFontFamily,
             Styles.SubTitleFontSize,
             "Classic Atari 2600 and 7800 games",
             300, 64,
-            WriteParaAlignment.Near, WriteTextAlignment.Leading);
+            WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
         _appicon = await CreateStaticBitmapAsync(Asset.appicon_128x128);
     }
 

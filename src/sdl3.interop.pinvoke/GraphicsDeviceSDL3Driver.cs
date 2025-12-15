@@ -10,11 +10,12 @@ namespace EMU7800.SDL3.Interop;
 
 public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
 {
-    public static GraphicsDeviceSDL3Driver Factory() => new();
+    readonly IntPtr hWnd, hRenderer;
+    readonly uint _displayId;
+    readonly List<IDisposable> _disposables = [];
+    readonly Stack<SDL_Rect> _prevClips = [];
 
-    static IntPtr hWnd, hRenderer;
-
-    readonly static List<IDisposable> Disposables = [];
+    public float ScaleFactor { get; private set; } = 1f;
 
     #region IGraphicsDeviceDriver Members
 
@@ -24,26 +25,27 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
     {
         SDL_SetRenderDrawColor(hRenderer, 0, 0, 0, 255); //SDL_ALPHA_OPAQUE
         SDL_RenderClear(hRenderer);
+        SDL_SetRenderScale(hRenderer, ScaleFactor, ScaleFactor);
     }
 
     public DynamicBitmap CreateDynamicBitmap(SizeU size)
     {
         var bitmap = new DynamicSDL3Bitmap(/*hRenderer, size*/);
-        Disposables.Add(bitmap);
+        _disposables.Add(bitmap);
         return bitmap;
     }
 
     public StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data)
     {
         var bitmap = new StaticSDL3Bitmap(hRenderer, data);
-        Disposables.Add(bitmap);
+        _disposables.Add(bitmap);
         return bitmap;
     }
 
-    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment)
+    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
     {
-        var textLayout = new TextSDL3Layout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment);
-        Disposables.Add(textLayout);
+        var textLayout = new TextSDL3Layout(hRenderer, fontSize, text, width, height, paragraphAlignment, textAlignment, brush);
+        _disposables.Add(textLayout);
         return textLayout;
     }
 
@@ -53,8 +55,8 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
     public void Draw(StaticBitmap bitmap, RectF rect)
       => bitmap.Draw(rect);
 
-    public void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush)
-      => textLayout.Draw(location, brush);
+    public void Draw(TextLayout textLayout, PointF location)
+      => textLayout.Draw(location);
 
     public void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush)
     {
@@ -74,6 +76,15 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
         ApplyBrush(brush);
         SDL_FRect r = rect;
         SDL_RenderRect(hRenderer, ref r);
+        while (strokeWidth >= 1.0)
+        {
+            r.x -= 0.5f;
+            r.y -= 0.5f;
+            r.w += 1f;
+            r.h += 1f;
+            strokeWidth -= 1.0f;
+            SDL_RenderRect(hRenderer, ref r);
+        }
     }
 
     public int EndDraw()
@@ -93,28 +104,30 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
         SDL_RenderFillRect(hRenderer, ref r);
     }
 
-    readonly Stack<SDL_Rect> _prevClips = new();
-
     public void PopAxisAlignedClip()
     {
-        if (_prevClips.Count == 0)
-            return;
-        var r = _prevClips.Pop();
-        SDL_SetRenderClipRect(hRenderer, ref r);
+        if (_prevClips.Count > 0)
+        {
+            _prevClips.Pop();
+        }
+        if (_prevClips.Count <= 0)
+        {
+            ClearRenderClipRect();
+        }
+        else
+        {
+            SetRenderClipRect(_prevClips.Peek());
+        }
     }
 
     public void PushAxisAlignedClip(RectF rect, AntiAliasMode antiAliasMode)
     {
-        SDL_GetRenderClipRect(hRenderer, out SDL_Rect r);
-        _prevClips.Push(r);
-
-        r = rect;
-        SDL_SetRenderClipRect(hRenderer, ref r);
-        //SDL_RenderClipEnabled(hRenderer);
+        SetRenderClipRect(rect);
+        _prevClips.Push(rect);
     }
 
     public void Resize(SizeU usize)
-      => SDL_SetWindowSize(hWnd, (int)usize.Width, (int)usize.Height);
+      => SDL_SetWindowSize(hWnd, (int)(usize.Width * ScaleFactor), (int)(usize.Height * ScaleFactor));
 
     public void SetAntiAliasMode(AntiAliasMode antiAliasMode)
     {
@@ -122,46 +135,80 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
 
     public void Shutdown()
     {
-        foreach (var disposable in Disposables)
+        foreach (var disposable in _disposables)
         {
             disposable.Dispose();
         }
-        Disposables.Clear();
+        _disposables.Clear();
 
         if (hRenderer != IntPtr.Zero)
             SDL_DestroyRenderer(hRenderer);
         if (hWnd != IntPtr.Zero)
             SDL_DestroyWindow(hWnd);
-        hWnd = hRenderer = IntPtr.Zero;
+
+        TTF_Quit();
+        SDL_Quit();
     }
 
     #endregion
 
     #region Constructors
 
-    public GraphicsDeviceSDL3Driver()
+    public GraphicsDeviceSDL3Driver(bool startMaximized)
     {
-        const int SdlWindowWidth = 800, SdlWindowHeight = 640;
+        if (!SDL_Init(SDL_InitFlags.SDL_INIT_TIMER | SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_AUDIO | SDL_InitFlags.SDL_INIT_GAMEPAD))
+        {
+            SDL_Log($"Couldn't initialize SDL: {SDL_GetError()}");
+            EC = -1;
+            return;
+        }
 
-        if (!SDL_CreateWindowAndRenderer(VersionInfo.EMU7800, SdlWindowWidth, SdlWindowHeight, SDL_WindowFlags.SDL_WINDOW_RESIZABLE, out hWnd, out hRenderer))
+        if (!TTF_Init())
+        {
+            SDL_Log($"Couldn't initialize SDL TTF: {SDL_GetError()}");
+            EC = -1;
+            return;
+        }
+
+        const int WINDOW_MIN_WIDTH = 800, WINDOW_MIN_HEIGHT = 480;
+
+        var windowFlags = SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_HIGH_PIXEL_DENSITY;
+        if (startMaximized)
+            windowFlags |= SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
+
+        if (!SDL_CreateWindowAndRenderer(VersionInfo.EMU7800, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, windowFlags, out nint hwnd, out nint hrenderer))
         {
             SDL_Log($"Couldn't initialize SDL: CreateWindowAndRenderer: {SDL_GetError()}");
             EC = -1;
+            return;
         }
-        else if (!SDL_SetRenderLogicalPresentation(hRenderer, SdlWindowWidth, SdlWindowHeight, SDL_RendererLogicalPresentation.SDL_LOGICAL_PRESENTATION_DISABLED))
+
+        hWnd = hwnd;
+        hRenderer = hrenderer;
+
+        if (!SDL_SetRenderLogicalPresentation(hRenderer, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, SDL_RendererLogicalPresentation.SDL_LOGICAL_PRESENTATION_DISABLED))
         {
             SDL_Log($"Couldn't initialize SDL: SetRenderLogicalPresentation: {SDL_GetError()}");
             EC = -1;
+            return;
         }
-        else
-        {
-            Window.OnResized(SdlWindowWidth, SdlWindowHeight);
-        }
+
+        ScaleFactor = SDL_GetWindowDisplayScale(hWnd);
+        _displayId = SDL_GetDisplayForWindow(hWnd);
+        SDL_GetDisplayBounds(_displayId, out var desktopRect);
+
+        var windowWidth  = (int)(WINDOW_MIN_WIDTH * ScaleFactor);
+        var windowHeight = (int)(WINDOW_MIN_HEIGHT * ScaleFactor);
+        var posX = (desktopRect.w >> 1) - (windowWidth >> 1);
+        var posY = (desktopRect.h >> 1) - (windowHeight >> 1);
+
+        SDL_SetWindowPosition(hWnd, posX, posY);
+        SDL_SetWindowSize(hWnd, windowWidth, windowHeight);
     }
 
     #endregion
 
-    static void ApplyBrush(SolidColorBrush brush)
+    void ApplyBrush(SolidColorBrush brush)
     {
         switch (brush)
         {
@@ -191,4 +238,10 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
                 break;
         }
     }
+
+    unsafe void SetRenderClipRect(SDL_Rect srect)
+      => SDL_SetRenderClipRect(hRenderer, &srect);
+
+    unsafe void ClearRenderClipRect()
+      => SDL_SetRenderClipRect(hRenderer, (SDL_Rect*)IntPtr.Zero);
 }

@@ -1,27 +1,26 @@
-﻿using EMU7800.Shell;
+﻿// © Mike Murphy
+
+using EMU7800.Shell;
 using System;
 
 using static EMU7800.SDL3.Interop.SDL3;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed class WindowSDL3Driver : IWindowDriver
+public static class WindowSDL3Driver
 {
-    public static WindowSDL3Driver Factory() => new();
-    WindowSDL3Driver() {}
+    static float ScaleFactor = 1f;
+    static bool StartMaximized;
 
-    #region IWindowDriver Members
-
-    public unsafe void StartWindowAndProcessEvents(bool startMaximized)
+    public static unsafe void StartWindowAndProcessEvents(bool startMaximized)
     {
+        StartMaximized = startMaximized;
+
         AudioDevice.DriverFactory     = AudioDeviceSDL3Driver.Factory;
-        GraphicsDevice.DriverFactory  = GraphicsDeviceSDL3Driver.Factory;
         GameControllers.DriverFactory = GameControllersSDL3InputDriver.Factory;
 
         SDL_EnterAppMainCallbacks(0, IntPtr.Zero, AppInit, AppIterate, AppEvent, AppQuit);
     }
-
-    #endregion
 
     static unsafe SDL_AppResult AppInit(IntPtr _, int argc, IntPtr argv)
     {
@@ -29,16 +28,13 @@ public sealed class WindowSDL3Driver : IWindowDriver
 
         SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
 
-        if (!SDL_Init(SDL_InitFlags.SDL_INIT_TIMER | SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_AUDIO | SDL_InitFlags.SDL_INIT_GAMEPAD))
-        {
-            SDL_Log($"Couldn't initialize SDL: Init: {SDL_GetError()}");
-            return SDL_AppResult.SDL_APP_FAILURE;
-        }
+        var driver = new GraphicsDeviceSDL3Driver(StartMaximized);
+        ScaleFactor = driver.ScaleFactor;
 
-        GraphicsDevice.Initialize();
+        GraphicsDevice.Initialize(driver);
         GameControllers.Initialize();
 
-        return SDL_AppResult.SDL_APP_CONTINUE;
+        return GraphicsDevice.EC == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
     }
 
     static unsafe SDL_AppResult AppIterate(IntPtr _)
@@ -49,26 +45,94 @@ public sealed class WindowSDL3Driver : IWindowDriver
 
     static unsafe SDL_AppResult AppEvent(IntPtr _, SDL_Event* pEvt)
     {
+
         switch ((SDL_EventType)pEvt->type)
         {
             case SDL_EventType.SDL_EVENT_QUIT:
                 return SDL_AppResult.SDL_APP_SUCCESS;
-            case SDL_EventType.SDL_EVENT_KEY_DOWN:
-                switch (pEvt->key.scancode)
+            case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
                 {
-                    case SDL_Scancode.SDL_SCANCODE_ESCAPE:
-                        return SDL_AppResult.SDL_APP_SUCCESS;
+                    var w = (int)(pEvt->window.data1 / ScaleFactor);
+                    var h = (int)(pEvt->window.data2 / ScaleFactor);
+                    Window.OnResized(w, h);
                 }
                 break;
-            case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
-                var w = pEvt->window.data1;
-                var h = pEvt->window.data2;
-                Console.WriteLine($"SDL_EVENT_WINDOW_RESIZED: {w}x{h}");
-                Window.OnResized(w, h);
+            case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
+                {
+                    var x = (int)(pEvt->motion.x / ScaleFactor);
+                    var y = (int)(pEvt->motion.y / ScaleFactor);
+                    Window.OnMouseMoved(x, y, (int)pEvt->motion.xrel, (int)pEvt->motion.yrel);
+                }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
+                {
+                    var x = (int)(pEvt->button.x / ScaleFactor);
+                    var y = (int)(pEvt->button.y / ScaleFactor);
+                    Window.OnMouseButtonChanged(x, y, pEvt->button.down);
+                }
+                break;
+            case SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
+                {
+                    var x = (int)(pEvt->wheel.mouse_x / ScaleFactor);
+                    var y = (int)(pEvt->wheel.mouse_y / ScaleFactor);
+                    var delta = (int)(120 * pEvt->wheel.y);
+                    Window.OnMouseWheelChanged(x, y, delta);
+                }
+                break;
+            case SDL_EventType.SDL_EVENT_KEY_DOWN:
+            case SDL_EventType.SDL_EVENT_KEY_UP:
+                Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
                 break;
         }
         return SDL_AppResult.SDL_APP_CONTINUE;
     }
+
+    static KeyboardKey ToKeyboardKey(SDL_Scancode scancode)
+      => scancode switch
+      {
+          SDL_Scancode.SDL_SCANCODE_UP          => KeyboardKey.Up,
+          SDL_Scancode.SDL_SCANCODE_DOWN        => KeyboardKey.Down,
+          SDL_Scancode.SDL_SCANCODE_LEFT        => KeyboardKey.Left,
+          SDL_Scancode.SDL_SCANCODE_RIGHT       => KeyboardKey.Right,
+          SDL_Scancode.SDL_SCANCODE_RETURN      => KeyboardKey.Enter,
+          SDL_Scancode.SDL_SCANCODE_RETURN2     => KeyboardKey.Enter,
+          SDL_Scancode.SDL_SCANCODE_ESCAPE      => KeyboardKey.Escape,
+
+          SDL_Scancode.SDL_SCANCODE_E           => KeyboardKey.E,
+          SDL_Scancode.SDL_SCANCODE_H           => KeyboardKey.H,
+          SDL_Scancode.SDL_SCANCODE_P           => KeyboardKey.P,
+          SDL_Scancode.SDL_SCANCODE_Q           => KeyboardKey.Q,
+          SDL_Scancode.SDL_SCANCODE_R           => KeyboardKey.R,
+          SDL_Scancode.SDL_SCANCODE_S           => KeyboardKey.S,
+          SDL_Scancode.SDL_SCANCODE_W           => KeyboardKey.W,
+          SDL_Scancode.SDL_SCANCODE_X           => KeyboardKey.X,
+          SDL_Scancode.SDL_SCANCODE_Z           => KeyboardKey.Z,
+
+          SDL_Scancode.SDL_SCANCODE_F1          => KeyboardKey.F1,
+          SDL_Scancode.SDL_SCANCODE_F2          => KeyboardKey.F2,
+          SDL_Scancode.SDL_SCANCODE_F3          => KeyboardKey.F3,
+          SDL_Scancode.SDL_SCANCODE_F4          => KeyboardKey.F4,
+
+          SDL_Scancode.SDL_SCANCODE_KP_0        => KeyboardKey.NumberPad0,
+          SDL_Scancode.SDL_SCANCODE_KP_1        => KeyboardKey.NumberPad1,
+          SDL_Scancode.SDL_SCANCODE_KP_2        => KeyboardKey.NumberPad2,
+          SDL_Scancode.SDL_SCANCODE_KP_3        => KeyboardKey.NumberPad3,
+          SDL_Scancode.SDL_SCANCODE_KP_4        => KeyboardKey.NumberPad4,
+          SDL_Scancode.SDL_SCANCODE_KP_5        => KeyboardKey.NumberPad5,
+          SDL_Scancode.SDL_SCANCODE_KP_6        => KeyboardKey.NumberPad6,
+          SDL_Scancode.SDL_SCANCODE_KP_7        => KeyboardKey.NumberPad7,
+          SDL_Scancode.SDL_SCANCODE_KP_8        => KeyboardKey.NumberPad8,
+          SDL_Scancode.SDL_SCANCODE_KP_9        => KeyboardKey.NumberPad9,
+          SDL_Scancode.SDL_SCANCODE_KP_MULTIPLY => KeyboardKey.Multiply,
+          SDL_Scancode.SDL_SCANCODE_KP_PLUS     => KeyboardKey.Add,
+
+          SDL_Scancode.SDL_SCANCODE_PAGEDOWN    => KeyboardKey.PageDown,
+          SDL_Scancode.SDL_SCANCODE_PAGEUP      => KeyboardKey.PageUp,
+
+          SDL_Scancode.SDL_SCANCODE_UNKNOWN     => KeyboardKey.None,
+          _                                     => KeyboardKey.None
+      };
 
     static unsafe void AppQuit(IntPtr _, SDL_AppResult result)
     {

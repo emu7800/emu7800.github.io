@@ -9,11 +9,10 @@ public class TextLayout : DisposableResource
     public SizeF Size { get; protected set; }
     public float Width => Size.Width;
     public float Height => Size.Height;
-    public int LineCount { get; protected set; }
 
     #endregion
 
-    public virtual void Draw(PointF location, SolidColorBrush brush) {}
+    public virtual void Draw(PointF location) {}
 
     #region Constructors
 

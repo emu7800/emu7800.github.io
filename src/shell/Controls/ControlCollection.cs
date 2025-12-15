@@ -243,7 +243,7 @@ public sealed class ControlCollection : ControlBase
     }
 
     static ControlBase[] CreateEmptyControlsArray(int size)
-        => Enumerable.Range(0, size).Select(_ => Default).ToArray();
+        => [.. Enumerable.Range(0, size).Select(_ => Default)];
 
     #endregion
 }

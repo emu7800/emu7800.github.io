@@ -8,7 +8,6 @@ namespace EMU7800.Win32.Interop;
 
 public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
 {
-    public static GraphicsDeviceD2DDriver Factory(IntPtr hWnd) => new(hWnd);
     GraphicsDeviceD2DDriver() {}
 
     readonly static List<IDisposable> Disposables = [];
@@ -33,9 +32,9 @@ public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
         return bitmap;
     }
 
-    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment)
+    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
     {
-        var textLayout = new TextD2DLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment);
+        var textLayout = new TextD2DLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment, brush);
         Disposables.Add(textLayout);
         return textLayout;
     }
@@ -44,8 +43,8 @@ public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
       => bitmap.Draw(rect, interpolationMode);
     public void Draw(StaticBitmap bitmap, RectF rect)
       => bitmap.Draw(rect);
-    public void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush)
-      => textLayout.Draw(location, brush);
+    public void Draw(TextLayout textLayout, PointF location)
+      => textLayout.Draw(location);
     public void DrawEllipse(RectF drect, float strokeWidth, SolidColorBrush brush)
       => Direct2DNativeMethods.Direct2D_DrawEllipse(drect, strokeWidth, brush);
     public void DrawLine(PointF dp0, PointF dp1, float strokeWidth, SolidColorBrush brush)

@@ -8,10 +8,10 @@ public interface IGraphicsDeviceDriver
     void BeginDraw();
     DynamicBitmap CreateDynamicBitmap(SizeU size);
     StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data);
-    TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment);
+    TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush);
     void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode);
     void Draw(StaticBitmap bitmap, RectF rect);
-    void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush);
+    void Draw(TextLayout textLayout, PointF location);
     void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush);
     void DrawLine(PointF p0, PointF p1, float strokeWidth, SolidColorBrush brush);
     void DrawRectangle(RectF rect, float strokeWidth, SolidColorBrush brush);
@@ -36,10 +36,10 @@ public sealed class EmptyGraphicsDeviceDriver : IGraphicsDeviceDriver
     public void BeginDraw() {}
     public DynamicBitmap CreateDynamicBitmap(SizeU size) => DynamicBitmap.Empty;
     public StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data) => StaticBitmap.Empty;
-    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment) => TextLayout.Empty;
+    public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush) => TextLayout.Empty;
     public void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode) {}
     public void Draw(StaticBitmap bitmap, RectF rect) {}
-    public void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush) {}
+    public void Draw(TextLayout textLayout, PointF location) {}
     public void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush) {}
     public void DrawLine(PointF p0, PointF p1, float strokeWidth, SolidColorBrush brush) {}
     public void DrawRectangle(RectF rect, float strokeWidth, SolidColorBrush brush) {}
@@ -57,14 +57,12 @@ public sealed class EmptyGraphicsDeviceDriver : IGraphicsDeviceDriver
 
 public static class GraphicsDevice
 {
-    public static Func<IGraphicsDeviceDriver> DriverFactory { get; set; } = () => EmptyGraphicsDeviceDriver.Default;
-
     static IGraphicsDeviceDriver _driver = EmptyGraphicsDeviceDriver.Default;
 
     public static int EC => _driver.EC;
 
-    public static void Initialize()
-      => _driver = DriverFactory();
+    public static void Initialize(IGraphicsDeviceDriver driver)
+      => _driver = driver;
 
     public static void BeginDraw()
       => _driver.BeginDraw();
@@ -75,8 +73,8 @@ public static class GraphicsDevice
     public static StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data)
       => _driver.CreateStaticBitmap(data);
 
-    public static TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment)
-      => _driver.CreateTextLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment);
+    public static TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
+      => _driver.CreateTextLayout(fontFamilyName, fontSize, text, width, height, paragraphAlignment, textAlignment, brush);
 
     public static void Draw(DynamicBitmap bitmap, RectF rect, BitmapInterpolationMode interpolationMode)
       => _driver.Draw(bitmap, rect, interpolationMode);
@@ -84,8 +82,8 @@ public static class GraphicsDevice
     public static void Draw(StaticBitmap bitmap, RectF rect)
       => _driver.Draw(bitmap, rect);
 
-    public static void Draw(TextLayout textLayout, PointF location, SolidColorBrush brush)
-      => _driver.Draw(textLayout, location, brush);
+    public static void Draw(TextLayout textLayout, PointF location)
+      => _driver.Draw(textLayout, location);
 
     public static void DrawEllipse(RectF rect, float strokeWidth, SolidColorBrush brush)
       => _driver.DrawEllipse(rect, strokeWidth, brush);

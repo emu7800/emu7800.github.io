@@ -88,7 +88,7 @@ public sealed class LabelControl : ControlBase
         {
             CreateResources2();
         }
-        GraphicsDevice.Draw(_textLayout, Location, SolidColorBrush.White);
+        GraphicsDevice.Draw(_textLayout, Location);
     }
 
     protected override void CreateResources()
@@ -109,7 +109,7 @@ public sealed class LabelControl : ControlBase
 
     void CreateResources2()
     {
-        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, ParagraphAlignment, TextAlignment);
+        _textLayout = GraphicsDevice.CreateTextLayout(TextFontFamilyName, TextFontSize, Text, Size.Width, Size.Height, ParagraphAlignment, TextAlignment, SolidColorBrush.White);
     }
 
     #endregion
