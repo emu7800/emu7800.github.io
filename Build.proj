@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="BuildAll">
+﻿<Project DefaultTargets="All">
   <Import Project="Directory.Build.Props" />
   <ItemGroup>
     <ProjectToBuild Include="src\win32\EMU7800.Win32.csproj"/>
@@ -10,8 +10,8 @@
     <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
   </ItemGroup>
   <Target Name="Clean">
-    <!--MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />-->
-	<Exec Command="dotnet clean %(ProjectToBuild.Identity)"/>
+    <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />-->
+    <Exec Command="dotnet clean %(ProjectToBuild.Identity)"/>
     <RemoveDir Directories="$(ArtifactsPath)" />
   </Target>
   <Target Name="Publish" DependsOnTargets="Clean">
@@ -127,7 +127,7 @@
   <Target Name="BuildWin32Installer" DependsOnTargets="ZipWin32Bin">
     <Exec Command="pwsh.exe .\src\tools\Installer\Build.ps1" />
   </Target>
-  <Target Name="BuildAll" DependsOnTargets="BuildWin32Installer;ZipWinSDL3Bin;ZipLinuxArmBin;ZipLinuxArm64Bin">
+  <Target Name="All" DependsOnTargets="BuildWin32Installer;ZipWinSDL3Bin;ZipLinuxArmBin;ZipLinuxArm64Bin">
     <RemoveDir Directories="$(ArtifactsPath)\ROMS;$(ArtifactsPath)\bin;$(ArtifactsPath)\obj;$(ArtifactsPath)\publish" />
   </Target>
 </Project>
