@@ -345,9 +345,11 @@ public sealed class GamePage : PageBase
 #endif
     }
 
-    public override void ControllersChanged(IGameControllersDriver gameControllers)
+    public override void InjectDependency(object dependency)
     {
-        _gameControllers = gameControllers;
+        base.InjectDependency(dependency);
+        if (dependency is IGameControllersDriver gameControllers)
+            _gameControllers = gameControllers;
     }
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)

@@ -139,7 +139,7 @@ public sealed class TitlePage : PageBase
                 ButtonAbout_Clicked(this, EventArgs.Empty);
                 break;
             case KeyboardKey.Escape:
-                PageBackStackStateService.Quit();
+                PopPage();
                 break;
         }
     }
@@ -148,12 +148,12 @@ public sealed class TitlePage : PageBase
 
     #region Event Handlers
 
-    static void ButtonPlayAtariToday_Clicked(object? sender, EventArgs eventArgs)
+    void ButtonPlayAtariToday_Clicked(object? sender, EventArgs eventArgs)
     {
         PushPage(new GameProgramSelectionPage());
     }
 
-    static void ButtonAbout_Clicked(object? sender, EventArgs eventArgs)
+    void ButtonAbout_Clicked(object? sender, EventArgs eventArgs)
     {
         PushPage(new AboutPage());
     }

@@ -9,6 +9,8 @@ public abstract class PageBase : IDisposable
 {
     public static readonly PageBase Default = new PageDefault();
 
+    PageBackStackStateService? _stateService;
+
     protected readonly ControlCollection Controls = new();
 
     public virtual void OnNavigatingHere()
@@ -23,14 +25,11 @@ public abstract class PageBase : IDisposable
     {
     }
 
-    public virtual void AudioChanged(IAudioDeviceDriver audioDevice)
+    public virtual void InjectDependency(object dependency)
     {
-        Controls.AudioChanged(audioDevice);
-    }
-
-    public virtual void ControllersChanged(IGameControllersDriver gameControllers)
-    {
-        Controls.ControllersChanged(gameControllers);
+        Controls.InjectDependency(dependency);
+        if (dependency is  PageBackStackStateService stateService)
+            _stateService = stateService;
     }
 
     public virtual void KeyboardKeyPressed(KeyboardKey key, bool down)
@@ -90,19 +89,19 @@ public abstract class PageBase : IDisposable
 
     #region PageStateService Accessors
 
-    protected static void PushPage(PageBase pageToPush)
+    protected void PushPage(PageBase pageToPush)
     {
-        PageBackStackStateService.Push(pageToPush);
+        _stateService?.Push(pageToPush);
     }
 
-    protected static void ReplacePage(PageBase replacePage)
+    protected void ReplacePage(PageBase replacePage)
     {
-        PageBackStackStateService.Replace(replacePage);
+        _stateService?.Replace(replacePage);
     }
 
-    protected static bool PopPage()
+    protected bool PopPage()
     {
-        return PageBackStackStateService.Pop();
+        return _stateService?.Pop() ?? false;
     }
 
     #endregion

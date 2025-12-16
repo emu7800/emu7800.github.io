@@ -88,11 +88,7 @@ public abstract class ControlBase : IDisposable
     {
     }
 
-    public virtual void AudioChanged(IAudioDeviceDriver audioDevice)
-    {
-    }
-
-    public virtual void ControllersChanged(IGameControllersDriver gameControllers)
+    public virtual void InjectDependency(object dependency)
     {
     }
 

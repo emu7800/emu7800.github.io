@@ -5,28 +5,28 @@ using System.Linq;
 
 namespace EMU7800.Shell;
 
-public static class PageBackStackStateService
+public sealed class PageBackStackStateService
 {
     #region Fields
 
-    static readonly Stack<PageBase> _pageStack = new();
-    static readonly HashSet<PageBase> _disposingPages = [];
-    static PageBase _pendingPage = PageBase.Default;
+    readonly Stack<PageBase> _pageStack = new();
+    readonly HashSet<PageBase> _disposingPages = [];
+    PageBase _pendingPage = PageBase.Default;
 
     #endregion
 
-    public static bool IsPagePending     { get; set; }  // cached _pendingPage != null for perf
-    public static bool IsDisposablePages { get; set; }  // cached _disposingPages.Count > 0 for perf
-    public static bool IsQuitPending     { get; set; }
+    public bool IsPagePending     { get; private set; }
+    public bool IsQuitPending     { get; private set; }
+    public bool IsDisposablePages { get; private set; }
 
-    public static void Push(PageBase newPage)
+    public void Push(PageBase newPage)
     {
         _pageStack.Push(newPage);
         _pendingPage = newPage;
         IsPagePending = !ReferenceEquals(_pendingPage, PageBase.Default);
     }
 
-    public static void Replace(PageBase newPage)
+    public void Replace(PageBase newPage)
     {
         var replacedPage = _pageStack.Pop();
         _pageStack.Push(newPage);
@@ -36,10 +36,13 @@ public static class PageBackStackStateService
         IsDisposablePages = true;
     }
 
-    public static bool Pop()
+    public bool Pop()
     {
         if (_pageStack.Count <= 1)
+        {
+            IsQuitPending = true;
             return false;
+        }
         var poppedPage = _pageStack.Pop();
         var newPage = _pageStack.Peek();
         _pendingPage = newPage;
@@ -49,12 +52,7 @@ public static class PageBackStackStateService
         return true;
     }
 
-    public static void Quit()
-    {
-        IsQuitPending = true;
-    }
-
-    public static PageBase GetPendingPage()
+    public PageBase GetPendingPage()
     {
         var pendingPage = _pendingPage;
         _pendingPage = PageBase.Default;
@@ -62,7 +60,7 @@ public static class PageBackStackStateService
         return pendingPage;
     }
 
-    public static PageBase GetNextDisposablePage()
+    public PageBase GetNextDisposablePage()
     {
         IsDisposablePages = _disposingPages.Count > 0;
         if (!IsDisposablePages)

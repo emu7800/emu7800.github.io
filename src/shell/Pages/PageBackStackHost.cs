@@ -9,6 +9,8 @@ public sealed class PageBackStackHost : IDisposable
 {
     #region Fields
 
+    readonly PageBackStackStateService _stateService = new();
+
     PageBase _currentPage = new Nullpage();
     bool _pageChanged;
     SizeF _size;
@@ -20,23 +22,24 @@ public sealed class PageBackStackHost : IDisposable
 
     public bool StartOfCycle()
     {
-        if (PageBackStackStateService.IsQuitPending)
+        if (_stateService.IsQuitPending)
         {
             return false;
         }
 
-        if (PageBackStackStateService.IsPagePending)
+        if (_stateService.IsPagePending)
         {
             _currentPage.OnNavigatingAway();
-            _currentPage = PageBackStackStateService.GetPendingPage();
+            _currentPage = _stateService.GetPendingPage();
             _currentPage.OnNavigatingHere();
             _currentPage.Resized(_size);
-            _currentPage.AudioChanged(_audioDevice);
-            _currentPage.ControllersChanged(_gameControllers);
+            _currentPage.InjectDependency(_stateService);
+            _currentPage.InjectDependency(_audioDevice);
+            _currentPage.InjectDependency(_gameControllers);
             _pageChanged = true;
         }
 
-        if (PageBackStackStateService.IsDisposablePages)
+        if (_stateService.IsDisposablePages)
         {
             DisposeAllDisposings();
         }
@@ -58,6 +61,11 @@ public sealed class PageBackStackHost : IDisposable
     {
         _size = size;
         _currentPage.Resized(size);
+    }
+
+    public void InjectDependency(object dependency)
+    {
+        _currentPage.InjectDependency(dependency);
     }
 
     public void AudioChanged(IAudioDeviceDriver audioDevice)
@@ -132,10 +140,10 @@ public sealed class PageBackStackHost : IDisposable
 
     #region Constructors
 
+    PageBackStackHost() {}
+
     public PageBackStackHost(PageBase startPage)
-    {
-        PageBackStackStateService.Push(startPage);
-    }
+      => _stateService.Push(startPage);
 
     #endregion
 
@@ -150,7 +158,7 @@ public sealed class PageBackStackHost : IDisposable
     {
         if (disposing)
         {
-            while (PageBackStackStateService.Pop())
+            while (_stateService.Pop())
             {
             }
             DisposeAllDisposings();
@@ -158,11 +166,11 @@ public sealed class PageBackStackHost : IDisposable
         }
     }
 
-    static void DisposeAllDisposings()
+    void DisposeAllDisposings()
     {
-        while (PageBackStackStateService.IsDisposablePages)
+        while (_stateService.IsDisposablePages)
         {
-            var disposingPage = PageBackStackStateService.GetNextDisposablePage();
+            var disposingPage = _stateService.GetNextDisposablePage();
             disposingPage.Dispose();
         }
     }

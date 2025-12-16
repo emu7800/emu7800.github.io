@@ -16,21 +16,12 @@ public sealed class ControlCollection : ControlBase
 
     #region ControlBase Overrides
 
-    public override void AudioChanged(IAudioDeviceDriver audioDevice)
+    public override void InjectDependency(object dependency)
     {
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            control.AudioChanged(audioDevice);
-        }
-    }
-
-    public override void ControllersChanged(IGameControllersDriver gameControllers)
-    {
-        for (var i = 0; i < _controls.Length; i++)
-        {
-            var control = _controls[i];
-            control.ControllersChanged(gameControllers);
+            control.InjectDependency(dependency);
         }
     }
 

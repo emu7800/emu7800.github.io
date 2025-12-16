@@ -187,9 +187,11 @@ public sealed class GameControl : ControlBase
 
     #region ControlBase Overrides
 
-    public override void AudioChanged(IAudioDeviceDriver audioDevice)
+    public override void InjectDependency(object dependency)
     {
-        _audioDevice = audioDevice;
+        base.InjectDependency(dependency);
+        if (dependency is IAudioDeviceDriver audioDevice)
+            _audioDevice = audioDevice;
     }
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)

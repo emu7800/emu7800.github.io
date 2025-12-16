@@ -69,7 +69,7 @@ public sealed class AboutPage : PageBase
 
     #region Event Handlers
 
-    static void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
+    void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
     {
         PopPage();
     }

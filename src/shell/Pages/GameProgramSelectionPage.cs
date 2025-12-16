@@ -75,14 +75,14 @@ public sealed class GameProgramSelectionPage : PageBase
 
     #region Event Handlers
 
-    static void GameProgramSelectionControl_Selected(object? sender, GameProgramSelectedEventArgs e)
+    void GameProgramSelectionControl_Selected(object? sender, GameProgramSelectedEventArgs e)
     {
         var gameProgramInfoViewItem = e.GameProgramInfoViewItem;
         var gamePage = new GamePage(gameProgramInfoViewItem);
         PushPage(gamePage);
     }
 
-    static void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
+    void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
     {
         PopPage();
     }
