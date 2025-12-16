@@ -29,11 +29,6 @@ public sealed class StaticD2DBitmap : StaticBitmap
         base.Dispose(disposing);
     }
 
-    ~StaticD2DBitmap()
-    {
-        Dispose(false);
-    }
-
     #endregion
 
     #region Constructors

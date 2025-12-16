@@ -5,13 +5,11 @@ using System;
 
 namespace EMU7800.Win32.Interop;
 
-public sealed class AudioDeviceWinmmDriver : IAudioDeviceDriver
+public sealed class AudioDeviceWinmmDriver : DisposableResource, IAudioDeviceDriver
 {
     IntPtr hwo;
 
     #region IAudioDeviceDriver Members
-
-    public int EC { get; private set; }
 
     public void Close()
       => WinmmNativeMethods.Close(hwo);
@@ -19,14 +17,29 @@ public sealed class AudioDeviceWinmmDriver : IAudioDeviceDriver
     public int GetBuffersQueued()
       => WinmmNativeMethods.GetBuffersQueued(hwo);
 
-    public void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
+    public bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
     {
         hwo = WinmmNativeMethods.Open(frequency, bufferPayloadSizeInBytes, queueLength, out var ec);
-        EC = ec;
+        HR = ec;
+        return ec == 0;
     }
 
     public void SubmitBuffer(ReadOnlySpan<byte> buffer)
       => WinmmNativeMethods.Enqueue(hwo, buffer);
+
+    #endregion
+
+    #region IDispose Members
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_resourceDisposed)
+        {
+            WinmmNativeMethods.Close(hwo);
+            _resourceDisposed = true;
+        }
+        base.Dispose(disposing);
+    }
 
     #endregion
 }

@@ -36,11 +36,6 @@ public sealed class StaticSDL3Bitmap : StaticBitmap
         base.Dispose(disposing);
     }
 
-    ~StaticSDL3Bitmap()
-    {
-        Dispose(false);
-    }
-
     #endregion
 
     #region Constructors

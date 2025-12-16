@@ -4,24 +4,21 @@ namespace EMU7800.Shell;
 
 public interface IAudioDeviceDriver
 {
-    public int EC { get; }
     void Close();
     int GetBuffersQueued();
-    void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength);
+    bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength);
     void SubmitBuffer(ReadOnlySpan<byte> buffer);
 }
 
 public sealed class EmptyAudioDeviceDriver : IAudioDeviceDriver
 {
     public readonly static EmptyAudioDeviceDriver Default = new();
-    EmptyAudioDeviceDriver() { }
+    EmptyAudioDeviceDriver() {}
 
     #region IAudioDeviceDriver Members
-
-    public int EC { get; }
-    public void Close() { }
+    public void Close() {}
     public int GetBuffersQueued() => 0;
-    public void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength) { }
+    public bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength) => false;
     public void SubmitBuffer(ReadOnlySpan<byte> buffer) { }
 
     #endregion

@@ -11,8 +11,6 @@ public sealed class AudioDevice
     public int QueueLength { get; private set; }
     public bool IsOpened { get; private set; }
     public bool IsClosed => !IsOpened;
-    public int EC => _driver.EC;
-
     public int CountBuffersQueued()
       => IsOpened ? _driver.GetBuffersQueued() : -1;
 
@@ -23,8 +21,7 @@ public sealed class AudioDevice
 
         if (!IsOpened)
         {
-            _driver.Open(Frequency, BufferPayloadSizeInBytes, QueueLength);
-            IsOpened = EC == 0;
+            IsOpened = _driver.Open(Frequency, BufferPayloadSizeInBytes, QueueLength);
         }
 
         if (IsOpened)

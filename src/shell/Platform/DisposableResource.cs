@@ -6,7 +6,7 @@ public abstract class DisposableResource : IDisposable
 {
     protected bool _resourceDisposed;
 
-    public int HR { get; init; } = 0;
+    public int HR { get; protected set; } = 0;
 
     protected virtual void Dispose(bool disposing) {}
 
@@ -15,4 +15,7 @@ public abstract class DisposableResource : IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    ~DisposableResource()
+      => Dispose(false);
 }

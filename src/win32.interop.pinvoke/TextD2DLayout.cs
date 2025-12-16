@@ -29,11 +29,6 @@ public sealed class TextD2DLayout : TextLayout
         base.Dispose(disposing);
     }
 
-    ~TextD2DLayout()
-    {
-        Dispose(false);
-    }
-
     #endregion
 
     #region Constructors

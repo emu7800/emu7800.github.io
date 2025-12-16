@@ -33,11 +33,6 @@ public sealed class DynamicD2DBitmap : DynamicBitmap
         base.Dispose(disposing);
     }
 
-    ~DynamicD2DBitmap()
-    {
-        Dispose(false);
-    }
-
     #endregion
 
     #region Constructors

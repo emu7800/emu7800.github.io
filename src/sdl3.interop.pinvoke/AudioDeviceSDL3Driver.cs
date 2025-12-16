@@ -3,14 +3,9 @@ using System;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed class AudioDeviceSDL3Driver : IAudioDeviceDriver
+public sealed class AudioDeviceSDL3Driver : DisposableResource, IAudioDeviceDriver
 {
-    public static AudioDeviceSDL3Driver Factory() => new();
-    AudioDeviceSDL3Driver() {}
-
     #region IAudioDeviceDriver Members
-
-    public int EC { get; }
 
     public void Close()
     {
@@ -21,12 +16,24 @@ public sealed class AudioDeviceSDL3Driver : IAudioDeviceDriver
         return 0;
     }
 
-    public void Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
-    {
-    }
+    public bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
+      => false;
 
     public void SubmitBuffer(ReadOnlySpan<byte> buffer)
     {
+    }
+
+    #endregion
+
+    #region IDispose Members
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_resourceDisposed)
+        {
+            _resourceDisposed = true;
+        }
+        base.Dispose(disposing);
     }
 
     #endregion

@@ -29,8 +29,8 @@
     <ItemGroup>
       <Win32BinArtifacts      Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*;lib\EMU7800.Win32.Interop.dll" />
       <WinSDL3BinArtifacts    Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\msyh.ttc " />
-      <LinuxArmBinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*" />
-      <LinuxArm64BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*" />
+      <LinuxArmBinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*;lib\msyh.ttc" />
+      <LinuxArm64BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*;lib\msyh.ttc" />
       <RomArtifacts           Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin;$(ArtifactsPath)\EMU7800.winsdl3bin;$(ArtifactsPath)\EMU7800.linuxarmbin;$(ArtifactsPath)\EMU7800.linuxarm64bin" />
