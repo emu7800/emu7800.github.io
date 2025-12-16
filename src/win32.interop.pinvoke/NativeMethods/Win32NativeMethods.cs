@@ -419,7 +419,10 @@ internal static unsafe partial class Win32NativeMethods
             }
             else
             {
-                wg.Window.OnIterate(wg.GraphicsDevice, wg.GameControllers);
+                if (!wg.Window.OnIterate(wg.GraphicsDevice, wg.GameControllers))
+                {
+                    break;
+                }
             }
         }
 

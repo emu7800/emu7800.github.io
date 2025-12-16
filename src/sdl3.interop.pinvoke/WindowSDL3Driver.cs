@@ -65,7 +65,10 @@ public sealed class WindowSDL3Driver
             return SDL_AppResult.SDL_APP_FAILURE;
         }
 
-        wd.Window.OnIterate(wd.GraphicsDevice, wd.GameControllers);
+        if (!wd.Window.OnIterate(wd.GraphicsDevice, wd.GameControllers))
+        {
+            return SDL_AppResult.SDL_APP_FAILURE;
+        }
 
         return SDL_AppResult.SDL_APP_CONTINUE;
     }
@@ -132,7 +135,9 @@ public sealed class WindowSDL3Driver
           SDL_Scancode.SDL_SCANCODE_RETURN      => KeyboardKey.Enter,
           SDL_Scancode.SDL_SCANCODE_RETURN2     => KeyboardKey.Enter,
           SDL_Scancode.SDL_SCANCODE_ESCAPE      => KeyboardKey.Escape,
+          SDL_Scancode.SDL_SCANCODE_SLASH       => KeyboardKey.Help,
 
+          SDL_Scancode.SDL_SCANCODE_A           => KeyboardKey.A,
           SDL_Scancode.SDL_SCANCODE_E           => KeyboardKey.E,
           SDL_Scancode.SDL_SCANCODE_H           => KeyboardKey.H,
           SDL_Scancode.SDL_SCANCODE_P           => KeyboardKey.P,

@@ -58,6 +58,19 @@ public sealed class GameProgramSelectionPage : PageBase
         _gameProgramSelectionControl.Size = new(size.Width, size.Height - 100);
     }
 
+    public override void KeyboardKeyPressed(KeyboardKey key, bool down)
+    {
+        base.KeyboardKeyPressed(key, down);
+        if (!down)
+            return;
+        switch (key)
+        {
+            case KeyboardKey.Escape:
+                PopPage();
+                break;
+        }
+    }
+
     #endregion
 
     #region Event Handlers

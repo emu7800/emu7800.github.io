@@ -124,6 +124,26 @@ public sealed class TitlePage : PageBase
         }
     }
 
+    public override void KeyboardKeyPressed(KeyboardKey key, bool down)
+    {
+        base.KeyboardKeyPressed(key, down);
+        if (!down)
+            return;
+        switch (key)
+        {
+            case KeyboardKey.Enter:
+                ButtonPlayAtariToday_Clicked(this, EventArgs.Empty);
+                break;
+            case KeyboardKey.A:
+            case KeyboardKey.Help:
+                ButtonAbout_Clicked(this, EventArgs.Empty);
+                break;
+            case KeyboardKey.Escape:
+                PageBackStackStateService.Quit();
+                break;
+        }
+    }
+
     #endregion
 
     #region Event Handlers

@@ -23,9 +23,12 @@ public sealed class Window
     public void OnDrivingPositionChanged(int controllerNo, MachineInput input)
       => _pageBackStack.DrivingPositionChanged(controllerNo, input);
 
-    public void OnIterate(IGraphicsDeviceDriver graphicsDevice, IGameControllersDriver gameControllers)
+    public bool OnIterate(IGraphicsDeviceDriver graphicsDevice, IGameControllersDriver gameControllers)
     {
-        _pageBackStack.StartOfCycle();
+        if (!_pageBackStack.StartOfCycle())
+        {
+            return false;
+        }
 
         if (!_resourcesLoaded)
         {
@@ -44,6 +47,8 @@ public sealed class Window
         graphicsDevice.EndDraw();
 
         _timerDevice.Update();
+
+        return true;
     }
 
     public void OnKeyboardKeyPressed(ushort vkey, bool down)

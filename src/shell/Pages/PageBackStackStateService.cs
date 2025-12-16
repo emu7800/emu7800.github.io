@@ -17,6 +17,7 @@ public static class PageBackStackStateService
 
     public static bool IsPagePending     { get; set; }  // cached _pendingPage != null for perf
     public static bool IsDisposablePages { get; set; }  // cached _disposingPages.Count > 0 for perf
+    public static bool IsQuitPending     { get; set; }
 
     public static void Push(PageBase newPage)
     {
@@ -46,6 +47,11 @@ public static class PageBackStackStateService
         IsPagePending = !ReferenceEquals(_pendingPage, PageBase.Default);
         IsDisposablePages = true;
         return true;
+    }
+
+    public static void Quit()
+    {
+        IsQuitPending = true;
     }
 
     public static PageBase GetPendingPage()

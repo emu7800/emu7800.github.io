@@ -18,8 +18,13 @@ public sealed class PageBackStackHost : IDisposable
 
     #endregion
 
-    public void StartOfCycle()
+    public bool StartOfCycle()
     {
+        if (PageBackStackStateService.IsQuitPending)
+        {
+            return false;
+        }
+
         if (PageBackStackStateService.IsPagePending)
         {
             _currentPage.OnNavigatingAway();
@@ -32,7 +37,11 @@ public sealed class PageBackStackHost : IDisposable
         }
 
         if (PageBackStackStateService.IsDisposablePages)
+        {
             DisposeAllDisposings();
+        }
+
+        return true;
     }
 
     public void OnNavigatingAway()
