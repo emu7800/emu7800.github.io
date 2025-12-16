@@ -20,7 +20,4 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll $(TargetDir)" />
   </Target>
-  <Target Name="PostPublish" AfterTargets="Publish">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll $(PublishDir)" />
-  </Target>
 </Project>

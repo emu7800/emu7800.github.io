@@ -27,8 +27,8 @@
   </Target>
   <Target Name="CopyBin" DependsOnTargets="Publish;ZipRoms">
     <ItemGroup>
-      <Win32BinArtifacts      Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*" />
-      <WinSDL3BinArtifacts    Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*" />
+      <Win32BinArtifacts      Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*;lib\EMU7800.Win32.Interop.dll" />
+      <WinSDL3BinArtifacts    Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\msyh.ttc " />
       <LinuxArmBinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*" />
       <LinuxArm64BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*" />
       <RomArtifacts           Include="$(ArtifactsPath)\ROMS\**\*" />

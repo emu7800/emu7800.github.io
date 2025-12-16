@@ -16,12 +16,4 @@
     <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
   </ItemGroup>
-  <!--
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(TargetDir)" />
-  </Target>
-  <Target Name="PostPublish" AfterTargets="Publish">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\*.dll $(PublishDir)" />
-  </Target>
-  -->
 </Project>
