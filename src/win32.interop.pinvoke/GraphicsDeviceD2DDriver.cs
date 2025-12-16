@@ -6,15 +6,12 @@ using System.Collections.Generic;
 
 namespace EMU7800.Win32.Interop;
 
-public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
+public sealed class GraphicsDeviceD2DDriver : DisposableResource, IGraphicsDeviceDriver
 {
-    GraphicsDeviceD2DDriver() {}
-
     readonly static List<IDisposable> Disposables = [];
 
     #region IGraphicsDeviceDriver Members
 
-    public int EC { get; private set; }
     public void BeginDraw()
       => Direct2DNativeMethods.Direct2D_BeginDraw();
 
@@ -79,10 +76,26 @@ public sealed class GraphicsDeviceD2DDriver : IGraphicsDeviceDriver
 
     #endregion
 
+    #region IDispose Members
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_resourceDisposed)
+        {
+            Shutdown();
+            _resourceDisposed = true;
+        }
+        base.Dispose(disposing);
+    }
+
+    #endregion
+
     #region Constructors
 
+    GraphicsDeviceD2DDriver() {}
+
     public GraphicsDeviceD2DDriver(IntPtr hWnd)
-      => EC = Direct2DNativeMethods.Direct2D_Initialize(hWnd);
+      => HR = Direct2DNativeMethods.Direct2D_Initialize(hWnd);
 
     #endregion
 }

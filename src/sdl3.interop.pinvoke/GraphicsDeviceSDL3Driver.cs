@@ -8,18 +8,17 @@ using static EMU7800.SDL3.Interop.SDL3;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
+public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDeviceDriver
 {
     readonly IntPtr hWnd, hRenderer;
     readonly uint _displayId;
     readonly List<IDisposable> _disposables = [];
     readonly Stack<SDL_Rect> _prevClips = [];
+    readonly Dictionary<float, IntPtr> _cachedFonts = [];
 
     public float ScaleFactor { get; private set; } = 1f;
 
     #region IGraphicsDeviceDriver Members
-
-    public int EC { get; private set; }
 
     public void BeginDraw()
     {
@@ -44,7 +43,18 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
 
     public TextLayout CreateTextLayout(string fontFamilyName, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
     {
-        var textLayout = new TextSDL3Layout(hRenderer, fontSize, text, width, height, paragraphAlignment, textAlignment, brush);
+        if (!_cachedFonts.TryGetValue(fontSize, out var hFont))
+        {
+            const string FontFileName = "msyh.ttc";
+            hFont = TTF_OpenFont(FontFileName, fontSize);
+            if (hFont == IntPtr.Zero)
+            {
+                SDL_Log($"CreateTextLayout: Unable to locate font: {FontFileName}");
+            }
+            _cachedFonts.Add(fontSize, hFont);
+        }
+
+        var textLayout = new TextSDL3Layout(hRenderer, hFont, text, width, height, paragraphAlignment, textAlignment, brush);
         _disposables.Add(textLayout);
         return textLayout;
     }
@@ -141,6 +151,12 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
         }
         _disposables.Clear();
 
+        foreach (var kvp in _cachedFonts)
+        {
+            TTF_CloseFont(kvp.Value);
+        }
+        _cachedFonts.Clear();
+
         if (hRenderer != IntPtr.Zero)
             SDL_DestroyRenderer(hRenderer);
         if (hWnd != IntPtr.Zero)
@@ -152,21 +168,37 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
 
     #endregion
 
+    #region IDispose Members
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_resourceDisposed)
+        {
+            Shutdown();
+            _resourceDisposed = true;
+        }
+        base.Dispose(disposing);
+    }
+
+    #endregion
+
     #region Constructors
+
+    GraphicsDeviceSDL3Driver() {}
 
     public GraphicsDeviceSDL3Driver(bool startMaximized)
     {
         if (!SDL_Init(SDL_InitFlags.SDL_INIT_TIMER | SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_AUDIO | SDL_InitFlags.SDL_INIT_GAMEPAD))
         {
             SDL_Log($"Couldn't initialize SDL: {SDL_GetError()}");
-            EC = -1;
+            HR = -1;
             return;
         }
 
         if (!TTF_Init())
         {
             SDL_Log($"Couldn't initialize SDL TTF: {SDL_GetError()}");
-            EC = -1;
+            HR = -1;
             return;
         }
 
@@ -179,7 +211,7 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
         if (!SDL_CreateWindowAndRenderer(VersionInfo.EMU7800, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, windowFlags, out nint hwnd, out nint hrenderer))
         {
             SDL_Log($"Couldn't initialize SDL: CreateWindowAndRenderer: {SDL_GetError()}");
-            EC = -1;
+            HR = -1;
             return;
         }
 
@@ -189,7 +221,7 @@ public sealed class GraphicsDeviceSDL3Driver : IGraphicsDeviceDriver
         if (!SDL_SetRenderLogicalPresentation(hRenderer, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, SDL_RendererLogicalPresentation.SDL_LOGICAL_PRESENTATION_DISABLED))
         {
             SDL_Log($"Couldn't initialize SDL: SetRenderLogicalPresentation: {SDL_GetError()}");
-            EC = -1;
+            HR = -1;
             return;
         }
 

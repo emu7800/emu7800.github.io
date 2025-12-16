@@ -55,7 +55,7 @@ public sealed class WindowSDL3Driver
 
         wd.GameControllers.Initialize();
 
-        return wd.GraphicsDevice.EC == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
+        return wd.GraphicsDevice.HR == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
     }
 
     static unsafe SDL_AppResult AppIterate(IntPtr pAppState)

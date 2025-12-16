@@ -4,7 +4,7 @@ namespace EMU7800.Shell;
 
 public interface IGraphicsDeviceDriver
 {
-    int EC { get; }
+    int HR { get; }
     void BeginDraw();
     DynamicBitmap CreateDynamicBitmap(SizeU size);
     StaticBitmap CreateStaticBitmap(ReadOnlySpan<byte> data);

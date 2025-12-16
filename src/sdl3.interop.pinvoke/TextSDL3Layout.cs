@@ -9,7 +9,7 @@ using static EMU7800.SDL3.Interop.SDL3;
 
 public sealed class TextSDL3Layout : TextLayout
 {
-    readonly IntPtr _hRenderer, _font, _texture;
+    readonly IntPtr _hRenderer, _texture;
     readonly SDL_FRect _dstrect;
 
     public override void Draw(PointF location)
@@ -30,31 +30,23 @@ public sealed class TextSDL3Layout : TextLayout
         {
             if (_texture != IntPtr.Zero && HR == 0)
                 SDL_DestroyTexture(_texture);
-            if (_font != IntPtr.Zero && HR == 0)
-                TTF_CloseFont(_font);
             _resourceDisposed = true;
         }
         base.Dispose(disposing);
-    }
-
-    ~TextSDL3Layout()
-    {
-        Dispose(false);
     }
 
     #endregion
 
     #region Constructors
 
-    public unsafe TextSDL3Layout(IntPtr hRenderer, float fontSize, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
+    public unsafe TextSDL3Layout(IntPtr hRenderer, IntPtr hFont, string text, float width, float height, WriteParaAlignment paragraphAlignment, WriteTextAlignment textAlignment, SolidColorBrush brush)
     {
-        if (string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text) || hRenderer == IntPtr.Zero || hFont == IntPtr.Zero)
             return;
 
         _hRenderer = hRenderer;
 
-        _font = TTF_OpenFont("msyh.ttc", fontSize);
-        var surface = (IntPtr)TTF_RenderText_Blended_Wrapped(_font, text, 0, ToSDLColor(brush), (int)width);
+        var surface = (IntPtr)TTF_RenderText_Blended_Wrapped(hFont, text, 0, ToSDLColor(brush), (int)width);
         var texture = SDL_CreateTextureFromSurface(_hRenderer, surface);
         _texture = (IntPtr)texture;
         SDL_SetTextureScaleMode(_texture, SDL_ScaleMode.SDL_SCALEMODE_NEAREST);
