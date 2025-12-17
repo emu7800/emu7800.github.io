@@ -12,6 +12,8 @@ public sealed class SDLConsoleLogger : ILogger
     public void Log(int level, string message)
     {
         if (level <= Level)
+        {
             SDL_Log(message);
+        }
     }
 }

@@ -4,27 +4,26 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace EMU7800.Shell;
 
-public static class CommandLine
+public sealed class CommandLine
 {
+    readonly ILogger _logger;
+
     static CommandLine()
     {
         AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
     }
 
-    public static void Run(ICommandLineDriver driver, string[] args)
+    public void Run(ICommandLineDriver driver, string[] args)
     {
         if (IsArg0(args, ["-r", "/r"]))
         {
-            driver.AttachConsole();
-
             var romPath = args.Length > 1 ? args[1] : string.Empty;
             if (string.IsNullOrWhiteSpace(romPath) || !File.Exists(romPath))
             {
-                Console.WriteLine($"Rom path not specified or not found: '{romPath}'");
+                _logger.Log(1, $"Rom path not specified or not found: '{romPath}'");
                 Environment.Exit(-8);
             }
 
@@ -46,7 +45,7 @@ public static class CommandLine
                     }
                     else if (cartType.ToString().StartsWith("A78"))
                     {
-                        Console.WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
+                        _logger.Log(1, $"Bad CartType '{cartType}' for MachineType '{machineType}'");
                         Environment.Exit(-8);
                     }
                     lController = lController is Controller.None ? Controller.Joystick : lController;
@@ -62,7 +61,7 @@ public static class CommandLine
                     }
                     else if (!cartType.ToString().StartsWith("A78"))
                     {
-                        Console.WriteLine($"Bad CartType '{cartType}' for MachineType '{machineType}'");
+                        _logger.Log(1, $"Bad CartType '{cartType}' for MachineType '{machineType}'");
                         Environment.Exit(-8);
                     }
                     lController = lController is Controller.None ? Controller.ProLineJoystick : lController;
@@ -70,7 +69,7 @@ public static class CommandLine
                 }
                 else
                 {
-                    Console.WriteLine("Unknown MachineType: " + machineType);
+                    _logger.Log(1, "Unknown MachineType: " + machineType);
                     Environment.Exit(-8);
                 }
                 driver.StartGameProgram(new(machineType, cartType, lController, rController, romPath), false);
@@ -92,7 +91,7 @@ public static class CommandLine
                     }
                     else
                     {
-                        Console.WriteLine("No information in ROMProperties.csv database for: " + romPath);
+                        _logger.Log(1, "No information in ROMProperties.csv database for: " + romPath);
                         Environment.Exit(-8);
                     }
                 }
@@ -103,8 +102,6 @@ public static class CommandLine
 
         if (IsArg0(args, ["-d", "/d"]))
         {
-            driver.AttachConsole();
-
             var romPath = args.Length > 1 ? args[1] : string.Empty;
             var romPaths = string.IsNullOrEmpty(romPath)
                 ? []
@@ -114,9 +111,9 @@ public static class CommandLine
 
             foreach (var path in romPaths)
             {
-                RomBytesService.DumpBin(path, Console.WriteLine);
+                RomBytesService.DumpBin(path, m => _logger.Log(1, m));
                 var gpiList = GameProgramLibraryService.GetGameProgramInfos(path);
-                Console.WriteLine(gpiList.Count > 0
+                _logger.Log(1, gpiList.Count > 0
                           ? """
 
                     Found matching entries in ROMProperties.csv database:
@@ -128,7 +125,7 @@ public static class CommandLine
 
                 foreach (var gpi in gpiList)
                 {
-                    Console.WriteLine($"""
+                    _logger.Log(1, $"""
 
                            Title       : {gpi.Title}
                            Manufacturer: {gpi.Manufacturer}
@@ -155,9 +152,7 @@ public static class CommandLine
 
         if (IsArg0(args, ["-?", "/?", "-h", "/h", "--help"]))
         {
-            driver.AttachConsole();
-
-            Console.WriteLine($"""
+            _logger.Log(1, $"""
 
                ** {VersionInfo.EMU7800} {VersionInfo.AssemblyVersion} **
                {VersionInfo.Author}
@@ -168,7 +163,7 @@ public static class CommandLine
                Options:
                -r <filename> : Try launching Game Program using specified machine configuration or .a78 header info
                -d <path>     : Dump Game Program information
-               -c            : Run Game Program selection menu with new console window (Windows only)
+               -c            : Open console window (Windows only)
                (none)        : Run Game Program selection menu
                -?            : This help
 
@@ -185,41 +180,19 @@ public static class CommandLine
             Environment.Exit(0);
         }
 
-        if (IsArg0(args, ["-c", "/c"]))
-        {
-            var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        driver.Start(false);
 
-            driver.AttachConsole(isWindows);
-
-            driver.Start(false);
-
-            if (isWindows)
-            {
-                Console.WriteLine("""
-
-                    Hit RETURN to close
-                    """);
-                Console.ReadLine();
-            }
-
-            Environment.Exit(0);
-        }
-
-        if (args.Length == 0)
-        {
-            driver.AttachConsole();
-
-            driver.Start(false);
-
-            Environment.Exit(0);
-        }
-
-        driver.AttachConsole();
-
-        Console.WriteLine($"Unknown option: {args[0]}");
-
-        Environment.Exit(-8);
+        Environment.Exit(0);
     }
+
+    #region Constructors
+
+    #pragma warning disable IDE0290
+
+    public CommandLine(ILogger logger)
+      => _logger = logger;
+
+    #endregion
 
     static bool IsBinOrA78File(FileInfo fi)
         => CiEq(fi.Extension, ".a78")
