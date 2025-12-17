@@ -11,15 +11,17 @@ public class CommandLineSDL3Driver : ICommandLineDriver
 
     public void Start(bool startMaximized)
     {
-        var window = new Window();
-        var windowDriver = new WindowSDL3Driver(window, startMaximized);
+        var logger = new SDLConsoleLogger { Level = 9 };
+        var window = new Window(logger);
+        var windowDriver = new WindowSDL3Driver(window, logger, startMaximized);
         windowDriver.ProcessEvents();
     }
 
     public void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized)
     {
-        var window = new Window(gpivi);
-        var windowDriver = new WindowSDL3Driver(window, startMaximized);
+        var logger = new SDLConsoleLogger { Level = 9 };
+        var window = new Window(gpivi, logger);
+        var windowDriver = new WindowSDL3Driver(window, logger, startMaximized);
         windowDriver.ProcessEvents();
     }
 

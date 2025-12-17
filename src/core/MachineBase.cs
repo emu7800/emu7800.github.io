@@ -150,7 +150,7 @@ public abstract class MachineBase
     /// </summary>
     public virtual void Reset()
     {
-        Logger.WriteLine($"Machine {this}  reset ({FrameHZ} HZ  {_Scanlines} scanlines)");
+        Logger.Log(4, $"Machine {this}  reset ({FrameHZ} HZ  {_Scanlines} scanlines)");
         FrameNumber = 0;
         MachineHalt = false;
         InputState.ClearAllInput();

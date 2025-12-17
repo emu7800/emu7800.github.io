@@ -1065,7 +1065,7 @@ public sealed class Maria : IDevice
     }
 
     void Log(string message)
-        => M.Logger.WriteLine(message);
+        => M.Logger.Log(4, message);
 
     // convenience overload
     static ushort WORD(int lsb, int msb)
@@ -1097,7 +1097,7 @@ public sealed class Maria : IDevice
 
     [System.Diagnostics.Conditional("DEBUG")]
     void LogDebug(string message)
-        => M.Logger.WriteLine(message);
+        => M.Logger.Log(5, message);
 
     [System.Diagnostics.Conditional("DEBUG")]
     static void AssertDebug(bool cond)

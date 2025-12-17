@@ -23,15 +23,17 @@ public sealed partial class CommandLineWin32Driver : ICommandLineDriver
 
     public void Start(bool startMaximized)
     {
-        var window = new Window();
-        var windowDriver = new WindowWin32Driver(window);
+        var logger = new ConsoleLogger { Level = 1 };
+        var window = new Window(logger);
+        var windowDriver = new WindowWin32Driver(window, logger);
         windowDriver.ProcessEvents(startMaximized);
     }
 
     public void StartGameProgram(GameProgramInfoViewItem gpivi, bool startMaximized)
     {
-        var window = new Window(gpivi);
-        var windowDriver = new WindowWin32Driver(window);
+        var logger = new ConsoleLogger { Level = 1 };
+        var window = new Window(gpivi, logger);
+        var windowDriver = new WindowWin32Driver(window, logger);
         windowDriver.ProcessEvents(startMaximized);
     }
 

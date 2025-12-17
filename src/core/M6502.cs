@@ -1052,7 +1052,7 @@ public sealed class M6502
     #region Helpers
 
     void Log(string message)
-        => M.Logger.WriteLine(message);
+        => M.Logger.Log(4, message);
 
     #endregion
 }

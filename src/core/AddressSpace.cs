@@ -120,9 +120,8 @@ public sealed class AddressSpace
 
     #region Helpers
 
-    [System.Diagnostics.Conditional("DEBUG")]
     void LogDebug(string message)
-        => M.Logger.WriteLine(message);
+        => M.Logger.Log(5, message);
 
     #endregion
 }

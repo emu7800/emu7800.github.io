@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
 using EMU7800.Shell;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
     readonly List<IDisposable> _disposables = [];
     readonly Stack<SDL_Rect> _prevClips = [];
     readonly Dictionary<float, IntPtr> _cachedFonts = [];
+    readonly ILogger _logger;
 
     public float ScaleFactor { get; private set; } = 1f;
 
@@ -22,7 +24,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
 
     public void BeginDraw()
     {
-        SDL_SetRenderDrawColor(hRenderer, 0, 0, 0, 255); //SDL_ALPHA_OPAQUE
+        SDL_SetRenderDrawColor(hRenderer, 0, 0, 0, 255 /* SDL_ALPHA_OPAQUE */);
         SDL_RenderClear(hRenderer);
         SDL_SetRenderScale(hRenderer, ScaleFactor, ScaleFactor);
     }
@@ -49,7 +51,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
             hFont = TTF_OpenFont(FontFileName, fontSize);
             if (hFont == IntPtr.Zero)
             {
-                SDL_Log($"CreateTextLayout: Unable to locate font: {FontFileName}");
+                _logger.Log(1, $"CreateTextLayout: Unable to locate font: {FontFileName}");
             }
             _cachedFonts.Add(fontSize, hFont);
         }
@@ -184,20 +186,20 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
 
     #region Constructors
 
-    GraphicsDeviceSDL3Driver() {}
-
-    public GraphicsDeviceSDL3Driver(bool startMaximized)
+    public GraphicsDeviceSDL3Driver(ILogger logger, bool startMaximized)
     {
+        _logger = logger;
+
         if (!SDL_Init(SDL_InitFlags.SDL_INIT_TIMER | SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_AUDIO | SDL_InitFlags.SDL_INIT_GAMEPAD))
         {
-            SDL_Log($"Couldn't initialize SDL: {SDL_GetError()}");
+            _logger.Log(1, $"Couldn't initialize SDL: {SDL_GetError()}");
             HR = -1;
             return;
         }
 
         if (!TTF_Init())
         {
-            SDL_Log($"Couldn't initialize SDL TTF: {SDL_GetError()}");
+            _logger.Log(1, $"Couldn't initialize SDL TTF: {SDL_GetError()}");
             HR = -1;
             return;
         }
@@ -210,7 +212,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
 
         if (!SDL_CreateWindowAndRenderer(VersionInfo.EMU7800, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, windowFlags, out nint hwnd, out nint hrenderer))
         {
-            SDL_Log($"Couldn't initialize SDL: CreateWindowAndRenderer: {SDL_GetError()}");
+            _logger.Log(1, $"Couldn't initialize SDL: CreateWindowAndRenderer: {SDL_GetError()}");
             HR = -1;
             return;
         }
@@ -220,7 +222,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
 
         if (!SDL_SetRenderLogicalPresentation(hRenderer, WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT, SDL_RendererLogicalPresentation.SDL_LOGICAL_PRESENTATION_DISABLED))
         {
-            SDL_Log($"Couldn't initialize SDL: SetRenderLogicalPresentation: {SDL_GetError()}");
+            _logger.Log(1, $"Couldn't initialize SDL: SetRenderLogicalPresentation: {SDL_GetError()}");
             HR = -1;
             return;
         }

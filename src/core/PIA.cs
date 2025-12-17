@@ -296,11 +296,10 @@ public sealed class PIA(MachineBase m) : IDevice
     #region Helpers
 
     void Log(string message)
-        => m.Logger.WriteLine(message);
+        => m.Logger.Log(4, message);
 
-    [System.Diagnostics.Conditional("DEBUG")]
     void LogDebug(string message)
-        => m.Logger.WriteLine(message);
+        => m.Logger.Log(5, message);
 
     #endregion
 }

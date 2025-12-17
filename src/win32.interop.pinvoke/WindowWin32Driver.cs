@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
 using EMU7800.Shell;
 using System;
 
@@ -13,6 +14,7 @@ public sealed class WindowWin32Driver
     public AudioDeviceWinmmDriver AudioDevice { get; private set; }
 
     readonly IntPtr _hWnd;
+    readonly ILogger _logger;
 
     public void ProcessEvents(bool startMaximized)
     {
@@ -28,9 +30,11 @@ public sealed class WindowWin32Driver
         GraphicsDevice.Shutdown();
     }
 
-    public WindowWin32Driver(Window window)
+    public WindowWin32Driver(Window window, ILogger logger)
     {
         Window = window;
+        _logger = logger;
+
         _hWnd = Win32NativeMethods.Win32_CreateWindow();
         GraphicsDevice = new GraphicsDeviceD2DDriver(_hWnd);
         GameControllers = new GameControllersDInputXInputDriver(_hWnd, window);

@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Core;
 using EMU7800.Shell;
 using System;
 using System.Collections.Concurrent;
@@ -13,6 +14,8 @@ public sealed class WindowSDL3Driver
     static readonly ConcurrentDictionary<IntPtr, WindowSDL3Driver> RegisteredWindows = [];
     static readonly ConcurrentQueue<IntPtr> PendingIds = [];
     static int _nextId;
+
+    readonly ILogger _logger;
 
     public Window Window { get; init; }
     public GraphicsDeviceSDL3Driver GraphicsDevice { get; init; }
@@ -29,10 +32,12 @@ public sealed class WindowSDL3Driver
         SDL_EnterAppMainCallbacks(0, IntPtr.Zero, AppInit, AppIterate, AppEvent, AppQuit);
     }
 
-    public WindowSDL3Driver(Window window, bool startMaximized)
+    public WindowSDL3Driver(Window window, ILogger logger, bool startMaximized)
     {
         Window = window;
-        GraphicsDevice = new GraphicsDeviceSDL3Driver(startMaximized);
+        _logger = logger;
+
+        GraphicsDevice = new GraphicsDeviceSDL3Driver(logger, startMaximized);
         GameControllers = EmptyGameControllersDriver.Default;
         AudioDevice = EmptyAudioDeviceDriver.Default;
 
@@ -42,16 +47,16 @@ public sealed class WindowSDL3Driver
 
     static unsafe SDL_AppResult AppInit(IntPtr ppAppState, int argc, IntPtr argv)
     {
-        Console.WriteLine($"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
-
-        SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
-
         if (!PendingIds.TryDequeue(out var id) || !RegisteredWindows.TryGetValue(id, out var wd))
         {
             return SDL_AppResult.SDL_APP_FAILURE;
         }
 
         *(void**)ppAppState = (void*)id;
+
+        SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
+
+        wd._logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
 
         wd.GameControllers.Initialize();
 

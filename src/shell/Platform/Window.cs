@@ -13,6 +13,8 @@ public sealed class Window
     readonly bool[] _lastKeyInput = new bool[0x100];
 
     readonly PageBackStackHost _pageBackStack;
+    readonly ILogger _logger;
+
     bool _resourcesLoaded;
 
     #endregion
@@ -101,14 +103,14 @@ public sealed class Window
 
     #region Constructors
 
-    public Window()
-      => _pageBackStack = new(new TitlePage());
+    public Window(ILogger logger)
+      : this(new TitlePage(), logger) {}
 
-    public Window(PageBase startPage)
-      => _pageBackStack = new PageBackStackHost(startPage);
+    public Window(GameProgramInfoViewItem gpivi, ILogger logger)
+      : this(new GamePage(gpivi, true), logger) {}
 
-    public Window(GameProgramInfoViewItem gpivi)
-      : this(new GamePage(gpivi, true)) {}
+    public Window(PageBase startPage, ILogger logger)
+      => (_pageBackStack, _logger) = (new PageBackStackHost(startPage), logger);
 
     #endregion
 }

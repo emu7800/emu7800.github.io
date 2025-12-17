@@ -1312,7 +1312,7 @@ public sealed class TIA : IDevice
     #region Helpers
 
     void Log(string message)
-        => M.Logger.WriteLine(message);
+        => M.Logger.Log(4, message);
 
     #endregion
 }
