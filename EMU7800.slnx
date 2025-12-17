@@ -3,7 +3,6 @@
     <BuildType Name="Debug" />
     <BuildType Name="Profile" />
     <BuildType Name="Release" />
-    <Platform Name="Any CPU" />
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -14,6 +13,7 @@
     <File Path="global.json" />
     <File Path="index.html" />
     <File Path="LICENSE.TXT" />
+    <File Path="NuGet.config" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Solution Items/installer/">
