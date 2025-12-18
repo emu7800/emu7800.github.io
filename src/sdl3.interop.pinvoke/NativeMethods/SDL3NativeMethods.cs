@@ -79,20 +79,8 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetError(string fmt);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_OutOfMemory();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetError();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ClearError();
 
     // /usr/local/include/SDL3/SDL_audio.h
 
@@ -122,172 +110,11 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumAudioDrivers();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetAudioDriver(int index);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetCurrentAudioDriver();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetAudioPlaybackDevices(out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetAudioRecordingDevices(out int count);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetAudioDeviceName(uint devid);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetAudioDeviceFormat(uint devid, out SDL_AudioSpec spec, out int sample_frames);
-
-    internal static Span<int> SDL_GetAudioDeviceChannelMap(uint devid)
-    {
-        var result = SDL_GetAudioDeviceChannelMap(devid, out var count);
-        return new Span<int>((void*) result, count);
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetAudioDeviceChannelMap(uint devid, out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_OpenAudioDevice(uint devid, ref SDL_AudioSpec spec);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_IsAudioDevicePhysical(uint devid);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_IsAudioDevicePlayback(uint devid);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PauseAudioDevice(uint dev);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ResumeAudioDevice(uint dev);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AudioDevicePaused(uint dev);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetAudioDeviceGain(uint devid);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioDeviceGain(uint devid, float gain);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_CloseAudioDevice(uint devid);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BindAudioStreams(uint devid, Span<IntPtr> streams, int num_streams);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BindAudioStream(uint devid, IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UnbindAudioStreams(Span<IntPtr> streams, int num_streams);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UnbindAudioStream(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetAudioStreamDevice(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateAudioStream(ref SDL_AudioSpec src_spec, ref SDL_AudioSpec dst_spec);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetAudioStreamProperties(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetAudioStreamFormat(IntPtr stream, out SDL_AudioSpec src_spec, out SDL_AudioSpec dst_spec);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamFormat(IntPtr stream, ref SDL_AudioSpec src_spec, ref SDL_AudioSpec dst_spec);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetAudioStreamFrequencyRatio(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamFrequencyRatio(IntPtr stream, float ratio);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetAudioStreamGain(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetAudioStreamGain(IntPtr stream, float gain);
 
-    internal static Span<int> SDL_GetAudioStreamInputChannelMap(IntPtr stream)
-    {
-        var result = SDL_GetAudioStreamInputChannelMap(stream, out var count);
-        return new Span<int>((void*) result, count);
-    }
-
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetAudioStreamInputChannelMap(IntPtr stream, out int count);
-
-    internal static Span<int> SDL_GetAudioStreamOutputChannelMap(IntPtr stream)
-    {
-        var result = SDL_GetAudioStreamOutputChannelMap(stream, out var count);
-        return new Span<int>((void*) result, count);
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetAudioStreamOutputChannelMap(IntPtr stream, out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamInputChannelMap(IntPtr stream, Span<int> chmap, int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamOutputChannelMap(IntPtr stream, Span<int> chmap, int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PutAudioStreamData(IntPtr stream, IntPtr buf, int len);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetAudioStreamData(IntPtr stream, IntPtr buf, int len);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetAudioStreamAvailable(IntPtr stream);
+    internal static partial SDLBool SDL_PutAudioStreamData(IntPtr stream, ReadOnlySpan<byte> buffer, int len);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -295,42 +122,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FlushAudioStream(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ClearAudioStream(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PauseAudioStreamDevice(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_ResumeAudioStreamDevice(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AudioStreamDevicePaused(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LockAudioStream(IntPtr stream);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UnlockAudioStream(IntPtr stream);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_AudioStreamCallback(IntPtr userdata, IntPtr stream, int additional_amount, int total_amount);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamGetCallback(IntPtr stream, SDL_AudioStreamCallback callback, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioStreamPutCallback(IntPtr stream, SDL_AudioStreamCallback callback, IntPtr userdata);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -338,102 +130,9 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_OpenAudioDeviceStream(uint devid, ref SDL_AudioSpec spec, SDL_AudioStreamCallback callback, IntPtr userdata);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_AudioPostmixCallback(IntPtr userdata, SDL_AudioSpec* spec, float* buffer, int buflen);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAudioPostmixCallback(uint devid, SDL_AudioPostmixCallback callback, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LoadWAV_IO(IntPtr src, SDLBool closeio, out SDL_AudioSpec spec, out IntPtr audio_buf, out uint audio_len);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LoadWAV(string path, out SDL_AudioSpec spec, out IntPtr audio_buf, out uint audio_len);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_MixAudio(IntPtr dst, IntPtr src, SDL_AudioFormat format, uint len, float volume);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ConvertAudioSamples(ref SDL_AudioSpec src_spec, IntPtr src_data, int src_len, ref SDL_AudioSpec dst_spec, IntPtr dst_data, out int dst_len);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetAudioFormatName(SDL_AudioFormat format);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetSilenceValueForFormat(SDL_AudioFormat format);
+    internal static partial IntPtr SDL_OpenAudioDeviceStream(uint devid, ref SDL_AudioSpec spec, IntPtr callback, IntPtr userdata);
 
     // /usr/local/include/SDL3/SDL_pixels.h
-
-    public enum SDL_PixelType
-    {
-        SDL_PIXELTYPE_UNKNOWN  = 0,
-        SDL_PIXELTYPE_INDEX1   = 1,
-        SDL_PIXELTYPE_INDEX4   = 2,
-        SDL_PIXELTYPE_INDEX8   = 3,
-        SDL_PIXELTYPE_PACKED8  = 4,
-        SDL_PIXELTYPE_PACKED16 = 5,
-        SDL_PIXELTYPE_PACKED32 = 6,
-        SDL_PIXELTYPE_ARRAYU8  = 7,
-        SDL_PIXELTYPE_ARRAYU16 = 8,
-        SDL_PIXELTYPE_ARRAYU32 = 9,
-        SDL_PIXELTYPE_ARRAYF16 = 10,
-        SDL_PIXELTYPE_ARRAYF32 = 11,
-        SDL_PIXELTYPE_INDEX2   = 12,
-    }
-
-    public enum SDL_BitmapOrder
-    {
-        SDL_BITMAPORDER_NONE = 0,
-        SDL_BITMAPORDER_4321 = 1,
-        SDL_BITMAPORDER_1234 = 2,
-    }
-
-    public enum SDL_PackedOrder
-    {
-        SDL_PACKEDORDER_NONE = 0,
-        SDL_PACKEDORDER_XRGB = 1,
-        SDL_PACKEDORDER_RGBX = 2,
-        SDL_PACKEDORDER_ARGB = 3,
-        SDL_PACKEDORDER_RGBA = 4,
-        SDL_PACKEDORDER_XBGR = 5,
-        SDL_PACKEDORDER_BGRX = 6,
-        SDL_PACKEDORDER_ABGR = 7,
-        SDL_PACKEDORDER_BGRA = 8,
-    }
-
-    public enum SDL_ArrayOrder
-    {
-        SDL_ARRAYORDER_NONE = 0,
-        SDL_ARRAYORDER_RGB  = 1,
-        SDL_ARRAYORDER_RGBA = 2,
-        SDL_ARRAYORDER_ARGB = 3,
-        SDL_ARRAYORDER_BGR  = 4,
-        SDL_ARRAYORDER_BGRA = 5,
-        SDL_ARRAYORDER_ABGR = 6,
-    }
-
-    public enum SDL_PackedLayout
-    {
-        SDL_PACKEDLAYOUT_NONE    = 0,
-        SDL_PACKEDLAYOUT_332     = 1,
-        SDL_PACKEDLAYOUT_4444    = 2,
-        SDL_PACKEDLAYOUT_1555    = 3,
-        SDL_PACKEDLAYOUT_5551    = 4,
-        SDL_PACKEDLAYOUT_565     = 5,
-        SDL_PACKEDLAYOUT_8888    = 6,
-        SDL_PACKEDLAYOUT_2101010 = 7,
-        SDL_PACKEDLAYOUT_1010102 = 8,
-    }
 
     public enum SDL_PixelFormat
     {
@@ -511,105 +210,6 @@ internal static unsafe partial class SDL3
         SDL_PIXELFORMAT_XBGR32        = 371595268,
     }
 
-    public enum SDL_ColorType
-    {
-        SDL_COLOR_TYPE_UNKNOWN = 0,
-        SDL_COLOR_TYPE_RGB     = 1,
-        SDL_COLOR_TYPE_YCBCR   = 2,
-    }
-
-    public enum SDL_ColorRange
-    {
-        SDL_COLOR_RANGE_UNKNOWN = 0,
-        SDL_COLOR_RANGE_LIMITED = 1,
-        SDL_COLOR_RANGE_FULL    = 2,
-    }
-
-    public enum SDL_ColorPrimaries
-    {
-        SDL_COLOR_PRIMARIES_UNKNOWN      = 0,
-        SDL_COLOR_PRIMARIES_BT709        = 1,
-        SDL_COLOR_PRIMARIES_UNSPECIFIED  = 2,
-        SDL_COLOR_PRIMARIES_BT470M       = 4,
-        SDL_COLOR_PRIMARIES_BT470BG      = 5,
-        SDL_COLOR_PRIMARIES_BT601        = 6,
-        SDL_COLOR_PRIMARIES_SMPTE240     = 7,
-        SDL_COLOR_PRIMARIES_GENERIC_FILM = 8,
-        SDL_COLOR_PRIMARIES_BT2020       = 9,
-        SDL_COLOR_PRIMARIES_XYZ          = 10,
-        SDL_COLOR_PRIMARIES_SMPTE431     = 11,
-        SDL_COLOR_PRIMARIES_SMPTE432     = 12,
-        SDL_COLOR_PRIMARIES_EBU3213      = 22,
-        SDL_COLOR_PRIMARIES_CUSTOM       = 31,
-    }
-
-    public enum SDL_TransferCharacteristics
-    {
-        SDL_TRANSFER_CHARACTERISTICS_UNKNOWN       = 0,
-        SDL_TRANSFER_CHARACTERISTICS_BT709         = 1,
-        SDL_TRANSFER_CHARACTERISTICS_UNSPECIFIED   = 2,
-        SDL_TRANSFER_CHARACTERISTICS_GAMMA22       = 4,
-        SDL_TRANSFER_CHARACTERISTICS_GAMMA28       = 5,
-        SDL_TRANSFER_CHARACTERISTICS_BT601         = 6,
-        SDL_TRANSFER_CHARACTERISTICS_SMPTE240      = 7,
-        SDL_TRANSFER_CHARACTERISTICS_LINEAR        = 8,
-        SDL_TRANSFER_CHARACTERISTICS_LOG100        = 9,
-        SDL_TRANSFER_CHARACTERISTICS_LOG100_SQRT10 = 10,
-        SDL_TRANSFER_CHARACTERISTICS_IEC61966      = 11,
-        SDL_TRANSFER_CHARACTERISTICS_BT1361        = 12,
-        SDL_TRANSFER_CHARACTERISTICS_SRGB          = 13,
-        SDL_TRANSFER_CHARACTERISTICS_BT2020_10BIT  = 14,
-        SDL_TRANSFER_CHARACTERISTICS_BT2020_12BIT  = 15,
-        SDL_TRANSFER_CHARACTERISTICS_PQ            = 16,
-        SDL_TRANSFER_CHARACTERISTICS_SMPTE428      = 17,
-        SDL_TRANSFER_CHARACTERISTICS_HLG           = 18,
-        SDL_TRANSFER_CHARACTERISTICS_CUSTOM        = 31,
-    }
-
-    public enum SDL_MatrixCoefficients
-    {
-        SDL_MATRIX_COEFFICIENTS_IDENTITY            = 0,
-        SDL_MATRIX_COEFFICIENTS_BT709               = 1,
-        SDL_MATRIX_COEFFICIENTS_UNSPECIFIED         = 2,
-        SDL_MATRIX_COEFFICIENTS_FCC                 = 4,
-        SDL_MATRIX_COEFFICIENTS_BT470BG             = 5,
-        SDL_MATRIX_COEFFICIENTS_BT601               = 6,
-        SDL_MATRIX_COEFFICIENTS_SMPTE240            = 7,
-        SDL_MATRIX_COEFFICIENTS_YCGCO               = 8,
-        SDL_MATRIX_COEFFICIENTS_BT2020_NCL          = 9,
-        SDL_MATRIX_COEFFICIENTS_BT2020_CL           = 10,
-        SDL_MATRIX_COEFFICIENTS_SMPTE2085           = 11,
-        SDL_MATRIX_COEFFICIENTS_CHROMA_DERIVED_NCL  = 12,
-        SDL_MATRIX_COEFFICIENTS_CHROMA_DERIVED_CL   = 13,
-        SDL_MATRIX_COEFFICIENTS_ICTCP               = 14,
-        SDL_MATRIX_COEFFICIENTS_CUSTOM              = 31,
-    }
-
-    public enum SDL_ChromaLocation
-    {
-        SDL_CHROMA_LOCATION_NONE    = 0,
-        SDL_CHROMA_LOCATION_LEFT    = 1,
-        SDL_CHROMA_LOCATION_CENTER  = 2,
-        SDL_CHROMA_LOCATION_TOPLEFT = 3,
-    }
-
-    public enum SDL_Colorspace
-    {
-        SDL_COLORSPACE_UNKNOWN        = 0,
-        SDL_COLORSPACE_SRGB           = 301991328,
-        SDL_COLORSPACE_SRGB_LINEAR    = 301991168,
-        SDL_COLORSPACE_HDR10          = 301999616,
-        SDL_COLORSPACE_JPEG           = 570426566,
-        SDL_COLORSPACE_BT601_LIMITED  = 554703046,
-        SDL_COLORSPACE_BT601_FULL     = 571480262,
-        SDL_COLORSPACE_BT709_LIMITED  = 554697761,
-        SDL_COLORSPACE_BT709_FULL     = 571474977,
-        SDL_COLORSPACE_BT2020_LIMITED = 554706441,
-        SDL_COLORSPACE_BT2020_FULL    = 571483657,
-        SDL_COLORSPACE_RGB_DEFAULT    = 301991328,
-        SDL_COLORSPACE_YUV_DEFAULT    = 570426566,
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     public struct SDL_Color
     {
@@ -627,81 +227,6 @@ internal static unsafe partial class SDL3
         public float b;
         public float a;
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_Palette
-    {
-        public int ncolors;
-        public SDL_Color* colors;
-        public uint version;
-        public int refcount;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_PixelFormatDetails
-    {
-        public SDL_PixelFormat format;
-        public byte bits_per_pixel;
-        public byte bytes_per_pixel;
-        public fixed byte padding[2];
-        public uint Rmask;
-        public uint Gmask;
-        public uint Bmask;
-        public uint Amask;
-        public byte Rbits;
-        public byte Gbits;
-        public byte Bbits;
-        public byte Abits;
-        public byte Rshift;
-        public byte Gshift;
-        public byte Bshift;
-        public byte Ashift;
-    }
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetPixelFormatName(SDL_PixelFormat format);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetMasksForPixelFormat(SDL_PixelFormat format, out int bpp, out uint Rmask, out uint Gmask, out uint Bmask, out uint Amask);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_PixelFormat SDL_GetPixelFormatForMasks(int bpp, uint Rmask, uint Gmask, uint Bmask, uint Amask);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_PixelFormatDetails* SDL_GetPixelFormatDetails(SDL_PixelFormat format);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Palette* SDL_CreatePalette(int ncolors);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetPaletteColors(IntPtr palette, Span<SDL_Color> colors, int firstcolor, int ncolors);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_DestroyPalette(IntPtr palette);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_MapRGB(IntPtr format, IntPtr palette, byte r, byte g, byte b);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_MapRGBA(IntPtr format, IntPtr palette, byte r, byte g, byte b, byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GetRGB(uint pixel, IntPtr format, IntPtr palette, out byte r, out byte g, out byte b);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GetRGBA(uint pixel, IntPtr format, IntPtr palette, out byte r, out byte g, out byte b, out byte a);
 
     // /usr/local/include/SDL3/SDL_rect.h
 
@@ -739,54 +264,7 @@ internal static unsafe partial class SDL3
         public static implicit operator SDL_FRect(Shell.RectF r) => new() { x = r.Left, y = r.Top, w = r.Right - r.Left, h = r.Bottom - r.Top };
     }
 
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasRectIntersection(ref SDL_Rect A, ref SDL_Rect B);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectIntersection(ref SDL_Rect A, ref SDL_Rect B, out SDL_Rect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectUnion(ref SDL_Rect A, ref SDL_Rect B, out SDL_Rect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectEnclosingPoints(Span<SDL_Point> points, int count, ref SDL_Rect clip, out SDL_Rect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectAndLineIntersection(ref SDL_Rect rect, ref int X1, ref int Y1, ref int X2, ref int Y2);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasRectIntersectionFloat(ref SDL_FRect A, ref SDL_FRect B);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectIntersectionFloat(ref SDL_FRect A, ref SDL_FRect B, out SDL_FRect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectUnionFloat(ref SDL_FRect A, ref SDL_FRect B, out SDL_FRect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectEnclosingPointsFloat(Span<SDL_FPoint> points, int count, ref SDL_FRect clip, out SDL_FRect result);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRectAndLineIntersectionFloat(ref SDL_FRect rect, ref float X1, ref float Y1, ref float X2, ref float Y2);
-
     // /usr/local/include/SDL3/SDL_surface.h
-
-    public const string
-        SDL_PROP_SURFACE_SDR_WHITE_POINT_FLOAT   = "SDL.surface.SDR_white_point",
-        SDL_PROP_SURFACE_HDR_HEADROOM_FLOAT      = "SDL.surface.HDR_headroom",
-        SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING = "SDL.surface.tonemap",
-        SDL_PROP_SURFACE_HOTSPOT_X_NUMBER        = "SDL.surface.hotspot.x",
-        SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER        = "SDL.surface.hotspot.y";
 
     [Flags]
     public enum SDL_SurfaceFlags : uint
@@ -801,13 +279,6 @@ internal static unsafe partial class SDL3
     {
         SDL_SCALEMODE_NEAREST = 0,
         SDL_SCALEMODE_LINEAR  = 1,
-    }
-
-    public enum SDL_FlipMode
-    {
-        SDL_FLIP_NONE       = 0,
-        SDL_FLIP_HORIZONTAL = 1,
-        SDL_FLIP_VERTICAL   = 2,
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -825,347 +296,13 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_CreateSurface(int width, int height, SDL_PixelFormat format);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_CreateSurfaceFrom(int width, int height, SDL_PixelFormat format, IntPtr pixels, int pitch);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroySurface(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetSurfaceProperties(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceColorspace(IntPtr surface, SDL_Colorspace colorspace);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Colorspace SDL_GetSurfaceColorspace(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Palette* SDL_CreateSurfacePalette(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfacePalette(IntPtr surface, IntPtr palette);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Palette* SDL_GetSurfacePalette(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AddSurfaceAlternateImage(IntPtr surface, IntPtr image);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SurfaceHasAlternateImages(IntPtr surface);
-
-    internal static Span<IntPtr> SDL_GetSurfaceImages(IntPtr surface)
-    {
-        var result = SDL_GetSurfaceImages(surface, out var count);
-        return new Span<IntPtr>((void*) result, count);
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetSurfaceImages(IntPtr surface, out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_RemoveSurfaceAlternateImages(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LockSurface(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UnlockSurface(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_LoadBMP_IO(IntPtr src, SDLBool closeio);
 
     [LibraryImport(SDL3DllimageName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* IMG_LoadPNG_IO(IntPtr src, SDLBool closeio);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_LoadBMP(string file);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SaveBMP_IO(IntPtr surface, IntPtr dst, SDLBool closeio);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SaveBMP(IntPtr surface, string file);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceRLE(IntPtr surface, SDLBool enabled);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SurfaceHasRLE(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceColorKey(IntPtr surface, SDLBool enabled, uint key);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SurfaceHasColorKey(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetSurfaceColorKey(IntPtr surface, out uint key);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceColorMod(IntPtr surface, byte r, byte g, byte b);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetSurfaceColorMod(IntPtr surface, out byte r, out byte g, out byte b);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceAlphaMod(IntPtr surface, byte alpha);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetSurfaceAlphaMod(IntPtr surface, out byte alpha);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceBlendMode(IntPtr surface, uint blendMode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetSurfaceBlendMode(IntPtr surface, IntPtr blendMode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetSurfaceClipRect(IntPtr surface, ref SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetSurfaceClipRect(IntPtr surface, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FlipSurface(IntPtr surface, SDL_FlipMode flip);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_DuplicateSurface(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_ScaleSurface(IntPtr surface, int width, int height, SDL_ScaleMode scaleMode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_ConvertSurface(IntPtr surface, SDL_PixelFormat format);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_ConvertSurfaceAndColorspace(IntPtr surface, SDL_PixelFormat format, IntPtr palette, SDL_Colorspace colorspace, uint props);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ConvertPixels(int width, int height, SDL_PixelFormat src_format, IntPtr src, int src_pitch, SDL_PixelFormat dst_format, IntPtr dst, int dst_pitch);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ConvertPixelsAndColorspace(int width, int height, SDL_PixelFormat src_format, SDL_Colorspace src_colorspace, uint src_properties, IntPtr src, int src_pitch, SDL_PixelFormat dst_format, SDL_Colorspace dst_colorspace, uint dst_properties, IntPtr dst, int dst_pitch);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PremultiplyAlpha(int width, int height, SDL_PixelFormat src_format, IntPtr src, int src_pitch, SDL_PixelFormat dst_format, IntPtr dst, int dst_pitch, SDLBool linear);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PremultiplySurfaceAlpha(IntPtr surface, SDLBool linear);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ClearSurface(IntPtr surface, float r, float g, float b, float a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FillSurfaceRect(IntPtr dst, IntPtr rect, uint color); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FillSurfaceRects(IntPtr dst, Span<SDL_Rect> rects, int count, uint color);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurface(IntPtr src, IntPtr srcrect, IntPtr dst, IntPtr dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurfaceUnchecked(IntPtr src, IntPtr srcrect, IntPtr dst, IntPtr dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurfaceScaled(IntPtr src, IntPtr srcrect, IntPtr dst, IntPtr dstrect, SDL_ScaleMode scaleMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurfaceUncheckedScaled(IntPtr src, IntPtr srcrect, IntPtr dst, IntPtr dstrect, SDL_ScaleMode scaleMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurfaceTiled(IntPtr src, IntPtr srcrect, IntPtr dst, IntPtr dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurfaceTiledWithScale(IntPtr src, IntPtr srcrect, float scale, SDL_ScaleMode scaleMode, IntPtr dst, IntPtr dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_BlitSurface9Grid(IntPtr src, IntPtr srcrect, int left_width, int right_width, int top_height, int bottom_height, float scale, SDL_ScaleMode scaleMode, IntPtr dst, IntPtr dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_MapSurfaceRGB(IntPtr surface, byte r, byte g, byte b);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_MapSurfaceRGBA(IntPtr surface, byte r, byte g, byte b, byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ReadSurfacePixel(IntPtr surface, int x, int y, out byte r, out byte g, out byte b, out byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ReadSurfacePixelFloat(IntPtr surface, int x, int y, out float r, out float g, out float b, out float a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WriteSurfacePixel(IntPtr surface, int x, int y, byte r, byte g, byte b, byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WriteSurfacePixelFloat(IntPtr surface, int x, int y, float r, float g, float b, float a);
-
     // /usr/local/include/SDL3/SDL_video.h
-
-    public const string
-        SDL_PROP_GLOBAL_VIDEO_WAYLAND_WL_DISPLAY_POINTER           = "SDL.video.wayland.wl_display",
-        SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN                       = "SDL.display.HDR_enabled",
-        SDL_PROP_DISPLAY_KMSDRM_PANEL_ORIENTATION_NUMBER           = "SDL.display.KMSDRM.panel_orientation",
-        SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN               = "SDL.window.create.always_on_top",
-        SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN                  = "SDL.window.create.borderless",
-        SDL_PROP_WINDOW_CREATE_FOCUSABLE_BOOLEAN                   = "SDL.window.create.focusable",
-        SDL_PROP_WINDOW_CREATE_EXTERNAL_GRAPHICS_CONTEXT_BOOLEAN   = "SDL.window.create.external_graphics_context",
-        SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER                        = "SDL.window.create.flags",
-        SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN                  = "SDL.window.create.fullscreen",
-        SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER                       = "SDL.window.create.height",
-        SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN                      = "SDL.window.create.hidden",
-        SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN          = "SDL.window.create.high_pixel_density",
-        SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN                   = "SDL.window.create.maximized",
-        SDL_PROP_WINDOW_CREATE_MENU_BOOLEAN                        = "SDL.window.create.menu",
-        SDL_PROP_WINDOW_CREATE_METAL_BOOLEAN                       = "SDL.window.create.metal",
-        SDL_PROP_WINDOW_CREATE_MINIMIZED_BOOLEAN                   = "SDL.window.create.minimized",
-        SDL_PROP_WINDOW_CREATE_MODAL_BOOLEAN                       = "SDL.window.create.modal",
-        SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN               = "SDL.window.create.mouse_grabbed",
-        SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN                      = "SDL.window.create.opengl",
-        SDL_PROP_WINDOW_CREATE_PARENT_POINTER                      = "SDL.window.create.parent",
-        SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN                   = "SDL.window.create.resizable",
-        SDL_PROP_WINDOW_CREATE_TITLE_STRING                        = "SDL.window.create.title",
-        SDL_PROP_WINDOW_CREATE_TRANSPARENT_BOOLEAN                 = "SDL.window.create.transparent",
-        SDL_PROP_WINDOW_CREATE_TOOLTIP_BOOLEAN                     = "SDL.window.create.tooltip",
-        SDL_PROP_WINDOW_CREATE_UTILITY_BOOLEAN                     = "SDL.window.create.utility",
-        SDL_PROP_WINDOW_CREATE_VULKAN_BOOLEAN                      = "SDL.window.create.vulkan",
-        SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER                        = "SDL.window.create.width",
-        SDL_PROP_WINDOW_CREATE_X_NUMBER                            = "SDL.window.create.x",
-        SDL_PROP_WINDOW_CREATE_Y_NUMBER                            = "SDL.window.create.y",
-        SDL_PROP_WINDOW_CREATE_COCOA_WINDOW_POINTER                = "SDL.window.create.cocoa.window",
-        SDL_PROP_WINDOW_CREATE_COCOA_VIEW_POINTER                  = "SDL.window.create.cocoa.view",
-        SDL_PROP_WINDOW_CREATE_WAYLAND_SURFACE_ROLE_CUSTOM_BOOLEAN = "SDL.window.create.wayland.surface_role_custom",
-        SDL_PROP_WINDOW_CREATE_WAYLAND_CREATE_EGL_WINDOW_BOOLEAN   = "SDL.window.create.wayland.create_egl_window",
-        SDL_PROP_WINDOW_CREATE_WAYLAND_WL_SURFACE_POINTER          = "SDL.window.create.wayland.wl_surface",
-        SDL_PROP_WINDOW_CREATE_WIN32_HWND_POINTER                  = "SDL.window.create.win32.hwnd",
-        SDL_PROP_WINDOW_CREATE_WIN32_PIXEL_FORMAT_HWND_POINTER     = "SDL.window.create.win32.pixel_format_hwnd",
-        SDL_PROP_WINDOW_CREATE_X11_WINDOW_NUMBER                   = "SDL.window.create.x11.window",
-        SDL_PROP_WINDOW_SHAPE_POINTER                              = "SDL.window.shape",
-        SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN                        = "SDL.window.HDR_enabled",
-        SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT                      = "SDL.window.SDR_white_level",
-        SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT                         = "SDL.window.HDR_headroom",
-        SDL_PROP_WINDOW_ANDROID_WINDOW_POINTER                     = "SDL.window.android.window",
-        SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER                    = "SDL.window.android.surface",
-        SDL_PROP_WINDOW_UIKIT_WINDOW_POINTER                       = "SDL.window.uikit.window",
-        SDL_PROP_WINDOW_UIKIT_METAL_VIEW_TAG_NUMBER                = "SDL.window.uikit.metal_view_tag",
-        SDL_PROP_WINDOW_UIKIT_OPENGL_FRAMEBUFFER_NUMBER            = "SDL.window.uikit.opengl.framebuffer",
-        SDL_PROP_WINDOW_UIKIT_OPENGL_RENDERBUFFER_NUMBER           = "SDL.window.uikit.opengl.renderbuffer",
-        SDL_PROP_WINDOW_UIKIT_OPENGL_RESOLVE_FRAMEBUFFER_NUMBER    = "SDL.window.uikit.opengl.resolve_framebuffer",
-        SDL_PROP_WINDOW_KMSDRM_DEVICE_INDEX_NUMBER                 = "SDL.window.kmsdrm.dev_index",
-        SDL_PROP_WINDOW_KMSDRM_DRM_FD_NUMBER                       = "SDL.window.kmsdrm.drm_fd",
-        SDL_PROP_WINDOW_KMSDRM_GBM_DEVICE_POINTER                  = "SDL.window.kmsdrm.gbm_dev",
-        SDL_PROP_WINDOW_COCOA_WINDOW_POINTER                       = "SDL.window.cocoa.window",
-        SDL_PROP_WINDOW_COCOA_METAL_VIEW_TAG_NUMBER                = "SDL.window.cocoa.metal_view_tag",
-        SDL_PROP_WINDOW_OPENVR_OVERLAY_ID                          = "SDL.window.openvr.overlay_id",
-        SDL_PROP_WINDOW_VIVANTE_DISPLAY_POINTER                    = "SDL.window.vivante.display",
-        SDL_PROP_WINDOW_VIVANTE_WINDOW_POINTER                     = "SDL.window.vivante.window",
-        SDL_PROP_WINDOW_VIVANTE_SURFACE_POINTER                    = "SDL.window.vivante.surface",
-        SDL_PROP_WINDOW_WIN32_HWND_POINTER                         = "SDL.window.win32.hwnd",
-        SDL_PROP_WINDOW_WIN32_HDC_POINTER                          = "SDL.window.win32.hdc",
-        SDL_PROP_WINDOW_WIN32_INSTANCE_POINTER                     = "SDL.window.win32.instance",
-        SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER                    = "SDL.window.wayland.display",
-        SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER                    = "SDL.window.wayland.surface",
-        SDL_PROP_WINDOW_WAYLAND_VIEWPORT_POINTER                   = "SDL.window.wayland.viewport",
-        SDL_PROP_WINDOW_WAYLAND_EGL_WINDOW_POINTER                 = "SDL.window.wayland.egl_window",
-        SDL_PROP_WINDOW_WAYLAND_XDG_SURFACE_POINTER                = "SDL.window.wayland.xdg_surface",
-        SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_POINTER               = "SDL.window.wayland.xdg_toplevel",
-        SDL_PROP_WINDOW_WAYLAND_XDG_TOPLEVEL_EXPORT_HANDLE_STRING  = "SDL.window.wayland.xdg_toplevel_export_handle",
-        SDL_PROP_WINDOW_WAYLAND_XDG_POPUP_POINTER                  = "SDL.window.wayland.xdg_popup",
-        SDL_PROP_WINDOW_WAYLAND_XDG_POSITIONER_POINTER             = "SDL.window.wayland.xdg_positioner",
-        SDL_PROP_WINDOW_X11_DISPLAY_POINTER                        = "SDL.window.x11.display",
-        SDL_PROP_WINDOW_X11_SCREEN_NUMBER                          = "SDL.window.x11.screen",
-        SDL_PROP_WINDOW_X11_WINDOW_NUMBER                          = "SDL.window.x11.window";
-
-    public enum SDL_SystemTheme
-    {
-        SDL_SYSTEM_THEME_UNKNOWN = 0,
-        SDL_SYSTEM_THEME_LIGHT   = 1,
-        SDL_SYSTEM_THEME_DARK    = 2,
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_DisplayMode
-    {
-        public uint displayID;
-        public SDL_PixelFormat format;
-        public int w;
-        public int h;
-        public float pixel_density;
-        public float refresh_rate;
-        public int refresh_rate_numerator;
-        public int refresh_rate_denominator;
-        public IntPtr @internal;
-    }
-
-    public enum SDL_DisplayOrientation
-    {
-        SDL_ORIENTATION_UNKNOWN           = 0,
-        SDL_ORIENTATION_LANDSCAPE         = 1,
-        SDL_ORIENTATION_LANDSCAPE_FLIPPED = 2,
-        SDL_ORIENTATION_PORTRAIT          = 3,
-        SDL_ORIENTATION_PORTRAIT_FLIPPED  = 4,
-    }
 
     [Flags]
     public enum SDL_WindowFlags : ulong
@@ -1197,111 +334,9 @@ internal static unsafe partial class SDL3
         SDL_WINDOW_NOT_FOCUSABLE        = 0x080000000,
     }
 
-    public enum SDL_FlashOperation
-    {
-        SDL_FLASH_CANCEL        = 0,
-        SDL_FLASH_BRIEFLY       = 1,
-        SDL_FLASH_UNTIL_FOCUSED = 2,
-    }
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate IntPtr SDL_EGLAttribArrayCallback();
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate IntPtr SDL_EGLIntArrayCallback();
-
-    public enum SDL_GLAttr
-    {
-        SDL_GL_RED_SIZE                     = 0,
-        SDL_GL_GREEN_SIZE                   = 1,
-        SDL_GL_BLUE_SIZE                    = 2,
-        SDL_GL_ALPHA_SIZE                   = 3,
-        SDL_GL_BUFFER_SIZE                  = 4,
-        SDL_GL_DOUBLEBUFFER                 = 5,
-        SDL_GL_DEPTH_SIZE                   = 6,
-        SDL_GL_STENCIL_SIZE                 = 7,
-        SDL_GL_ACCUM_RED_SIZE               = 8,
-        SDL_GL_ACCUM_GREEN_SIZE             = 9,
-        SDL_GL_ACCUM_BLUE_SIZE              = 10,
-        SDL_GL_ACCUM_ALPHA_SIZE             = 11,
-        SDL_GL_STEREO                       = 12,
-        SDL_GL_MULTISAMPLEBUFFERS           = 13,
-        SDL_GL_MULTISAMPLESAMPLES           = 14,
-        SDL_GL_ACCELERATED_VISUAL           = 15,
-        SDL_GL_RETAINED_BACKING             = 16,
-        SDL_GL_CONTEXT_MAJOR_VERSION        = 17,
-        SDL_GL_CONTEXT_MINOR_VERSION        = 18,
-        SDL_GL_CONTEXT_FLAGS                = 19,
-        SDL_GL_CONTEXT_PROFILE_MASK         = 20,
-        SDL_GL_SHARE_WITH_CURRENT_CONTEXT   = 21,
-        SDL_GL_FRAMEBUFFER_SRGB_CAPABLE     = 22,
-        SDL_GL_CONTEXT_RELEASE_BEHAVIOR     = 23,
-        SDL_GL_CONTEXT_RESET_NOTIFICATION   = 24,
-        SDL_GL_CONTEXT_NO_ERROR             = 25,
-        SDL_GL_FLOATBUFFERS                 = 26,
-        SDL_GL_EGL_PLATFORM                 = 27,
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumVideoDrivers();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetVideoDriver(int index);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetCurrentVideoDriver();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_SystemTheme SDL_GetSystemTheme();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetDisplays(out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetPrimaryDisplay();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetDisplayProperties(uint displayID);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetDisplayName(uint displayID);
-
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_GetDisplayBounds(uint displayID, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetDisplayUsableBounds(uint displayID, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_DisplayOrientation SDL_GetNaturalDisplayOrientation(uint displayID);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_DisplayOrientation SDL_GetCurrentDisplayOrientation(uint displayID);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetDisplayContentScale(uint displayID);
-
-    internal static Span<IntPtr> SDL_GetFullscreenDisplayModes(uint displayID)
-    {
-        var result = SDL_GetFullscreenDisplayModes(displayID, out var count);
-        return new Span<IntPtr>((void*) result, count);
-    }
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -1309,31 +344,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetClosestFullscreenDisplayMode(uint displayID, int w, int h, float refresh_rate, SDLBool include_high_density_modes, out SDL_DisplayMode closest);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_DisplayMode* SDL_GetDesktopDisplayMode(uint displayID);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_DisplayMode* SDL_GetCurrentDisplayMode(uint displayID);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetDisplayForPoint(ref SDL_Point point);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetDisplayForRect(ref SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetDisplayForWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetWindowPixelDensity(IntPtr window);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -1341,74 +352,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowFullscreenMode(IntPtr window, ref SDL_DisplayMode mode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_DisplayMode* SDL_GetWindowFullscreenMode(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetWindowICCProfile(IntPtr window, out UIntPtr size);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_PixelFormat SDL_GetWindowPixelFormat(IntPtr window);
-
-    internal static Span<IntPtr> SDL_GetWindows()
-    {
-        var result = SDL_GetWindows(out var count);
-        return new Span<IntPtr>((void*) result, count);
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetWindows(out int count);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateWindow(string title, int w, int h, SDL_WindowFlags flags);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreatePopupWindow(IntPtr parent, int offset_x, int offset_y, int w, int h, SDL_WindowFlags flags);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateWindowWithProperties(uint props);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetWindowID(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetWindowFromID(uint id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetWindowParent(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetWindowProperties(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_WindowFlags SDL_GetWindowFlags(IntPtr window);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowTitle(IntPtr window, string title);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetWindowTitle(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowIcon(IntPtr window, IntPtr icon);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -1416,300 +360,11 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowPosition(IntPtr window, out int x, out int y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetWindowSize(IntPtr window, int w, int h);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowSize(IntPtr window, out int w, out int h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowSafeArea(IntPtr window, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowAspectRatio(IntPtr window, float min_aspect, float max_aspect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowAspectRatio(IntPtr window, out float min_aspect, out float max_aspect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowBordersSize(IntPtr window, out int top, out int left, out int bottom, out int right);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowSizeInPixels(IntPtr window, out int w, out int h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowMinimumSize(IntPtr window, int min_w, int min_h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowMinimumSize(IntPtr window, out int w, out int h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowMaximumSize(IntPtr window, int max_w, int max_h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowMaximumSize(IntPtr window, out int w, out int h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowBordered(IntPtr window, SDLBool bordered);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowResizable(IntPtr window, SDLBool resizable);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowAlwaysOnTop(IntPtr window, SDLBool on_top);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ShowWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HideWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RaiseWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_MaximizeWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_MinimizeWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RestoreWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowFullscreen(IntPtr window, SDLBool fullscreen);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SyncWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WindowHasSurface(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_GetWindowSurface(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowSurfaceVSync(IntPtr window, int vsync);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowSurfaceVSync(IntPtr window, out int vsync);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UpdateWindowSurface(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UpdateWindowSurfaceRects(IntPtr window, Span<SDL_Rect> rects, int numrects);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_DestroyWindowSurface(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowKeyboardGrab(IntPtr window, SDLBool grabbed);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowMouseGrab(IntPtr window, SDLBool grabbed);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowKeyboardGrab(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetWindowMouseGrab(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGrabbedWindow();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowMouseRect(IntPtr window, ref SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Rect* SDL_GetWindowMouseRect(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowOpacity(IntPtr window, float opacity);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial float SDL_GetWindowOpacity(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowParent(IntPtr window, IntPtr parent);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowModal(IntPtr window, SDLBool modal);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowFocusable(IntPtr window, SDLBool focusable);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ShowWindowSystemMenu(IntPtr window, int x, int y);
-
-    public enum SDL_HitTestResult
-    {
-        SDL_HITTEST_NORMAL              = 0,
-        SDL_HITTEST_DRAGGABLE           = 1,
-        SDL_HITTEST_RESIZE_TOPLEFT      = 2,
-        SDL_HITTEST_RESIZE_TOP          = 3,
-        SDL_HITTEST_RESIZE_TOPRIGHT     = 4,
-        SDL_HITTEST_RESIZE_RIGHT        = 5,
-        SDL_HITTEST_RESIZE_BOTTOMRIGHT  = 6,
-        SDL_HITTEST_RESIZE_BOTTOM       = 7,
-        SDL_HITTEST_RESIZE_BOTTOMLEFT   = 8,
-        SDL_HITTEST_RESIZE_LEFT         = 9,
-    }
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate SDL_HitTestResult SDL_HitTest(IntPtr win, SDL_Point* area, IntPtr data);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowHitTest(IntPtr window, SDL_HitTest callback, IntPtr callback_data);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetWindowShape(IntPtr window, IntPtr shape);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FlashWindow(IntPtr window, SDL_FlashOperation operation);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ScreenSaverEnabled();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_EnableScreenSaver();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_DisableScreenSaver();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_LoadLibrary(string path);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GL_GetProcAddress(string proc);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_EGL_GetProcAddress(string proc);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GL_UnloadLibrary();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_ExtensionSupported(string extension);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GL_ResetAttributes();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_SetAttribute(SDL_GLAttr attr, int value);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_GetAttribute(SDL_GLAttr attr, out int value);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GL_CreateContext(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_MakeCurrent(IntPtr window, IntPtr context);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GL_GetCurrentWindow();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GL_GetCurrentContext();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_EGL_GetCurrentDisplay();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_EGL_GetCurrentConfig();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_EGL_GetWindowSurface(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_EGL_SetAttributeCallbacks(SDL_EGLAttribArrayCallback platformAttribCallback, SDL_EGLIntArrayCallback surfaceAttribCallback, SDL_EGLIntArrayCallback contextAttribCallback, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_SetSwapInterval(int interval);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_GetSwapInterval(out int interval);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_SwapWindow(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GL_DestroyContext(IntPtr context);
 
     // /usr/local/include/SDL3/SDL_guid.h
 
@@ -1718,14 +373,6 @@ internal static unsafe partial class SDL3
     {
         public fixed byte data[16];
     }
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void SDL_GUIDToString(SDL_GUID guid, string pszGUID, int cbGUID);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial SDL_GUID SDL_StringToGUID(string pchGUID);
 
     // /usr/local/include/SDL3/SDL_joystick.h
 
@@ -2418,6 +1065,7 @@ internal static unsafe partial class SDL3
     internal static partial string SDL_GetGamepadAppleSFSymbolsNameForAxis(IntPtr gamepad, SDL_GamepadAxis axis);
 
     // /usr/local/include/SDL3/SDL_scancode.h
+
     public enum SDL_Scancode
     {
         SDL_SCANCODE_UNKNOWN = 0,
@@ -2958,14 +1606,6 @@ internal static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_keyboard.h
 
-    public const string
-        SDL_PROP_TEXTINPUT_TYPE_NUMBER              = "SDL.textinput.type",
-        SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER    = "SDL.textinput.capitalization",
-        SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN      = "SDL.textinput.autocorrect",
-        SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN        = "SDL.textinput.multiline",
-        SDL_PROP_TEXTINPUT_ANDROID_INPUTTYPE_NUMBER = "SDL.textinput.android.inputtype"
-        ;
-
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_HasKeyboard();
@@ -3034,63 +1674,6 @@ internal static unsafe partial class SDL3
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetKeyFromName(string name);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_StartTextInput(IntPtr window);
-
-    public enum SDL_TextInputType
-    {
-        SDL_TEXTINPUT_TYPE_TEXT                    = 0,
-        SDL_TEXTINPUT_TYPE_TEXT_NAME               = 1,
-        SDL_TEXTINPUT_TYPE_TEXT_EMAIL              = 2,
-        SDL_TEXTINPUT_TYPE_TEXT_USERNAME           = 3,
-        SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_HIDDEN    = 4,
-        SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_VISIBLE   = 5,
-        SDL_TEXTINPUT_TYPE_NUMBER                  = 6,
-        SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_HIDDEN  = 7,
-        SDL_TEXTINPUT_TYPE_NUMBER_PASSWORD_VISIBLE = 8,
-    }
-
-    public enum SDL_Capitalization
-    {
-        SDL_CAPITALIZE_NONE      = 0,
-        SDL_CAPITALIZE_SENTENCES = 1,
-        SDL_CAPITALIZE_WORDS     = 2,
-        SDL_CAPITALIZE_LETTERS   = 3,
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_StartTextInputWithProperties(IntPtr window, uint props);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_TextInputActive(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_StopTextInput(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ClearComposition(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextInputArea(IntPtr window, ref SDL_Rect rect, int cursor);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextInputArea(IntPtr window, out SDL_Rect rect, out int cursor);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasScreenKeyboardSupport();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ScreenKeyboardShown(IntPtr window);
 
     // /usr/local/include/SDL3/SDL_mouse.h
 
@@ -3404,44 +1987,6 @@ internal static unsafe partial class SDL3
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_TextEditingEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-        public byte* text;
-        public int start;
-        public int length;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_TextEditingCandidatesEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-        public byte** candidates;
-        public int num_candidates;
-        public int selected_candidate;
-        public SDLBool horizontal;
-        public byte padding1;
-        public byte padding2;
-        public byte padding3;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_TextInputEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-        public byte* text;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SDL_MouseDeviceEvent
     {
         public SDL_EventType type;
@@ -3625,37 +2170,6 @@ internal static unsafe partial class SDL3
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_AudioDeviceEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public SDLBool recording;
-        public byte padding1;
-        public byte padding2;
-        public byte padding3;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_CameraDeviceEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_RenderEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SDL_TouchFingerEvent
     {
         public SDL_EventType type;
@@ -3672,16 +2186,6 @@ internal static unsafe partial class SDL3
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_PenProximityEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-        public uint which;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SDL_DropEvent
     {
         public SDL_EventType type;
@@ -3692,28 +2196,6 @@ internal static unsafe partial class SDL3
         public float y;
         public byte* source;
         public byte* data;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_ClipboardEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public SDLBool owner;
-        public int num_mime_types;
-        public byte** mime_types;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_SensorEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public fixed float data[6];
-        public ulong sensor_timestamp;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -3751,12 +2233,12 @@ internal static unsafe partial class SDL3
         public SDL_KeyboardDeviceEvent kdevice;
         [FieldOffset(0)]
         public SDL_KeyboardEvent key;
-        [FieldOffset(0)]
-        public SDL_TextEditingEvent edit;
-        [FieldOffset(0)]
-        public SDL_TextEditingCandidatesEvent edit_candidates;
-        [FieldOffset(0)]
-        public SDL_TextInputEvent text;
+      //[FieldOffset(0)]
+      //public SDL_TextEditingEvent edit;
+      //[FieldOffset(0)]
+      //public SDL_TextEditingCandidatesEvent edit_candidates;
+      //[FieldOffset(0)]
+      //public SDL_TextInputEvent text;
         [FieldOffset(0)]
         public SDL_MouseDeviceEvent mdevice;
         [FieldOffset(0)]
@@ -3785,517 +2267,29 @@ internal static unsafe partial class SDL3
         public SDL_GamepadTouchpadEvent gtouchpad;
         [FieldOffset(0)]
         public SDL_GamepadSensorEvent gsensor;
-        [FieldOffset(0)]
-        public SDL_AudioDeviceEvent adevice;
-        [FieldOffset(0)]
-        public SDL_CameraDeviceEvent cdevice;
-        [FieldOffset(0)]
-        public SDL_SensorEvent sensor;
+       //FieldOffset(0)]
+       //ublic SDL_AudioDeviceEvent adevice;
+       //FieldOffset(0)]
+       //ublic SDL_CameraDeviceEvent cdevice;
+       //FieldOffset(0)]
+       //public SDL_SensorEvent sensor;
         [FieldOffset(0)]
         public SDL_QuitEvent quit;
         [FieldOffset(0)]
         public SDL_UserEvent user;
         [FieldOffset(0)]
         public SDL_TouchFingerEvent tfinger;
-        [FieldOffset(0)]
-        public SDL_PenProximityEvent pproximity;
-        [FieldOffset(0)]
-        public SDL_RenderEvent render;
+      //[FieldOffset(0)]
+      //public SDL_PenProximityEvent pproximity;
+      //[FieldOffset(0)]
+      //public SDL_RenderEvent render;
         [FieldOffset(0)]
         public SDL_DropEvent drop;
-        [FieldOffset(0)]
-        public SDL_ClipboardEvent clipboard;
+      //[FieldOffset(0)]
+      //public SDL_ClipboardEvent clipboard;
         [FieldOffset(0)]
         public fixed byte padding[128];
     }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_PumpEvents();
-
-    public enum SDL_EventAction
-    {
-        SDL_ADDEVENT  = 0,
-        SDL_PEEKEVENT = 1,
-        SDL_GETEVENT  = 2,
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_PeepEvents(Span<SDL_Event> events, int numevents, SDL_EventAction action, uint minType, uint maxType);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasEvent(uint type);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasEvents(uint minType, uint maxType);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_FlushEvent(uint type);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_FlushEvents(uint minType, uint maxType);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PollEvent(out SDL_Event @event);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WaitEvent(out SDL_Event @event);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WaitEventTimeout(out SDL_Event @event, int timeoutMS);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_PushEvent(ref SDL_Event @event);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate bool SDL_EventFilter(IntPtr userdata, SDL_Event* evt);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetEventFilter(SDL_EventFilter filter, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetEventFilter(out SDL_EventFilter filter, out IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AddEventWatch(SDL_EventFilter filter, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_RemoveEventWatch(SDL_EventFilter filter, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_FilterEvents(SDL_EventFilter filter, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetEventEnabled(uint type, SDLBool enabled);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_EventEnabled(uint type);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_RegisterEvents(int numevents);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetWindowFromEvent(ref SDL_Event @event);
-
-    // /usr/local/include/SDL3/SDL_hidapi.h
-
-    public enum SDL_hid_bus_type
-    {
-        SDL_HID_API_BUS_UNKNOWN = 0,
-        SDL_HID_API_BUS_USB = 1,
-        SDL_HID_API_BUS_BLUETOOTH = 2,
-        SDL_HID_API_BUS_I2C = 3,
-        SDL_HID_API_BUS_SPI = 4,
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_hid_device_info
-    {
-        public byte* path;
-        public ushort vendor_id;
-        public ushort product_id;
-        public byte* serial_number;
-        public ushort release_number;
-        public byte* manufacturer_string;
-        public byte* product_string;
-        public ushort usage_page;
-        public ushort usage;
-        public int interface_number;
-        public int interface_class;
-        public int interface_subclass;
-        public int interface_protocol;
-        public SDL_hid_bus_type bus_type;
-        public SDL_hid_device_info* next;
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_init();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_exit();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_hid_device_change_count();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_hid_device_info* SDL_hid_enumerate(ushort vendor_id, ushort product_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_hid_free_enumeration(IntPtr devs); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_hid_open(ushort vendor_id, ushort product_id, string serial_number);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_hid_open_path(string path);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_write(IntPtr dev, IntPtr data, UIntPtr length); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_read_timeout(IntPtr dev, IntPtr data, UIntPtr length, int milliseconds); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_read(IntPtr dev, IntPtr data, UIntPtr length); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_set_nonblocking(IntPtr dev, int nonblock);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_send_feature_report(IntPtr dev, IntPtr data, UIntPtr length); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_feature_report(IntPtr dev, IntPtr data, UIntPtr length); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_input_report(IntPtr dev, IntPtr data, UIntPtr length); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_close(IntPtr dev);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_manufacturer_string(IntPtr dev, string @string, UIntPtr maxlen);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_product_string(IntPtr dev, string @string, UIntPtr maxlen);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_serial_number_string(IntPtr dev, string @string, UIntPtr maxlen);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_indexed_string(IntPtr dev, int string_index, string @string, UIntPtr maxlen);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_hid_device_info* SDL_hid_get_device_info(IntPtr dev);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_hid_get_report_descriptor(IntPtr dev, IntPtr buf, UIntPtr buf_size); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_hid_ble_scan(SDLBool active);
-
-    // /usr/local/include/SDL3/SDL_hints.h
-
-    public const string SDL_HINT_ALLOW_ALT_TAB_WHILE_GRABBED = "SDL_ALLOW_ALT_TAB_WHILE_GRABBED";
-    public const string SDL_HINT_ANDROID_ALLOW_RECREATE_ACTIVITY = "SDL_ANDROID_ALLOW_RECREATE_ACTIVITY";
-    public const string SDL_HINT_ANDROID_BLOCK_ON_PAUSE = "SDL_ANDROID_BLOCK_ON_PAUSE";
-    public const string SDL_HINT_ANDROID_LOW_LATENCY_AUDIO = "SDL_ANDROID_LOW_LATENCY_AUDIO";
-    public const string SDL_HINT_ANDROID_TRAP_BACK_BUTTON = "SDL_ANDROID_TRAP_BACK_BUTTON";
-    public const string SDL_HINT_APP_ID = "SDL_APP_ID";
-    public const string SDL_HINT_APP_NAME = "SDL_APP_NAME";
-    public const string SDL_HINT_APPLE_TV_CONTROLLER_UI_EVENTS = "SDL_APPLE_TV_CONTROLLER_UI_EVENTS";
-    public const string SDL_HINT_APPLE_TV_REMOTE_ALLOW_ROTATION = "SDL_APPLE_TV_REMOTE_ALLOW_ROTATION";
-    public const string SDL_HINT_AUDIO_ALSA_DEFAULT_DEVICE = "SDL_AUDIO_ALSA_DEFAULT_DEVICE";
-    public const string SDL_HINT_AUDIO_ALSA_DEFAULT_PLAYBACK_DEVICE = "SDL_AUDIO_ALSA_DEFAULT_PLAYBACK_DEVICE";
-    public const string SDL_HINT_AUDIO_ALSA_DEFAULT_RECORDING_DEVICE = "SDL_AUDIO_ALSA_DEFAULT_RECORDING_DEVICE";
-    public const string SDL_HINT_AUDIO_CATEGORY = "SDL_AUDIO_CATEGORY";
-    public const string SDL_HINT_AUDIO_CHANNELS = "SDL_AUDIO_CHANNELS";
-    public const string SDL_HINT_AUDIO_DEVICE_APP_ICON_NAME = "SDL_AUDIO_DEVICE_APP_ICON_NAME";
-    public const string SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES = "SDL_AUDIO_DEVICE_SAMPLE_FRAMES";
-    public const string SDL_HINT_AUDIO_DEVICE_STREAM_NAME = "SDL_AUDIO_DEVICE_STREAM_NAME";
-    public const string SDL_HINT_AUDIO_DEVICE_STREAM_ROLE = "SDL_AUDIO_DEVICE_STREAM_ROLE";
-    public const string SDL_HINT_AUDIO_DISK_INPUT_FILE = "SDL_AUDIO_DISK_INPUT_FILE";
-    public const string SDL_HINT_AUDIO_DISK_OUTPUT_FILE = "SDL_AUDIO_DISK_OUTPUT_FILE";
-    public const string SDL_HINT_AUDIO_DISK_TIMESCALE = "SDL_AUDIO_DISK_TIMESCALE";
-    public const string SDL_HINT_AUDIO_DRIVER = "SDL_AUDIO_DRIVER";
-    public const string SDL_HINT_AUDIO_DUMMY_TIMESCALE = "SDL_AUDIO_DUMMY_TIMESCALE";
-    public const string SDL_HINT_AUDIO_FORMAT = "SDL_AUDIO_FORMAT";
-    public const string SDL_HINT_AUDIO_FREQUENCY = "SDL_AUDIO_FREQUENCY";
-    public const string SDL_HINT_AUDIO_INCLUDE_MONITORS = "SDL_AUDIO_INCLUDE_MONITORS";
-    public const string SDL_HINT_AUTO_UPDATE_JOYSTICKS = "SDL_AUTO_UPDATE_JOYSTICKS";
-    public const string SDL_HINT_AUTO_UPDATE_SENSORS = "SDL_AUTO_UPDATE_SENSORS";
-    public const string SDL_HINT_BMP_SAVE_LEGACY_FORMAT = "SDL_BMP_SAVE_LEGACY_FORMAT";
-    public const string SDL_HINT_CAMERA_DRIVER = "SDL_CAMERA_DRIVER";
-    public const string SDL_HINT_CPU_FEATURE_MASK = "SDL_CPU_FEATURE_MASK";
-    public const string SDL_HINT_JOYSTICK_DIRECTINPUT = "SDL_JOYSTICK_DIRECTINPUT";
-    public const string SDL_HINT_FILE_DIALOG_DRIVER = "SDL_FILE_DIALOG_DRIVER";
-    public const string SDL_HINT_DISPLAY_USABLE_BOUNDS = "SDL_DISPLAY_USABLE_BOUNDS";
-    public const string SDL_HINT_EMSCRIPTEN_ASYNCIFY = "SDL_EMSCRIPTEN_ASYNCIFY";
-    public const string SDL_HINT_EMSCRIPTEN_CANVAS_SELECTOR = "SDL_EMSCRIPTEN_CANVAS_SELECTOR";
-    public const string SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT = "SDL_EMSCRIPTEN_KEYBOARD_ELEMENT";
-    public const string SDL_HINT_ENABLE_SCREEN_KEYBOARD = "SDL_ENABLE_SCREEN_KEYBOARD";
-    public const string SDL_HINT_EVDEV_DEVICES = "SDL_EVDEV_DEVICES";
-    public const string SDL_HINT_EVENT_LOGGING = "SDL_EVENT_LOGGING";
-    public const string SDL_HINT_FORCE_RAISEWINDOW = "SDL_FORCE_RAISEWINDOW";
-    public const string SDL_HINT_FRAMEBUFFER_ACCELERATION = "SDL_FRAMEBUFFER_ACCELERATION";
-    public const string SDL_HINT_GAMECONTROLLERCONFIG = "SDL_GAMECONTROLLERCONFIG";
-    public const string SDL_HINT_GAMECONTROLLERCONFIG_FILE = "SDL_GAMECONTROLLERCONFIG_FILE";
-    public const string SDL_HINT_GAMECONTROLLERTYPE = "SDL_GAMECONTROLLERTYPE";
-    public const string SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES = "SDL_GAMECONTROLLER_IGNORE_DEVICES";
-    public const string SDL_HINT_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT = "SDL_GAMECONTROLLER_IGNORE_DEVICES_EXCEPT";
-    public const string SDL_HINT_GAMECONTROLLER_SENSOR_FUSION = "SDL_GAMECONTROLLER_SENSOR_FUSION";
-    public const string SDL_HINT_GDK_TEXTINPUT_DEFAULT_TEXT = "SDL_GDK_TEXTINPUT_DEFAULT_TEXT";
-    public const string SDL_HINT_GDK_TEXTINPUT_DESCRIPTION = "SDL_GDK_TEXTINPUT_DESCRIPTION";
-    public const string SDL_HINT_GDK_TEXTINPUT_MAX_LENGTH = "SDL_GDK_TEXTINPUT_MAX_LENGTH";
-    public const string SDL_HINT_GDK_TEXTINPUT_SCOPE = "SDL_GDK_TEXTINPUT_SCOPE";
-    public const string SDL_HINT_GDK_TEXTINPUT_TITLE = "SDL_GDK_TEXTINPUT_TITLE";
-    public const string SDL_HINT_HIDAPI_LIBUSB = "SDL_HIDAPI_LIBUSB";
-    public const string SDL_HINT_HIDAPI_LIBUSB_WHITELIST = "SDL_HIDAPI_LIBUSB_WHITELIST";
-    public const string SDL_HINT_HIDAPI_UDEV = "SDL_HIDAPI_UDEV";
-    public const string SDL_HINT_GPU_DRIVER = "SDL_GPU_DRIVER";
-    public const string SDL_HINT_HIDAPI_ENUMERATE_ONLY_CONTROLLERS = "SDL_HIDAPI_ENUMERATE_ONLY_CONTROLLERS";
-    public const string SDL_HINT_HIDAPI_IGNORE_DEVICES = "SDL_HIDAPI_IGNORE_DEVICES";
-    public const string SDL_HINT_IME_IMPLEMENTED_UI = "SDL_IME_IMPLEMENTED_UI";
-    public const string SDL_HINT_IOS_HIDE_HOME_INDICATOR = "SDL_IOS_HIDE_HOME_INDICATOR";
-    public const string SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS = "SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS";
-    public const string SDL_HINT_JOYSTICK_ARCADESTICK_DEVICES = "SDL_JOYSTICK_ARCADESTICK_DEVICES";
-    public const string SDL_HINT_JOYSTICK_ARCADESTICK_DEVICES_EXCLUDED = "SDL_JOYSTICK_ARCADESTICK_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_BLACKLIST_DEVICES = "SDL_JOYSTICK_BLACKLIST_DEVICES";
-    public const string SDL_HINT_JOYSTICK_BLACKLIST_DEVICES_EXCLUDED = "SDL_JOYSTICK_BLACKLIST_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_DEVICE = "SDL_JOYSTICK_DEVICE";
-    public const string SDL_HINT_JOYSTICK_ENHANCED_REPORTS = "SDL_JOYSTICK_ENHANCED_REPORTS";
-    public const string SDL_HINT_JOYSTICK_FLIGHTSTICK_DEVICES = "SDL_JOYSTICK_FLIGHTSTICK_DEVICES";
-    public const string SDL_HINT_JOYSTICK_FLIGHTSTICK_DEVICES_EXCLUDED = "SDL_JOYSTICK_FLIGHTSTICK_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_GAMEINPUT = "SDL_JOYSTICK_GAMEINPUT";
-    public const string SDL_HINT_JOYSTICK_GAMECUBE_DEVICES = "SDL_JOYSTICK_GAMECUBE_DEVICES";
-    public const string SDL_HINT_JOYSTICK_GAMECUBE_DEVICES_EXCLUDED = "SDL_JOYSTICK_GAMECUBE_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI = "SDL_JOYSTICK_HIDAPI";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_COMBINE_JOY_CONS = "SDL_JOYSTICK_HIDAPI_COMBINE_JOY_CONS";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE = "SDL_JOYSTICK_HIDAPI_GAMECUBE";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_GAMECUBE_RUMBLE_BRAKE = "SDL_JOYSTICK_HIDAPI_GAMECUBE_RUMBLE_BRAKE";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_JOY_CONS = "SDL_JOYSTICK_HIDAPI_JOY_CONS";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_JOYCON_HOME_LED = "SDL_JOYSTICK_HIDAPI_JOYCON_HOME_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_LUNA = "SDL_JOYSTICK_HIDAPI_LUNA";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_NINTENDO_CLASSIC = "SDL_JOYSTICK_HIDAPI_NINTENDO_CLASSIC";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS3 = "SDL_JOYSTICK_HIDAPI_PS3";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS3_SIXAXIS_DRIVER = "SDL_JOYSTICK_HIDAPI_PS3_SIXAXIS_DRIVER";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS4 = "SDL_JOYSTICK_HIDAPI_PS4";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS4_REPORT_INTERVAL = "SDL_JOYSTICK_HIDAPI_PS4_REPORT_INTERVAL";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS5 = "SDL_JOYSTICK_HIDAPI_PS5";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_PS5_PLAYER_LED = "SDL_JOYSTICK_HIDAPI_PS5_PLAYER_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_SHIELD = "SDL_JOYSTICK_HIDAPI_SHIELD";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_STADIA = "SDL_JOYSTICK_HIDAPI_STADIA";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_STEAM = "SDL_JOYSTICK_HIDAPI_STEAM";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_STEAM_HOME_LED = "SDL_JOYSTICK_HIDAPI_STEAM_HOME_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_STEAMDECK = "SDL_JOYSTICK_HIDAPI_STEAMDECK";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_STEAM_HORI = "SDL_JOYSTICK_HIDAPI_STEAM_HORI";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_SWITCH = "SDL_JOYSTICK_HIDAPI_SWITCH";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_SWITCH_HOME_LED = "SDL_JOYSTICK_HIDAPI_SWITCH_HOME_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_SWITCH_PLAYER_LED = "SDL_JOYSTICK_HIDAPI_SWITCH_PLAYER_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS = "SDL_JOYSTICK_HIDAPI_VERTICAL_JOY_CONS";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_WII = "SDL_JOYSTICK_HIDAPI_WII";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_WII_PLAYER_LED = "SDL_JOYSTICK_HIDAPI_WII_PLAYER_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX = "SDL_JOYSTICK_HIDAPI_XBOX";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX_360 = "SDL_JOYSTICK_HIDAPI_XBOX_360";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_PLAYER_LED = "SDL_JOYSTICK_HIDAPI_XBOX_360_PLAYER_LED";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX_360_WIRELESS = "SDL_JOYSTICK_HIDAPI_XBOX_360_WIRELESS";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE = "SDL_JOYSTICK_HIDAPI_XBOX_ONE";
-    public const string SDL_HINT_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED = "SDL_JOYSTICK_HIDAPI_XBOX_ONE_HOME_LED";
-    public const string SDL_HINT_JOYSTICK_IOKIT = "SDL_JOYSTICK_IOKIT";
-    public const string SDL_HINT_JOYSTICK_LINUX_CLASSIC = "SDL_JOYSTICK_LINUX_CLASSIC";
-    public const string SDL_HINT_JOYSTICK_LINUX_DEADZONES = "SDL_JOYSTICK_LINUX_DEADZONES";
-    public const string SDL_HINT_JOYSTICK_LINUX_DIGITAL_HATS = "SDL_JOYSTICK_LINUX_DIGITAL_HATS";
-    public const string SDL_HINT_JOYSTICK_LINUX_HAT_DEADZONES = "SDL_JOYSTICK_LINUX_HAT_DEADZONES";
-    public const string SDL_HINT_JOYSTICK_MFI = "SDL_JOYSTICK_MFI";
-    public const string SDL_HINT_JOYSTICK_RAWINPUT = "SDL_JOYSTICK_RAWINPUT";
-    public const string SDL_HINT_JOYSTICK_RAWINPUT_CORRELATE_XINPUT = "SDL_JOYSTICK_RAWINPUT_CORRELATE_XINPUT";
-    public const string SDL_HINT_JOYSTICK_ROG_CHAKRAM = "SDL_JOYSTICK_ROG_CHAKRAM";
-    public const string SDL_HINT_JOYSTICK_THREAD = "SDL_JOYSTICK_THREAD";
-    public const string SDL_HINT_JOYSTICK_THROTTLE_DEVICES = "SDL_JOYSTICK_THROTTLE_DEVICES";
-    public const string SDL_HINT_JOYSTICK_THROTTLE_DEVICES_EXCLUDED = "SDL_JOYSTICK_THROTTLE_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_WGI = "SDL_JOYSTICK_WGI";
-    public const string SDL_HINT_JOYSTICK_WHEEL_DEVICES = "SDL_JOYSTICK_WHEEL_DEVICES";
-    public const string SDL_HINT_JOYSTICK_WHEEL_DEVICES_EXCLUDED = "SDL_JOYSTICK_WHEEL_DEVICES_EXCLUDED";
-    public const string SDL_HINT_JOYSTICK_ZERO_CENTERED_DEVICES = "SDL_JOYSTICK_ZERO_CENTERED_DEVICES";
-    public const string SDL_HINT_JOYSTICK_HAPTIC_AXES = "SDL_JOYSTICK_HAPTIC_AXES";
-    public const string SDL_HINT_KEYCODE_OPTIONS = "SDL_KEYCODE_OPTIONS";
-    public const string SDL_HINT_KMSDRM_DEVICE_INDEX = "SDL_KMSDRM_DEVICE_INDEX";
-    public const string SDL_HINT_KMSDRM_REQUIRE_DRM_MASTER = "SDL_KMSDRM_REQUIRE_DRM_MASTER";
-    public const string SDL_HINT_LOGGING = "SDL_LOGGING";
-    public const string SDL_HINT_MAC_BACKGROUND_APP = "SDL_MAC_BACKGROUND_APP";
-    public const string SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK = "SDL_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK";
-    public const string SDL_HINT_MAC_OPENGL_ASYNC_DISPATCH = "SDL_MAC_OPENGL_ASYNC_DISPATCH";
-    public const string SDL_HINT_MAC_OPTION_AS_ALT = "SDL_MAC_OPTION_AS_ALT";
-    public const string SDL_HINT_MAC_SCROLL_MOMENTUM = "SDL_MAC_SCROLL_MOMENTUM";
-    public const string SDL_HINT_MAIN_CALLBACK_RATE = "SDL_MAIN_CALLBACK_RATE";
-    public const string SDL_HINT_MOUSE_AUTO_CAPTURE = "SDL_MOUSE_AUTO_CAPTURE";
-    public const string SDL_HINT_MOUSE_DOUBLE_CLICK_RADIUS = "SDL_MOUSE_DOUBLE_CLICK_RADIUS";
-    public const string SDL_HINT_MOUSE_DOUBLE_CLICK_TIME = "SDL_MOUSE_DOUBLE_CLICK_TIME";
-    public const string SDL_HINT_MOUSE_DEFAULT_SYSTEM_CURSOR = "SDL_MOUSE_DEFAULT_SYSTEM_CURSOR";
-    public const string SDL_HINT_MOUSE_EMULATE_WARP_WITH_RELATIVE = "SDL_MOUSE_EMULATE_WARP_WITH_RELATIVE";
-    public const string SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH = "SDL_MOUSE_FOCUS_CLICKTHROUGH";
-    public const string SDL_HINT_MOUSE_NORMAL_SPEED_SCALE = "SDL_MOUSE_NORMAL_SPEED_SCALE";
-    public const string SDL_HINT_MOUSE_RELATIVE_MODE_CENTER = "SDL_MOUSE_RELATIVE_MODE_CENTER";
-    public const string SDL_HINT_MOUSE_RELATIVE_SPEED_SCALE = "SDL_MOUSE_RELATIVE_SPEED_SCALE";
-    public const string SDL_HINT_MOUSE_RELATIVE_SYSTEM_SCALE = "SDL_MOUSE_RELATIVE_SYSTEM_SCALE";
-    public const string SDL_HINT_MOUSE_RELATIVE_WARP_MOTION = "SDL_MOUSE_RELATIVE_WARP_MOTION";
-    public const string SDL_HINT_MOUSE_RELATIVE_CURSOR_VISIBLE = "SDL_MOUSE_RELATIVE_CURSOR_VISIBLE";
-    public const string SDL_HINT_MOUSE_TOUCH_EVENTS = "SDL_MOUSE_TOUCH_EVENTS";
-    public const string SDL_HINT_MUTE_CONSOLE_KEYBOARD = "SDL_MUTE_CONSOLE_KEYBOARD";
-    public const string SDL_HINT_NO_SIGNAL_HANDLERS = "SDL_NO_SIGNAL_HANDLERS";
-    public const string SDL_HINT_OPENGL_LIBRARY = "SDL_OPENGL_LIBRARY";
-    public const string SDL_HINT_EGL_LIBRARY = "SDL_EGL_LIBRARY";
-    public const string SDL_HINT_OPENGL_ES_DRIVER = "SDL_OPENGL_ES_DRIVER";
-    public const string SDL_HINT_OPENVR_LIBRARY = "SDL_OPENVR_LIBRARY";
-    public const string SDL_HINT_ORIENTATIONS = "SDL_ORIENTATIONS";
-    public const string SDL_HINT_POLL_SENTINEL = "SDL_POLL_SENTINEL";
-    public const string SDL_HINT_PREFERRED_LOCALES = "SDL_PREFERRED_LOCALES";
-    public const string SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE = "SDL_QUIT_ON_LAST_WINDOW_CLOSE";
-    public const string SDL_HINT_RENDER_DIRECT3D_THREADSAFE = "SDL_RENDER_DIRECT3D_THREADSAFE";
-    public const string SDL_HINT_RENDER_DIRECT3D11_DEBUG = "SDL_RENDER_DIRECT3D11_DEBUG";
-    public const string SDL_HINT_RENDER_VULKAN_DEBUG = "SDL_RENDER_VULKAN_DEBUG";
-    public const string SDL_HINT_RENDER_GPU_DEBUG = "SDL_RENDER_GPU_DEBUG";
-    public const string SDL_HINT_RENDER_GPU_LOW_POWER = "SDL_RENDER_GPU_LOW_POWER";
-    public const string SDL_HINT_RENDER_DRIVER = "SDL_RENDER_DRIVER";
-    public const string SDL_HINT_RENDER_LINE_METHOD = "SDL_RENDER_LINE_METHOD";
-    public const string SDL_HINT_RENDER_METAL_PREFER_LOW_POWER_DEVICE = "SDL_RENDER_METAL_PREFER_LOW_POWER_DEVICE";
-    public const string SDL_HINT_RENDER_VSYNC = "SDL_RENDER_VSYNC";
-    public const string SDL_HINT_RETURN_KEY_HIDES_IME = "SDL_RETURN_KEY_HIDES_IME";
-    public const string SDL_HINT_ROG_GAMEPAD_MICE = "SDL_ROG_GAMEPAD_MICE";
-    public const string SDL_HINT_ROG_GAMEPAD_MICE_EXCLUDED = "SDL_ROG_GAMEPAD_MICE_EXCLUDED";
-    public const string SDL_HINT_RPI_VIDEO_LAYER = "SDL_RPI_VIDEO_LAYER";
-    public const string SDL_HINT_SCREENSAVER_INHIBIT_ACTIVITY_NAME = "SDL_SCREENSAVER_INHIBIT_ACTIVITY_NAME";
-    public const string SDL_HINT_SHUTDOWN_DBUS_ON_QUIT = "SDL_SHUTDOWN_DBUS_ON_QUIT";
-    public const string SDL_HINT_STORAGE_TITLE_DRIVER = "SDL_STORAGE_TITLE_DRIVER";
-    public const string SDL_HINT_STORAGE_USER_DRIVER = "SDL_STORAGE_USER_DRIVER";
-    public const string SDL_HINT_THREAD_FORCE_REALTIME_TIME_CRITICAL = "SDL_THREAD_FORCE_REALTIME_TIME_CRITICAL";
-    public const string SDL_HINT_THREAD_PRIORITY_POLICY = "SDL_THREAD_PRIORITY_POLICY";
-    public const string SDL_HINT_TIMER_RESOLUTION = "SDL_TIMER_RESOLUTION";
-    public const string SDL_HINT_TOUCH_MOUSE_EVENTS = "SDL_TOUCH_MOUSE_EVENTS";
-    public const string SDL_HINT_TRACKPAD_IS_TOUCH_ONLY = "SDL_TRACKPAD_IS_TOUCH_ONLY";
-    public const string SDL_HINT_TV_REMOTE_AS_JOYSTICK = "SDL_TV_REMOTE_AS_JOYSTICK";
-    public const string SDL_HINT_VIDEO_ALLOW_SCREENSAVER = "SDL_VIDEO_ALLOW_SCREENSAVER";
-    public const string SDL_HINT_VIDEO_DISPLAY_PRIORITY = "SDL_VIDEO_DISPLAY_PRIORITY";
-    public const string SDL_HINT_VIDEO_DOUBLE_BUFFER = "SDL_VIDEO_DOUBLE_BUFFER";
-    public const string SDL_HINT_VIDEO_DRIVER = "SDL_VIDEO_DRIVER";
-    public const string SDL_HINT_VIDEO_DUMMY_SAVE_FRAMES = "SDL_VIDEO_DUMMY_SAVE_FRAMES";
-    public const string SDL_HINT_VIDEO_EGL_ALLOW_GETDISPLAY_FALLBACK = "SDL_VIDEO_EGL_ALLOW_GETDISPLAY_FALLBACK";
-    public const string SDL_HINT_VIDEO_FORCE_EGL = "SDL_VIDEO_FORCE_EGL";
-    public const string SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES = "SDL_VIDEO_MAC_FULLSCREEN_SPACES";
-    public const string SDL_HINT_VIDEO_MAC_FULLSCREEN_MENU_VISIBILITY = "SDL_VIDEO_MAC_FULLSCREEN_MENU_VISIBILITY";
-    public const string SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS = "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS";
-    public const string SDL_HINT_VIDEO_OFFSCREEN_SAVE_FRAMES = "SDL_VIDEO_OFFSCREEN_SAVE_FRAMES";
-    public const string SDL_HINT_VIDEO_SYNC_WINDOW_OPERATIONS = "SDL_VIDEO_SYNC_WINDOW_OPERATIONS";
-    public const string SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR = "SDL_VIDEO_WAYLAND_ALLOW_LIBDECOR";
-    public const string SDL_HINT_VIDEO_WAYLAND_MODE_EMULATION = "SDL_VIDEO_WAYLAND_MODE_EMULATION";
-    public const string SDL_HINT_VIDEO_WAYLAND_MODE_SCALING = "SDL_VIDEO_WAYLAND_MODE_SCALING";
-    public const string SDL_HINT_VIDEO_WAYLAND_PREFER_LIBDECOR = "SDL_VIDEO_WAYLAND_PREFER_LIBDECOR";
-    public const string SDL_HINT_VIDEO_WAYLAND_SCALE_TO_DISPLAY = "SDL_VIDEO_WAYLAND_SCALE_TO_DISPLAY";
-    public const string SDL_HINT_VIDEO_WIN_D3DCOMPILER = "SDL_VIDEO_WIN_D3DCOMPILER";
-    public const string SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR = "SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR";
-    public const string SDL_HINT_VIDEO_X11_NET_WM_PING = "SDL_VIDEO_X11_NET_WM_PING";
-    public const string SDL_HINT_VIDEO_X11_NODIRECTCOLOR = "SDL_VIDEO_X11_NODIRECTCOLOR";
-    public const string SDL_HINT_VIDEO_X11_SCALING_FACTOR = "SDL_VIDEO_X11_SCALING_FACTOR";
-    public const string SDL_HINT_VIDEO_X11_VISUALID = "SDL_VIDEO_X11_VISUALID";
-    public const string SDL_HINT_VIDEO_X11_WINDOW_VISUALID = "SDL_VIDEO_X11_WINDOW_VISUALID";
-    public const string SDL_HINT_VIDEO_X11_XRANDR = "SDL_VIDEO_X11_XRANDR";
-    public const string SDL_HINT_VITA_ENABLE_BACK_TOUCH = "SDL_VITA_ENABLE_BACK_TOUCH";
-    public const string SDL_HINT_VITA_ENABLE_FRONT_TOUCH = "SDL_VITA_ENABLE_FRONT_TOUCH";
-    public const string SDL_HINT_VITA_MODULE_PATH = "SDL_VITA_MODULE_PATH";
-    public const string SDL_HINT_VITA_PVR_INIT = "SDL_VITA_PVR_INIT";
-    public const string SDL_HINT_VITA_RESOLUTION = "SDL_VITA_RESOLUTION";
-    public const string SDL_HINT_VITA_PVR_OPENGL = "SDL_VITA_PVR_OPENGL";
-    public const string SDL_HINT_VITA_TOUCH_MOUSE_DEVICE = "SDL_VITA_TOUCH_MOUSE_DEVICE";
-    public const string SDL_HINT_VULKAN_DISPLAY = "SDL_VULKAN_DISPLAY";
-    public const string SDL_HINT_VULKAN_LIBRARY = "SDL_VULKAN_LIBRARY";
-    public const string SDL_HINT_WAVE_FACT_CHUNK = "SDL_WAVE_FACT_CHUNK";
-    public const string SDL_HINT_WAVE_CHUNK_LIMIT = "SDL_WAVE_CHUNK_LIMIT";
-    public const string SDL_HINT_WAVE_RIFF_CHUNK_SIZE = "SDL_WAVE_RIFF_CHUNK_SIZE";
-    public const string SDL_HINT_WAVE_TRUNCATION = "SDL_WAVE_TRUNCATION";
-    public const string SDL_HINT_WINDOW_ACTIVATE_WHEN_RAISED = "SDL_WINDOW_ACTIVATE_WHEN_RAISED";
-    public const string SDL_HINT_WINDOW_ACTIVATE_WHEN_SHOWN = "SDL_WINDOW_ACTIVATE_WHEN_SHOWN";
-    public const string SDL_HINT_WINDOW_ALLOW_TOPMOST = "SDL_WINDOW_ALLOW_TOPMOST";
-    public const string SDL_HINT_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN = "SDL_WINDOW_FRAME_USABLE_WHILE_CURSOR_HIDDEN";
-    public const string SDL_HINT_WINDOWS_CLOSE_ON_ALT_F4 = "SDL_WINDOWS_CLOSE_ON_ALT_F4";
-    public const string SDL_HINT_WINDOWS_ENABLE_MENU_MNEMONICS = "SDL_WINDOWS_ENABLE_MENU_MNEMONICS";
-    public const string SDL_HINT_WINDOWS_ENABLE_MESSAGELOOP = "SDL_WINDOWS_ENABLE_MESSAGELOOP";
-    public const string SDL_HINT_WINDOWS_GAMEINPUT = "SDL_WINDOWS_GAMEINPUT";
-    public const string SDL_HINT_WINDOWS_RAW_KEYBOARD = "SDL_WINDOWS_RAW_KEYBOARD";
-    public const string SDL_HINT_WINDOWS_FORCE_SEMAPHORE_KERNEL = "SDL_WINDOWS_FORCE_SEMAPHORE_KERNEL";
-    public const string SDL_HINT_WINDOWS_INTRESOURCE_ICON = "SDL_WINDOWS_INTRESOURCE_ICON";
-    public const string SDL_HINT_WINDOWS_INTRESOURCE_ICON_SMALL = "SDL_WINDOWS_INTRESOURCE_ICON_SMALL";
-    public const string SDL_HINT_WINDOWS_USE_D3D9EX = "SDL_WINDOWS_USE_D3D9EX";
-    public const string SDL_HINT_WINDOWS_ERASE_BACKGROUND_MODE = "SDL_WINDOWS_ERASE_BACKGROUND_MODE";
-    public const string SDL_HINT_X11_FORCE_OVERRIDE_REDIRECT = "SDL_X11_FORCE_OVERRIDE_REDIRECT";
-    public const string SDL_HINT_X11_WINDOW_TYPE = "SDL_X11_WINDOW_TYPE";
-    public const string SDL_HINT_X11_XCB_LIBRARY = "SDL_X11_XCB_LIBRARY";
-    public const string SDL_HINT_XINPUT_ENABLED = "SDL_XINPUT_ENABLED";
-    public const string SDL_HINT_ASSERT = "SDL_ASSERT";
-    public const string SDL_HINT_PEN_MOUSE_EVENTS = "SDL_PEN_MOUSE_EVENTS";
-    public const string SDL_HINT_PEN_TOUCH_EVENTS = "SDL_PEN_TOUCH_EVENTS";
-
-    public enum SDL_HintPriority
-    {
-        SDL_HINT_DEFAULT = 0,
-        SDL_HINT_NORMAL = 1,
-        SDL_HINT_OVERRIDE = 2,
-    }
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetHintWithPriority(string name, string value, SDL_HintPriority priority);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetHint(string name, string value);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ResetHint(string name);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_ResetHints();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetHint(string name);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetHintBoolean(string name, SDLBool default_value);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_HintCallback(IntPtr userdata, byte* name, byte* oldValue, byte* newValue);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AddHintCallback(string name, SDL_HintCallback callback, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_RemoveHintCallback(string name, SDL_HintCallback callback, IntPtr userdata);
 
     // /usr/local/include/SDL3/SDL_init.h
 
@@ -4338,43 +2332,11 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_InitSubSystem(SDL_InitFlags flags);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_QuitSubSystem(SDL_InitFlags flags);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_InitFlags SDL_WasInit(SDL_InitFlags flags);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_Quit();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_IsMainThread();
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_MainThreadCallback(IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RunOnMainThread(SDL_MainThreadCallback callback, IntPtr userdata, SDLBool wait_complete);
 
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetAppMetadata(string appname, string appversion, string appidentifier);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetAppMetadataProperty(string name, string value);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetAppMetadataProperty(string name);
 
     // /usr/local/include/SDL3/SDL_loadso.h
 
@@ -4392,208 +2354,11 @@ internal static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_log.h
 
-    public enum SDL_LogCategory
-    {
-        SDL_LOG_CATEGORY_APPLICATION = 0,
-        SDL_LOG_CATEGORY_ERROR = 1,
-        SDL_LOG_CATEGORY_ASSERT = 2,
-        SDL_LOG_CATEGORY_SYSTEM = 3,
-        SDL_LOG_CATEGORY_AUDIO = 4,
-        SDL_LOG_CATEGORY_VIDEO = 5,
-        SDL_LOG_CATEGORY_RENDER = 6,
-        SDL_LOG_CATEGORY_INPUT = 7,
-        SDL_LOG_CATEGORY_TEST = 8,
-        SDL_LOG_CATEGORY_GPU = 9,
-        SDL_LOG_CATEGORY_RESERVED2 = 10,
-        SDL_LOG_CATEGORY_RESERVED3 = 11,
-        SDL_LOG_CATEGORY_RESERVED4 = 12,
-        SDL_LOG_CATEGORY_RESERVED5 = 13,
-        SDL_LOG_CATEGORY_RESERVED6 = 14,
-        SDL_LOG_CATEGORY_RESERVED7 = 15,
-        SDL_LOG_CATEGORY_RESERVED8 = 16,
-        SDL_LOG_CATEGORY_RESERVED9 = 17,
-        SDL_LOG_CATEGORY_RESERVED10 = 18,
-        SDL_LOG_CATEGORY_CUSTOM = 19,
-    }
-
-    public enum SDL_LogPriority
-    {
-        SDL_LOG_PRIORITY_INVALID = 0,
-        SDL_LOG_PRIORITY_TRACE = 1,
-        SDL_LOG_PRIORITY_VERBOSE = 2,
-        SDL_LOG_PRIORITY_DEBUG = 3,
-        SDL_LOG_PRIORITY_INFO = 4,
-        SDL_LOG_PRIORITY_WARN = 5,
-        SDL_LOG_PRIORITY_ERROR = 6,
-        SDL_LOG_PRIORITY_CRITICAL = 7,
-        SDL_LOG_PRIORITY_COUNT = 8,
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetLogPriorities(SDL_LogPriority priority);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetLogPriority(int category, SDL_LogPriority priority);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_LogPriority SDL_GetLogPriority(int category);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_ResetLogPriorities();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetLogPriorityPrefix(SDL_LogPriority priority, string prefix);
-
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_Log(string fmt);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogTrace(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogVerbose(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogDebug(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogInfo(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogWarn(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogError(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogCritical(int category, string fmt);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_LogMessage(int category, SDL_LogPriority priority, string fmt);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SDL_LogOutputFunction(IntPtr userdata, int category, SDL_LogPriority priority, byte* message);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_LogOutputFunction SDL_GetDefaultLogOutputFunction();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GetLogOutputFunction(out SDL_LogOutputFunction callback, out IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetLogOutputFunction(SDL_LogOutputFunction callback, IntPtr userdata);
-
     // /usr/local/include/SDL3/SDL_render.h
-
-    public const string SDL_PROP_RENDERER_CREATE_NAME_STRING = "SDL.renderer.create.name";
-    public const string SDL_PROP_RENDERER_CREATE_WINDOW_POINTER = "SDL.renderer.create.window";
-    public const string SDL_PROP_RENDERER_CREATE_SURFACE_POINTER = "SDL.renderer.create.surface";
-    public const string SDL_PROP_RENDERER_CREATE_OUTPUT_COLORSPACE_NUMBER = "SDL.renderer.create.output_colorspace";
-    public const string SDL_PROP_RENDERER_CREATE_PRESENT_VSYNC_NUMBER = "SDL.renderer.create.present_vsync";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_INSTANCE_POINTER = "SDL.renderer.create.vulkan.instance";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_SURFACE_NUMBER = "SDL.renderer.create.vulkan.surface";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_PHYSICAL_DEVICE_POINTER = "SDL.renderer.create.vulkan.physical_device";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_DEVICE_POINTER = "SDL.renderer.create.vulkan.device";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_GRAPHICS_QUEUE_FAMILY_INDEX_NUMBER = "SDL.renderer.create.vulkan.graphics_queue_family_index";
-    public const string SDL_PROP_RENDERER_CREATE_VULKAN_PRESENT_QUEUE_FAMILY_INDEX_NUMBER = "SDL.renderer.create.vulkan.present_queue_family_index";
-    public const string SDL_PROP_RENDERER_NAME_STRING = "SDL.renderer.name";
-    public const string SDL_PROP_RENDERER_WINDOW_POINTER = "SDL.renderer.window";
-    public const string SDL_PROP_RENDERER_SURFACE_POINTER = "SDL.renderer.surface";
-    public const string SDL_PROP_RENDERER_VSYNC_NUMBER = "SDL.renderer.vsync";
-    public const string SDL_PROP_RENDERER_MAX_TEXTURE_SIZE_NUMBER = "SDL.renderer.max_texture_size";
-    public const string SDL_PROP_RENDERER_TEXTURE_FORMATS_POINTER = "SDL.renderer.texture_formats";
-    public const string SDL_PROP_RENDERER_OUTPUT_COLORSPACE_NUMBER = "SDL.renderer.output_colorspace";
-    public const string SDL_PROP_RENDERER_HDR_ENABLED_BOOLEAN = "SDL.renderer.HDR_enabled";
-    public const string SDL_PROP_RENDERER_SDR_WHITE_POINT_FLOAT = "SDL.renderer.SDR_white_point";
-    public const string SDL_PROP_RENDERER_HDR_HEADROOM_FLOAT = "SDL.renderer.HDR_headroom";
-    public const string SDL_PROP_RENDERER_D3D9_DEVICE_POINTER = "SDL.renderer.d3d9.device";
-    public const string SDL_PROP_RENDERER_D3D11_DEVICE_POINTER = "SDL.renderer.d3d11.device";
-    public const string SDL_PROP_RENDERER_D3D11_SWAPCHAIN_POINTER = "SDL.renderer.d3d11.swap_chain";
-    public const string SDL_PROP_RENDERER_D3D12_DEVICE_POINTER = "SDL.renderer.d3d12.device";
-    public const string SDL_PROP_RENDERER_D3D12_SWAPCHAIN_POINTER = "SDL.renderer.d3d12.swap_chain";
-    public const string SDL_PROP_RENDERER_D3D12_COMMAND_QUEUE_POINTER = "SDL.renderer.d3d12.command_queue";
-    public const string SDL_PROP_RENDERER_VULKAN_INSTANCE_POINTER = "SDL.renderer.vulkan.instance";
-    public const string SDL_PROP_RENDERER_VULKAN_SURFACE_NUMBER = "SDL.renderer.vulkan.surface";
-    public const string SDL_PROP_RENDERER_VULKAN_PHYSICAL_DEVICE_POINTER = "SDL.renderer.vulkan.physical_device";
-    public const string SDL_PROP_RENDERER_VULKAN_DEVICE_POINTER = "SDL.renderer.vulkan.device";
-    public const string SDL_PROP_RENDERER_VULKAN_GRAPHICS_QUEUE_FAMILY_INDEX_NUMBER = "SDL.renderer.vulkan.graphics_queue_family_index";
-    public const string SDL_PROP_RENDERER_VULKAN_PRESENT_QUEUE_FAMILY_INDEX_NUMBER = "SDL.renderer.vulkan.present_queue_family_index";
-    public const string SDL_PROP_RENDERER_VULKAN_SWAPCHAIN_IMAGE_COUNT_NUMBER = "SDL.renderer.vulkan.swapchain_image_count";
-    public const string SDL_PROP_RENDERER_GPU_DEVICE_POINTER = "SDL.renderer.gpu.device";
-    public const string SDL_PROP_TEXTURE_CREATE_COLORSPACE_NUMBER = "SDL.texture.create.colorspace";
-    public const string SDL_PROP_TEXTURE_CREATE_FORMAT_NUMBER = "SDL.texture.create.format";
-    public const string SDL_PROP_TEXTURE_CREATE_ACCESS_NUMBER = "SDL.texture.create.access";
-    public const string SDL_PROP_TEXTURE_CREATE_WIDTH_NUMBER = "SDL.texture.create.width";
-    public const string SDL_PROP_TEXTURE_CREATE_HEIGHT_NUMBER = "SDL.texture.create.height";
-    public const string SDL_PROP_TEXTURE_CREATE_SDR_WHITE_POINT_FLOAT = "SDL.texture.create.SDR_white_point";
-    public const string SDL_PROP_TEXTURE_CREATE_HDR_HEADROOM_FLOAT = "SDL.texture.create.HDR_headroom";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_POINTER = "SDL.texture.create.d3d11.texture";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_U_POINTER = "SDL.texture.create.d3d11.texture_u";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D11_TEXTURE_V_POINTER = "SDL.texture.create.d3d11.texture_v";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_POINTER = "SDL.texture.create.d3d12.texture";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_U_POINTER = "SDL.texture.create.d3d12.texture_u";
-    public const string SDL_PROP_TEXTURE_CREATE_D3D12_TEXTURE_V_POINTER = "SDL.texture.create.d3d12.texture_v";
-    public const string SDL_PROP_TEXTURE_CREATE_METAL_PIXELBUFFER_POINTER = "SDL.texture.create.metal.pixelbuffer";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_NUMBER = "SDL.texture.create.opengl.texture";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_UV_NUMBER = "SDL.texture.create.opengl.texture_uv";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_U_NUMBER = "SDL.texture.create.opengl.texture_u";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGL_TEXTURE_V_NUMBER = "SDL.texture.create.opengl.texture_v";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_NUMBER = "SDL.texture.create.opengles2.texture";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_UV_NUMBER = "SDL.texture.create.opengles2.texture_uv";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_U_NUMBER = "SDL.texture.create.opengles2.texture_u";
-    public const string SDL_PROP_TEXTURE_CREATE_OPENGLES2_TEXTURE_V_NUMBER = "SDL.texture.create.opengles2.texture_v";
-    public const string SDL_PROP_TEXTURE_CREATE_VULKAN_TEXTURE_NUMBER = "SDL.texture.create.vulkan.texture";
-    public const string SDL_PROP_TEXTURE_COLORSPACE_NUMBER = "SDL.texture.colorspace";
-    public const string SDL_PROP_TEXTURE_FORMAT_NUMBER = "SDL.texture.format";
-    public const string SDL_PROP_TEXTURE_ACCESS_NUMBER = "SDL.texture.access";
-    public const string SDL_PROP_TEXTURE_WIDTH_NUMBER = "SDL.texture.width";
-    public const string SDL_PROP_TEXTURE_HEIGHT_NUMBER = "SDL.texture.height";
-    public const string SDL_PROP_TEXTURE_SDR_WHITE_POINT_FLOAT = "SDL.texture.SDR_white_point";
-    public const string SDL_PROP_TEXTURE_HDR_HEADROOM_FLOAT = "SDL.texture.HDR_headroom";
-    public const string SDL_PROP_TEXTURE_D3D11_TEXTURE_POINTER = "SDL.texture.d3d11.texture";
-    public const string SDL_PROP_TEXTURE_D3D11_TEXTURE_U_POINTER = "SDL.texture.d3d11.texture_u";
-    public const string SDL_PROP_TEXTURE_D3D11_TEXTURE_V_POINTER = "SDL.texture.d3d11.texture_v";
-    public const string SDL_PROP_TEXTURE_D3D12_TEXTURE_POINTER = "SDL.texture.d3d12.texture";
-    public const string SDL_PROP_TEXTURE_D3D12_TEXTURE_U_POINTER = "SDL.texture.d3d12.texture_u";
-    public const string SDL_PROP_TEXTURE_D3D12_TEXTURE_V_POINTER = "SDL.texture.d3d12.texture_v";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEXTURE_NUMBER = "SDL.texture.opengl.texture";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEXTURE_UV_NUMBER = "SDL.texture.opengl.texture_uv";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEXTURE_U_NUMBER = "SDL.texture.opengl.texture_u";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEXTURE_V_NUMBER = "SDL.texture.opengl.texture_v";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEXTURE_TARGET_NUMBER = "SDL.texture.opengl.target";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEX_W_FLOAT = "SDL.texture.opengl.tex_w";
-    public const string SDL_PROP_TEXTURE_OPENGL_TEX_H_FLOAT = "SDL.texture.opengl.tex_h";
-    public const string SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_NUMBER = "SDL.texture.opengles2.texture";
-    public const string SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_UV_NUMBER = "SDL.texture.opengles2.texture_uv";
-    public const string SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_U_NUMBER = "SDL.texture.opengles2.texture_u";
-    public const string SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_V_NUMBER = "SDL.texture.opengles2.texture_v";
-    public const string SDL_PROP_TEXTURE_OPENGLES2_TEXTURE_TARGET_NUMBER = "SDL.texture.opengles2.target";
-    public const string SDL_PROP_TEXTURE_VULKAN_TEXTURE_NUMBER = "SDL.texture.vulkan.texture";
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_Vertex
-    {
-        public SDL_FPoint position;
-        public SDL_FColor color;
-        public SDL_FPoint tex_coord;
-    }
 
     public enum SDL_TextureAccess
     {
@@ -4620,55 +2385,9 @@ internal static unsafe partial class SDL3
         public int refcount;
     }
 
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumRenderDrivers();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetRenderDriver(int index);
-
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_CreateWindowAndRenderer(string title, int width, int height, SDL_WindowFlags window_flags, out IntPtr window, out IntPtr renderer);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateRenderer(IntPtr window, string name);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateRendererWithProperties(uint props);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_CreateSoftwareRenderer(IntPtr surface);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetRenderer(IntPtr window);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetRenderWindow(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetRendererName(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetRendererProperties(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderOutputSize(IntPtr renderer, out int w, out int h);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetCurrentRenderOutputSize(IntPtr renderer, out int w, out int h);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4680,99 +2399,11 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Texture* SDL_CreateTextureWithProperties(IntPtr renderer, uint props);
+    internal static partial SDLBool SDL_SetTextureScaleMode(IntPtr texture, SDL_ScaleMode scaleMode);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetTextureProperties(IntPtr texture); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetRendererFromTexture(IntPtr texture); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureSize(IntPtr texture, out float w, out float h); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureColorMod(IntPtr texture, byte r, byte g, byte b); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureColorModFloat(IntPtr texture, float r, float g, float b); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureColorMod(IntPtr texture, out byte r, out byte g, out byte b); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureColorModFloat(IntPtr texture, out float r, out float g, out float b); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureAlphaMod(IntPtr texture, byte alpha); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureAlphaModFloat(IntPtr texture, float alpha); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureAlphaMod(IntPtr texture, out byte alpha); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureAlphaModFloat(IntPtr texture, out float alpha); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureBlendMode(IntPtr texture, uint blendMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureBlendMode(IntPtr texture, IntPtr blendMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetTextureScaleMode(IntPtr texture, SDL_ScaleMode scaleMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetTextureScaleMode(IntPtr texture, out SDL_ScaleMode scaleMode); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UpdateTexture(IntPtr texture, ref SDL_Rect rect, IntPtr pixels, int pitch); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UpdateYUVTexture(IntPtr texture, ref SDL_Rect rect, IntPtr Yplane, int Ypitch, IntPtr Uplane, int Upitch, IntPtr Vplane, int Vpitch); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_UpdateNVTexture(IntPtr texture, ref SDL_Rect rect, IntPtr Yplane, int Ypitch, IntPtr UVplane, int UVpitch); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LockTexture(IntPtr texture, ref SDL_Rect rect, out IntPtr pixels, out int pitch); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_LockTextureToSurface(IntPtr texture, ref SDL_Rect rect, out IntPtr surface); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UnlockTexture(IntPtr texture); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderTarget(IntPtr renderer, IntPtr texture); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Texture* SDL_GetRenderTarget(IntPtr renderer);
+    internal static partial SDLBool SDL_UpdateTexture(IntPtr texture, IntPtr rect, ReadOnlySpan<byte> pixels, int pitch);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4780,51 +2411,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderLogicalPresentation(IntPtr renderer, out int w, out int h, out SDL_RendererLogicalPresentation mode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderLogicalPresentationRect(IntPtr renderer, out SDL_FRect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderCoordinatesFromWindow(IntPtr renderer, float window_x, float window_y, out float x, out float y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderCoordinatesToWindow(IntPtr renderer, float x, float y, out float window_x, out float window_y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ConvertEventToRenderCoordinates(IntPtr renderer, ref SDL_Event @event);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderViewport(IntPtr renderer, ref SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderViewport(IntPtr renderer, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderViewportSet(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderSafeArea(IntPtr renderer, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderClipRect(IntPtr renderer, SDL_Rect* rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderClipRect(IntPtr renderer, out SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderClipEnabled(IntPtr renderer);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4832,39 +2419,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderScale(IntPtr renderer, out float scaleX, out float scaleY);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderDrawColor(IntPtr renderer, byte r, byte g, byte b, byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderDrawColorFloat(IntPtr renderer, float r, float g, float b, float a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderDrawColor(IntPtr renderer, out byte r, out byte g, out byte b, out byte a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderDrawColorFloat(IntPtr renderer, out float r, out float g, out float b, out float a);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderColorScale(IntPtr renderer, float scale);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderColorScale(IntPtr renderer, out float scale);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderDrawBlendMode(IntPtr renderer, uint blendMode);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderDrawBlendMode(IntPtr renderer, IntPtr blendMode);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4872,19 +2427,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderPoint(IntPtr renderer, float x, float y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderPoints(IntPtr renderer, Span<SDL_FPoint> points, int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderLine(IntPtr renderer, float x1, float y1, float x2, float y2);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderLines(IntPtr renderer, Span<SDL_FPoint> points, int count);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4892,15 +2435,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderRects(IntPtr renderer, Span<SDL_FRect> rects, int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderFillRect(IntPtr renderer, ref SDL_FRect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderFillRects(IntPtr renderer, Span<SDL_FRect> rects, int count);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -4908,75 +2443,15 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderTextureRotated(IntPtr renderer, IntPtr texture, ref SDL_FRect srcrect, ref SDL_FRect dstrect, double angle, ref SDL_FPoint center, SDL_FlipMode flip); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderTextureAffine(IntPtr renderer, IntPtr texture, in SDL_FRect srcrect, in SDL_FPoint origin, in SDL_FPoint right, in SDL_FPoint down);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderTextureTiled(IntPtr renderer, IntPtr texture, ref SDL_FRect srcrect, float scale, ref SDL_FRect dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderTexture9Grid(IntPtr renderer, IntPtr texture, ref SDL_FRect srcrect, float left_width, float right_width, float top_height, float bottom_height, float scale, ref SDL_FRect dstrect); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderGeometry(IntPtr renderer, IntPtr texture, Span<SDL_Vertex> vertices, int num_vertices, Span<int> indices, int num_indices); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderGeometryRaw(IntPtr renderer, IntPtr texture, IntPtr xy, int xy_stride, IntPtr color, int color_stride, IntPtr uv, int uv_stride, int num_vertices, IntPtr indices, int num_indices, int size_indices); // WARN_UNKNOWN_POINTER_PARAMETER
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_Surface* SDL_RenderReadPixels(IntPtr renderer, ref SDL_Rect rect);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderPresent(IntPtr renderer);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_DestroyTexture(IntPtr texture); // WARN_UNKNOWN_POINTER_PARAMETER
+    internal static partial void SDL_DestroyTexture(IntPtr texture);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyRenderer(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_FlushRenderer(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetRenderMetalLayer(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetRenderMetalCommandEncoder(IntPtr renderer);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_AddVulkanRenderSemaphores(IntPtr renderer, uint wait_stage_mask, long wait_semaphore, long signal_semaphore);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetRenderVSync(IntPtr renderer, int vsync);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetRenderVSync(IntPtr renderer, out int vsync);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderDebugText(IntPtr renderer, float x, float y, string str);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RenderDebugTextFormat(IntPtr renderer, float x, float y, string fmt);
 
     // /usr/local/include/SDL3/SDL_version.h
 
@@ -5022,41 +2497,11 @@ internal static unsafe partial class SDL3
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate uint SDL_TimerCallback(IntPtr userdata, uint timerID, uint interval);
 
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_AddTimer(uint interval, SDL_TimerCallback callback, IntPtr userdata);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate ulong SDL_NSTimerCallback(IntPtr userdata, uint timerID, ulong interval);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_AddTimerNS(ulong interval, SDL_NSTimerCallback callback, IntPtr userdata);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RemoveTimer(uint id);
-
     // /usr/local/include/SDL3/SDL_main.h
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate int SDL_main_func(int argc, IntPtr argv);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetMainReady();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_RunApp(int argc, IntPtr argv, SDL_main_func mainFunction, IntPtr reserved);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_EnterAppMainCallbacks(int argc, IntPtr argv, SDL_AppInit_func appinit, SDL_AppIterate_func appiter, SDL_AppEvent_func appevent, SDL_AppQuit_func appquit);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GDKSuspendComplete();
 
     // /usr/local/include/SDL3/SDL_iostream.h
 
