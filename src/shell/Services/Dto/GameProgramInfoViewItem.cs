@@ -28,12 +28,19 @@ public record GameProgramInfoViewItem
     {
         Title    = string.Empty;
         SubTitle = string.Empty;
-        ImportedGameProgramInfo = new(new()
-        {
-            MachineType = machineType,
-            CartType    = cartType,
-            LController = lcontroller,
-            RController = rcontroller
-        }, romPath);
+        ImportedGameProgramInfo = new(new(
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            cartType,
+            machineType,
+            lcontroller,
+            rcontroller,
+            string.Empty,
+            string.Empty), romPath);
     }
 }

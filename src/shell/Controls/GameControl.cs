@@ -4,6 +4,7 @@ using EMU7800.Core;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -108,15 +109,17 @@ public sealed class GameControl : ControlBase
         _frameRateChangeNeeded = true;
     }
 
-    public void Start(ImportedGameProgramInfo importedGameProgramInfo, bool startFresh = false)
+    public void Start(ImportedGameProgramInfo importedGameProgramInfo, List<ImportedSpecialBinaryInfo> specialBinaries, bool startFresh = false)
     {
-        if (!_workerTask.IsCompleted)
+        if (!_workerTask.IsCompleted || DatastoreService is null)
             return;
 
         _stopRequested = false;
         _dynamicBitmapData.Span.Clear();
 
-        var state = Tuple.Create(importedGameProgramInfo, startFresh);
+        var machineFactory = new MachineFactory(DatastoreService, specialBinaries, Logger);
+
+        var state = Tuple.Create(importedGameProgramInfo, machineFactory, startFresh);
         _workerTask = Task.Factory.StartNew(Run, state, TaskCreationOptions.LongRunning);
     }
 
@@ -187,11 +190,17 @@ public sealed class GameControl : ControlBase
 
     #region ControlBase Overrides
 
-    public override void InjectDependency(object dependency)
+    public override void InjectDependencies(object[] dependencies)
     {
-        base.InjectDependency(dependency);
-        if (dependency is IAudioDeviceDriver audioDevice)
-            _audioDevice = audioDevice;
+        base.InjectDependencies(dependencies);
+        for (var i = 0; i < dependencies.Length; i++)
+        {
+            if (dependencies[i] is IAudioDeviceDriver audioDevice)
+            {
+                _audioDevice = audioDevice;
+                break;
+            }
+        }
     }
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
@@ -302,12 +311,12 @@ public sealed class GameControl : ControlBase
 
     void Run(object? state)
     {
-        if (state is not Tuple<ImportedGameProgramInfo, bool> typedState)
+        if (state is not Tuple<ImportedGameProgramInfo, MachineFactory, bool> typedState)
         {
             return;
         }
 
-        var (importedGameProgramInfo, startFresh) = typedState;
+        var (importedGameProgramInfo, machineFactory, startFresh) = typedState;
 
         var machineStateInfo = MachineStateInfo.Default;
 
@@ -318,7 +327,7 @@ public sealed class GameControl : ControlBase
 
         if (machineStateInfo == MachineStateInfo.Default)
         {
-            machineStateInfo = MachineFactory.Create(importedGameProgramInfo);
+            machineStateInfo = machineFactory.Create(importedGameProgramInfo);
             _calibrationNeeded = true;
         }
 
@@ -334,7 +343,7 @@ public sealed class GameControl : ControlBase
 
         _maxFrameRate = machine.FrameHZ;
         CurrentFrameRate = _maxFrameRate;
-        ProposeNewFrameRate(machineStateInfo.FramesPerSecond);
+        ProposeNewFrameRate(machineStateInfo.Machine.FrameHZ);
 
         _dynamicBitmapInterpolationMode = (BitmapInterpolationMode)machineStateInfo.InterpolationMode;
 
@@ -461,7 +470,6 @@ public sealed class GameControl : ControlBase
         machineStateInfo = machineStateInfo with
         {
             CurrentPlayerNo   = _currentKeyboardPlayerNo + 1,
-            FramesPerSecond   = CurrentFrameRate,
             InterpolationMode = (int)_dynamicBitmapInterpolationMode,
             SoundOff          = !IsSoundOn
         };

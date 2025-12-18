@@ -3,8 +3,7 @@
 using EMU7800.Services;
 using EMU7800.Services.Dto;
 using System;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace EMU7800.Shell;
 
@@ -12,11 +11,14 @@ public sealed class GameProgramSelectionPage : PageBase
 {
     readonly BackButton _buttonBack;
     readonly GameProgramSelectionControl _gameProgramSelectionControl;
+    readonly ImportedRoms _importedRoms;
+    readonly List<GameProgramInfoViewItemCollection> _gameProgramViewItems;
 
-    bool _isGetGameProgramInfoViewItemCollectionAsyncStarted;
-
-    public GameProgramSelectionPage()
+    public GameProgramSelectionPage(ImportedRoms importedRoms)
     {
+        _importedRoms = importedRoms;
+        _gameProgramViewItems = GameProgramLibraryService.GetGameProgramInfoViewItemCollections(_importedRoms.GamePrograms);
+
         _buttonBack = new()
         {
             Location = new(5, 5)
@@ -30,7 +32,7 @@ public sealed class GameProgramSelectionPage : PageBase
             Size = new(400, 200),
             IsVisible = true
         };
-        _gameProgramSelectionControl = new()
+        _gameProgramSelectionControl = new(_gameProgramViewItems)
         {
             Location = _buttonBack.ToBottomOf(-5, 5)
         };
@@ -42,15 +44,9 @@ public sealed class GameProgramSelectionPage : PageBase
 
     #region PageBase Overrides
 
-    public override void OnNavigatingHere()
+    public override void OnNavigatingHere(object[] dependencies)
     {
-        base.OnNavigatingHere();
-
-        if (_isGetGameProgramInfoViewItemCollectionAsyncStarted)
-            return;
-        _isGetGameProgramInfoViewItemCollectionAsyncStarted = true;
-
-        GetGameProgramInfoViewItemCollectionsAsync();
+        base.OnNavigatingHere(dependencies);
     }
 
     public override void Resized(SizeF size)
@@ -78,7 +74,7 @@ public sealed class GameProgramSelectionPage : PageBase
     void GameProgramSelectionControl_Selected(object? sender, GameProgramSelectedEventArgs e)
     {
         var gameProgramInfoViewItem = e.GameProgramInfoViewItem;
-        var gamePage = new GamePage(gameProgramInfoViewItem);
+        var gamePage = new GamePage(gameProgramInfoViewItem, _importedRoms.SpecialBinaries);
         PushPage(gamePage);
     }
 
@@ -86,19 +82,6 @@ public sealed class GameProgramSelectionPage : PageBase
     {
         PopPage();
     }
-
-    #endregion
-
-    #region Helpers
-
-    async void GetGameProgramInfoViewItemCollectionsAsync()
-    {
-        var gpivics = await Task.Run(() => GetGameProgramInfoViewItemCollection());
-        _gameProgramSelectionControl.BindTo(gpivics);
-    }
-
-    static GameProgramInfoViewItemCollection[] GetGameProgramInfoViewItemCollection()
-        => [.. GameProgramLibraryService.GetGameProgramInfoViewItemCollections(DatastoreService.ImportedGameProgramInfo)];
 
     #endregion
 }

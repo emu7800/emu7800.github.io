@@ -9,14 +9,18 @@ using System.Linq;
 
 namespace EMU7800.Services;
 
-public class MachineFactory
+public sealed class MachineFactory
 {
-    public static MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo)
+    readonly DatastoreService _datastoreSvc;
+    readonly List<ImportedSpecialBinaryInfo> _importedSpecialBinaries;
+    readonly ILogger _logger;
+
+    public MachineStateInfo Create(ImportedGameProgramInfo importedGameProgramInfo)
     {
         ArgumentException.ThrowIf(importedGameProgramInfo.StorageKeySet.Count == 0, "StorageKeysSet is unexpectedly empty.", nameof(importedGameProgramInfo));
 
         var romBytes = importedGameProgramInfo.StorageKeySet
-            .Select(sk => DatastoreService.GetRomBytes(sk))
+            .Select(_datastoreSvc.GetRomBytes)
             .FirstOrDefault(b => b.Length > 0) ?? [];
 
         if (romBytes.Length == 0)
@@ -44,13 +48,13 @@ public class MachineFactory
 
         if (MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType))
         {
-            bios7800 = GetBios7800(gameProgramInfo);
+            bios7800 = GetBios7800(gameProgramInfo, _importedSpecialBinaries);
             Info("7800 BIOS Installed");
         }
 
         if (MachineTypeUtil.Is7800hsc(gameProgramInfo.MachineType))
         {
-            var hscRom = GetHSCRom();
+            var hscRom = GetHSCRom(_importedSpecialBinaries);
             if (hscRom.Length > 0)
             {
                 cart = new HSC7800(hscRom, cart);
@@ -61,7 +65,7 @@ public class MachineFactory
 
         if (MachineTypeUtil.Is7800xm(gameProgramInfo.MachineType))
         {
-            var hscRom = GetHSCRom();
+            var hscRom = GetHSCRom(_importedSpecialBinaries);
             if (hscRom.Length > 0)
             {
                 cart = new XM7800(hscRom, cart);
@@ -72,46 +76,47 @@ public class MachineFactory
 
         var machine = MachineBase.Create(gameProgramInfo.MachineType, cart, bios7800, gameProgramInfo.LController, gameProgramInfo.RController, NullLogger.Default);
 
-        return new()
-        {
-            FramesPerSecond = machine.FrameHZ,
-            CurrentPlayerNo = 1,
-            GameProgramInfo = gameProgramInfo,
-            Machine         = machine
-        };
+        return new(machine, gameProgramInfo, false, 1, 0);
     }
+
+    #region Constructors
+
+    public MachineFactory(DatastoreService datastoreSvc, List<ImportedSpecialBinaryInfo> importedSpecialBinaries, ILogger logger)
+      => (_datastoreSvc, _importedSpecialBinaries, _logger) = (datastoreSvc, importedSpecialBinaries, logger);
+
+    #endregion
 
     #region Helpers
 
-    static Bios7800 GetBios7800(GameProgramInfo gameProgramInfo)
-        => PickFirstBios7800(ToBiosCandidateList(gameProgramInfo));
+    Bios7800 GetBios7800(GameProgramInfo gameProgramInfo, IEnumerable<ImportedSpecialBinaryInfo> importedSpecialBinaries)
+        => PickFirstBios7800(ToBiosCandidateList(gameProgramInfo, importedSpecialBinaries));
 
-    static IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo)
-        => DatastoreService.ImportedSpecialBinaryInfo
+    static IEnumerable<ImportedSpecialBinaryInfo> ToBiosCandidateList(GameProgramInfo gameProgramInfo, IEnumerable<ImportedSpecialBinaryInfo> importedSpecialBinaries)
+        => importedSpecialBinaries
             .Where(sbi => MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsNTSC(gameProgramInfo.MachineType)
                             && sbi.Type is SpecialBinaryType.Bios7800Ntsc or SpecialBinaryType.Bios7800NtscAlternate
                        || MachineTypeUtil.Is7800bios(gameProgramInfo.MachineType) && MachineTypeUtil.IsPAL(gameProgramInfo.MachineType)
                             && sbi.Type == SpecialBinaryType.Bios7800Pal);
 
-    static Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
+    Bios7800 PickFirstBios7800(IEnumerable<ImportedSpecialBinaryInfo> specialBinaryInfoSet)
         => specialBinaryInfoSet
-            .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
+            .Select(sbi => _datastoreSvc.GetRomBytes(sbi.StorageKey))
             .Where(b => b.Length is 4096 or 16384)
             .Take(1)
             .Select(b => new Bios7800(b))
             .FirstOrDefault() ?? Bios7800.Default;
 
-    static byte[] GetHSCRom()
-        => DatastoreService.ImportedSpecialBinaryInfo
+    byte[] GetHSCRom(IEnumerable<ImportedSpecialBinaryInfo> importedSpecialBinaries)
+        => importedSpecialBinaries
             .Where(sbi => sbi.Type == SpecialBinaryType.Hsc7800)
-            .Select(sbi => DatastoreService.GetRomBytes(sbi.StorageKey))
+            .Select(sbi => _datastoreSvc.GetRomBytes(sbi.StorageKey))
             .FirstOrDefault() ?? [];
 
-    static void Info(string message)
-        => Console.WriteLine(message);
+    void Info(string message)
+        => _logger.Log(3, message);
 
-    static void Error(string message)
-        => Info("ERROR: " + message);
+    void Error(string message)
+        => _logger.Log(1, message);
 
     #endregion
 }

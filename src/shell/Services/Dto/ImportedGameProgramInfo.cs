@@ -1,4 +1,4 @@
-// � Mike Murphy
+// © Mike Murphy
 
 using System;
 using System.Collections.Generic;

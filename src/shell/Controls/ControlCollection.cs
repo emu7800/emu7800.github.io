@@ -16,12 +16,12 @@ public sealed class ControlCollection : ControlBase
 
     #region ControlBase Overrides
 
-    public override void InjectDependency(object dependency)
+    public override void InjectDependencies(object[] dependencies)
     {
         for (var i = 0; i < _controls.Length; i++)
         {
             var control = _controls[i];
-            control.InjectDependency(dependency);
+            control.InjectDependencies(dependencies);
         }
     }
 

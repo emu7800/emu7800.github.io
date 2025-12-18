@@ -83,14 +83,20 @@ public class RomBytesService
               tvType == 1                  ? MachineType.A7800PAL :
               MachineType.Unknown;
 
-        return new()
-        {
-            Title       = title,
-            MachineType = machineType,
-            CartType    = cartType,
-            LController = ToController(bytes[0x37]),
-            RController = ToController(bytes[0x38]),
-        };
+        return new(
+            title,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            string.Empty,
+            cartType,
+            machineType,
+            ToController(bytes[0x37]),
+            ToController(bytes[0x38]),
+            string.Empty,
+            string.Empty);
 
         static Controller ToController(byte b)
             => b switch {

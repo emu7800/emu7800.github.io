@@ -1,7 +1,9 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using EMU7800.Services;
 using EMU7800.Services.Dto;
+using System.Collections.Generic;
 
 namespace EMU7800.Shell;
 
@@ -29,6 +31,7 @@ public sealed class Window
     {
         if (!_pageBackStack.StartOfCycle())
         {
+            _logger.Log(3, "Stop requested.");
             return false;
         }
 
@@ -104,13 +107,16 @@ public sealed class Window
     #region Constructors
 
     public Window(ILogger logger)
-      : this(new TitlePage(), logger) {}
+      : this(new(logger), logger) {}
 
-    public Window(GameProgramInfoViewItem gpivi, ILogger logger)
-      : this(new GamePage(gpivi, true), logger) {}
+    public Window(DatastoreService datastoreSvc, ILogger logger)
+      : this(new TitlePage(), datastoreSvc, logger) {}
 
-    public Window(PageBase startPage, ILogger logger)
-      => (_pageBackStack, _logger) = (new PageBackStackHost(startPage), logger);
+    public Window(GameProgramInfoViewItem gpivi, List<ImportedSpecialBinaryInfo> specialBinaries, DatastoreService datastoreSvc, ILogger logger)
+      : this(new GamePage(gpivi, specialBinaries, true), datastoreSvc, logger) {}
+
+    public Window(PageBase startPage, DatastoreService datastoreSvc, ILogger logger)
+      => (_pageBackStack, _logger) = (new PageBackStackHost(startPage, datastoreSvc, logger), logger);
 
     #endregion
 }

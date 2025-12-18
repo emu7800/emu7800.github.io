@@ -9,14 +9,24 @@ namespace EMU7800.Shell;
 
 public sealed class CommandLine
 {
+    readonly IFileSystemAccessor _fileSystemAccessor;
     readonly ILogger _logger;
 
-    static CommandLine()
+    readonly DatastoreService _datastoreSvc;
+
+    public void Run(IWindowDriver driver, string[] args)
     {
-        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        try
+        {
+            RunInternal(driver, args);
+        }
+        catch (Exception ex)
+        {
+            _datastoreSvc.DumpCrashReport(ex);
+        }
     }
 
-    public void Run(ICommandLineDriver driver, string[] args)
+    void RunInternal(IWindowDriver driver, string[] args)
     {
         if (IsArg0(args, ["-r", "/r"]))
         {
@@ -32,14 +42,20 @@ public sealed class CommandLine
             var lController = args.Select(ControllerUtil.From).FirstOrDefault(co => co != Controller.None);
             var rController = args.Select(ControllerUtil.From).Where(co => co != Controller.None).Skip(1).FirstOrDefault();
 
+            _logger.Log(3, "Importing ROMs...");
+
+            var romImportSvc = new RomImportService(_datastoreSvc);
+            var importedRoms = romImportSvc.Import();
+
+            _logger.Log(3, "Importing ROMs completed.");
+
             if (machineType != MachineType.Unknown)
             {
-                RomImportService.Import();
                 if (MachineTypeUtil.Is2600(machineType))
                 {
                     if (cartType is CartType.Unknown)
                     {
-                        var bytes = DatastoreService.GetRomBytes(romPath);
+                        var bytes = _datastoreSvc.GetRomBytes(romPath);
                         var len = bytes.Length;
                         cartType = RomBytesService.InferCartTypeFromSize(machineType, len);
                     }
@@ -55,7 +71,7 @@ public sealed class CommandLine
                 {
                     if (cartType is CartType.Unknown)
                     {
-                        var bytes = DatastoreService.GetRomBytes(romPath);
+                        var bytes = _datastoreSvc.GetRomBytes(romPath);
                         var len = RomBytesService.RemoveA78HeaderIfNecessary(bytes).Length;
                         cartType = RomBytesService.InferCartTypeFromSize(machineType, len);
                     }
@@ -72,22 +88,25 @@ public sealed class CommandLine
                     _logger.Log(1, "Unknown MachineType: " + machineType);
                     Environment.Exit(-8);
                 }
-                driver.StartGameProgram(new(machineType, cartType, lController, rController, romPath), false);
+
+                driver.Start(new(new(machineType, cartType, lController, rController, romPath), importedRoms.SpecialBinaries, _datastoreSvc, _logger), false);
             }
             else
             {
-                var gpiviList = GameProgramLibraryService.GetGameProgramInfoViewItems(romPath);
+                var gameProgramLibrarySvc = new GameProgramLibraryService(_datastoreSvc);
+                var gpiviList = gameProgramLibrarySvc.GetGameProgramInfoViewItems(romPath);
                 if (gpiviList.Count > 0)
                 {
-                    driver.StartGameProgram(gpiviList.First(), false);
+                    driver.Start(new(gpiviList.First(), importedRoms.SpecialBinaries, _datastoreSvc, _logger), false);
+                    var window = new Window(new(machineType, cartType, lController, rController, romPath), importedRoms.SpecialBinaries, _datastoreSvc, _logger);
                 }
                 else
                 {
-                    var bytes = DatastoreService.GetRomBytes(romPath);
+                    var bytes = _datastoreSvc.GetRomBytes(romPath);
                     if (RomBytesService.IsA78Format(bytes))
                     {
                         var gpi = RomBytesService.ToGameProgramInfoFromA78Format(bytes);
-                        driver.StartGameProgram(new(gpi, string.Empty, romPath), false);
+                        driver.Start(new(new(gpi, string.Empty, romPath), importedRoms.SpecialBinaries, _datastoreSvc, _logger), false);
                     }
                     else
                     {
@@ -103,16 +122,16 @@ public sealed class CommandLine
         if (IsArg0(args, ["-d", "/d"]))
         {
             var romPath = args.Length > 1 ? args[1] : string.Empty;
-            var romPaths = string.IsNullOrEmpty(romPath)
-                ? []
-                : Directory.Exists(romPath)
-                    ? new DirectoryInfo(romPath).GetFiles().Where(IsBinOrA78File).Select(fi => fi.FullName).ToList()
+            List<string> romPaths = _fileSystemAccessor.FolderExists(romPath)
+                    ? [.._fileSystemAccessor.GetFiles(romPath).Select(kvp => kvp.Key).Where(IsBinOrA78File)]
                     : [romPath];
+
+            var gameProgramLibrarySvc = new GameProgramLibraryService(_datastoreSvc);
 
             foreach (var path in romPaths)
             {
                 RomBytesService.DumpBin(path, m => _logger.Log(1, m));
-                var gpiList = GameProgramLibraryService.GetGameProgramInfos(path);
+                var gpiList = gameProgramLibrarySvc.GetGameProgramInfos(path);
                 _logger.Log(1, gpiList.Count > 0
                           ? """
 
@@ -180,23 +199,28 @@ public sealed class CommandLine
             Environment.Exit(0);
         }
 
-        driver.Start(false);
+        driver.Start(new(_datastoreSvc, _logger), false);
 
         Environment.Exit(0);
     }
 
     #region Constructors
 
-    #pragma warning disable IDE0290
-
     public CommandLine(ILogger logger)
-      => _logger = logger;
+      : this(new FileSystemAccessor(logger), logger) {}
+
+    public CommandLine(IFileSystemAccessor fileSystemAccessor, ILogger logger)
+    {
+        _logger = logger;
+        _fileSystemAccessor = fileSystemAccessor;
+        _datastoreSvc = new(_fileSystemAccessor, _logger);
+    }
 
     #endregion
 
-    static bool IsBinOrA78File(FileInfo fi)
-        => CiEq(fi.Extension, ".a78")
-        || CiEq(fi.Extension, ".bin");
+    static bool IsBinOrA78File(string path)
+        => path.EndsWith(".a78", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".bin", StringComparison.OrdinalIgnoreCase);
 
     static IEnumerable<string> GetMachineTypes()
         => MachineTypeUtil.GetAllValues().Select(mt => $"{mt,-13}: {MachineTypeUtil.ToMachineTypeWordString(mt)}");
@@ -212,12 +236,4 @@ public sealed class CommandLine
 
     static bool CiEq(string a, string b)
         => string.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0;
-
-    static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        if (e.ExceptionObject is Exception ex)
-        {
-            DatastoreService.DumpCrashReport(ex);
-        }
-    }
 }

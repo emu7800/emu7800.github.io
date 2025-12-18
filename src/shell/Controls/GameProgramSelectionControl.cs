@@ -4,6 +4,7 @@ using EMU7800.Assets;
 using EMU7800.Core;
 using EMU7800.Services.Dto;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EMU7800.Shell;
@@ -45,7 +46,7 @@ public sealed class GameProgramSelectionControl : ControlBase
     int _focusedCollectionIndex = -1, _focusedCollectionItemIndex = -1;
     int _focusCandidateCollectionIndex, _focusCandidateCollectionItemIndex;
 
-    ScrollColumnInfo[] _scrollColumnInfoSet = [];
+    readonly ScrollColumnInfo[] _scrollColumnInfoSet;
     RectF _gameProgramViewItemCollectionsRect;
     RectF _clipRect;
 
@@ -63,18 +64,6 @@ public sealed class GameProgramSelectionControl : ControlBase
     #endregion
 
     public event EventHandler<GameProgramSelectedEventArgs> Selected = DefaultEventHandler;
-
-    public void BindTo(GameProgramInfoViewItemCollection[] gameProgramInfoViewItemCollection)
-    {
-        _scrollColumnInfoSet = [.. Enumerable.Range(0, gameProgramInfoViewItemCollection.Length).Select(i => ToScrollColumnInfo(gameProgramInfoViewItemCollection[i]))];
-
-        _reinitializeAtNextUpdate = true;
-    }
-
-    public override void SizeChanged()
-    {
-        _reinitializeAtNextUpdate = true;
-    }
 
     #region ControlBase Overrides
 
@@ -292,7 +281,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         for (var i = 0; i < _scrollColumnInfoSet.Length; i++)
         {
             var gpivic = _scrollColumnInfoSet[i].GameProgramInfoViewItemCollection;
-            for (var j = 0; j < gpivic.GameProgramInfoViewItemSet.Length; j++)
+            for (var j = 0; j < gpivic.GameProgramInfoViewItems.Length; j++)
             {
                 var itemRect = ToItemRect(i, j);
                 TranslateRect(ref itemRect, i);
@@ -329,7 +318,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                     _focusCandidateCollectionItemIndex = j;
                 }
 
-                var gpivi = gpivic.GameProgramInfoViewItemSet[j];
+                var gpivi = gpivic.GameProgramInfoViewItems[j];
 
                 if (gpivi.TitleTextLayout == TextLayout.Empty)
                     gpivi.TitleTextLayout = graphicsDevice.CreateTextLayout(Styles.NormalFontFamily, Styles.NormalFontSize, gpivi.Title, ITEM_WIDTH - 25, ITEM_HEIGHT, WriteParaAlignment.Near, WriteTextAlignment.Leading, SolidColorBrush.White);
@@ -404,7 +393,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                 ntl.Dispose();
             sci.GameProgramInfoViewItemCollection.NameTextLayout = TextLayout.Empty;
 
-            foreach (var gpivi in sci.GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet)
+            foreach (var gpivi in sci.GameProgramInfoViewItemCollection.GameProgramInfoViewItems)
             {
                 var ttl = gpivi.TitleTextLayout;
                 var sttl = gpivi.SubTitleTextLayout;
@@ -418,6 +407,27 @@ public sealed class GameProgramSelectionControl : ControlBase
         }
 
         base.DisposeResources();
+    }
+
+    #endregion
+
+    #region PageBase Overrides
+
+    public override void SizeChanged()
+    {
+        _reinitializeAtNextUpdate = true;
+    }
+
+    #endregion
+
+    #region Constructors
+
+    #pragma warning disable IDE0290 // Use primary constructor
+
+    public GameProgramSelectionControl(List<GameProgramInfoViewItemCollection> gameProgramViewItems)
+    {
+        _scrollColumnInfoSet = [..gameProgramViewItems.Select(ToScrollColumnInfo)];
+        _reinitializeAtNextUpdate = true;
     }
 
     #endregion
@@ -463,7 +473,7 @@ public sealed class GameProgramSelectionControl : ControlBase
                 }
                 break;
             case KeyboardKey.Down:
-                if (_focusedCollectionItemIndex < _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet.Length - 1)
+                if (_focusedCollectionItemIndex < _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItems.Length - 1)
                 {
                     var pt = Add(iconRect.ToLocation(), new(ITEM_WIDTH / 2, ITEM_HEIGHT / 2 + ITEM_HEIGHT));
                     var t = ToCollectionIndexes(pt);
@@ -478,7 +488,7 @@ public sealed class GameProgramSelectionControl : ControlBase
     {
         if (Selected == DefaultEventHandler || !IsFocusSet)
             return;
-        var gpivi = _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet[_focusedCollectionItemIndex];
+        var gpivi = _scrollColumnInfoSet[_focusedCollectionIndex].GameProgramInfoViewItemCollection.GameProgramInfoViewItems[_focusedCollectionItemIndex];
         Selected(this, new(ToGameProgramInfoViewItem(gpivi)));
     }
 
@@ -495,7 +505,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         for (var i = 0; i < _scrollColumnInfoSet.Length; i++)
         {
             var scrollColumnInfo = _scrollColumnInfoSet[i];
-            var clen = scrollColumnInfo.GameProgramInfoViewItemCollection.GameProgramInfoViewItemSet.Length;
+            var clen = scrollColumnInfo.GameProgramInfoViewItemCollection.GameProgramInfoViewItems.Length;
             scrollColumnInfo.ScrollYBottomMostBoundary = 5f;
             if (includeCollectionRects)
             {
@@ -614,7 +624,7 @@ public sealed class GameProgramSelectionControl : ControlBase
         var gpvic = scrollColumnInfo.GameProgramInfoViewItemCollection;
         Sub(ref pt, scrollColumnInfo.CollectionRect.ToLocation());
         var j = (int)(pt.Y / ITEM_HEIGHT);
-        if (j < 0 || j >= gpvic.GameProgramInfoViewItemSet.Length)
+        if (j < 0 || j >= gpvic.GameProgramInfoViewItems.Length)
             return (i, -1, false);
 
         Sub(ref pt, i * (ITEM_WIDTH + GapBetweenCollections), j * ITEM_HEIGHT);
@@ -651,22 +661,13 @@ public sealed class GameProgramSelectionControl : ControlBase
     }
 
     static ScrollColumnInfo ToScrollColumnInfo(GameProgramInfoViewItemCollection gpvic)
-        => new() { GameProgramInfoViewItemCollection = ToGameProgramInfoViewItemCollectionEx(gpvic) };
+        => new(ToGameProgramInfoViewItemCollectionEx(gpvic));
 
     static GameProgramInfoViewItemCollectionEx ToGameProgramInfoViewItemCollectionEx(GameProgramInfoViewItemCollection gpvic)
-        => new()
-        {
-            Name = gpvic.Name,
-            GameProgramInfoViewItemSet = [.. gpvic.GameProgramInfoViewItemSet.Select(ToGameProgramInfoViewItemEx)]
-        };
+        => new(gpvic.Name, [.. gpvic.GameProgramInfoViewItems.Select(ToGameProgramInfoViewItemEx)]);
 
     static GameProgramInfoViewItemEx ToGameProgramInfoViewItemEx(GameProgramInfoViewItem gpvi)
-        => new()
-        {
-            Title = gpvi.Title,
-            SubTitle = gpvi.SubTitle,
-            ImportedGameProgramInfo = gpvi.ImportedGameProgramInfo
-        };
+        => new(gpvi.Title, gpvi.SubTitle, gpvi.ImportedGameProgramInfo);
 
     static GameProgramInfoViewItem ToGameProgramInfoViewItem(GameProgramInfoViewItemEx gpivi)
         => new(gpivi.ImportedGameProgramInfo, gpivi.SubTitle);

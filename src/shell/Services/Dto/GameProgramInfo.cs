@@ -4,19 +4,33 @@ using EMU7800.Core;
 
 namespace EMU7800.Services.Dto;
 
-public record GameProgramInfo
+public record GameProgramInfo(
+    string Title,
+    string Manufacturer,
+    string Author,
+    string Qualifier,
+    string Year,
+    string ModelNo,
+    string Rarity,
+    CartType CartType,
+    MachineType MachineType,
+    Controller LController,
+    Controller RController,
+    string MD5,
+    string HelpUri)
 {
-    public string Title { get; init; } = string.Empty;
-    public string Manufacturer { get; init; } = string.Empty;
-    public string Author { get; init; } = string.Empty;
-    public string Qualifier { get; init; } = string.Empty;
-    public string Year { get; init; } = string.Empty;
-    public string ModelNo { get; init; } = string.Empty;
-    public string Rarity { get; init; } = string.Empty;
-    public CartType CartType { get; init; } = CartType.Unknown;
-    public MachineType MachineType { get; init; } = MachineType.Unknown;
-    public Controller LController { get; init; } = Controller.None;
-    public Controller RController { get; init; } = Controller.None;
-    public string MD5 { get; init; } = string.Empty;
-    public string HelpUri { get; init; } = string.Empty;
+    public readonly static GameProgramInfo Default = new(
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        CartType.Unknown,
+        MachineType.Unknown,
+        Controller.None,
+        Controller.None,
+        string.Empty,
+        string.Empty);
 }

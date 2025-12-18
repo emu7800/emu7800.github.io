@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using EMU7800.Services;
 using System;
 
 namespace EMU7800.Shell;
@@ -11,10 +12,24 @@ public abstract class PageBase : IDisposable
 
     PageBackStackStateService? _stateService;
 
+    protected DatastoreService DatastoreService { get; private set; } = DatastoreService.Default;
+    protected ILogger Logger { get; private set; } = NullLogger.Default;
+
     protected readonly ControlCollection Controls = new();
 
-    public virtual void OnNavigatingHere()
+    public virtual void OnNavigatingHere(object[] dependencies)
     {
+        Controls.InjectDependencies(dependencies);
+        for (var i = 0; i < dependencies.Length; i++)
+        {
+            var dep = dependencies[i];
+            if (dep is PageBackStackStateService stateService)
+                _stateService = stateService;
+            else if (dep is ILogger logger)
+                Logger = logger;
+            else if (dep is DatastoreService datastoreSvc)
+                DatastoreService = datastoreSvc;
+        }
     }
 
     public virtual void OnNavigatingAway()
@@ -23,13 +38,6 @@ public abstract class PageBase : IDisposable
 
     public virtual void Resized(SizeF size)
     {
-    }
-
-    public virtual void InjectDependency(object dependency)
-    {
-        Controls.InjectDependency(dependency);
-        if (dependency is  PageBackStackStateService stateService)
-            _stateService = stateService;
     }
 
     public virtual void KeyboardKeyPressed(KeyboardKey key, bool down)

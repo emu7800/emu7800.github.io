@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using EMU7800.Services;
 using System;
 
 namespace EMU7800.Shell;
@@ -39,6 +40,10 @@ public abstract class ControlBase : IDisposable
 
     public PointF ToBottomOf(int dx, int dy)
         => new(Location.X + dx, Location.Y + Size.Height + dy);
+
+    protected DatastoreService DatastoreService { get; private set; } = DatastoreService.Default;
+
+    protected ILogger Logger { get; private set; } = NullLogger.Default;
 
     protected ControlBase()
     {
@@ -88,8 +93,16 @@ public abstract class ControlBase : IDisposable
     {
     }
 
-    public virtual void InjectDependency(object dependency)
+    public virtual void InjectDependencies(object[] dependencies)
     {
+        for (var i = 0; i < dependencies.Length; i++)
+        {
+            var dep = dependencies[i];
+            if (dep is ILogger logger)
+                Logger = logger;
+            else if (dep is DatastoreService datastoreSvc)
+                DatastoreService = datastoreSvc;
+        }
     }
 
     public virtual void LoadResources(IGraphicsDeviceDriver graphicsDevice)

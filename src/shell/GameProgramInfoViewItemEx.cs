@@ -4,11 +4,8 @@ using EMU7800.Services.Dto;
 
 namespace EMU7800.Shell;
 
-public class GameProgramInfoViewItemEx
+public record GameProgramInfoViewItemEx(string Title, string SubTitle, ImportedGameProgramInfo ImportedGameProgramInfo)
 {
-    public string Title { get; set; } = string.Empty;
-    public TextLayout TitleTextLayout { get; set; } = TextLayout.Empty;
-    public string SubTitle { get; set; } = string.Empty;
+    public TextLayout TitleTextLayout { get; set;} = TextLayout.Empty;
     public TextLayout SubTitleTextLayout { get; set; } = TextLayout.Empty;
-    public ImportedGameProgramInfo ImportedGameProgramInfo { get; set; } = new(new());
 }

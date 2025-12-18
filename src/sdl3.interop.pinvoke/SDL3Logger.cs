@@ -5,7 +5,7 @@ using static EMU7800.SDL3.Interop.SDL3;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed class SDLConsoleLogger : ILogger
+public sealed class SDL3Logger : ILogger
 {
     public int Level { get; set; }
 

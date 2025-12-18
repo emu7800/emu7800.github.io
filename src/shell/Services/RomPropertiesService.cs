@@ -25,7 +25,8 @@ public static partial class RomPropertiesService
         CsvColumnLController  = 9,
         CsvColumnRController  = 10,
         CsvColumnMD5          = 11,
-        CsvColumnHelpUri      = 12;
+        CsvColumnHelpUri      = 12,
+        CsvColumnsCount       = 13;
 
     const string ReferenceRepositoryCsvHeader
         = "Title,Manufacturer,Author,Qualifier,Year,ModelNo,Rarity,CartType,MachineType,LController,RController,MD5,HelpUri";
@@ -40,26 +41,26 @@ public static partial class RomPropertiesService
     public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> romPropertiesCsv)
         => [.. VerifyReferenceRepositoryCsvHeader(romPropertiesCsv)
             .Select(Split)
-            .Select(sl => new GameProgramInfo
-            {
-                MD5          = sl[CsvColumnMD5],
-                MachineType  = MachineTypeUtil.From(sl[CsvColumnMachineType]),
-                CartType     = CartTypeUtil.From(sl[CsvColumnCartType]),
-                LController  = ControllerUtil.From(sl[CsvColumnLController], sl[CsvColumnMachineType]),
-                RController  = ControllerUtil.From(sl[CsvColumnRController], sl[CsvColumnMachineType]),
-                HelpUri      = sl[CsvColumnHelpUri],
-                Title        = sl[CsvColumnTitle],
-                Manufacturer = sl[CsvColumnManufacturer],
-                Author       = sl[CsvColumnAuthor],
-                Qualifier    = sl[CsvColumnQualifier],
-                Year         = sl[CsvColumnYear],
-                ModelNo      = sl[CsvColumnModelNo],
-                Rarity       = sl[CsvColumnRarity]
-            })
-            .Where(gpi => IsMD5(gpi.MD5))]
-            ;
+            .Where(sl => sl.Length >= CsvColumnsCount)
+            .Select(ToGameProgramInfo)
+            .Where(gpi => IsMD5(gpi.MD5))];
 
     #region Helpers
+
+    static GameProgramInfo ToGameProgramInfo(string[] sl)
+        => new(sl[CsvColumnTitle],
+               sl[CsvColumnManufacturer],
+               sl[CsvColumnAuthor],
+               sl[CsvColumnQualifier],
+               sl[CsvColumnYear],
+               sl[CsvColumnModelNo],
+               sl[CsvColumnRarity],
+               CartTypeUtil.From(sl[CsvColumnCartType]),
+               MachineTypeUtil.From(sl[CsvColumnMachineType]),
+               ControllerUtil.From(sl[CsvColumnLController], sl[CsvColumnMachineType]),
+               ControllerUtil.From(sl[CsvColumnRController], sl[CsvColumnMachineType]),
+               sl[CsvColumnMD5],
+               sl[CsvColumnHelpUri]);
 
     static IEnumerable<string> VerifyReferenceRepositoryCsvHeader(IEnumerable<string> romPropertiesCsv)
     {

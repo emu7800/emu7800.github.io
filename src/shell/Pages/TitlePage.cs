@@ -2,6 +2,7 @@
 
 using EMU7800.Core;
 using EMU7800.Services;
+using EMU7800.Services.Dto;
 using System;
 using System.Threading.Tasks;
 
@@ -14,7 +15,8 @@ public sealed class TitlePage : PageBase
     readonly ButtonCircleImage _buttonAbout;
     readonly LabelControl _labelCopyr, _labelVers, _labelBusyInit;
 
-    bool _isImportCheckStarted;
+    Task? _importRomsTask;
+    ImportedRoms? _importedRoms;
 
     public TitlePage()
     {
@@ -63,15 +65,10 @@ public sealed class TitlePage : PageBase
 
     #region PageBase Overrides
 
-    public override void OnNavigatingHere()
+    public override void OnNavigatingHere(object[] dependencies)
     {
-        base.OnNavigatingHere();
-
-        if (_isImportCheckStarted)
-            return;
-        _isImportCheckStarted = true;
-
-        ImportCheckAsync();
+        base.OnNavigatingHere(dependencies);
+        _importRomsTask ??= ImportRomsAsync();
     }
 
     public override void Resized(SizeF size)
@@ -150,7 +147,10 @@ public sealed class TitlePage : PageBase
 
     void ButtonPlayAtariToday_Clicked(object? sender, EventArgs eventArgs)
     {
-        PushPage(new GameProgramSelectionPage());
+        if (_importedRoms is not null)
+        {
+            PushPage(new GameProgramSelectionPage(_importedRoms));
+        }
     }
 
     void ButtonAbout_Clicked(object? sender, EventArgs eventArgs)
@@ -162,14 +162,18 @@ public sealed class TitlePage : PageBase
 
     #region Helpers
 
-    async void ImportCheckAsync()
+    async Task ImportRomsAsync()
     {
         _buttonPlayAtariToday.IsVisible = false;
         _buttonAbout.IsVisible = false;
         _labelBusyInit.IsVisible = true;
 
-        await Task.Run(DatastoreService.GetSettings);
-        await Task.Run(RomImportService.ImportDefaultsIfNecessary);
+        Logger.Log(3, "Importing ROMs...");
+
+        var importSvc = new RomImportService(DatastoreService);
+        _importedRoms = await importSvc.ImportAsync();
+
+        Logger.Log(3, $"ROMs imported: {_importedRoms.FilesRecognized} files recognized.");
 
         _buttonPlayAtariToday.IsVisible = true;
         _buttonAbout.IsVisible = true;

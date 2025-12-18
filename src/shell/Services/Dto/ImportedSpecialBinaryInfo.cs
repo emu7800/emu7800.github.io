@@ -11,8 +11,4 @@ public enum SpecialBinaryType
     Hsc7800
 }
 
-public record ImportedSpecialBinaryInfo
-{
-    public SpecialBinaryType Type { get; init; } = SpecialBinaryType.None;
-    public string StorageKey { get; init; } = string.Empty;
-}
+public record ImportedSpecialBinaryInfo(SpecialBinaryType Type, string StorageKey);

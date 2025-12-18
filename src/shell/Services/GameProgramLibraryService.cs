@@ -9,41 +9,52 @@ using System.Linq;
 
 namespace EMU7800.Services;
 
-public class GameProgramLibraryService
+public sealed class GameProgramLibraryService
 {
-    public static IEnumerable<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet)
+    readonly DatastoreService _datastoreSvc;
+
+    public static List<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGamePrograms)
       => [
             .. ToGameProgramInfoViewItemRecentsCollection(
-                ToDict(importedGameProgramInfoSet.Where(igpi => igpi.PersistedStateExists),
+                ToDict(importedGamePrograms.Where(igpi => igpi.PersistedStateExists),
                 _ => "Recents")),
 
             .. ToGameProgramInfoViewItemCollections(
-                ToDict(importedGameProgramInfoSet, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
+                ToDict(importedGamePrograms, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
                 igpi => igpi.GameProgramInfo.Title,
                 ToMachineTypeSubTitle)
 ,
             .. ToGameProgramInfoViewItemCollections(
-                ToDict(importedGameProgramInfoSet, igpi => igpi.GameProgramInfo.Manufacturer),
+                ToDict(importedGamePrograms, igpi => igpi.GameProgramInfo.Manufacturer),
                 igpi => igpi.GameProgramInfo.Title,
                 ToManufacturerSubTitle)
 ,
             .. ToGameProgramInfoViewItemCollections(
-                ToDict(importedGameProgramInfoSet, igpi => igpi.GameProgramInfo.Author),
+                ToDict(importedGamePrograms, igpi => igpi.GameProgramInfo.Author),
                 igpi => igpi.GameProgramInfo.Year,
                 ToAuthorSubTitle)
          ];
 
-    public static List<GameProgramInfoViewItem> GetGameProgramInfoViewItems(string romPath)
+    public List<GameProgramInfoViewItem> GetGameProgramInfoViewItems(string romPath)
         => [.. GetGameProgramInfos(romPath).Select(gpi => new GameProgramInfoViewItem(gpi, $"{gpi.Manufacturer} {gpi.Year}", romPath))];
 
-    public static List<GameProgramInfo> GetGameProgramInfos(string romPath)
+    public List<GameProgramInfo> GetGameProgramInfos(string romPath)
     {
-        var bytes = DatastoreService.GetRomBytes(romPath);
+        var bytes = _datastoreSvc.GetRomBytes(romPath);
         var rawBytes = RomBytesService.RemoveA78HeaderIfNecessary(bytes);
         var md5key = RomBytesService.ToMD5Key(rawBytes);
         var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
         return [.. RomPropertiesService.ToGameProgramInfo(romPropertiesCsv).Where(gpi => gpi.MD5 == md5key)];
     }
+
+    #region Constructors
+
+    #pragma warning disable IDE0290 // Use primary constructor
+
+    public GameProgramLibraryService(DatastoreService datastoreSvc)
+      => _datastoreSvc = datastoreSvc;
+
+    #endregion
 
     #region Helpers
 
@@ -52,24 +63,16 @@ public class GameProgramLibraryService
         Func<ImportedGameProgramInfo, string> orderByFunc,
         Func<ImportedGameProgramInfo, string> subTitleFunc)
         => dict.OrderBy(kvp => kvp.Key)
-            .Select(kvp => new GameProgramInfoViewItemCollection
-            {
-                Name = kvp.Key,
-                GameProgramInfoViewItemSet = [.. kvp.Value
+            .Select(kvp => new GameProgramInfoViewItemCollection(kvp.Key, [.. kvp.Value
                     .OrderBy(orderByFunc)
-                    .Select(igpi => ToGameProgramInfoViewItem(igpi, subTitleFunc))],
-            });
+                    .Select(igpi => ToGameProgramInfoViewItem(igpi, subTitleFunc))]));
 
     static IEnumerable<GameProgramInfoViewItemCollection> ToGameProgramInfoViewItemRecentsCollection(
         Dictionary<string, List<ImportedGameProgramInfo>> dict)
-        => dict.Select(kvp => new GameProgramInfoViewItemCollection
-        {
-            Name = kvp.Key,
-            GameProgramInfoViewItemSet = [.. kvp.Value
-                .OrderByDescending(igpi => igpi.PersistedStateAt)
-                .ThenBy(igpi => igpi.GameProgramInfo.Title)
-                .Select(igpi => ToGameProgramInfoViewItem(igpi, ToMachineTypeSubTitle))]
-        });
+        => dict.Select(kvp => new GameProgramInfoViewItemCollection(kvp.Key, [.. kvp.Value
+                    .OrderByDescending(igpi => igpi.PersistedStateAt)
+                    .ThenBy(igpi => igpi.GameProgramInfo.Title)
+                    .Select(igpi => ToGameProgramInfoViewItem(igpi, ToMachineTypeSubTitle))]));
 
     static GameProgramInfoViewItem ToGameProgramInfoViewItem(ImportedGameProgramInfo igpi, Func<ImportedGameProgramInfo, string> subTitleFunc)
         => new(igpi, subTitleFunc(igpi));

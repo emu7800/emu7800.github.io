@@ -4,35 +4,38 @@ using EMU7800.Assets;
 using EMU7800.Services.Dto;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EMU7800.Services;
 
-public class RomImportService
+public sealed class RomImportService
 {
-    public static bool CancelRequested { get; set; }
-    public static bool DirectoryScanCompleted { get; set; }
+    readonly DatastoreService _datastoreSvc;
 
-    public static int FilesExamined { get; private set; }
-    public static int FilesRecognized { get; private set; }
-
-    public static void Import()
-        => Import(DatastoreService.QueryROMSFolder());
-
-    public static void ImportDefaultsIfNecessary()
+    public async Task<ImportedRoms> ImportAsync(IEnumerable<string>? paths = null)
     {
-        if (!DatastoreService.ImportedGameProgramInfo.Any()
-            || !DatastoreService.ImportedSpecialBinaryInfo.Any())
-            Import();
+        await Task.Yield();
+        return Import();
     }
+
+    public ImportedRoms Import(IEnumerable<string>? paths = null)
+      => ImportInternal(paths ?? _datastoreSvc.QueryForROMs());
+
+    #region Constructors
+
+    #pragma warning disable IDE0290 // Use primary constructor
+
+    public RomImportService(DatastoreService datastore)
+      => _datastoreSvc = datastore;
+
+    #endregion
 
     #region Helpers
 
-    static void Import(IEnumerable<string> paths)
+    ImportedRoms ImportInternal(IEnumerable<string> paths)
     {
-        DirectoryScanCompleted = false;
-        CancelRequested = false;
-        FilesExamined = 0;
-        FilesRecognized = 0;
+        var filesExamined = 0;
+        var filesRecognized = 0;
 
         var romPropertiesCsv = AssetService.GetAssetByLines(Asset.ROMProperties);
         var gameProgramInfoSet = RomPropertiesService.ToGameProgramInfo(romPropertiesCsv);
@@ -40,16 +43,11 @@ public class RomImportService
         var importedGameProgramInfoMd5Dict = new Dictionary<string, ImportedGameProgramInfo>();
         var importedSpecialBinaryInfoSet = new List<ImportedSpecialBinaryInfo>();
 
-        DirectoryScanCompleted = true;
-
         foreach (var path in paths)
         {
-            if (CancelRequested)
-                break;
+            filesExamined++;
 
-            FilesExamined++;
-
-            var bytes = DatastoreService.GetRomBytes(path);
+            var bytes = _datastoreSvc.GetRomBytes(path);
 
             if (bytes.Length == 0)
                 continue;
@@ -61,13 +59,12 @@ public class RomImportService
                 var specialBinaryType = RomBytesService.ToSpecialBinaryType(md5key);
                 if (specialBinaryType != SpecialBinaryType.None)
                 {
-                    var sbi = new ImportedSpecialBinaryInfo { Type = specialBinaryType, StorageKey = path };
-                    importedSpecialBinaryInfoSet.Add(sbi);
+                    importedSpecialBinaryInfoSet.Add(new(specialBinaryType, path));
                 }
                 continue;
             }
 
-            FilesRecognized++;
+            filesRecognized++;
 
             foreach (var gpi in gpiList)
             {
@@ -76,7 +73,7 @@ public class RomImportService
                 {
                     igpi = new(gpi)
                     {
-                        PersistedStateAt = DatastoreService.PersistedMachineAt(gpi)
+                        PersistedStateAt = _datastoreSvc.PersistedMachineAt(gpi)
                     };
                     importedGameProgramInfoMd5Dict.Add(md5keyPlus, igpi);
                 }
@@ -84,14 +81,16 @@ public class RomImportService
             }
         }
 
-        if (CancelRequested)
-            return;
-
-        DatastoreService.ImportedGameProgramInfo = importedGameProgramInfoMd5Dict.Values
+        var importedGameProgramInfoSet = importedGameProgramInfoMd5Dict.Values
             .Where(igpi => igpi.StorageKeySet.Count > 0)
-            .OrderBy(igpi => igpi.GameProgramInfo.Title);
+            .OrderBy(igpi => igpi.GameProgramInfo.Title)
+            .ToList();
 
-        DatastoreService.ImportedSpecialBinaryInfo = importedSpecialBinaryInfoSet;
+        return new(
+            importedGameProgramInfoSet,
+            importedSpecialBinaryInfoSet,
+            filesExamined,
+            filesRecognized);
     }
 
     #endregion

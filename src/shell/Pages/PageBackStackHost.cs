@@ -1,6 +1,7 @@
 ﻿// © Mike Murphy
 
 using EMU7800.Core;
+using EMU7800.Services;
 using System;
 
 namespace EMU7800.Shell;
@@ -10,6 +11,8 @@ public sealed class PageBackStackHost : IDisposable
     #region Fields
 
     readonly PageBackStackStateService _stateService = new();
+    readonly DatastoreService _datastoreSvc;
+    readonly ILogger _logger;
 
     PageBase _currentPage = new Nullpage();
     bool _pageChanged;
@@ -31,11 +34,8 @@ public sealed class PageBackStackHost : IDisposable
         {
             _currentPage.OnNavigatingAway();
             _currentPage = _stateService.GetPendingPage();
-            _currentPage.OnNavigatingHere();
+            OnNavigatingHere();
             _currentPage.Resized(_size);
-            _currentPage.InjectDependency(_stateService);
-            _currentPage.InjectDependency(_audioDevice);
-            _currentPage.InjectDependency(_gameControllers);
             _pageChanged = true;
         }
 
@@ -54,18 +54,13 @@ public sealed class PageBackStackHost : IDisposable
 
     public void OnNavigatingHere()
     {
-        _currentPage.OnNavigatingHere();
+        _currentPage.OnNavigatingHere([_stateService, _audioDevice, _gameControllers, _datastoreSvc, _logger]);
     }
 
     public void Resized(SizeF size)
     {
         _size = size;
         _currentPage.Resized(size);
-    }
-
-    public void InjectDependency(object dependency)
-    {
-        _currentPage.InjectDependency(dependency);
     }
 
     public void AudioChanged(IAudioDeviceDriver audioDevice)
@@ -140,10 +135,12 @@ public sealed class PageBackStackHost : IDisposable
 
     #region Constructors
 
-    PageBackStackHost() {}
-
-    public PageBackStackHost(PageBase startPage)
-      => _stateService.Push(startPage);
+    public PageBackStackHost(PageBase startPage, DatastoreService datastoreSvc, ILogger logger)
+    {
+        _logger = logger;
+        _datastoreSvc = datastoreSvc;
+        _stateService.Push(startPage);
+    }
 
     #endregion
 

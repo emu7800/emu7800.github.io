@@ -1,7 +1,9 @@
 ﻿// © Mike Murphy
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EMU7800.Core;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -12,8 +14,8 @@ public sealed class GamePage : PageBase
 {
     #region Fields
 
-    readonly ApplicationSettings _settings;
     readonly GameProgramInfoViewItem _gameProgramInfoViewItem;
+    readonly List<ImportedSpecialBinaryInfo> _specialBinaries;
     readonly GameControl _gameControl;
     readonly ButtonBase _buttonBack, _buttonSettings;
     readonly LabelControl _labelInfoText;
@@ -45,14 +47,15 @@ public sealed class GamePage : PageBase
 
     IGameControllersDriver _gameControllers = EmptyGameControllersDriver.Default;
 
+    ApplicationSettings _settings = new();
+
     #endregion
 
-    public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, bool startFresh = false)
+    public GamePage(GameProgramInfoViewItem gameProgramInfoViewItem, List<ImportedSpecialBinaryInfo> specialBinaries, bool startFresh = false)
     {
         _gameProgramInfoViewItem = gameProgramInfoViewItem;
+        _specialBinaries = specialBinaries;
         _startFreshReq = startFresh;
-
-        _settings = DatastoreService.GetSettings();
 
         _gameControl = new GameControl();
         _buttonBack = new BackButton
@@ -166,8 +169,6 @@ public sealed class GamePage : PageBase
         _touchbuttonCollection = new ControlCollection();
         _touchbuttonCollection.Add(_touchbuttonLeft, _touchbuttonRight, _touchbuttonUp, _touchbuttonDown, _touchbuttonFire, _touchbuttonFire2);
 
-        _gameControl.IsInTouchMode = _touchbuttonCollection.IsVisible = _settings.ShowTouchControls;
-
         Controls.Add(_gameControl, _labelInfoText, _hud_controlCollection, _touchbuttonCollection);
 
         if (!_startFreshReq)
@@ -223,14 +224,23 @@ public sealed class GamePage : PageBase
 
     #region PageBase Overrides
 
-    public override void OnNavigatingHere()
+    public override void OnNavigatingHere(object[] dependencies)
     {
-        base.OnNavigatingHere();
+        base.OnNavigatingHere(dependencies);
 
         if (_isAlreadyNavigatedHere)
             return;
         _isAlreadyNavigatedHere = true;
         _isAlreadyNavigatedAway = false;
+
+        for (var i = 0; i < dependencies.Length; i++)
+        {
+            if (dependencies[i] is IGameControllersDriver gameControllers)
+            {
+                _gameControllers = gameControllers;
+                break;
+            }
+        }
 
         ResetBackAndSettingsButtonVisibilityCounter();
 
@@ -240,9 +250,12 @@ public sealed class GamePage : PageBase
             _hud_buttonPaused.IsChecked = _gameControl.IsPaused = false;
         }
 
-        _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _startFreshReq);
+        _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _specialBinaries, _startFreshReq);
 
         _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateAt = DateTime.UtcNow;
+
+        _settings = DatastoreService.GetSettings();
+        _gameControl.IsInTouchMode = _touchbuttonCollection.IsVisible = _settings.ShowTouchControls;
     }
 
     public override void OnNavigatingAway()
@@ -254,13 +267,14 @@ public sealed class GamePage : PageBase
         _isAlreadyNavigatedAway = true;
         _isAlreadyNavigatedHere = false;
 
-        DatastoreService.SaveSettings(_settings);
         _gameControl.Stop();
 
         HideHud();
 
         _buttonBack.IsVisible = !_isTooNarrowForHud;
         _buttonSettings.IsVisible = !_isTooNarrowForHud;
+
+        DatastoreService.SaveSettings(_settings);
     }
 
     public override void Resized(SizeF size)
@@ -343,13 +357,6 @@ public sealed class GamePage : PageBase
         _buffersQueuedRect = new(Struct.ToPointF(35, size.Height - 50), Struct.ToSizeF(25, 25));
         _numbercontrolRefreshRate.Location = new(size.Width, size.Height - 50);
 #endif
-    }
-
-    public override void InjectDependency(object dependency)
-    {
-        base.InjectDependency(dependency);
-        if (dependency is IGameControllersDriver gameControllers)
-            _gameControllers = gameControllers;
     }
 
     public override void KeyboardKeyPressed(KeyboardKey key, bool down)
@@ -580,7 +587,7 @@ public sealed class GamePage : PageBase
     {
         _gameControl.Stop();
         _hud_buttonPaused.IsChecked = _gameControl.IsPaused = false;
-        _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, true);
+        _gameControl.Start(_gameProgramInfoViewItem.ImportedGameProgramInfo, _specialBinaries, true);
         _gameProgramInfoViewItem.ImportedGameProgramInfo.PersistedStateAt = DateTime.UtcNow;
         _hud_buttonPower.IsChecked = true;
     }

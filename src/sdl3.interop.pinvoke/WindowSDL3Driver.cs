@@ -9,41 +9,55 @@ using static EMU7800.SDL3.Interop.SDL3;
 
 namespace EMU7800.SDL3.Interop;
 
-public sealed class WindowSDL3Driver
+public record SDLWindowDevices(Window Window,
+    GraphicsDeviceSDL3Driver SDL3GraphicsDevice,
+    IAudioDeviceDriver AudioDevice,
+    IGameControllersDriver GameControllers,
+    ILogger Logger)
+    : WindowDevices(Window, SDL3GraphicsDevice, AudioDevice, GameControllers);
+
+public sealed class WindowSDL3Driver : IWindowDriver
 {
-    static readonly ConcurrentDictionary<IntPtr, WindowSDL3Driver> RegisteredWindows = [];
+    static readonly ConcurrentDictionary<IntPtr, SDLWindowDevices> RegisteredWindows = [];
     static readonly ConcurrentQueue<IntPtr> PendingIds = [];
     static int _nextId;
 
     readonly ILogger _logger;
 
-    public Window Window { get; init; }
-    public GraphicsDeviceSDL3Driver GraphicsDevice { get; init; }
-    public IGameControllersDriver GameControllers { get; init; }
-    public IAudioDeviceDriver AudioDevice { get; init; }
+    #region IWindowDriver Members
 
-    public unsafe void ProcessEvents()
+    public unsafe void Start(Window window, bool startMaximized)
     {
+        SDLWindowDevices devices = new(
+            window,
+            new GraphicsDeviceSDL3Driver(_logger, startMaximized),
+            EmptyAudioDeviceDriver.Default,
+            EmptyGameControllersDriver.Default,
+            _logger);
+
+        window.OnAudioChanged(devices.AudioDevice);
+        window.OnControllersChanged(devices.GameControllers);
+
+        devices.GameControllers.Initialize();
+
         IntPtr id = Interlocked.Increment(ref _nextId);
 
         PendingIds.Enqueue(id);
-        RegisteredWindows.TryAdd(id, this);
+        RegisteredWindows.TryAdd(id, devices);
 
         SDL_EnterAppMainCallbacks(0, IntPtr.Zero, AppInit, AppIterate, AppEvent, AppQuit);
     }
 
-    public WindowSDL3Driver(Window window, ILogger logger, bool startMaximized)
-    {
-        Window = window;
-        _logger = logger;
+    #endregion
 
-        GraphicsDevice = new GraphicsDeviceSDL3Driver(logger, startMaximized);
-        GameControllers = EmptyGameControllersDriver.Default;
-        AudioDevice = EmptyAudioDeviceDriver.Default;
+    #region Constructors
 
-        window.OnAudioChanged(AudioDevice);
-        window.OnControllersChanged(GameControllers);
-    }
+    public WindowSDL3Driver(ILogger logger)
+      => _logger = logger;
+
+    #endregion
+
+    #region Helpers
 
     static unsafe SDL_AppResult AppInit(IntPtr ppAppState, int argc, IntPtr argv)
     {
@@ -56,7 +70,12 @@ public sealed class WindowSDL3Driver
 
         SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
 
-        wd._logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
+        wd.Logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
+
+        // Windows:
+
+        // Version  Revision
+        // 3002026  release-3.2.26-0-gbadbf8da4 (libsdl.org)
 
         wd.GameControllers.Initialize();
 
@@ -91,30 +110,30 @@ public sealed class WindowSDL3Driver
                 return SDL_AppResult.SDL_APP_SUCCESS;
             case SDL_EventType.SDL_EVENT_WINDOW_RESIZED:
                 {
-                    var w = (int)(pEvt->window.data1 / wd.GraphicsDevice.ScaleFactor);
-                    var h = (int)(pEvt->window.data2 / wd.GraphicsDevice.ScaleFactor);
+                    var w = (int)(pEvt->window.data1 / wd.SDL3GraphicsDevice.ScaleFactor);
+                    var h = (int)(pEvt->window.data2 / wd.SDL3GraphicsDevice.ScaleFactor);
                     wd.Window.OnResized(wd.GraphicsDevice, w, h);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_MOTION:
                 {
-                    var x = (int)(pEvt->motion.x / wd.GraphicsDevice.ScaleFactor);
-                    var y = (int)(pEvt->motion.y / wd.GraphicsDevice.ScaleFactor);
+                    var x = (int)(pEvt->motion.x / wd.SDL3GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->motion.y / wd.SDL3GraphicsDevice.ScaleFactor);
                     wd.Window.OnMouseMoved(x, y, (int)pEvt->motion.xrel, (int)pEvt->motion.yrel);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
                 {
-                    var x = (int)(pEvt->button.x / wd.GraphicsDevice.ScaleFactor);
-                    var y = (int)(pEvt->button.y / wd.GraphicsDevice.ScaleFactor);
+                    var x = (int)(pEvt->button.x / wd.SDL3GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->button.y / wd.SDL3GraphicsDevice.ScaleFactor);
                     wd.Window.OnMouseButtonChanged(x, y, pEvt->button.down);
                 }
                 break;
             case SDL_EventType.SDL_EVENT_MOUSE_WHEEL:
                 {
-                    var x = (int)(pEvt->wheel.mouse_x / wd.GraphicsDevice.ScaleFactor);
-                    var y = (int)(pEvt->wheel.mouse_y / wd.GraphicsDevice.ScaleFactor);
+                    var x = (int)(pEvt->wheel.mouse_x / wd.SDL3GraphicsDevice.ScaleFactor);
+                    var y = (int)(pEvt->wheel.mouse_y / wd.SDL3GraphicsDevice.ScaleFactor);
                     var delta = (int)(120 * pEvt->wheel.y);
                     wd.Window.OnMouseWheelChanged(x, y, delta);
                 }
@@ -128,6 +147,16 @@ public sealed class WindowSDL3Driver
         }
 
         return SDL_AppResult.SDL_APP_CONTINUE;
+    }
+
+    static unsafe void AppQuit(IntPtr pAppState, SDL_AppResult result)
+    {
+        if (RegisteredWindows.TryRemove(pAppState, out var wd))
+        {
+            wd.GraphicsDevice.Shutdown();
+            wd.GameControllers.Shutdown();
+            wd.AudioDevice.Close();
+        }
     }
 
     static KeyboardKey ToKeyboardKey(SDL_Scancode scancode)
@@ -178,13 +207,5 @@ public sealed class WindowSDL3Driver
           _                                     => KeyboardKey.None
       };
 
-    static unsafe void AppQuit(IntPtr pAppState, SDL_AppResult result)
-    {
-        if (RegisteredWindows.TryRemove(pAppState, out var wd))
-        {
-            wd.GraphicsDevice.Shutdown();
-            wd.GameControllers.Shutdown();
-            wd.AudioDevice.Close();
-        }
-    }
+    #endregion
 }
