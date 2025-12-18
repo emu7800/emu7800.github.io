@@ -15,9 +15,9 @@ public interface IFileSystemAccessor
     bool FolderExists(params string[] pathParts);
     IEnumerable<string> GetFolders(params string[] pathParts);
     Dictionary<string, DateTime> GetFiles(params string[] pathParts);
+    void DeleteFile(params string[] pathParts);
     Stream CreateReadStream(params string[] pathParts);
     Stream CreateWriteStream(params string[] pathParts);
-    void DeleteFile(params string[] pathParts);
 }
 
 public sealed class NullFileSystemAccessor : IFileSystemAccessor
@@ -183,7 +183,7 @@ public sealed class FileSystemAccessor : IFileSystemAccessor
     #region Helpers
 
     void Error(string message, Exception ex, string path)
-      => _logger.Log(1, $"Unexpected error {message}: {ToString(ex)}: {path}");
+      => _logger.Log(1, $"Unexpected error {message}: {ToString(ex)} {path}");
 
     static string ToString(Exception ex) => $"{ex.GetType().Name}: {ex.Message}";
 
