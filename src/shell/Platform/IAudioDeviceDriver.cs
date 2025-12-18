@@ -6,7 +6,7 @@ public interface IAudioDeviceDriver
 {
     void Close();
     int GetBuffersQueued();
-    bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength);
+    bool Open(int frequency, int soundFrameSize, int queueLength);
     void SubmitBuffer(ReadOnlySpan<byte> buffer);
 }
 
@@ -18,7 +18,7 @@ public sealed class EmptyAudioDeviceDriver : IAudioDeviceDriver
     #region IAudioDeviceDriver Members
     public void Close() {}
     public int GetBuffersQueued() => 0;
-    public bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength) => false;
+    public bool Open(int frequency, int soundFrameSize, int queueLength) => false;
     public void SubmitBuffer(ReadOnlySpan<byte> buffer) { }
 
     #endregion

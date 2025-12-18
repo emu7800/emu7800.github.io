@@ -31,7 +31,7 @@ public sealed class WindowSDL3Driver : IWindowDriver
         SDLWindowDevices devices = new(
             window,
             new GraphicsDeviceSDL3Driver(_logger, startMaximized),
-            EmptyAudioDeviceDriver.Default,
+            new AudioDeviceSDL3Driver(),
             EmptyGameControllersDriver.Default,
             _logger);
 

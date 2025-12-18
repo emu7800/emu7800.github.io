@@ -31,7 +31,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
 
     public DynamicBitmap CreateDynamicBitmap(SizeU size)
     {
-        var bitmap = new DynamicSDL3Bitmap(/*hRenderer, size*/);
+        var bitmap = new DynamicSDL3Bitmap(hRenderer, size);
         _disposables.Add(bitmap);
         return bitmap;
     }

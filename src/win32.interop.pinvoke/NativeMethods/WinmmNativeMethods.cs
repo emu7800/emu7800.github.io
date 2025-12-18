@@ -48,7 +48,7 @@ internal static unsafe partial class WinmmNativeMethods
 
     internal static IntPtr Open(int freq, int soundFrameSize, int queueLen, out int mmResult)
     {
-        if (freq <= 0 || soundFrameSize <= 0 || soundFrameSize > ushort.MaxValue)
+        if (freq < 1 || soundFrameSize < 1 || soundFrameSize > ushort.MaxValue)
         {
             mmResult = -1;
             return IntPtr.Zero;

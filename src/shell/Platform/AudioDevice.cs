@@ -7,7 +7,7 @@ public sealed class AudioDevice
     readonly IAudioDeviceDriver _driver;
 
     public int Frequency { get; private set; }
-    public int BufferPayloadSizeInBytes { get; private set; }
+    public int SoundFrameSize { get; private set; }
     public int QueueLength { get; private set; }
     public bool IsOpened { get; private set; }
     public bool IsClosed => !IsOpened;
@@ -16,12 +16,12 @@ public sealed class AudioDevice
 
     public void SubmitBuffer(ReadOnlySpan<byte> buffer)
     {
-        if (buffer.Length < BufferPayloadSizeInBytes)
-            throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + BufferPayloadSizeInBytes);
+        if (buffer.Length < SoundFrameSize)
+            throw new ApplicationException("Bad SubmitBuffer request: buffer length is not at least " + SoundFrameSize);
 
         if (!IsOpened)
         {
-            IsOpened = _driver.Open(Frequency, BufferPayloadSizeInBytes, QueueLength);
+            IsOpened = _driver.Open(Frequency, SoundFrameSize, QueueLength);
         }
 
         if (IsOpened)
@@ -39,34 +39,34 @@ public sealed class AudioDevice
         }
     }
 
-    public void Configure(int frequency, int bufferSizeInBytes, int queueLength)
+    public void Configure(int frequency, int soundFrameSize, int queueLength)
     {
-        if (frequency < 0)
+        if (frequency < 1)
         {
-            frequency = 0;
+            frequency = 1;
         }
 
-        bufferSizeInBytes = bufferSizeInBytes switch
+        soundFrameSize = soundFrameSize switch
         {
-            < 0 => 0,
+            < 1 => 1,
             > 0x400 => 0x400,
-            _ => bufferSizeInBytes
+            _ => soundFrameSize
         };
 
         queueLength = queueLength switch
         {
-            < 0 => 0,
+            < 1 => 1,
             > 0x10 => 0x10,
             _ => queueLength
         };
 
-        if (Frequency != frequency || BufferPayloadSizeInBytes != bufferSizeInBytes || QueueLength != queueLength)
+        if (Frequency != frequency || SoundFrameSize != soundFrameSize || QueueLength != queueLength)
         {
             Close();
         }
 
         Frequency = frequency;
-        BufferPayloadSizeInBytes = bufferSizeInBytes;
+        SoundFrameSize = soundFrameSize;
         QueueLength = queueLength;
     }
 

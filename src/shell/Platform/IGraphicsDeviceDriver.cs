@@ -33,7 +33,7 @@ public class DynamicBitmap : DisposableResource
 
     public virtual void Load(ReadOnlySpan<byte> data) {}
 
-    protected DynamicBitmap() { }
+    protected DynamicBitmap() {}
 }
 
 public class StaticBitmap : DisposableResource

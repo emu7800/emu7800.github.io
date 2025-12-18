@@ -17,9 +17,9 @@ public sealed class AudioDeviceWinmmDriver : DisposableResource, IAudioDeviceDri
     public int GetBuffersQueued()
       => WinmmNativeMethods.GetBuffersQueued(hwo);
 
-    public bool Open(int frequency, int bufferPayloadSizeInBytes, int queueLength)
+    public bool Open(int frequency, int soundFrameSize, int queueLength)
     {
-        hwo = WinmmNativeMethods.Open(frequency, bufferPayloadSizeInBytes, queueLength, out var ec);
+        hwo = WinmmNativeMethods.Open(frequency, soundFrameSize, queueLength, out var ec);
         HR = ec;
         return ec == 0;
     }
