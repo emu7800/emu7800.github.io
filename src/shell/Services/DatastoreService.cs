@@ -147,9 +147,17 @@ public sealed class DatastoreService
 
     public DateTime PersistedMachineAt(GameProgramInfo gameProgramInfo)
     {
-        _cachedPersistedDir ??= _fileSystemAccessor.GetFiles(SaveGamesEmu7800Folder, PersistedGameProgramsName);
-        return _cachedPersistedDir.TryGetValue(ToPersistedStateStorageName(gameProgramInfo), out var lastUpdated)
+        _cachedPersistedDir ??= _fileSystemAccessor.GetFiles(SaveGamesEmu7800Folder, PersistedGameProgramsName)
+            .Select(kvp => new { FullName = kvp.Key, Pos = kvp.Key.LastIndexOfAny('/', '\\') + 1, LastModified = kvp.Value })
+            .Select(r => new { Name = r.FullName[r.Pos..], r.LastModified })
+            .GroupBy(r => r.Name)
+            .Select(g => new { Name = g.Key, LastModified = g.Select(r => r.LastModified).First() })
+            .ToDictionary(r => r.Name, r => r.LastModified);
+
+        var dt = _cachedPersistedDir.TryGetValue(ToPersistedStateStorageName(gameProgramInfo), out var lastUpdated)
             ? lastUpdated : DateTime.MinValue;
+
+        return dt;
     }
 
     public void PersistMachine(MachineStateInfo machineStateInfo, ReadOnlyMemory<byte> screenshotData)
