@@ -48,8 +48,16 @@ public sealed class TextSDL3Layout : TextLayout
 
         var surface = (IntPtr)TTF_RenderText_Blended_Wrapped(hFont, text, 0, ToSDLColor(brush), (int)width);
         var texture = SDL_CreateTextureFromSurface(_hRenderer, surface);
+
         _texture = (IntPtr)texture;
-        SDL_SetTextureScaleMode(_texture, SDL_ScaleMode.SDL_SCALEMODE_NEAREST);
+
+        HR = _texture != IntPtr.Zero ? 0 : -1;
+
+        if (HR == 0)
+        {
+            SDL_SetTextureScaleMode(_texture, SDL_ScaleMode.SDL_SCALEMODE_NEAREST);
+        }
+
         SDL_DestroySurface(surface);
 
         _dstrect.x = textAlignment switch

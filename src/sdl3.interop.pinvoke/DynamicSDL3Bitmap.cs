@@ -18,6 +18,7 @@ public sealed class DynamicSDL3Bitmap : DynamicBitmap
 
     public override void Draw(RectF rect, BitmapInterpolationMode interpolationMode)
     {
+        SDL_SetTextureScaleMode(_texture, (SDL_ScaleMode)interpolationMode);
         SDL_FRect srect = rect;
         SDL_RenderTexture(_hRenderer, _texture, IntPtr.Zero, ref srect);
     }
@@ -71,6 +72,11 @@ public sealed class DynamicSDL3Bitmap : DynamicBitmap
             (int)size.Width, (int)size.Height);
 
         HR = _texture != IntPtr.Zero ? 0 : -1;
+
+        if (HR == 0)
+        {
+            SDL_SetTextureScaleMode(_texture, SDL_ScaleMode.SDL_SCALEMODE_NEAREST);
+        }
     }
 
     #endregion
