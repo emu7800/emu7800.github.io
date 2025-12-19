@@ -78,7 +78,7 @@ public sealed class DatastoreService
 
                 field = saveFolder;
 
-                Info(nameof(SaveGamesEmu7800Folder), "Using folder: " + saveFolder);
+                Info(nameof(SaveGamesEmu7800Folder), "Using folder: " + ToString(saveFolder));
             }
             return field;
         }
@@ -91,7 +91,13 @@ public sealed class DatastoreService
     public IEnumerable<string> QueryForROMs()
     {
         string[] folder = [..SaveGamesEmu7800Folder, PersistedGameProgramsFolderName];
-        return [..QueryForRomCandidates(folder), ..QueryForRomCandidates(AppBaseFolder)];
+        string[] otherLocation =
+#if DEBUG
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "AppData", "Local", "Programs", "EMU7800"] : [];
+#else
+        [];
+#endif
+        return [..QueryForRomCandidates(folder), ..QueryForRomCandidates(AppBaseFolder), ..QueryForRomCandidates(otherLocation)];
     }
 
     public byte[] GetRomBytes(string path)
@@ -410,7 +416,7 @@ public sealed class DatastoreService
         }
         catch (Exception ex)
         {
-            if (ex is not FileNotFoundException or DirectoryNotFoundException)
+            if (ex is not FileNotFoundException && ex is not DirectoryNotFoundException)
             {
                 Error(nameof(ReadNVRAMBytes), "Unable to read NVRAM", ex);
             }
@@ -482,6 +488,9 @@ public sealed class DatastoreService
 
     IEnumerable<string> QueryForRomCandidates(params string[] path)
     {
+        if (path.Length == 0)
+            yield break;
+
         var stack = new Stack<string[]>();
         stack.Push(path);
 
@@ -552,7 +561,7 @@ public sealed class DatastoreService
       => ex is not null ? $"{ex.GetType().Name}: {ex.Message}" : string.Empty;
 
     static string ToString(string[] path)
-      => string.Join("/", path);
+      => string.Join("|", path);
 
     #endregion
 }

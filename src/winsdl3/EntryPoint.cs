@@ -1,6 +1,9 @@
 ﻿using EMU7800.Shell;
 
-var logger = new EMU7800.SDL3.Interop.SDL3Logger { Level = 9 };
+var logger = new EMU7800.Win32.Interop.ConsoleLogger(CommandLine.GetOpenConsoleOption(args))
+{
+    Level = CommandLine.GetLoggingVerbosityOption(args)
+};
 
 var commandLine = new CommandLine(logger);
-commandLine.Run(new EMU7800.SDL3.Interop.WindowWinSDL3Driver(args, logger), args);
+commandLine.Run(new EMU7800.SDL3.Interop.WindowSDL3Driver(logger), args);

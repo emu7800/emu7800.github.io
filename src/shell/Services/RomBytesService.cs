@@ -3,12 +3,13 @@
 using EMU7800.Core;
 using EMU7800.Services.Dto;
 using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace EMU7800.Services;
 
-public class RomBytesService
+public sealed class RomBytesService
 {
     #region Fields
 
@@ -32,6 +33,9 @@ public class RomBytesService
     static readonly MD5 MD5 = MD5.Create();
     static readonly byte[] Atari7800Tag = [0x41, 0x54, 0x41, 0x52, 0x49, 0x37, 0x38, 0x30, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
     static readonly uint[] HexStringLookup = CreateHexStringLookupTable();
+
+    readonly IFileSystemAccessor _fileSystemAccessor;
+    readonly ILogger _logger;
 
     #endregion
 
@@ -155,9 +159,9 @@ public class RomBytesService
         }
         : CartType.Unknown;
 
-    public static void DumpBin(string path, Action<string> printLineFn)
+    public void DumpBin(params string[] path)
     {
-        printLineFn($"""
+        _logger.Log(1, $"""
 
                      File: {path}
                      """);
@@ -165,11 +169,12 @@ public class RomBytesService
         byte[] bytes;
         try
         {
-            bytes = System.IO.File.ReadAllBytes(path);
+            using var stream = _fileSystemAccessor.CreateReadStream(path) ?? Stream.Null;
+            bytes = ReadAllBytes(stream);
         }
         catch (Exception ex)
         {
-            printLineFn($"Unable to read ROM: {ex.GetType().Name}: {ex.Message}");
+            _logger.Log(1, $"Unable to read ROM: {ex.GetType().Name}: {ex.Message}");
             return;
         }
 
@@ -178,7 +183,7 @@ public class RomBytesService
         if (isA78Format)
         {
             var gpi = ToGameProgramInfoFromA78Format(bytes);
-            printLineFn($"""
+            _logger.Log(1, $"""
 
                          A78 : Title           : {gpi.Title}
                                MachineType     : {gpi.MachineType}
@@ -203,7 +208,7 @@ public class RomBytesService
         var rawBytes = RemoveA78HeaderIfNecessary(bytes);
         var md5 = ToMD5Key(rawBytes);
 
-        printLineFn($"""
+        _logger.Log(1, $"""
 
                      MD5 : {md5}
                      Size: {rawBytes.Length} {(isA78Format ? "(excluding A78 header)" : string.Empty)}
@@ -213,7 +218,31 @@ public class RomBytesService
         static string ToHexByte(byte b) => "$" + b.ToString("X2");
     }
 
+    #region Constructors
+
+    public RomBytesService(IFileSystemAccessor fileSystemAccessor, ILogger logger)
+      => (_fileSystemAccessor, _logger) = (fileSystemAccessor, logger);
+
+    #endregion
+
     #region Helpers
+
+    static byte[] ReadAllBytes(Stream stream)
+    {
+        using var br = new BinaryReader(stream);
+        using var ms = new MemoryStream();
+
+        var buffer = new byte[4096];
+        while (true)
+        {
+            var count = br.Read(buffer, 0, buffer.Length);
+            if (count == 0)
+                break;
+            ms.Write(buffer, 0, count);
+        }
+
+        return ms.ToArray();
+    }
 
     static CartType To78CartType(int cartSize, byte cartType1, byte cartType2)
     {

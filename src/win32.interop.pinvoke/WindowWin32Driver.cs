@@ -3,27 +3,18 @@
 using EMU7800.Core;
 using EMU7800.Shell;
 using System;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace EMU7800.Win32.Interop;
 
 public sealed partial class WindowWin32Driver : IWindowDriver
 {
     readonly ILogger _logger;
-    readonly bool _openConsole;
     IntPtr _hWnd;
 
     #region IWindowDriver Members
 
     public void Start(Window window, bool startMaximized)
     {
-        if (_openConsole)
-        {
-            AllocConsole();
-            _logger.Log(5, "Opened console window.");
-        }
-
         _hWnd = Win32NativeMethods.Win32_CreateWindow();
 
         if (_hWnd == IntPtr.Zero)
@@ -51,18 +42,8 @@ public sealed partial class WindowWin32Driver : IWindowDriver
 
     #region Constructors
 
-    public WindowWin32Driver(string[] args, ILogger logger)
-      => (_logger, _openConsole) = (logger, args.Any(arg => CiOneOf(arg, "-c", "/c")));
-
-    #endregion
-
-    #region Helpers
-
-    static bool CiOneOf(string arg, params string[] items)
-      => items.Any(item => item.Equals(arg, StringComparison.OrdinalIgnoreCase));
-
-    [LibraryImport("Kernel32.dll")]
-    internal static partial void AllocConsole();
+    public WindowWin32Driver(ILogger logger)
+      => _logger = logger;
 
     #endregion
 }

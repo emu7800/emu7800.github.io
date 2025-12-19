@@ -422,8 +422,6 @@ public sealed class GameProgramSelectionControl : ControlBase
 
     #region Constructors
 
-    #pragma warning disable IDE0290 // Use primary constructor
-
     public GameProgramSelectionControl(List<GameProgramInfoViewItemCollection> gameProgramViewItems)
     {
         _scrollColumnInfoSet = [..gameProgramViewItems.Select(ToScrollColumnInfo)];

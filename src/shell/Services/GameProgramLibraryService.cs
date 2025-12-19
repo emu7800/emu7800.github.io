@@ -49,8 +49,6 @@ public sealed class GameProgramLibraryService
 
     #region Constructors
 
-    #pragma warning disable IDE0290 // Use primary constructor
-
     public GameProgramLibraryService(DatastoreService datastoreSvc)
       => _datastoreSvc = datastoreSvc;
 

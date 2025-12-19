@@ -9,6 +9,7 @@
     <RuntimeIdentifiers>win-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
+    <NoWarn>IDE0290</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyVersion>5.7.0.0</AssemblyVersion> <!-- search/replace '5.7.0' to update -->

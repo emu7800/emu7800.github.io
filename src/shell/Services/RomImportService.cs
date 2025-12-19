@@ -23,8 +23,6 @@ public sealed class RomImportService
 
     #region Constructors
 
-    #pragma warning disable IDE0290 // Use primary constructor
-
     public RomImportService(DatastoreService datastore)
       => _datastoreSvc = datastore;
 

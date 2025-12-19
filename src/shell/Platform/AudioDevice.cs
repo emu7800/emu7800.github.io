@@ -72,8 +72,6 @@ public sealed class AudioDevice
 
     #region Constructors
 
-    #pragma warning disable IDE0290 // Use primary constructor
-
     public AudioDevice(IAudioDeviceDriver driver)
       => _driver = driver;
 

@@ -173,8 +173,6 @@ public sealed class FileSystemAccessor : IFileSystemAccessor
 
     #region Constructors
 
-    #pragma warning disable IDE0290 // Use primary constructor
-
     public FileSystemAccessor(ILogger logger)
       => _logger = logger;
 
