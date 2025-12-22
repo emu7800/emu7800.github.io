@@ -1,51 +1,31 @@
 ﻿<Project DefaultTargets="All">
   <PropertyGroup>
     <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+    <LinuxArmPublishAot>false</LinuxArmPublishAot>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectToBuild Include="src\win32\EMU7800.Win32.csproj"/>
-    <ProjectToBuild Include="src\winsdl3\EMU7800.WinSDL3.csproj"/>
-  </ItemGroup>
   <ItemGroup>
     <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
   </ItemGroup>
   <Target Name="Clean">
-    <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Clean" />-->
-    <Exec Command="dotnet clean %(ProjectToBuild.Identity)"/>
     <RemoveDir Directories="$(ArtifactsPath)" />
   </Target>
-  <Target Name="Publish">
+  <Target Name="PublishWin32">
     <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
-    <Exec Command="dotnet publish %(ProjectToBuild.Identity) -c Release"/>
+    <Exec Command="dotnet publish src\win32\EMU7800.Win32.csproj -c Release"/>
+  </Target>
+  <Target Name="PublishWinSDL3">
+    <Exec Command="dotnet publish src\winsdl3\EMU7800.WinSDL3.csproj -c Release"/>
+  </Target>
+  <Target Name="PublishLinuxArm">
+    <Exec Command="dotnet publish src\linuxarm\EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
+  </Target>
+  <Target Name="PublishLinuxArm64">
+    <Exec Command="dotnet publish src\linuxarm64\EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
     <Copy SourceFiles="@(SourceArtifacts)"
           DestinationFiles="@(SourceArtifacts->'$(ArtifactsPath)\EMU7800.src\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          />
-  </Target>
-  <Target Name="CopyBin" DependsOnTargets="Publish;ZipRoms">
-    <ItemGroup>
-      <Win32BinArtifacts   Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*;lib\EMU7800.Win32.Interop.dll" />
-      <WinSDL3BinArtifacts Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\OpenSans-VariableFont.ttf" />
-      <RomArtifacts        Include="$(ArtifactsPath)\ROMS\**\*" />
-    </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin;$(ArtifactsPath)\EMU7800.winsdl3bin" />
-    <Copy SourceFiles="@(Win32BinArtifacts)"
-          DestinationFiles="@(Win32BinArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          />
-    <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          />
-    <Copy SourceFiles="@(WinSDL3BinArtifacts)"
-          DestinationFiles="@(WinSDL3BinArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          />
-    <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
@@ -82,22 +62,97 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="ZipWin32Bin" DependsOnTargets="CopyBin">
+  <Target Name="CopyBinWin32" DependsOnTargets="PublishWin32;ZipRoms">
+    <ItemGroup>
+      <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*;lib\EMU7800.Win32.Interop.dll" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin" />
+    <Copy SourceFiles="@(BinWin32Artifacts)"
+          DestinationFiles="@(BinWin32Artifacts->'$(ArtifactsPath)\EMU7800.win32bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="CopyBinWinSDL3" DependsOnTargets="PublishWinSDL3;ZipRoms">
+    <ItemGroup>
+      <BinWinSDL3Artifacts Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.winsdl3bin" />
+    <Copy SourceFiles="@(BinWinSDL3Artifacts)"
+          DestinationFiles="@(BinWinSDL3Artifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="CopyBinLinuxArm" DependsOnTargets="PublishLinuxArm;ZipRoms">
+    <ItemGroup>
+      <BinLinuxArmArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linuxarmbin"/>
+    <Copy SourceFiles="@(BinLinuxArmArtifacts)"
+          DestinationFiles="@(BinLinuxArmArtifacts->'$(ArtifactsPath)\EMU7800.linuxarmbin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linuxarmbin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="CopyBinLinuxArm64" DependsOnTargets="PublishLinuxArm64;ZipRoms">
+    <ItemGroup>
+      <BinLinuxArm64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linuxarm64bin" />
+    <Copy SourceFiles="@(BinLinuxArm64Artifacts)"
+          DestinationFiles="@(BinLinuxArm64Artifacts->'$(ArtifactsPath)\EMU7800.linuxarm64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linuxarm64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="ZipBinWin32" DependsOnTargets="CopyBinWin32">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win32bin"
                   DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="ZipWinSDL3Bin" DependsOnTargets="CopyBin">
+  <Target Name="ZipBinWinSDL3" DependsOnTargets="CopyBinWinSDL3">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.winsdl3bin"
                   DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="BuildWin32Installer" DependsOnTargets="ZipWin32Bin">
+  <Target Name="ZipBinLinuxArm" DependsOnTargets="CopyBinLinuxArm">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarmbin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
+  </Target>
+  <Target Name="ZipBinLinuxArm64" DependsOnTargets="CopyBinLinuxArm64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarm64bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
+  </Target>
+  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32">
     <Exec Command="pwsh.exe .\src\tools\Installer\Build.ps1" />
   </Target>
-  <Target Name="All" DependsOnTargets="BuildWin32Installer;ZipWinSDL3Bin;ZipSrc">
-    <RemoveDir Directories="$(ArtifactsPath)\ROMS;$(ArtifactsPath)\bin;$(ArtifactsPath)\obj;$(ArtifactsPath)\publish" />
+  <Target Name="LinuxArm" DependsOnTargets="ZipBinLinuxArm" />
+  <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
+  <Target Name="Win32" DependsOnTargets="BuildWin32Installer;ZipBinWin32" />
+  <Target Name="WinSDL3" DependsOnTargets="ZipBinWinSDL3" />
+  <Target Name="All" DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc">
   </Target>
 </Project>
