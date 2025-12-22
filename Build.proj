@@ -1,6 +1,6 @@
 ﻿<Project DefaultTargets="All">
+  <Import Project="Directory.Build.props" />
   <PropertyGroup>
-    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
     <LinuxArmPublishAot>false</LinuxArmPublishAot>
   </PropertyGroup>
   <ItemGroup>
@@ -11,16 +11,16 @@
   </Target>
   <Target Name="PublishWin32">
     <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
-    <Exec Command="dotnet publish src\win32\EMU7800.Win32.csproj -c Release"/>
+    <Exec Command="dotnet publish src/win32/EMU7800.Win32.csproj -c Release"/>
   </Target>
   <Target Name="PublishWinSDL3">
-    <Exec Command="dotnet publish src\winsdl3\EMU7800.WinSDL3.csproj -c Release"/>
+    <Exec Command="dotnet publish src/winsdl3/EMU7800.WinSDL3.csproj -c Release"/>
   </Target>
   <Target Name="PublishLinuxArm">
-    <Exec Command="dotnet publish src\linuxarm\EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
+    <Exec Command="dotnet publish src/linuxarm/EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
   </Target>
   <Target Name="PublishLinuxArm64">
-    <Exec Command="dotnet publish src\linuxarm64\EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
+    <Exec Command="dotnet publish src/linuxarm64/EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
@@ -151,8 +151,8 @@
   </Target>
   <Target Name="LinuxArm" DependsOnTargets="ZipBinLinuxArm" />
   <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
-  <Target Name="Win32" DependsOnTargets="BuildWin32Installer;ZipBinWin32" />
+  <Target Name="Win32" DependsOnTargets="ZipBinWin32" />
   <Target Name="WinSDL3" DependsOnTargets="ZipBinWinSDL3" />
-  <Target Name="All" DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc">
+  <Target Name="All" DependsOnTargets="Win32;BuildWin32Installer;WinSDL3;LinuxArm;LinuxArm64;ZipSrc">
   </Target>
 </Project>
