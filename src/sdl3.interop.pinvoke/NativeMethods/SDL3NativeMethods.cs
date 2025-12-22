@@ -376,14 +376,6 @@ internal static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_joystick.h
 
-    public const string
-        SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN       = "SDL.joystick.cap.mono_led",
-        SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN        = "SDL.joystick.cap.rgb_led",
-        SDL_PROP_JOYSTICK_CAP_PLAYER_LED_BOOLEAN     = "SDL.joystick.cap.player_led",
-        SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN         = "SDL.joystick.cap.rumble",
-        SDL_PROP_JOYSTICK_CAP_TRIGGER_RUMBLE_BOOLEAN = "SDL.joystick.cap.trigger_rumble"
-        ;
-
     public enum SDL_JoystickType
     {
         SDL_JOYSTICK_TYPE_UNKNOWN        = 0,
@@ -1024,45 +1016,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumGamepadTouchpads(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumGamepadTouchpadFingers(IntPtr gamepad, int touchpad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetGamepadTouchpadFinger(IntPtr gamepad, int touchpad, int finger, out SDLBool down, out float x, out float y, out float pressure);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RumbleGamepad(IntPtr gamepad, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RumbleGamepadTriggers(IntPtr gamepad, ushort left_rumble, ushort right_rumble, uint duration_ms);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetGamepadLED(IntPtr gamepad, byte red, byte green, byte blue);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SendGamepadEffect(IntPtr gamepad, IntPtr data, int size);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_CloseGamepad(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadAppleSFSymbolsNameForButton(IntPtr gamepad, SDL_GamepadButton button);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadAppleSFSymbolsNameForAxis(IntPtr gamepad, SDL_GamepadAxis axis);
 
     // /usr/local/include/SDL3/SDL_scancode.h
 
@@ -1749,14 +1703,6 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_WarpMouseInWindow(IntPtr window, float x, float y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_WarpMouseGlobal(float x, float y);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetWindowRelativeMouseMode(IntPtr window, SDLBool enabled);
 
     [LibraryImport(SDL3DllName)]
@@ -2144,61 +2090,6 @@ internal static unsafe partial class SDL3
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_GamepadTouchpadEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public int touchpad;
-        public int finger;
-        public float x;
-        public float y;
-        public float pressure;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_GamepadSensorEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public int sensor;
-        public fixed float data[3];
-        public ulong sensor_timestamp;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_TouchFingerEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public ulong touchID;
-        public ulong fingerID;
-        public float x;
-        public float y;
-        public float dx;
-        public float dy;
-        public float pressure;
-        public uint windowID;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_DropEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint windowID;
-        public float x;
-        public float y;
-        public byte* source;
-        public byte* data;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SDL_QuitEvent
     {
         public SDL_EventType type;
@@ -2263,10 +2154,10 @@ internal static unsafe partial class SDL3
         public SDL_GamepadAxisEvent gaxis;
         [FieldOffset(0)]
         public SDL_GamepadButtonEvent gbutton;
-        [FieldOffset(0)]
-        public SDL_GamepadTouchpadEvent gtouchpad;
-        [FieldOffset(0)]
-        public SDL_GamepadSensorEvent gsensor;
+      //[FieldOffset(0)]
+      //public SDL_GamepadTouchpadEvent gtouchpad;
+      //[FieldOffset(0)]
+      //public SDL_GamepadSensorEvent gsensor;
        //FieldOffset(0)]
        //ublic SDL_AudioDeviceEvent adevice;
        //FieldOffset(0)]
@@ -2277,14 +2168,14 @@ internal static unsafe partial class SDL3
         public SDL_QuitEvent quit;
         [FieldOffset(0)]
         public SDL_UserEvent user;
-        [FieldOffset(0)]
-        public SDL_TouchFingerEvent tfinger;
+      //[FieldOffset(0)]
+      //public SDL_TouchFingerEvent tfinger;
       //[FieldOffset(0)]
       //public SDL_PenProximityEvent pproximity;
       //[FieldOffset(0)]
       //public SDL_RenderEvent render;
-        [FieldOffset(0)]
-        public SDL_DropEvent drop;
+      //[FieldOffset(0)]
+      //public SDL_DropEvent drop;
       //[FieldOffset(0)]
       //public SDL_ClipboardEvent clipboard;
         [FieldOffset(0)]

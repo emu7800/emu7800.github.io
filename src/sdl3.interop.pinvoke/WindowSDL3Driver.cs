@@ -12,9 +12,9 @@ namespace EMU7800.SDL3.Interop;
 public record SDLWindowDevices(Window Window,
     GraphicsDeviceSDL3Driver SDL3GraphicsDevice,
     IAudioDeviceDriver AudioDevice,
-    IGameControllersDriver GameControllers,
+    GameControllersSDL3InputDriver SDL3GameControllers,
     ILogger Logger)
-    : WindowDevices(Window, SDL3GraphicsDevice, AudioDevice, GameControllers);
+    : WindowDevices(Window, SDL3GraphicsDevice, AudioDevice, SDL3GameControllers);
 
 public sealed class WindowSDL3Driver : IWindowDriver
 {
@@ -32,13 +32,13 @@ public sealed class WindowSDL3Driver : IWindowDriver
             window,
             new GraphicsDeviceSDL3Driver(_logger, startMaximized),
             new AudioDeviceSDL3Driver(),
-            EmptyGameControllersDriver.Default,
+            new GameControllersSDL3InputDriver(window, _logger),
             _logger);
 
         window.OnAudioChanged(devices.AudioDevice);
         window.OnControllersChanged(devices.GameControllers);
 
-        devices.GameControllers.Initialize();
+        devices.SDL3GameControllers.Initialize();
 
         IntPtr id = Interlocked.Increment(ref _nextId);
 
@@ -77,7 +77,7 @@ public sealed class WindowSDL3Driver : IWindowDriver
         // Version  Revision
         // 3002026  release-3.2.26-0-gbadbf8da4 (libsdl.org)
 
-        wd.GameControllers.Initialize();
+        wd.SDL3GameControllers.Initialize();
 
         return wd.GraphicsDevice.HR == 0 ? SDL_AppResult.SDL_APP_CONTINUE : SDL_AppResult.SDL_APP_FAILURE;
     }
@@ -144,6 +144,62 @@ public sealed class WindowSDL3Driver : IWindowDriver
                     wd.Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
                 }
                 break;
+            case SDL_EventType.SDL_EVENT_GAMEPAD_ADDED:
+                {
+                    wd.SDL3GameControllers.AddController(pEvt->gdevice.which);
+                }
+                break;
+            case SDL_EventType.SDL_EVENT_GAMEPAD_REMOVED:
+                {
+                    wd.SDL3GameControllers.RemoveController(pEvt->gdevice.which);
+                }
+                break;
+            case SDL_EventType.SDL_EVENT_GAMEPAD_AXIS_MOTION:
+                break;
+            case SDL_EventType.SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+            case SDL_EventType.SDL_EVENT_GAMEPAD_BUTTON_UP:
+                {
+                    switch (pEvt->gbutton.button)
+                    {
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_UP:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Up, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Down, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Left, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Right, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_SOUTH:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_EAST:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire2, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_NORTH:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire2, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_WEST:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_START:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Start, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Select, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Reset, pEvt->gbutton.down);
+                            break;
+                        case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_BACK:
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.End, pEvt->gbutton.down);
+                            break;
+                    }
+                }
+                break;
         }
 
         return SDL_AppResult.SDL_APP_CONTINUE;
@@ -154,7 +210,7 @@ public sealed class WindowSDL3Driver : IWindowDriver
         if (RegisteredWindows.TryRemove(pAppState, out var wd))
         {
             wd.GraphicsDevice.Shutdown();
-            wd.GameControllers.Shutdown();
+            wd.SDL3GameControllers.Shutdown();
             wd.AudioDevice.Close();
         }
     }
@@ -206,6 +262,9 @@ public sealed class WindowSDL3Driver : IWindowDriver
           SDL_Scancode.SDL_SCANCODE_UNKNOWN     => KeyboardKey.None,
           _                                     => KeyboardKey.None
       };
+
+    static void Info(SDLWindowDevices wd, string message)
+      => wd.Logger.Log(3, message);
 
     #endregion
 }

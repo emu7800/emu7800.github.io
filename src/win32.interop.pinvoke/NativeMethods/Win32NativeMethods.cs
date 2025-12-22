@@ -336,7 +336,7 @@ internal static unsafe partial class Win32NativeMethods
                 if (wParam == DBT_DEVNODES_CHANGED)
                 {
                     if (RegisteredWindows.TryGetValue(hWnd, out var wd))
-                        wd.GameControllers.Initialize();
+                        wd.DInputXInputGameControllers.Initialize();
                 }
                 return 0;
         }
@@ -376,7 +376,7 @@ internal static unsafe partial class Win32NativeMethods
             posX, posY, windowWidth, windowHeight, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
     }
 
-    public static void Win32_ProcessEvents(WindowDevices wd, IntPtr hWnd, int nCmdShow)
+    public static void Win32_ProcessEvents(Win32WindowDevices wd, IntPtr hWnd, int nCmdShow)
     {
         RegisteredWindows.TryAdd(hWnd, wd);
 
@@ -429,7 +429,7 @@ internal static unsafe partial class Win32NativeMethods
         RegisteredWindows.TryRemove(hWnd, out var _);
     }
 
-    static readonly ConcurrentDictionary<IntPtr, WindowDevices> RegisteredWindows = [];
+    static readonly ConcurrentDictionary<IntPtr, Win32WindowDevices> RegisteredWindows = [];
 
     #pragma warning disable SYSLIB1054
     #pragma warning disable CA2101

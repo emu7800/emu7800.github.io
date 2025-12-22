@@ -23,9 +23,9 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
     {
         Shutdown();
 
-        DirectInputNativeMethods.Initialize(_hWnd, out var joystickNames);
-
         Controllers = [new(0, _window), new(1, _window)];
+
+        DirectInputNativeMethods.Initialize(_hWnd, out var joystickNames);
 
         for (var i = 0; i < Controllers.Length; i++)
         {

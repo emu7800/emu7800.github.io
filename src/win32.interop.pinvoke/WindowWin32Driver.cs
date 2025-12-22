@@ -6,6 +6,12 @@ using System;
 
 namespace EMU7800.Win32.Interop;
 
+public record Win32WindowDevices(Window Window,
+    GraphicsDeviceD2DDriver D2DGraphicsDevice,
+    IAudioDeviceDriver AudioDevice,
+    GameControllersDInputXInputDriver DInputXInputGameControllers)
+    : WindowDevices(Window, D2DGraphicsDevice, AudioDevice, DInputXInputGameControllers);
+
 public sealed partial class WindowWin32Driver : IWindowDriver
 {
     readonly ILogger _logger;
@@ -20,7 +26,7 @@ public sealed partial class WindowWin32Driver : IWindowDriver
         if (_hWnd == IntPtr.Zero)
             return;
 
-        WindowDevices devices = new(
+        Win32WindowDevices devices = new(
             window,
             new GraphicsDeviceD2DDriver(_hWnd),
             new AudioDeviceWinmmDriver(),
@@ -29,11 +35,11 @@ public sealed partial class WindowWin32Driver : IWindowDriver
         window.OnAudioChanged(devices.AudioDevice);
         window.OnControllersChanged(devices.GameControllers);
 
-        devices.GameControllers.Initialize();
+        devices.DInputXInputGameControllers.Initialize();
 
         Win32NativeMethods.Win32_ProcessEvents(devices, _hWnd, startMaximized ? 3 /*SW_MAXIMIZE*/ : 1 /*SW_SHOWNORMAL*/);
 
-        devices.GameControllers.Shutdown();
+        devices.DInputXInputGameControllers.Shutdown();
         devices.AudioDevice.Close();
         devices.GraphicsDevice.Shutdown();
     }
