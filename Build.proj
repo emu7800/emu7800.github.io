@@ -1,5 +1,7 @@
 ﻿<Project DefaultTargets="All">
-  <Import Project="Directory.Build.Props" />
+  <PropertyGroup>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectToBuild Include="src\win32\EMU7800.Win32.csproj"/>
     <ProjectToBuild Include="src\winsdl3\EMU7800.WinSDL3.csproj"/>
@@ -12,7 +14,7 @@
     <Exec Command="dotnet clean %(ProjectToBuild.Identity)"/>
     <RemoveDir Directories="$(ArtifactsPath)" />
   </Target>
-  <Target Name="Publish" DependsOnTargets="Clean">
+  <Target Name="Publish">
     <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
     <Exec Command="dotnet publish %(ProjectToBuild.Identity) -c Release"/>
   </Target>
