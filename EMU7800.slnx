@@ -8,6 +8,7 @@
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
+    <File Path="Build-linuxarm.proj" />
     <File Path="Build.proj" />
     <File Path="Directory.Build.props" />
     <File Path="global.json" />
@@ -23,11 +24,11 @@
   </Folder>
   <Project Path="src\assets\EMU7800.Assets.csproj" />
   <Project Path="src\core\EMU7800.Core.csproj" />
-  <Project Path="src\shell\EMU7800.Shell.csproj" />
-  <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" /> 
-  <Project Path="src\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
-  <Project Path="src\win32\EMU7800.Win32.csproj" />
-  <Project Path="src\linuxarm\EMU7800.LinuxArm.csproj" />
   <Project Path="src\linuxarm64\EMU7800.LinuxArm64.csproj" />
-  <Project Path="src\winsdl3\EMU7800.WinSDL3.csproj" />  
+  <Project Path="src\linuxarm\EMU7800.LinuxArm.csproj" />
+  <Project Path="src\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
+  <Project Path="src\shell\EMU7800.Shell.csproj" />
+  <Project Path="src\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
+  <Project Path="src\win32\EMU7800.Win32.csproj" />
+  <Project Path="src\winsdl3\EMU7800.WinSDL3.csproj" />
 </Solution>

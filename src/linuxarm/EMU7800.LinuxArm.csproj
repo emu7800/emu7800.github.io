@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>EMU7800</AssemblyName>
     <RuntimeIdentifier>linux-arm</RuntimeIdentifier>
-    <PublishAot>false</PublishAot>
+    <PublishAot>true</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
