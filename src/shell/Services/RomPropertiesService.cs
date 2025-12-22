@@ -31,11 +31,6 @@ public static partial class RomPropertiesService
     const string ReferenceRepositoryCsvHeader
         = "Title,Manufacturer,Author,Qualifier,Year,ModelNo,Rarity,CartType,MachineType,LController,RController,MD5,HelpUri";
 
-    static readonly Regex _regexMd5KeyType = CompiledMd5RegEx();
-
-    [GeneratedRegex("^([0-9a-f]{32,32})$", RegexOptions.IgnoreCase | RegexOptions.Singleline, "en-US")]
-    private static partial Regex CompiledMd5RegEx();
-
     #endregion
 
     public static IEnumerable<GameProgramInfo> ToGameProgramInfo(IEnumerable<string> romPropertiesCsv)
@@ -119,7 +114,7 @@ public static partial class RomPropertiesService
     }
 
     static bool IsMD5(string s)
-        => _regexMd5KeyType.IsMatch(s);
+      => s.Length == 32 && s.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
 
     #endregion
 }
