@@ -47,7 +47,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
     {
         if (!_cachedFonts.TryGetValue(fontSize, out var hFont))
         {
-            const string FontFileName = "msyh.ttc";
+            const string FontFileName = "OpenSans-VariableFont.ttf";
             hFont = TTF_OpenFont(FontFileName, fontSize);
             if (hFont == IntPtr.Zero)
             {

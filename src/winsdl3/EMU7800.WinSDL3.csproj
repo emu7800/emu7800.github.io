@@ -22,6 +22,6 @@
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3.dll $(TargetDir)" />
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_ttf.dll $(TargetDir)" />
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_image.dll $(TargetDir)" />
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\msyh.ttc $(TargetDir)" />
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\OpenSans-VariableFont.ttf $(TargetDir)" />
   </Target>
 </Project>
