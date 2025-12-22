@@ -24,11 +24,6 @@ public sealed class GameController
         MachineInput.NumPad0
     ];
 
-    public static readonly Action<int, MachineInput, bool> ButtonChangedHandlerDefault = (cn, mi, d) => {};
-    public static readonly Action<int, int, int> PaddlePositionChangedHandlerDefault = (cn, pn, o) => {};
-    public static readonly Action<int, int, bool> PaddleButtonChangedHandlerDefault = (cn, pn, d) => {};
-    public static readonly Action<int, MachineInput> DrivingPositionChangedHandlerDefault = (cn, mi) => {};
-
     readonly Window _window;
 
     public int ControllerNo { get; init; }

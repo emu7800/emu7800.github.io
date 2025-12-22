@@ -56,8 +56,8 @@ internal unsafe partial class DirectInputNativeMethods
         public readonly bool InterpretJoyUp()    => lY < -DEADZONE;
         public readonly bool InterpretJoyDown()  => lY >  DEADZONE;
 
-        public readonly int InterpretStelladaptorDrivingPosition()
-            => lY switch
+        public readonly int InterpretStelladaptorDrivingPosition(int controllerno)
+            => (controllerno == 0 ? lX : lY) switch
             {
                 < -DEADZONE => 3, // up
                 > DEADZONE  => 1, // down
@@ -80,13 +80,12 @@ internal unsafe partial class DirectInputNativeMethods
     public static int Initialize(IntPtr hWnd, out string[] joystickNames)
     {
         var hr = DInput8_Initialize(hWnd, AXISRANGE, out var productName1Ptr, out var productName2Ptr);
-        joystickNames = new List<string>
+        joystickNames = [.. new List<string>
             {
                 Marshal.PtrToStringUni(productName1Ptr) ?? string.Empty,
                 Marshal.PtrToStringUni(productName2Ptr) ?? string.Empty
             }
-            .Where(js => !string.IsNullOrWhiteSpace(js))
-            .ToArray();
+            .Where(js => !string.IsNullOrWhiteSpace(js))];
         return hr;
     }
 

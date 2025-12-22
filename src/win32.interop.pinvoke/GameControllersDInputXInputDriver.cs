@@ -107,79 +107,106 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             c.DaptorMode = maybeNewDaptorMode;
         }
 
-        if (c.ButtonChanged != GameController.ButtonChangedHandlerDefault)
+        for (var i = 0; i < 0xf; i++)
         {
-            for (var i = 0; i < 0xf; i++)
+            var prevButtonDown = prevState.InterpretJoyButtonDown(i);
+            var currButtonDown = currState.InterpretJoyButtonDown(i);
+            if (prevButtonDown != currButtonDown)
             {
-                var prevButtonDown = prevState.InterpretJoyButtonDown(i);
-                var currButtonDown = currState.InterpretJoyButtonDown(i);
-                if (prevButtonDown != currButtonDown)
+                switch (c.DaptorMode)
                 {
-                    switch (c.DaptorMode)
-                    {
-                        // 7800 mode
-                        case 1 when i == 2:
-                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
-                            break;
-                        case 1:
-                            {
-                                if (i == 3)
-                                {
-                                    c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
-                                }
+                    // 7800 mode
+                    case 1 when i == 2:
+                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
+                        break;
+                    case 1:
+                        if (i == 3)
+                        {
+                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
+                        }
+                        break;
+                    // keypad mode
+                    case 2:
+                        c.ButtonChanged(c.ControllerNo, GameController.Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
+                        break;
+                    // 2600/regular mode
+                    default:
+                        switch (i)
+                        {
+                            case 0:
+                                c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
+                                c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
                                 break;
-                            }
-                        // keypad mode
-                        case 2:
-                            c.ButtonChanged(c.ControllerNo, GameController.Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
-                            break;
-                        // 2600/regular mode
-                        default:
-                            {
-                                switch (i)
-                                {
-                                    case 0:
-                                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
-                                        c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
-                                        break;
-                                    case 1:
-                                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
-                                        c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
-                                        break;
-                                }
+                            case 1:
+                                c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
+                                c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
                                 break;
-                            }
-                    }
+                        }
+                        break;
                 }
             }
+        }
 
-            var prevLeft = prevState.InterpretJoyLeft();
-            var currLeft = currState.InterpretJoyLeft();
-            if (prevLeft != currLeft)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Left, currLeft);
-            }
+        var prevLeft = prevState.InterpretJoyLeft();
+        var currLeft = currState.InterpretJoyLeft();
+        if (prevLeft != currLeft)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Left, currLeft);
+        }
 
-            var prevRight = prevState.InterpretJoyRight();
-            var currRight = currState.InterpretJoyRight();
-            if (prevRight != currRight)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Right, currRight);
-            }
+        var prevRight = prevState.InterpretJoyRight();
+        var currRight = currState.InterpretJoyRight();
+        if (prevRight != currRight)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Right, currRight);
+        }
 
-            var prevUp = prevState.InterpretJoyUp();
-            var currUp = currState.InterpretJoyUp();
-            if (prevUp != currUp)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Up, currUp);
-            }
+        var prevUp = prevState.InterpretJoyUp();
+        var currUp = currState.InterpretJoyUp();
+        if (prevUp != currUp)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Up, currUp);
+        }
 
-            var prevDown = prevState.InterpretJoyDown();
-            var currDown = currState.InterpretJoyDown();
-            if (prevDown != currDown)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
-            }
+        var prevDown = prevState.InterpretJoyDown();
+        var currDown = currState.InterpretJoyDown();
+        if (prevDown != currDown)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
+        }
+
+        switch (c.DaptorMode)
+        {
+
+            case 1:  // 7800 mode
+            case 2:  // keypad mode
+                break;
+            default: // 2600/regular mode
+                {
+                    var paddleno = c.ControllerNo << 1;
+                    var prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
+                    var currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
+                    if (prevPos != currPos)
+                    {
+                        c.PaddlePositionChanged(c.ControllerNo, paddleno, currPos);
+                    }
+
+                    paddleno++;
+                    prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
+                    currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
+                    if (prevPos != currPos)
+                    {
+                        c.PaddlePositionChanged(c.ControllerNo, paddleno, currPos);
+                    }
+
+                    prevPos = prevState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
+                    currPos = currState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
+                    if (prevPos != currPos)
+                    {
+                        c.DrivingPositionChanged(c.ControllerNo, GameController.StelladaptorDrivingMachineInputMapping[currPos]);
+                    }
+                    break;
+                }
         }
     }
 
@@ -187,81 +214,78 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
     {
         XInputNativeMethods.Poll(c.InternalDeviceNumber, out var currState, out var prevState);
 
-        if (c.ButtonChanged != GameController.ButtonChangedHandlerDefault)
+        for (var i = 0; i < 4; i++)
         {
-            for (var i = 0; i < 4; i++)
+            var prevButton = prevState.InterpretButtonDown(i);
+            var currButton = currState.InterpretButtonDown(i);
+            if (prevButton != currButton)
             {
-                var prevButton = prevState.InterpretButtonDown(i);
-                var currButton = currState.InterpretButtonDown(i);
-                if (prevButton != currButton)
+                switch (i)
                 {
-                    switch (i)
-                    {
-                        case 0:
-                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButton);
-                            break;
-                        case 1:
-                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButton);
-                            break;
-                    }
+                    case 0:
+                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButton);
+                        break;
+                    case 1:
+                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButton);
+                        break;
                 }
             }
+        }
 
-            var prevLeft = prevState.InterpretJoyLeft();
-            var currLeft = currState.InterpretJoyLeft();
-            if (prevLeft != currLeft)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Left, currLeft);
-            }
+        var prevLeft = prevState.InterpretJoyLeft();
+        var currLeft = currState.InterpretJoyLeft();
+        if (prevLeft != currLeft)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Left, currLeft);
+        }
 
-            var prevRight = prevState.InterpretJoyRight();
-            var currRight = currState.InterpretJoyRight();
-            if (prevRight != currRight)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Right, currRight);
-            }
+        var prevRight = prevState.InterpretJoyRight();
+        var currRight = currState.InterpretJoyRight();
+        if (prevRight != currRight)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Right, currRight);
+        }
 
-            var prevUp = prevState.InterpretJoyUp();
-            var currUp = currState.InterpretJoyUp();
-            if (prevUp != currUp)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Up, currUp);
-            }
+        var prevUp = prevState.InterpretJoyUp();
+        var currUp = currState.InterpretJoyUp();
+        if (prevUp != currUp)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Up, currUp);
+        }
 
-            var prevDown = prevState.InterpretJoyDown();
-            var currDown = currState.InterpretJoyDown();
-            if (prevDown != currDown)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
-            }
+        var prevDown = prevState.InterpretJoyDown();
+        var currDown = currState.InterpretJoyDown();
+        if (prevDown != currDown)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
+        }
 
-            var prevBack = prevState.InterpretButtonBack();
-            var currBack = currState.InterpretButtonBack();
-            if (prevBack != currBack)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.End, currBack);
-            }
+        var prevBack = prevState.InterpretButtonBack();
+        var currBack = currState.InterpretButtonBack();
+        if (prevBack != currBack)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.End, currBack);
+        }
 
-            var prevStart = prevState.InterpretButtonStart();
-            var currStart = currState.InterpretButtonStart();
-            if (prevStart != currStart)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Start, currStart);
-            }
+        var prevStart = prevState.InterpretButtonStart();
+        var currStart = currState.InterpretButtonStart();
+        if (prevStart != currStart)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Start, currStart);
+        }
 
-            var prevSelect = prevState.InterpretLeftShoulderButton();
-            var currSelect = currState.InterpretLeftShoulderButton();
-            if (prevSelect != currSelect)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Select, currSelect);
-            }
+        var prevSelect = prevState.InterpretLeftShoulderButton();
+        var currSelect = currState.InterpretLeftShoulderButton();
+        if (prevSelect != currSelect)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Select, currSelect);
+        }
 
-            var prevReset = prevState.InterpretRightShoulderButton();
-            var currReset = currState.InterpretRightShoulderButton();
-            if (prevReset != currReset)
-            {
-                c.ButtonChanged(c.ControllerNo, MachineInput.Reset, currReset);
-            }
+        var prevReset = prevState.InterpretRightShoulderButton();
+        var currReset = currState.InterpretRightShoulderButton();
+        if (prevReset != currReset)
+        {
+            c.ButtonChanged(c.ControllerNo, MachineInput.Reset, currReset);
         }
     }
 
@@ -271,9 +295,6 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             "Stelladaptor 2600-to-USB Interface" => JoystickType.Stelladaptor,
             "2600-daptor"                        => JoystickType.Daptor,
             "2600-daptor II"                     => JoystickType.Daptor2,
-            "Controller (XBOX 360 For Windows)"
-            or "Controller (Xbox 360 Wireless Receiver for Windows)"
-                                                 => JoystickType.XInput,
             _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
                     ? JoystickType.XInput
                     : name.Length > 0 ? JoystickType.Usb : JoystickType.XInput

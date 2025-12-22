@@ -57,7 +57,7 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
                 return;
             }
         }
-        Info($"Controller {instanceId} ignored, no free slots.");
+        Info($"Controller {instanceId} ignored, two controllers already added.");
     }
 
     public void Poll()
@@ -81,7 +81,6 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
                 return;
             }
         }
-        Info($"Controller {instanceId} ignored, not previously added.");
     }
 
     public void ButtonChanged(uint instanceId, MachineInput machineInput, bool down)
@@ -96,14 +95,8 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
     {
         for (var i = 0; i < Controllers.Length; i++)
         {
-            var c = Controllers[i];
             var instanceId = _instanceIds[i];
-            var gamepad = SDL_GetGamepadFromID(instanceId);
-            if (gamepad != IntPtr.Zero)
-            {
-                SDL_CloseGamepad(gamepad);
-                Info($"Controller closed: P{i + 1}: {c.ProductName} {c.JoystickType}");
-            }
+            RemoveController(instanceId);
         }
         Controllers = [];
         _instanceIds = [];
@@ -133,9 +126,9 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
         Info($"Controller added: P{i + 1}: {instanceId} {c.ProductName} {c.JoystickType} {gamepadType}");
     }
 
-    public int GetControllerNo(uint instanceId)
+    int GetControllerNo(uint instanceId)
     {
-        for (var i = 0; i < Controllers.Length; i++)
+        for (var i = 0; i < _instanceIds.Length; i++)
         {
             if (_instanceIds[i] == instanceId)
                 return i;
@@ -147,10 +140,10 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
         => name switch
         {
             "Stelladaptor 2600-to-USB Interface" => JoystickType.Stelladaptor,
-            "2600-daptor" => JoystickType.Daptor,
-            "2600-daptor II" => JoystickType.Daptor2,
+            "2600-daptor"                        => JoystickType.Daptor,
+            "2600-daptor II"                     => JoystickType.Daptor2,
             "Controller (XBOX 360 For Windows)"
-            or "Controller (Xbox 360 Wireless Receiver for Windows)"
+         or "Controller (Xbox 360 Wireless Receiver for Windows)"
                                                  => JoystickType.XInput,
             _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
                     ? JoystickType.XInput
