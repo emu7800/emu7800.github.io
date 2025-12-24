@@ -140,19 +140,21 @@ public sealed class WindowSDL3Driver : IWindowDriver
                 break;
             case SDL_EventType.SDL_EVENT_KEY_DOWN:
             case SDL_EventType.SDL_EVENT_KEY_UP:
-                {
-                    wd.Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
-                }
+                wd.Window.OnKeyboardKeyPressed((ushort)ToKeyboardKey(pEvt->key.scancode), pEvt->key.down);
                 break;
             case SDL_EventType.SDL_EVENT_GAMEPAD_ADDED:
-                {
-                    wd.SDL3GameControllers.AddController(pEvt->gdevice.which);
-                }
+                wd.SDL3GameControllers.AddGamepad(pEvt->gdevice.which);
                 break;
             case SDL_EventType.SDL_EVENT_GAMEPAD_REMOVED:
-                {
-                    wd.SDL3GameControllers.RemoveController(pEvt->gdevice.which);
-                }
+                wd.SDL3GameControllers.RemoveGamepad(pEvt->gdevice.which);
+                break;
+            case SDL_EventType.SDL_EVENT_JOYSTICK_ADDED:
+                if (SDL_GetJoystickTypeForID(pEvt->jdevice.which) == SDL_JoystickType.SDL_JOYSTICK_TYPE_GAMEPAD)
+                    break;
+                wd.SDL3GameControllers.AddJoystick(pEvt->jdevice.which);
+                break;
+            case SDL_EventType.SDL_EVENT_JOYSTICK_REMOVED:
+                wd.SDL3GameControllers.RemoveJoystick(pEvt->jdevice.which);
                 break;
             case SDL_EventType.SDL_EVENT_GAMEPAD_AXIS_MOTION:
                 break;
@@ -180,10 +182,10 @@ public sealed class WindowSDL3Driver : IWindowDriver
                             wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire2, pEvt->gbutton.down);
                             break;
                         case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_NORTH:
-                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire2, pEvt->gbutton.down);
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire, pEvt->gbutton.down);
                             break;
                         case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_WEST:
-                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire, pEvt->gbutton.down);
+                            wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Fire2, pEvt->gbutton.down);
                             break;
                         case (byte)SDL_GamepadButton.SDL_GAMEPAD_BUTTON_START:
                             wd.SDL3GameControllers.ButtonChanged(pEvt->gbutton.which, MachineInput.Start, pEvt->gbutton.down);
@@ -199,6 +201,13 @@ public sealed class WindowSDL3Driver : IWindowDriver
                             break;
                     }
                 }
+                break;
+            case SDL_EventType.SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+            case SDL_EventType.SDL_EVENT_JOYSTICK_BUTTON_UP:
+                wd.SDL3GameControllers.ButtonChanged(pEvt->jbutton.which, pEvt->jbutton.button, pEvt->jbutton.down);
+                break;
+            case SDL_EventType.SDL_EVENT_JOYSTICK_AXIS_MOTION:
+                wd.SDL3GameControllers.AxisChanged(pEvt->jaxis.which, pEvt->jaxis.axis, pEvt->jaxis.value);
                 break;
         }
 

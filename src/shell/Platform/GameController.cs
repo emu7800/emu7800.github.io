@@ -6,6 +6,7 @@ using System;
 namespace EMU7800.Shell;
 
 public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 }
+public enum Daptor2Mode { Unknown = -1, A2600 = 0, A7800 = 1, Keypad = 2 } // Last three values are significant
 
 public sealed class GameController
 {
@@ -27,19 +28,19 @@ public sealed class GameController
     readonly Window _window;
 
     public int ControllerNo { get; init; }
-    public int DaptorMode { get; set; }
-    public string DaptorModeStr => DaptorMode switch
+    public Daptor2Mode Daptor2Mode { get; set; } = Daptor2Mode.Unknown;
+    public string Daptor2ModeStr => Daptor2Mode switch
     {
-        0 => "2600",
-        1 => "7800",
-        2 => "keypad",
+        Daptor2Mode.A2600  => "2600",
+        Daptor2Mode.A7800  => "7800",
+        Daptor2Mode.Keypad => "keypad",
         _ => "unknown"
     };
 
     public string ProductName { get; set; } = string.Empty;
     public int InternalDeviceNumber { get; set; }
     public JoystickType JoystickType { get; set; } = JoystickType.None;
-    public string Info => ProductName + (IsDaptor ? $" ({DaptorModeStr} mode)" : string.Empty);
+    public string Info => ProductName + (IsDaptor ? $" ({Daptor2ModeStr} mode)" : string.Empty);
     public bool IsAtariAdaptor
       => JoystickType is JoystickType.Stelladaptor or JoystickType.Daptor or JoystickType.Daptor2;
     public bool IsDaptor
@@ -49,6 +50,26 @@ public sealed class GameController
     public Action<int, int, int> PaddlePositionChanged => _window.OnPaddlePositionChanged;
     public Action<int, int, bool> PaddleButtonChanged => _window.OnPaddleButtonChanged;
     public Action<int, MachineInput> DrivingPositionChanged => _window.OnDrivingPositionChanged;
+
+    public static JoystickType JoystickTypeFrom(string name)
+        => name switch
+        {
+            "Pixels Past Stelladaptor 2600-to-USB Interface" or
+            "Stelladaptor 2600-to-USB Interface"
+                => JoystickType.Stelladaptor,
+            "Microchip Technology Inc. 2600-daptor" or // unverified
+            "2600-daptor"
+                => JoystickType.Daptor,
+            "Microchip Technology Inc. 2600-daptor II" or
+            "2600-daptor II"
+                => JoystickType.Daptor2,
+            "Controller (XBOX 360 For Windows)" or
+            "Controller (Xbox 360 Wireless Receiver for Windows)"
+                => JoystickType.XInput,
+            _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
+                    ? JoystickType.XInput
+                    : name.Length > 0 ? JoystickType.Usb : JoystickType.XInput
+        };
 
     #region Constructors
 

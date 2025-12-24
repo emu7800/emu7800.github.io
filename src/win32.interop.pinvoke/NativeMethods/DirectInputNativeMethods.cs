@@ -1,5 +1,6 @@
 ﻿// © Mike Murphy
 
+using EMU7800.Shell;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,13 +68,13 @@ internal unsafe partial class DirectInputNativeMethods
         public readonly int InterpretStelladaptorPaddlePosition(int paddleno)
             => (paddleno & 1) == 0 ? lX : lY;
 
-        public readonly int InterpretDaptor2Mode()
+        public readonly Daptor2Mode InterpretDaptor2Mode()
             => lZ switch
             {
-                -1000 =>  0,  // 2600 mode
-                 -875 =>  1,  // 7800 mode
-                 -750 =>  2,  // keypad mode
-                _     => -1   // unknown mode
+                -1000 => Daptor2Mode.A2600,
+                 -875 => Daptor2Mode.A7800,
+                 -750 => Daptor2Mode.Keypad,
+                _     => Daptor2Mode.Unknown
             };
     }
 

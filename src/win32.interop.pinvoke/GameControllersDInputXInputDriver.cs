@@ -34,7 +34,7 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             {
                 var joystickName = joystickNames[i];
                 c.ProductName = joystickName;
-                c.JoystickType = JoystickTypeFrom(joystickName);
+                c.JoystickType = GameController.JoystickTypeFrom(joystickName);
                 c.InternalDeviceNumber = i;
             }
             else
@@ -102,9 +102,9 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
         DirectInputNativeMethods.Poll(c.InternalDeviceNumber, out var currState, out var prevState);
 
         var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
-        if (maybeNewDaptorMode != c.DaptorMode)
+        if (maybeNewDaptorMode != c.Daptor2Mode)
         {
-            c.DaptorMode = maybeNewDaptorMode;
+            c.Daptor2Mode = maybeNewDaptorMode;
         }
 
         for (var i = 0; i < 0xf; i++)
@@ -113,23 +113,23 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             var currButtonDown = currState.InterpretJoyButtonDown(i);
             if (prevButtonDown != currButtonDown)
             {
-                switch (c.DaptorMode)
+                switch (c.Daptor2Mode)
                 {
-                    // 7800 mode
-                    case 1 when i == 2:
-                        c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
-                        break;
-                    case 1:
-                        if (i == 3)
+                    case Daptor2Mode.A7800:
+                        switch (i)
                         {
-                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
+                            case 2:
+                                c.ButtonChanged(i, MachineInput.Fire, currButtonDown);
+                                break;
+                            case 3:
+                                c.ButtonChanged(i, MachineInput.Fire2, currButtonDown);
+                                break;
                         }
                         break;
-                    // keypad mode
-                    case 2:
+                    case Daptor2Mode.Keypad:
                         c.ButtonChanged(c.ControllerNo, GameController.Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
                         break;
-                    // 2600/regular mode
+                    case Daptor2Mode.A2600:
                     default:
                         switch (i)
                         {
@@ -175,13 +175,14 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
         }
 
-        switch (c.DaptorMode)
+        switch (c.Daptor2Mode)
         {
 
-            case 1:  // 7800 mode
-            case 2:  // keypad mode
+            case Daptor2Mode.A7800:
+            case Daptor2Mode.Keypad:
                 break;
-            default: // 2600/regular mode
+            case Daptor2Mode.A2600:
+            default:
                 {
                     var paddleno = c.ControllerNo << 1;
                     var prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
@@ -288,17 +289,6 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             c.ButtonChanged(c.ControllerNo, MachineInput.Reset, currReset);
         }
     }
-
-    static JoystickType JoystickTypeFrom(string name)
-        => name switch
-        {
-            "Stelladaptor 2600-to-USB Interface" => JoystickType.Stelladaptor,
-            "2600-daptor"                        => JoystickType.Daptor,
-            "2600-daptor II"                     => JoystickType.Daptor2,
-            _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
-                    ? JoystickType.XInput
-                    : name.Length > 0 ? JoystickType.Usb : JoystickType.XInput
-        };
 
     #endregion
 }
