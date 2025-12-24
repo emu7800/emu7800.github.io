@@ -153,6 +153,5 @@
   <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
   <Target Name="Win32" DependsOnTargets="ZipBinWin32" />
   <Target Name="WinSDL3" DependsOnTargets="ZipBinWinSDL3" />
-  <Target Name="All" DependsOnTargets="Win32;BuildWin32Installer;WinSDL3;LinuxArm;LinuxArm64;ZipSrc">
-  </Target>
+  <Target Name="All" DependsOnTargets="Win32;BuildWin32Installer;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
 </Project>

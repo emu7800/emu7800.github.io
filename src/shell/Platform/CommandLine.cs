@@ -233,8 +233,8 @@ public sealed class CommandLine
         }
     }
 
-    public static int GetLoggingVerbosityOption(string[] args)
-      => TryGetIntOption(args, out var level, "v") ? level : 0;
+    public static int GetLoggingVerbosityOption(string[] args, int defaultLevel = 3)
+      => TryGetIntOption(args, out var level, "v") ? level : defaultLevel;
 
     public static bool TryGetDumpGameInfoOption(string[] args, out string path)
       => TryGetStringOption(args, out path, "d");

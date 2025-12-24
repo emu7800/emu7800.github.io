@@ -73,9 +73,12 @@ public sealed class WindowSDL3Driver : IWindowDriver
         wd.Logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
 
         // Windows:
-
         // Version  Revision
         // 3002026  release-3.2.26-0-gbadbf8da4 (libsdl.org)
+
+        // LinuxArm64:
+        // Version  Revision
+        // 3002010  release-3.2.10-0-g877399b2b (Debian 3.2.10+ds-1)
 
         wd.SDL3GameControllers.Initialize();
 

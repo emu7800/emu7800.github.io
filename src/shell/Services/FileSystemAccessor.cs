@@ -137,6 +137,10 @@ public sealed class FileSystemAccessor : IFileSystemAccessor
         {
             return File.Open(path, FileMode.Open, FileAccess.Read);
         }
+        catch (FileNotFoundException)
+        {
+            return Stream.Null;
+        }
         catch (Exception ex)
         {
             Error("creating read stream", ex, path);

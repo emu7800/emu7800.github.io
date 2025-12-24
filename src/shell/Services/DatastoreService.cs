@@ -263,7 +263,7 @@ public sealed class DatastoreService
         using var stream = _fileSystemAccessor.CreateReadStream(path);
         if (stream == Stream.Null)
         {
-            Error(nameof(RestoreMachine), "Unable to read persisted machine state due to previous error.");
+            Info(nameof(RestoreMachine), $"No persisted state found for {gameProgramInfo.Title}.");
             return MachineStateInfo.Default;
         }
 
