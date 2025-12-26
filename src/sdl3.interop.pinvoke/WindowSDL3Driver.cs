@@ -37,6 +37,7 @@ public sealed class WindowSDL3Driver : IWindowDriver
 
         window.OnAudioChanged(devices.AudioDevice);
         window.OnControllersChanged(devices.GameControllers);
+        window.OnResized(devices.GraphicsDevice, (int)devices.SDL3GraphicsDevice.WindowSize.Width, (int)devices.SDL3GraphicsDevice.WindowSize.Height);
 
         devices.SDL3GameControllers.Initialize();
 
@@ -137,7 +138,7 @@ public sealed class WindowSDL3Driver : IWindowDriver
                 {
                     var x = (int)(pEvt->wheel.mouse_x / wd.SDL3GraphicsDevice.ScaleFactor);
                     var y = (int)(pEvt->wheel.mouse_y / wd.SDL3GraphicsDevice.ScaleFactor);
-                    var delta = (int)(120 * pEvt->wheel.y);
+                    var delta = 120 * (pEvt->wheel.y < 0 ? -1 : 1);
                     wd.Window.OnMouseWheelChanged(x, y, delta);
                 }
                 break;

@@ -295,7 +295,7 @@ public sealed class CommandLine
       => i < 0 || i + 1 >= args.Length || !int.TryParse(args[i + 1], out var intval) ? -1 : intval;
 
     static string GetStrFromOptionIndex(string[] args, int i)
-      => i < 0 || i + 1 >= args.Length ? string.Empty : args[i].Trim();
+      => i < 0 || i + 1 >= args.Length ? string.Empty : args[i + 1].Trim();
 
     static int FindOptionIndex(string[] args, params string[] options)
       => args.Select((a, i) => new { a, i})

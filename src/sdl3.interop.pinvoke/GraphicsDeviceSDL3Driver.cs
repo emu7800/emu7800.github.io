@@ -18,6 +18,7 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
     readonly Dictionary<float, IntPtr> _cachedFonts = [];
     readonly ILogger _logger;
 
+    public SizeU WindowSize { get; private set; }
     public float ScaleFactor { get; private set; } = 1f;
 
     #region IGraphicsDeviceDriver Members
@@ -139,7 +140,10 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
     }
 
     public void Resize(SizeU usize)
-      => SDL_SetWindowSize(hWnd, (int)(usize.Width * ScaleFactor), (int)(usize.Height * ScaleFactor));
+    {
+        WindowSize = usize;
+        SDL_SetWindowSize(hWnd, (int)(usize.Width * ScaleFactor), (int)(usize.Height * ScaleFactor));
+    }
 
     public void SetAntiAliasMode(AntiAliasMode antiAliasMode)
     {
@@ -237,7 +241,8 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
         var posY = (desktopRect.h >> 1) - (windowHeight >> 1);
 
         SDL_SetWindowPosition(hWnd, posX, posY);
-        SDL_SetWindowSize(hWnd, windowWidth, windowHeight);
+
+        Resize(new SizeU(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT));
     }
 
     #endregion

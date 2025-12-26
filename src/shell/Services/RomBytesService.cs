@@ -163,7 +163,7 @@ public sealed class RomBytesService
     {
         _logger.Log(1, $"""
 
-                     File: {path}
+                     File: {string.Join("|", path)}
                      """);
 
         byte[] bytes;
