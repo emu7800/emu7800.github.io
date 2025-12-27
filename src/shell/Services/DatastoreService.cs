@@ -111,7 +111,7 @@ public sealed class DatastoreService
             using var stream = _fileSystemAccessor.CreateReadStream(splitPath[0]);
             if (stream == Stream.Null)
             {
-                Error(nameof(GetRomBytes), "Unable to read ROM bytes because of previous error.");
+                Info(nameof(GetRomBytes), $"No readable ROM bytes found at {splitPath[0]}");
                 return [];
             }
 
@@ -126,7 +126,7 @@ public sealed class DatastoreService
             }
             catch (Exception ex)
             {
-                Error(nameof(GetRomBytes), "Unable to read ROM bytes from zip archive at {path}", ex);
+                Error(nameof(GetRomBytes), $"Unable to read ROM bytes from zip archive at {path}", ex);
                 return [];
             }
         }
@@ -135,7 +135,7 @@ public sealed class DatastoreService
             using var stream = _fileSystemAccessor.CreateReadStream(path);
             if (stream == Stream.Null)
             {
-                Error(nameof(GetRomBytes), "Unable to read ROM bytes because of previous error.");
+                Info(nameof(GetRomBytes), $"No readable ROM bytes found at {path}");
                 return [];
             }
 
@@ -302,7 +302,7 @@ public sealed class DatastoreService
         using var stream = _fileSystemAccessor.CreateReadStream(path);
         if (stream == Stream.Null)
         {
-            Error(nameof(GetSettings), "Unable to read persisted application settings because of previous error.");
+            Info(nameof(GetSettings), "No persisted application settings found.");
             return new();
         }
 
@@ -405,7 +405,7 @@ public sealed class DatastoreService
         using var stream = _fileSystemAccessor.CreateReadStream([..SaveGamesEmu7800Folder, NvramFolderName, fileName]);
         if (stream == Stream.Null)
         {
-            Error(nameof(ReadNVRAMBytes), "Unable to read because of previous error.");
+            Info(nameof(ReadNVRAMBytes), "No persisted NVRAM found.");
             return new byte[count];
         }
 
@@ -416,10 +416,7 @@ public sealed class DatastoreService
         }
         catch (Exception ex)
         {
-            if (ex is not FileNotFoundException && ex is not DirectoryNotFoundException)
-            {
-                Error(nameof(ReadNVRAMBytes), "Unable to read NVRAM", ex);
-            }
+            Error(nameof(ReadNVRAMBytes), "Unable to read NVRAM", ex);
             return new byte[count];
         }
     }

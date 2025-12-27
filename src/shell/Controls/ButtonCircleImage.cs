@@ -133,6 +133,29 @@ public class CancelButton : ButtonCircleImage
 
 public class PlusButton : ButtonCircleImage
 {
+    public override void KeyboardKeyPressed(KeyboardKey key, bool down)
+    {
+        base.KeyboardKeyPressed(key, down);
+
+        switch (key)
+        {
+            case KeyboardKey.PlusKey:
+                switch (down)
+                {
+                    case true:
+                        IsPressedByPointerId = 0;
+                        OnPressed();
+                        break;
+                    case false:
+                        IsPressedByPointerId = -1;
+                        OnReleased();
+                        OnClicked();
+                        break;
+                }
+                break;
+        }
+    }
+
     public PlusButton() : base(Asset.appbar_add_rest, Asset.appbar_add_rest_inverted, SolidColorBrush.Green)
     {
     }
@@ -140,6 +163,29 @@ public class PlusButton : ButtonCircleImage
 
 public class MinusButton : ButtonCircleImage
 {
+    public override void KeyboardKeyPressed(KeyboardKey key, bool down)
+    {
+        base.KeyboardKeyPressed(key, down);
+
+        switch (key)
+        {
+            case KeyboardKey.MinusKey:
+                switch (down)
+                {
+                    case true:
+                        IsPressedByPointerId = 0;
+                        OnPressed();
+                        break;
+                    case false:
+                        IsPressedByPointerId = -1;
+                        OnReleased();
+                        OnClicked();
+                        break;
+                }
+                break;
+        }
+    }
+
     public MinusButton() : base(Asset.appbar_minus_rest, Asset.appbar_minus_rest_inverted, SolidColorBrush.Red)
     {
     }

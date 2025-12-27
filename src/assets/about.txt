@@ -1,6 +1,6 @@
 ﻿EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward compatible with the older and more popular Atari 2600 Video Computer System.
 
-WHATS NEW—Updated to .NET10 AOT/native for high performance. Many minor fixes. Added support for XM and corrected high score cart. Implemented the 7800 pause key. Improved support for newest 7800 homebrews.
+WHATS NEW—Added Linux ARM/64 targets using SDL3. Included a WinSDL3 target for convenient dev/testing. Added support for XM and corrected high score cart. Implemented the 7800 pause key. Improved support for newest 7800 homebrews.
 
 BASIC OPERATION—Several classic games are included to jump start your experience! Many additional ROM files are recognizable by EMU7800; drop them into the ROMS folder to use or specify machine configuration at the command-line. Use -? to see options. Game states and settings are always preserved. The selection screen will display a Paused icon when there is pre-existing game state for a particular title. Visit www.atariage.com for manuals, box art, and game tips.
 

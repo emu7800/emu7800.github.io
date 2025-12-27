@@ -269,6 +269,9 @@ public sealed class WindowSDL3Driver : IWindowDriver
           SDL_Scancode.SDL_SCANCODE_KP_MULTIPLY => KeyboardKey.Multiply,
           SDL_Scancode.SDL_SCANCODE_KP_PLUS     => KeyboardKey.Add,
 
+          SDL_Scancode.SDL_SCANCODE_MINUS       => KeyboardKey.MinusKey,
+          SDL_Scancode.SDL_SCANCODE_EQUALS      => KeyboardKey.PlusKey,
+
           SDL_Scancode.SDL_SCANCODE_PAGEDOWN    => KeyboardKey.PageDown,
           SDL_Scancode.SDL_SCANCODE_PAGEUP      => KeyboardKey.PageUp,
 

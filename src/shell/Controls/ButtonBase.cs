@@ -104,18 +104,18 @@ public abstract class ButtonBase : ControlBase
     protected int IsPressedByPointerId { get; set; } = -1;
 
     protected virtual RectF ComputeBoundingRectangle()
-        => new(Location, Size);
+      => new(Location, Size);
 
     #region Helpers
 
-    void OnClicked()
-        => Clicked(this, DefaultEventArgs);
+    protected void OnClicked()
+      => Clicked(this, DefaultEventArgs);
 
-    void OnPressed()
-        => Pressed(this, DefaultEventArgs);
+    protected void OnPressed()
+      => Pressed(this, DefaultEventArgs);
 
-    void OnReleased()
-        => Released(this, DefaultEventArgs);
+    protected void OnReleased()
+      => Released(this, DefaultEventArgs);
 
     #endregion
 }

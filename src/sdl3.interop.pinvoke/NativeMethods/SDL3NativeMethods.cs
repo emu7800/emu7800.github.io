@@ -63,7 +63,8 @@ internal static unsafe partial class SDL3
     const string
         SDL3DllName      = "SDL3",
         SDL3DllimageName = "SDL3_image",
-        SDL3DllttfName   = "SDL3_ttf";
+        SDL3DllttfName   = "SDL3_ttf"
+        ;
 
     // /usr/local/include/SDL3/SDL_stdinc.h
 
@@ -483,45 +484,12 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_DetachVirtualJoystick(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_IsJoystickVirtual(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickVirtualAxis(IntPtr joystick, int axis, short value);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickVirtualBall(IntPtr joystick, int ball, short xrel, short yrel);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickVirtualButton(IntPtr joystick, int button, SDLBool down);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickVirtualHat(IntPtr joystick, int hat, byte value);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickVirtualTouchpad(IntPtr joystick, int touchpad, int finger, SDLBool down, float x, float y, float pressure);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetJoystickProperties(IntPtr joystick);
 
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetJoystickName(IntPtr joystick);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetJoystickPath(IntPtr joystick);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -562,10 +530,6 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_GetJoystickGUIDInfo(SDL_GUID guid, out ushort vendor, out ushort product, out ushort version, out ushort crc16);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_JoystickConnected(IntPtr joystick);
 
     [LibraryImport(SDL3DllName)]
@@ -575,14 +539,6 @@ internal static unsafe partial class SDL3
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetNumJoystickAxes(IntPtr joystick);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumJoystickBalls(IntPtr joystick);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetNumJoystickHats(IntPtr joystick);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -598,10 +554,6 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UpdateJoysticks();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial short SDL_GetJoystickAxis(IntPtr joystick, int axis);
 
     [LibraryImport(SDL3DllName)]
@@ -610,39 +562,7 @@ internal static unsafe partial class SDL3
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetJoystickBall(IntPtr joystick, int ball, out int dx, out int dy);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial byte SDL_GetJoystickHat(IntPtr joystick, int hat);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetJoystickButton(IntPtr joystick, int button);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RumbleJoystick(IntPtr joystick, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_RumbleJoystickTriggers(IntPtr joystick, ushort left_rumble, ushort right_rumble, uint duration_ms);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetJoystickLED(IntPtr joystick, byte red, byte green, byte blue);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SendJoystickEffect(IntPtr joystick, IntPtr data, int size);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_CloseJoystick(IntPtr joystick);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_JoystickConnectionState SDL_GetJoystickConnectionState(IntPtr joystick);
 
     // /usr/local/include/SDL3/SDL_gamepad.h
 
@@ -727,136 +647,9 @@ internal static unsafe partial class SDL3
         SDL_GAMEPAD_BINDTYPE_HAT    = 3,
     }
 
-    [StructLayout(LayoutKind.Explicit)]
-    public struct SDL_GamepadBinding
-    {
-        [FieldOffset(0)]
-        public SDL_GamepadBindingType input_type;
-        [FieldOffset(4)]
-        public int input_button;
-        [FieldOffset(4)]
-        public INTERNAL_SDL_GamepadBinding_input_axis input_axis;
-        [FieldOffset(4)]
-        public INTERNAL_SDL_GamepadBinding_input_hat input_hat;
-        [FieldOffset(16)]
-        public SDL_GamepadBindingType output_type;
-        [FieldOffset(20)]
-        public SDL_GamepadButton output_button;
-        [FieldOffset(20)]
-        public INTERNAL_SDL_GamepadBinding_output_axis output_axis;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct INTERNAL_SDL_GamepadBinding_input_axis
-    {
-        public int axis;
-        public int axis_min;
-        public int axis_max;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct INTERNAL_SDL_GamepadBinding_input_hat
-    {
-        public int hat;
-        public int hat_mask;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct INTERNAL_SDL_GamepadBinding_output_axis
-    {
-        public SDL_GamepadAxis axis;
-        public int axis_min;
-        public int axis_max;
-    }
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_AddGamepadMapping(string mapping);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_AddGamepadMappingsFromIO(IntPtr src, SDLBool closeio);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_AddGamepadMappingsFromFile(string file);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_ReloadGamepadMappings();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGamepadMappings(out int count);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(CallerOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadMappingForGUID(SDL_GUID guid);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(CallerOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadMapping(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetGamepadMapping(uint instance_id, string mapping);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_HasGamepad();
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGamepads(out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_IsGamepad(uint instance_id);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadNameForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadPathForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetGamepadPlayerIndexForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GUID SDL_GetGamepadGUIDForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadVendorForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadProductForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadProductVersionForID(uint instance_id);
-
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_GamepadType SDL_GetGamepadTypeForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadType SDL_GetRealGamepadTypeForID(uint instance_id);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(CallerOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadMappingForID(uint instance_id);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -866,153 +659,10 @@ internal static unsafe partial class SDL3
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetGamepadFromID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGamepadFromPlayerIndex(int player_index);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetGamepadProperties(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial uint SDL_GetGamepadID(IntPtr gamepad);
-
     [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetGamepadName(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadPath(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadType SDL_GetGamepadType(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadType SDL_GetRealGamepadType(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial int SDL_GetGamepadPlayerIndex(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_SetGamepadPlayerIndex(IntPtr gamepad, int player_index);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadVendor(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadProduct(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadProductVersion(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ushort SDL_GetGamepadFirmwareVersion(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadSerial(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial ulong SDL_GetGamepadSteamHandle(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_JoystickConnectionState SDL_GetGamepadConnectionState(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GamepadConnected(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGamepadJoystick(IntPtr gamepad);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_SetGamepadEventsEnabled(SDLBool enabled);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GamepadEventsEnabled();
-
-    internal static Span<IntPtr> SDL_GetGamepadBindings(IntPtr gamepad)
-    {
-        var result = SDL_GetGamepadBindings(gamepad, out var count);
-        return new Span<IntPtr>((void*) result, count);
-    }
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial IntPtr SDL_GetGamepadBindings(IntPtr gamepad, out int count);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial void SDL_UpdateGamepads();
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadType SDL_GetGamepadTypeFromString(string str);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadStringForType(SDL_GamepadType type);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadAxis SDL_GetGamepadAxisFromString(string str);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadStringForAxis(SDL_GamepadAxis axis);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GamepadHasAxis(IntPtr gamepad, SDL_GamepadAxis axis);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial short SDL_GetGamepadAxis(IntPtr gamepad, SDL_GamepadAxis axis);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadButton SDL_GetGamepadButtonFromString(string str);
-
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
-    internal static partial string SDL_GetGamepadStringForButton(SDL_GamepadButton button);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GamepadHasButton(IntPtr gamepad, SDL_GamepadButton button);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDLBool SDL_GetGamepadButton(IntPtr gamepad, SDL_GamepadButton button);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadButtonLabel SDL_GetGamepadButtonLabelForType(SDL_GamepadType type, SDL_GamepadButton button);
-
-    [LibraryImport(SDL3DllName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    internal static partial SDL_GamepadButtonLabel SDL_GetGamepadButtonLabel(IntPtr gamepad, SDL_GamepadButton button);
 
     [LibraryImport(SDL3DllName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -1022,518 +672,518 @@ internal static unsafe partial class SDL3
 
     public enum SDL_Scancode
     {
-        SDL_SCANCODE_UNKNOWN = 0,
-        SDL_SCANCODE_A = 4,
-        SDL_SCANCODE_B = 5,
-        SDL_SCANCODE_C = 6,
-        SDL_SCANCODE_D = 7,
-        SDL_SCANCODE_E = 8,
-        SDL_SCANCODE_F = 9,
-        SDL_SCANCODE_G = 10,
-        SDL_SCANCODE_H = 11,
-        SDL_SCANCODE_I = 12,
-        SDL_SCANCODE_J = 13,
-        SDL_SCANCODE_K = 14,
-        SDL_SCANCODE_L = 15,
-        SDL_SCANCODE_M = 16,
-        SDL_SCANCODE_N = 17,
-        SDL_SCANCODE_O = 18,
-        SDL_SCANCODE_P = 19,
-        SDL_SCANCODE_Q = 20,
-        SDL_SCANCODE_R = 21,
-        SDL_SCANCODE_S = 22,
-        SDL_SCANCODE_T = 23,
-        SDL_SCANCODE_U = 24,
-        SDL_SCANCODE_V = 25,
-        SDL_SCANCODE_W = 26,
-        SDL_SCANCODE_X = 27,
-        SDL_SCANCODE_Y = 28,
-        SDL_SCANCODE_Z = 29,
-        SDL_SCANCODE_1 = 30,
-        SDL_SCANCODE_2 = 31,
-        SDL_SCANCODE_3 = 32,
-        SDL_SCANCODE_4 = 33,
-        SDL_SCANCODE_5 = 34,
-        SDL_SCANCODE_6 = 35,
-        SDL_SCANCODE_7 = 36,
-        SDL_SCANCODE_8 = 37,
-        SDL_SCANCODE_9 = 38,
-        SDL_SCANCODE_0 = 39,
-        SDL_SCANCODE_RETURN = 40,
-        SDL_SCANCODE_ESCAPE = 41,
-        SDL_SCANCODE_BACKSPACE = 42,
-        SDL_SCANCODE_TAB = 43,
-        SDL_SCANCODE_SPACE = 44,
-        SDL_SCANCODE_MINUS = 45,
-        SDL_SCANCODE_EQUALS = 46,
-        SDL_SCANCODE_LEFTBRACKET = 47,
-        SDL_SCANCODE_RIGHTBRACKET = 48,
-        SDL_SCANCODE_BACKSLASH = 49,
-        SDL_SCANCODE_NONUSHASH = 50,
-        SDL_SCANCODE_SEMICOLON = 51,
-        SDL_SCANCODE_APOSTROPHE = 52,
-        SDL_SCANCODE_GRAVE = 53,
-        SDL_SCANCODE_COMMA = 54,
-        SDL_SCANCODE_PERIOD = 55,
-        SDL_SCANCODE_SLASH = 56,
-        SDL_SCANCODE_CAPSLOCK = 57,
-        SDL_SCANCODE_F1 = 58,
-        SDL_SCANCODE_F2 = 59,
-        SDL_SCANCODE_F3 = 60,
-        SDL_SCANCODE_F4 = 61,
-        SDL_SCANCODE_F5 = 62,
-        SDL_SCANCODE_F6 = 63,
-        SDL_SCANCODE_F7 = 64,
-        SDL_SCANCODE_F8 = 65,
-        SDL_SCANCODE_F9 = 66,
-        SDL_SCANCODE_F10 = 67,
-        SDL_SCANCODE_F11 = 68,
-        SDL_SCANCODE_F12 = 69,
-        SDL_SCANCODE_PRINTSCREEN = 70,
-        SDL_SCANCODE_SCROLLLOCK = 71,
-        SDL_SCANCODE_PAUSE = 72,
-        SDL_SCANCODE_INSERT = 73,
-        SDL_SCANCODE_HOME = 74,
-        SDL_SCANCODE_PAGEUP = 75,
-        SDL_SCANCODE_DELETE = 76,
-        SDL_SCANCODE_END = 77,
-        SDL_SCANCODE_PAGEDOWN = 78,
-        SDL_SCANCODE_RIGHT = 79,
-        SDL_SCANCODE_LEFT = 80,
-        SDL_SCANCODE_DOWN = 81,
-        SDL_SCANCODE_UP = 82,
-        SDL_SCANCODE_NUMLOCKCLEAR = 83,
-        SDL_SCANCODE_KP_DIVIDE = 84,
-        SDL_SCANCODE_KP_MULTIPLY = 85,
-        SDL_SCANCODE_KP_MINUS = 86,
-        SDL_SCANCODE_KP_PLUS = 87,
-        SDL_SCANCODE_KP_ENTER = 88,
-        SDL_SCANCODE_KP_1 = 89,
-        SDL_SCANCODE_KP_2 = 90,
-        SDL_SCANCODE_KP_3 = 91,
-        SDL_SCANCODE_KP_4 = 92,
-        SDL_SCANCODE_KP_5 = 93,
-        SDL_SCANCODE_KP_6 = 94,
-        SDL_SCANCODE_KP_7 = 95,
-        SDL_SCANCODE_KP_8 = 96,
-        SDL_SCANCODE_KP_9 = 97,
-        SDL_SCANCODE_KP_0 = 98,
-        SDL_SCANCODE_KP_PERIOD = 99,
-        SDL_SCANCODE_NONUSBACKSLASH = 100,
-        SDL_SCANCODE_APPLICATION = 101,
-        SDL_SCANCODE_POWER = 102,
-        SDL_SCANCODE_KP_EQUALS = 103,
-        SDL_SCANCODE_F13 = 104,
-        SDL_SCANCODE_F14 = 105,
-        SDL_SCANCODE_F15 = 106,
-        SDL_SCANCODE_F16 = 107,
-        SDL_SCANCODE_F17 = 108,
-        SDL_SCANCODE_F18 = 109,
-        SDL_SCANCODE_F19 = 110,
-        SDL_SCANCODE_F20 = 111,
-        SDL_SCANCODE_F21 = 112,
-        SDL_SCANCODE_F22 = 113,
-        SDL_SCANCODE_F23 = 114,
-        SDL_SCANCODE_F24 = 115,
-        SDL_SCANCODE_EXECUTE = 116,
-        SDL_SCANCODE_HELP = 117,
-        SDL_SCANCODE_MENU = 118,
-        SDL_SCANCODE_SELECT = 119,
-        SDL_SCANCODE_STOP = 120,
-        SDL_SCANCODE_AGAIN = 121,
-        SDL_SCANCODE_UNDO = 122,
-        SDL_SCANCODE_CUT = 123,
-        SDL_SCANCODE_COPY = 124,
-        SDL_SCANCODE_PASTE = 125,
-        SDL_SCANCODE_FIND = 126,
-        SDL_SCANCODE_MUTE = 127,
-        SDL_SCANCODE_VOLUMEUP = 128,
-        SDL_SCANCODE_VOLUMEDOWN = 129,
-        SDL_SCANCODE_KP_COMMA = 133,
-        SDL_SCANCODE_KP_EQUALSAS400 = 134,
-        SDL_SCANCODE_INTERNATIONAL1 = 135,
-        SDL_SCANCODE_INTERNATIONAL2 = 136,
-        SDL_SCANCODE_INTERNATIONAL3 = 137,
-        SDL_SCANCODE_INTERNATIONAL4 = 138,
-        SDL_SCANCODE_INTERNATIONAL5 = 139,
-        SDL_SCANCODE_INTERNATIONAL6 = 140,
-        SDL_SCANCODE_INTERNATIONAL7 = 141,
-        SDL_SCANCODE_INTERNATIONAL8 = 142,
-        SDL_SCANCODE_INTERNATIONAL9 = 143,
-        SDL_SCANCODE_LANG1 = 144,
-        SDL_SCANCODE_LANG2 = 145,
-        SDL_SCANCODE_LANG3 = 146,
-        SDL_SCANCODE_LANG4 = 147,
-        SDL_SCANCODE_LANG5 = 148,
-        SDL_SCANCODE_LANG6 = 149,
-        SDL_SCANCODE_LANG7 = 150,
-        SDL_SCANCODE_LANG8 = 151,
-        SDL_SCANCODE_LANG9 = 152,
-        SDL_SCANCODE_ALTERASE = 153,
-        SDL_SCANCODE_SYSREQ = 154,
-        SDL_SCANCODE_CANCEL = 155,
-        SDL_SCANCODE_CLEAR = 156,
-        SDL_SCANCODE_PRIOR = 157,
-        SDL_SCANCODE_RETURN2 = 158,
-        SDL_SCANCODE_SEPARATOR = 159,
-        SDL_SCANCODE_OUT = 160,
-        SDL_SCANCODE_OPER = 161,
-        SDL_SCANCODE_CLEARAGAIN = 162,
-        SDL_SCANCODE_CRSEL = 163,
-        SDL_SCANCODE_EXSEL = 164,
-        SDL_SCANCODE_KP_00 = 176,
-        SDL_SCANCODE_KP_000 = 177,
-        SDL_SCANCODE_THOUSANDSSEPARATOR = 178,
-        SDL_SCANCODE_DECIMALSEPARATOR = 179,
-        SDL_SCANCODE_CURRENCYUNIT = 180,
-        SDL_SCANCODE_CURRENCYSUBUNIT = 181,
-        SDL_SCANCODE_KP_LEFTPAREN = 182,
-        SDL_SCANCODE_KP_RIGHTPAREN = 183,
-        SDL_SCANCODE_KP_LEFTBRACE = 184,
-        SDL_SCANCODE_KP_RIGHTBRACE = 185,
-        SDL_SCANCODE_KP_TAB = 186,
-        SDL_SCANCODE_KP_BACKSPACE = 187,
-        SDL_SCANCODE_KP_A = 188,
-        SDL_SCANCODE_KP_B = 189,
-        SDL_SCANCODE_KP_C = 190,
-        SDL_SCANCODE_KP_D = 191,
-        SDL_SCANCODE_KP_E = 192,
-        SDL_SCANCODE_KP_F = 193,
-        SDL_SCANCODE_KP_XOR = 194,
-        SDL_SCANCODE_KP_POWER = 195,
-        SDL_SCANCODE_KP_PERCENT = 196,
-        SDL_SCANCODE_KP_LESS = 197,
-        SDL_SCANCODE_KP_GREATER = 198,
-        SDL_SCANCODE_KP_AMPERSAND = 199,
-        SDL_SCANCODE_KP_DBLAMPERSAND = 200,
-        SDL_SCANCODE_KP_VERTICALBAR = 201,
-        SDL_SCANCODE_KP_DBLVERTICALBAR = 202,
-        SDL_SCANCODE_KP_COLON = 203,
-        SDL_SCANCODE_KP_HASH = 204,
-        SDL_SCANCODE_KP_SPACE = 205,
-        SDL_SCANCODE_KP_AT = 206,
-        SDL_SCANCODE_KP_EXCLAM = 207,
-        SDL_SCANCODE_KP_MEMSTORE = 208,
-        SDL_SCANCODE_KP_MEMRECALL = 209,
-        SDL_SCANCODE_KP_MEMCLEAR = 210,
-        SDL_SCANCODE_KP_MEMADD = 211,
-        SDL_SCANCODE_KP_MEMSUBTRACT = 212,
-        SDL_SCANCODE_KP_MEMMULTIPLY = 213,
-        SDL_SCANCODE_KP_MEMDIVIDE = 214,
-        SDL_SCANCODE_KP_PLUSMINUS = 215,
-        SDL_SCANCODE_KP_CLEAR = 216,
-        SDL_SCANCODE_KP_CLEARENTRY = 217,
-        SDL_SCANCODE_KP_BINARY = 218,
-        SDL_SCANCODE_KP_OCTAL = 219,
-        SDL_SCANCODE_KP_DECIMAL = 220,
-        SDL_SCANCODE_KP_HEXADECIMAL = 221,
-        SDL_SCANCODE_LCTRL = 224,
-        SDL_SCANCODE_LSHIFT = 225,
-        SDL_SCANCODE_LALT = 226,
-        SDL_SCANCODE_LGUI = 227,
-        SDL_SCANCODE_RCTRL = 228,
-        SDL_SCANCODE_RSHIFT = 229,
-        SDL_SCANCODE_RALT = 230,
-        SDL_SCANCODE_RGUI = 231,
-        SDL_SCANCODE_MODE = 257,
-        SDL_SCANCODE_SLEEP = 258,
-        SDL_SCANCODE_WAKE = 259,
-        SDL_SCANCODE_CHANNEL_INCREMENT = 260,
-        SDL_SCANCODE_CHANNEL_DECREMENT = 261,
-        SDL_SCANCODE_MEDIA_PLAY = 262,
-        SDL_SCANCODE_MEDIA_PAUSE = 263,
-        SDL_SCANCODE_MEDIA_RECORD = 264,
-        SDL_SCANCODE_MEDIA_FAST_FORWARD = 265,
-        SDL_SCANCODE_MEDIA_REWIND = 266,
-        SDL_SCANCODE_MEDIA_NEXT_TRACK = 267,
+        SDL_SCANCODE_UNKNOWN              = 0,
+        SDL_SCANCODE_A                    = 4,
+        SDL_SCANCODE_B                    = 5,
+        SDL_SCANCODE_C                    = 6,
+        SDL_SCANCODE_D                    = 7,
+        SDL_SCANCODE_E                    = 8,
+        SDL_SCANCODE_F                    = 9,
+        SDL_SCANCODE_G                    = 10,
+        SDL_SCANCODE_H                    = 11,
+        SDL_SCANCODE_I                    = 12,
+        SDL_SCANCODE_J                    = 13,
+        SDL_SCANCODE_K                    = 14,
+        SDL_SCANCODE_L                    = 15,
+        SDL_SCANCODE_M                    = 16,
+        SDL_SCANCODE_N                    = 17,
+        SDL_SCANCODE_O                    = 18,
+        SDL_SCANCODE_P                    = 19,
+        SDL_SCANCODE_Q                    = 20,
+        SDL_SCANCODE_R                    = 21,
+        SDL_SCANCODE_S                    = 22,
+        SDL_SCANCODE_T                    = 23,
+        SDL_SCANCODE_U                    = 24,
+        SDL_SCANCODE_V                    = 25,
+        SDL_SCANCODE_W                    = 26,
+        SDL_SCANCODE_X                    = 27,
+        SDL_SCANCODE_Y                    = 28,
+        SDL_SCANCODE_Z                    = 29,
+        SDL_SCANCODE_1                    = 30,
+        SDL_SCANCODE_2                    = 31,
+        SDL_SCANCODE_3                    = 32,
+        SDL_SCANCODE_4                    = 33,
+        SDL_SCANCODE_5                    = 34,
+        SDL_SCANCODE_6                    = 35,
+        SDL_SCANCODE_7                    = 36,
+        SDL_SCANCODE_8                    = 37,
+        SDL_SCANCODE_9                    = 38,
+        SDL_SCANCODE_0                    = 39,
+        SDL_SCANCODE_RETURN               = 40,
+        SDL_SCANCODE_ESCAPE               = 41,
+        SDL_SCANCODE_BACKSPACE            = 42,
+        SDL_SCANCODE_TAB                  = 43,
+        SDL_SCANCODE_SPACE                = 44,
+        SDL_SCANCODE_MINUS                = 45,
+        SDL_SCANCODE_EQUALS               = 46,
+        SDL_SCANCODE_LEFTBRACKET          = 47,
+        SDL_SCANCODE_RIGHTBRACKET         = 48,
+        SDL_SCANCODE_BACKSLASH            = 49,
+        SDL_SCANCODE_NONUSHASH            = 50,
+        SDL_SCANCODE_SEMICOLON            = 51,
+        SDL_SCANCODE_APOSTROPHE           = 52,
+        SDL_SCANCODE_GRAVE                = 53,
+        SDL_SCANCODE_COMMA                = 54,
+        SDL_SCANCODE_PERIOD               = 55,
+        SDL_SCANCODE_SLASH                = 56,
+        SDL_SCANCODE_CAPSLOCK             = 57,
+        SDL_SCANCODE_F1                   = 58,
+        SDL_SCANCODE_F2                   = 59,
+        SDL_SCANCODE_F3                   = 60,
+        SDL_SCANCODE_F4                   = 61,
+        SDL_SCANCODE_F5                   = 62,
+        SDL_SCANCODE_F6                   = 63,
+        SDL_SCANCODE_F7                   = 64,
+        SDL_SCANCODE_F8                   = 65,
+        SDL_SCANCODE_F9                   = 66,
+        SDL_SCANCODE_F10                  = 67,
+        SDL_SCANCODE_F11                  = 68,
+        SDL_SCANCODE_F12                  = 69,
+        SDL_SCANCODE_PRINTSCREEN          = 70,
+        SDL_SCANCODE_SCROLLLOCK           = 71,
+        SDL_SCANCODE_PAUSE                = 72,
+        SDL_SCANCODE_INSERT               = 73,
+        SDL_SCANCODE_HOME                 = 74,
+        SDL_SCANCODE_PAGEUP               = 75,
+        SDL_SCANCODE_DELETE               = 76,
+        SDL_SCANCODE_END                  = 77,
+        SDL_SCANCODE_PAGEDOWN             = 78,
+        SDL_SCANCODE_RIGHT                = 79,
+        SDL_SCANCODE_LEFT                 = 80,
+        SDL_SCANCODE_DOWN                 = 81,
+        SDL_SCANCODE_UP                   = 82,
+        SDL_SCANCODE_NUMLOCKCLEAR         = 83,
+        SDL_SCANCODE_KP_DIVIDE            = 84,
+        SDL_SCANCODE_KP_MULTIPLY          = 85,
+        SDL_SCANCODE_KP_MINUS             = 86,
+        SDL_SCANCODE_KP_PLUS              = 87,
+        SDL_SCANCODE_KP_ENTER             = 88,
+        SDL_SCANCODE_KP_1                 = 89,
+        SDL_SCANCODE_KP_2                 = 90,
+        SDL_SCANCODE_KP_3                 = 91,
+        SDL_SCANCODE_KP_4                 = 92,
+        SDL_SCANCODE_KP_5                 = 93,
+        SDL_SCANCODE_KP_6                 = 94,
+        SDL_SCANCODE_KP_7                 = 95,
+        SDL_SCANCODE_KP_8                 = 96,
+        SDL_SCANCODE_KP_9                 = 97,
+        SDL_SCANCODE_KP_0                 = 98,
+        SDL_SCANCODE_KP_PERIOD            = 99,
+        SDL_SCANCODE_NONUSBACKSLASH       = 100,
+        SDL_SCANCODE_APPLICATION          = 101,
+        SDL_SCANCODE_POWER                = 102,
+        SDL_SCANCODE_KP_EQUALS            = 103,
+        SDL_SCANCODE_F13                  = 104,
+        SDL_SCANCODE_F14                  = 105,
+        SDL_SCANCODE_F15                  = 106,
+        SDL_SCANCODE_F16                  = 107,
+        SDL_SCANCODE_F17                  = 108,
+        SDL_SCANCODE_F18                  = 109,
+        SDL_SCANCODE_F19                  = 110,
+        SDL_SCANCODE_F20                  = 111,
+        SDL_SCANCODE_F21                  = 112,
+        SDL_SCANCODE_F22                  = 113,
+        SDL_SCANCODE_F23                  = 114,
+        SDL_SCANCODE_F24                  = 115,
+        SDL_SCANCODE_EXECUTE              = 116,
+        SDL_SCANCODE_HELP                 = 117,
+        SDL_SCANCODE_MENU                 = 118,
+        SDL_SCANCODE_SELECT               = 119,
+        SDL_SCANCODE_STOP                 = 120,
+        SDL_SCANCODE_AGAIN                = 121,
+        SDL_SCANCODE_UNDO                 = 122,
+        SDL_SCANCODE_CUT                  = 123,
+        SDL_SCANCODE_COPY                 = 124,
+        SDL_SCANCODE_PASTE                = 125,
+        SDL_SCANCODE_FIND                 = 126,
+        SDL_SCANCODE_MUTE                 = 127,
+        SDL_SCANCODE_VOLUMEUP             = 128,
+        SDL_SCANCODE_VOLUMEDOWN           = 129,
+        SDL_SCANCODE_KP_COMMA             = 133,
+        SDL_SCANCODE_KP_EQUALSAS400       = 134,
+        SDL_SCANCODE_INTERNATIONAL1       = 135,
+        SDL_SCANCODE_INTERNATIONAL2       = 136,
+        SDL_SCANCODE_INTERNATIONAL3       = 137,
+        SDL_SCANCODE_INTERNATIONAL4       = 138,
+        SDL_SCANCODE_INTERNATIONAL5       = 139,
+        SDL_SCANCODE_INTERNATIONAL6       = 140,
+        SDL_SCANCODE_INTERNATIONAL7       = 141,
+        SDL_SCANCODE_INTERNATIONAL8       = 142,
+        SDL_SCANCODE_INTERNATIONAL9       = 143,
+        SDL_SCANCODE_LANG1                = 144,
+        SDL_SCANCODE_LANG2                = 145,
+        SDL_SCANCODE_LANG3                = 146,
+        SDL_SCANCODE_LANG4                = 147,
+        SDL_SCANCODE_LANG5                = 148,
+        SDL_SCANCODE_LANG6                = 149,
+        SDL_SCANCODE_LANG7                = 150,
+        SDL_SCANCODE_LANG8                = 151,
+        SDL_SCANCODE_LANG9                = 152,
+        SDL_SCANCODE_ALTERASE             = 153,
+        SDL_SCANCODE_SYSREQ               = 154,
+        SDL_SCANCODE_CANCEL               = 155,
+        SDL_SCANCODE_CLEAR                = 156,
+        SDL_SCANCODE_PRIOR                = 157,
+        SDL_SCANCODE_RETURN2              = 158,
+        SDL_SCANCODE_SEPARATOR            = 159,
+        SDL_SCANCODE_OUT                  = 160,
+        SDL_SCANCODE_OPER                 = 161,
+        SDL_SCANCODE_CLEARAGAIN           = 162,
+        SDL_SCANCODE_CRSEL                = 163,
+        SDL_SCANCODE_EXSEL                = 164,
+        SDL_SCANCODE_KP_00                = 176,
+        SDL_SCANCODE_KP_000               = 177,
+        SDL_SCANCODE_THOUSANDSSEPARATOR   = 178,
+        SDL_SCANCODE_DECIMALSEPARATOR     = 179,
+        SDL_SCANCODE_CURRENCYUNIT         = 180,
+        SDL_SCANCODE_CURRENCYSUBUNIT      = 181,
+        SDL_SCANCODE_KP_LEFTPAREN         = 182,
+        SDL_SCANCODE_KP_RIGHTPAREN        = 183,
+        SDL_SCANCODE_KP_LEFTBRACE         = 184,
+        SDL_SCANCODE_KP_RIGHTBRACE        = 185,
+        SDL_SCANCODE_KP_TAB               = 186,
+        SDL_SCANCODE_KP_BACKSPACE         = 187,
+        SDL_SCANCODE_KP_A                 = 188,
+        SDL_SCANCODE_KP_B                 = 189,
+        SDL_SCANCODE_KP_C                 = 190,
+        SDL_SCANCODE_KP_D                 = 191,
+        SDL_SCANCODE_KP_E                 = 192,
+        SDL_SCANCODE_KP_F                 = 193,
+        SDL_SCANCODE_KP_XOR               = 194,
+        SDL_SCANCODE_KP_POWER             = 195,
+        SDL_SCANCODE_KP_PERCENT           = 196,
+        SDL_SCANCODE_KP_LESS              = 197,
+        SDL_SCANCODE_KP_GREATER           = 198,
+        SDL_SCANCODE_KP_AMPERSAND         = 199,
+        SDL_SCANCODE_KP_DBLAMPERSAND      = 200,
+        SDL_SCANCODE_KP_VERTICALBAR       = 201,
+        SDL_SCANCODE_KP_DBLVERTICALBAR    = 202,
+        SDL_SCANCODE_KP_COLON             = 203,
+        SDL_SCANCODE_KP_HASH              = 204,
+        SDL_SCANCODE_KP_SPACE             = 205,
+        SDL_SCANCODE_KP_AT                = 206,
+        SDL_SCANCODE_KP_EXCLAM            = 207,
+        SDL_SCANCODE_KP_MEMSTORE          = 208,
+        SDL_SCANCODE_KP_MEMRECALL         = 209,
+        SDL_SCANCODE_KP_MEMCLEAR          = 210,
+        SDL_SCANCODE_KP_MEMADD            = 211,
+        SDL_SCANCODE_KP_MEMSUBTRACT       = 212,
+        SDL_SCANCODE_KP_MEMMULTIPLY       = 213,
+        SDL_SCANCODE_KP_MEMDIVIDE         = 214,
+        SDL_SCANCODE_KP_PLUSMINUS         = 215,
+        SDL_SCANCODE_KP_CLEAR             = 216,
+        SDL_SCANCODE_KP_CLEARENTRY        = 217,
+        SDL_SCANCODE_KP_BINARY            = 218,
+        SDL_SCANCODE_KP_OCTAL             = 219,
+        SDL_SCANCODE_KP_DECIMAL           = 220,
+        SDL_SCANCODE_KP_HEXADECIMAL       = 221,
+        SDL_SCANCODE_LCTRL                = 224,
+        SDL_SCANCODE_LSHIFT               = 225,
+        SDL_SCANCODE_LALT                 = 226,
+        SDL_SCANCODE_LGUI                 = 227,
+        SDL_SCANCODE_RCTRL                = 228,
+        SDL_SCANCODE_RSHIFT               = 229,
+        SDL_SCANCODE_RALT                 = 230,
+        SDL_SCANCODE_RGUI                 = 231,
+        SDL_SCANCODE_MODE                 = 257,
+        SDL_SCANCODE_SLEEP                = 258,
+        SDL_SCANCODE_WAKE                 = 259,
+        SDL_SCANCODE_CHANNEL_INCREMENT    = 260,
+        SDL_SCANCODE_CHANNEL_DECREMENT    = 261,
+        SDL_SCANCODE_MEDIA_PLAY           = 262,
+        SDL_SCANCODE_MEDIA_PAUSE          = 263,
+        SDL_SCANCODE_MEDIA_RECORD         = 264,
+        SDL_SCANCODE_MEDIA_FAST_FORWARD   = 265,
+        SDL_SCANCODE_MEDIA_REWIND         = 266,
+        SDL_SCANCODE_MEDIA_NEXT_TRACK     = 267,
         SDL_SCANCODE_MEDIA_PREVIOUS_TRACK = 268,
-        SDL_SCANCODE_MEDIA_STOP = 269,
-        SDL_SCANCODE_MEDIA_EJECT = 270,
-        SDL_SCANCODE_MEDIA_PLAY_PAUSE = 271,
-        SDL_SCANCODE_MEDIA_SELECT = 272,
-        SDL_SCANCODE_AC_NEW = 273,
-        SDL_SCANCODE_AC_OPEN = 274,
-        SDL_SCANCODE_AC_CLOSE = 275,
-        SDL_SCANCODE_AC_EXIT = 276,
-        SDL_SCANCODE_AC_SAVE = 277,
-        SDL_SCANCODE_AC_PRINT = 278,
-        SDL_SCANCODE_AC_PROPERTIES = 279,
-        SDL_SCANCODE_AC_SEARCH = 280,
-        SDL_SCANCODE_AC_HOME = 281,
-        SDL_SCANCODE_AC_BACK = 282,
-        SDL_SCANCODE_AC_FORWARD = 283,
-        SDL_SCANCODE_AC_STOP = 284,
-        SDL_SCANCODE_AC_REFRESH = 285,
-        SDL_SCANCODE_AC_BOOKMARKS = 286,
-        SDL_SCANCODE_SOFTLEFT = 287,
-        SDL_SCANCODE_SOFTRIGHT = 288,
-        SDL_SCANCODE_CALL = 289,
-        SDL_SCANCODE_ENDCALL = 290,
-        SDL_SCANCODE_RESERVED = 400,
-        SDL_SCANCODE_COUNT = 512,
+        SDL_SCANCODE_MEDIA_STOP           = 269,
+        SDL_SCANCODE_MEDIA_EJECT          = 270,
+        SDL_SCANCODE_MEDIA_PLAY_PAUSE     = 271,
+        SDL_SCANCODE_MEDIA_SELECT         = 272,
+        SDL_SCANCODE_AC_NEW               = 273,
+        SDL_SCANCODE_AC_OPEN              = 274,
+        SDL_SCANCODE_AC_CLOSE             = 275,
+        SDL_SCANCODE_AC_EXIT              = 276,
+        SDL_SCANCODE_AC_SAVE              = 277,
+        SDL_SCANCODE_AC_PRINT             = 278,
+        SDL_SCANCODE_AC_PROPERTIES        = 279,
+        SDL_SCANCODE_AC_SEARCH            = 280,
+        SDL_SCANCODE_AC_HOME              = 281,
+        SDL_SCANCODE_AC_BACK              = 282,
+        SDL_SCANCODE_AC_FORWARD           = 283,
+        SDL_SCANCODE_AC_STOP              = 284,
+        SDL_SCANCODE_AC_REFRESH           = 285,
+        SDL_SCANCODE_AC_BOOKMARKS         = 286,
+        SDL_SCANCODE_SOFTLEFT             = 287,
+        SDL_SCANCODE_SOFTRIGHT            = 288,
+        SDL_SCANCODE_CALL                 = 289,
+        SDL_SCANCODE_ENDCALL              = 290,
+        SDL_SCANCODE_RESERVED             = 400,
+        SDL_SCANCODE_COUNT                = 512,
     }
 
     // /usr/local/include/SDL3/SDL_keycode.h
 
     public enum SDL_Keycode : uint
     {
-        SDLK_SCANCODE_MASK = 0x40000000,
-        SDLK_UNKNOWN = 0x00000000u,
-        SDLK_RETURN = 0x0000000du,
-        SDLK_ESCAPE = 0x0000001bu,
-        SDLK_BACKSPACE = 0x00000008u,
-        SDLK_TAB = 0x00000009u,
-        SDLK_SPACE = 0x00000020u,
-        SDLK_EXCLAIM = 0x00000021u,
-        SDLK_DBLAPOSTROPHE = 0x00000022u,
-        SDLK_HASH = 0x00000023u,
-        SDLK_DOLLAR = 0x00000024u,
-        SDLK_PERCENT = 0x00000025u,
-        SDLK_AMPERSAND = 0x00000026u,
-        SDLK_APOSTROPHE = 0x00000027u,
-        SDLK_LEFTPAREN = 0x00000028u,
-        SDLK_RIGHTPAREN = 0x00000029u,
-        SDLK_ASTERISK = 0x0000002au,
-        SDLK_PLUS = 0x0000002bu,
-        SDLK_COMMA = 0x0000002cu,
-        SDLK_MINUS = 0x0000002du,
-        SDLK_PERIOD = 0x0000002eu,
-        SDLK_SLASH = 0x0000002fu,
-        SDLK_0 = 0x00000030u,
-        SDLK_1 = 0x00000031u,
-        SDLK_2 = 0x00000032u,
-        SDLK_3 = 0x00000033u,
-        SDLK_4 = 0x00000034u,
-        SDLK_5 = 0x00000035u,
-        SDLK_6 = 0x00000036u,
-        SDLK_7 = 0x00000037u,
-        SDLK_8 = 0x00000038u,
-        SDLK_9 = 0x00000039u,
-        SDLK_COLON = 0x0000003au,
-        SDLK_SEMICOLON = 0x0000003bu,
-        SDLK_LESS = 0x0000003cu,
-        SDLK_EQUALS = 0x0000003du,
-        SDLK_GREATER = 0x0000003eu,
-        SDLK_QUESTION = 0x0000003fu,
-        SDLK_AT = 0x00000040u,
-        SDLK_LEFTBRACKET = 0x0000005bu,
-        SDLK_BACKSLASH = 0x0000005cu,
-        SDLK_RIGHTBRACKET = 0x0000005du,
-        SDLK_CARET = 0x0000005eu,
-        SDLK_UNDERSCORE = 0x0000005fu,
-        SDLK_GRAVE = 0x00000060u,
-        SDLK_A = 0x00000061u,
-        SDLK_B = 0x00000062u,
-        SDLK_C = 0x00000063u,
-        SDLK_D = 0x00000064u,
-        SDLK_E = 0x00000065u,
-        SDLK_F = 0x00000066u,
-        SDLK_G = 0x00000067u,
-        SDLK_H = 0x00000068u,
-        SDLK_I = 0x00000069u,
-        SDLK_J = 0x0000006au,
-        SDLK_K = 0x0000006bu,
-        SDLK_L = 0x0000006cu,
-        SDLK_M = 0x0000006du,
-        SDLK_N = 0x0000006eu,
-        SDLK_O = 0x0000006fu,
-        SDLK_P = 0x00000070u,
-        SDLK_Q = 0x00000071u,
-        SDLK_R = 0x00000072u,
-        SDLK_S = 0x00000073u,
-        SDLK_T = 0x00000074u,
-        SDLK_U = 0x00000075u,
-        SDLK_V = 0x00000076u,
-        SDLK_W = 0x00000077u,
-        SDLK_X = 0x00000078u,
-        SDLK_Y = 0x00000079u,
-        SDLK_Z = 0x0000007au,
-        SDLK_LEFTBRACE = 0x0000007bu,
-        SDLK_PIPE = 0x0000007cu,
-        SDLK_RIGHTBRACE = 0x0000007du,
-        SDLK_TILDE = 0x0000007eu,
-        SDLK_DELETE = 0x0000007fu,
-        SDLK_PLUSMINUS = 0x000000b1u,
-        SDLK_CAPSLOCK = 0x40000039u,
-        SDLK_F1 = 0x4000003au,
-        SDLK_F2 = 0x4000003bu,
-        SDLK_F3 = 0x4000003cu,
-        SDLK_F4 = 0x4000003du,
-        SDLK_F5 = 0x4000003eu,
-        SDLK_F6 = 0x4000003fu,
-        SDLK_F7 = 0x40000040u,
-        SDLK_F8 = 0x40000041u,
-        SDLK_F9 = 0x40000042u,
-        SDLK_F10 = 0x40000043u,
-        SDLK_F11 = 0x40000044u,
-        SDLK_F12 = 0x40000045u,
-        SDLK_PRINTSCREEN = 0x40000046u,
-        SDLK_SCROLLLOCK = 0x40000047u,
-        SDLK_PAUSE = 0x40000048u,
-        SDLK_INSERT = 0x40000049u,
-        SDLK_HOME = 0x4000004au,
-        SDLK_PAGEUP = 0x4000004bu,
-        SDLK_END = 0x4000004du,
-        SDLK_PAGEDOWN = 0x4000004eu,
-        SDLK_RIGHT = 0x4000004fu,
-        SDLK_LEFT = 0x40000050u,
-        SDLK_DOWN = 0x40000051u,
-        SDLK_UP = 0x40000052u,
-        SDLK_NUMLOCKCLEAR = 0x40000053u,
-        SDLK_KP_DIVIDE = 0x40000054u,
-        SDLK_KP_MULTIPLY = 0x40000055u,
-        SDLK_KP_MINUS = 0x40000056u,
-        SDLK_KP_PLUS = 0x40000057u,
-        SDLK_KP_ENTER = 0x40000058u,
-        SDLK_KP_1 = 0x40000059u,
-        SDLK_KP_2 = 0x4000005au,
-        SDLK_KP_3 = 0x4000005bu,
-        SDLK_KP_4 = 0x4000005cu,
-        SDLK_KP_5 = 0x4000005du,
-        SDLK_KP_6 = 0x4000005eu,
-        SDLK_KP_7 = 0x4000005fu,
-        SDLK_KP_8 = 0x40000060u,
-        SDLK_KP_9 = 0x40000061u,
-        SDLK_KP_0 = 0x40000062u,
-        SDLK_KP_PERIOD = 0x40000063u,
-        SDLK_APPLICATION = 0x40000065u,
-        SDLK_POWER = 0x40000066u,
-        SDLK_KP_EQUALS = 0x40000067u,
-        SDLK_F13 = 0x40000068u,
-        SDLK_F14 = 0x40000069u,
-        SDLK_F15 = 0x4000006au,
-        SDLK_F16 = 0x4000006bu,
-        SDLK_F17 = 0x4000006cu,
-        SDLK_F18 = 0x4000006du,
-        SDLK_F19 = 0x4000006eu,
-        SDLK_F20 = 0x4000006fu,
-        SDLK_F21 = 0x40000070u,
-        SDLK_F22 = 0x40000071u,
-        SDLK_F23 = 0x40000072u,
-        SDLK_F24 = 0x40000073u,
-        SDLK_EXECUTE = 0x40000074u,
-        SDLK_HELP = 0x40000075u,
-        SDLK_MENU = 0x40000076u,
-        SDLK_SELECT = 0x40000077u,
-        SDLK_STOP = 0x40000078u,
-        SDLK_AGAIN = 0x40000079u,
-        SDLK_UNDO = 0x4000007au,
-        SDLK_CUT = 0x4000007bu,
-        SDLK_COPY = 0x4000007cu,
-        SDLK_PASTE = 0x4000007du,
-        SDLK_FIND = 0x4000007eu,
-        SDLK_MUTE = 0x4000007fu,
-        SDLK_VOLUMEUP = 0x40000080u,
-        SDLK_VOLUMEDOWN = 0x40000081u,
-        SDLK_KP_COMMA = 0x40000085u,
-        SDLK_KP_EQUALSAS400 = 0x40000086u,
-        SDLK_ALTERASE = 0x40000099u,
-        SDLK_SYSREQ = 0x4000009au,
-        SDLK_CANCEL = 0x4000009bu,
-        SDLK_CLEAR = 0x4000009cu,
-        SDLK_PRIOR = 0x4000009du,
-        SDLK_RETURN2 = 0x4000009eu,
-        SDLK_SEPARATOR = 0x4000009fu,
-        SDLK_OUT = 0x400000a0u,
-        SDLK_OPER = 0x400000a1u,
-        SDLK_CLEARAGAIN = 0x400000a2u,
-        SDLK_CRSEL = 0x400000a3u,
-        SDLK_EXSEL = 0x400000a4u,
-        SDLK_KP_00 = 0x400000b0u,
-        SDLK_KP_000 = 0x400000b1u,
-        SDLK_THOUSANDSSEPARATOR = 0x400000b2u,
-        SDLK_DECIMALSEPARATOR = 0x400000b3u,
-        SDLK_CURRENCYUNIT = 0x400000b4u,
-        SDLK_CURRENCYSUBUNIT = 0x400000b5u,
-        SDLK_KP_LEFTPAREN = 0x400000b6u,
-        SDLK_KP_RIGHTPAREN = 0x400000b7u,
-        SDLK_KP_LEFTBRACE = 0x400000b8u,
-        SDLK_KP_RIGHTBRACE = 0x400000b9u,
-        SDLK_KP_TAB = 0x400000bau,
-        SDLK_KP_BACKSPACE = 0x400000bbu,
-        SDLK_KP_A = 0x400000bcu,
-        SDLK_KP_B = 0x400000bdu,
-        SDLK_KP_C = 0x400000beu,
-        SDLK_KP_D = 0x400000bfu,
-        SDLK_KP_E = 0x400000c0u,
-        SDLK_KP_F = 0x400000c1u,
-        SDLK_KP_XOR = 0x400000c2u,
-        SDLK_KP_POWER = 0x400000c3u,
-        SDLK_KP_PERCENT = 0x400000c4u,
-        SDLK_KP_LESS = 0x400000c5u,
-        SDLK_KP_GREATER = 0x400000c6u,
-        SDLK_KP_AMPERSAND = 0x400000c7u,
-        SDLK_KP_DBLAMPERSAND = 0x400000c8u,
-        SDLK_KP_VERTICALBAR = 0x400000c9u,
-        SDLK_KP_DBLVERTICALBAR = 0x400000cau,
-        SDLK_KP_COLON = 0x400000cbu,
-        SDLK_KP_HASH = 0x400000ccu,
-        SDLK_KP_SPACE = 0x400000cdu,
-        SDLK_KP_AT = 0x400000ceu,
-        SDLK_KP_EXCLAM = 0x400000cfu,
-        SDLK_KP_MEMSTORE = 0x400000d0u,
-        SDLK_KP_MEMRECALL = 0x400000d1u,
-        SDLK_KP_MEMCLEAR = 0x400000d2u,
-        SDLK_KP_MEMADD = 0x400000d3u,
-        SDLK_KP_MEMSUBTRACT = 0x400000d4u,
-        SDLK_KP_MEMMULTIPLY = 0x400000d5u,
-        SDLK_KP_MEMDIVIDE = 0x400000d6u,
-        SDLK_KP_PLUSMINUS = 0x400000d7u,
-        SDLK_KP_CLEAR = 0x400000d8u,
-        SDLK_KP_CLEARENTRY = 0x400000d9u,
-        SDLK_KP_BINARY = 0x400000dau,
-        SDLK_KP_OCTAL = 0x400000dbu,
-        SDLK_KP_DECIMAL = 0x400000dcu,
-        SDLK_KP_HEXADECIMAL = 0x400000ddu,
-        SDLK_LCTRL = 0x400000e0u,
-        SDLK_LSHIFT = 0x400000e1u,
-        SDLK_LALT = 0x400000e2u,
-        SDLK_LGUI = 0x400000e3u,
-        SDLK_RCTRL = 0x400000e4u,
-        SDLK_RSHIFT = 0x400000e5u,
-        SDLK_RALT = 0x400000e6u,
-        SDLK_RGUI = 0x400000e7u,
-        SDLK_MODE = 0x40000101u,
-        SDLK_SLEEP = 0x40000102u,
-        SDLK_WAKE = 0x40000103u,
-        SDLK_CHANNEL_INCREMENT = 0x40000104u,
-        SDLK_CHANNEL_DECREMENT = 0x40000105u,
-        SDLK_MEDIA_PLAY = 0x40000106u,
-        SDLK_MEDIA_PAUSE = 0x40000107u,
-        SDLK_MEDIA_RECORD = 0x40000108u,
-        SDLK_MEDIA_FAST_FORWARD = 0x40000109u,
-        SDLK_MEDIA_REWIND = 0x4000010au,
-        SDLK_MEDIA_NEXT_TRACK = 0x4000010bu,
+        SDLK_SCANCODE_MASK        = 0x40000000,
+        SDLK_UNKNOWN              = 0x00000000u,
+        SDLK_RETURN               = 0x0000000du,
+        SDLK_ESCAPE               = 0x0000001bu,
+        SDLK_BACKSPACE            = 0x00000008u,
+        SDLK_TAB                  = 0x00000009u,
+        SDLK_SPACE                = 0x00000020u,
+        SDLK_EXCLAIM              = 0x00000021u,
+        SDLK_DBLAPOSTROPHE        = 0x00000022u,
+        SDLK_HASH                 = 0x00000023u,
+        SDLK_DOLLAR               = 0x00000024u,
+        SDLK_PERCENT              = 0x00000025u,
+        SDLK_AMPERSAND            = 0x00000026u,
+        SDLK_APOSTROPHE           = 0x00000027u,
+        SDLK_LEFTPAREN            = 0x00000028u,
+        SDLK_RIGHTPAREN           = 0x00000029u,
+        SDLK_ASTERISK             = 0x0000002au,
+        SDLK_PLUS                 = 0x0000002bu,
+        SDLK_COMMA                = 0x0000002cu,
+        SDLK_MINUS                = 0x0000002du,
+        SDLK_PERIOD               = 0x0000002eu,
+        SDLK_SLASH                = 0x0000002fu,
+        SDLK_0                    = 0x00000030u,
+        SDLK_1                    = 0x00000031u,
+        SDLK_2                    = 0x00000032u,
+        SDLK_3                    = 0x00000033u,
+        SDLK_4                    = 0x00000034u,
+        SDLK_5                    = 0x00000035u,
+        SDLK_6                    = 0x00000036u,
+        SDLK_7                    = 0x00000037u,
+        SDLK_8                    = 0x00000038u,
+        SDLK_9                    = 0x00000039u,
+        SDLK_COLON                = 0x0000003au,
+        SDLK_SEMICOLON            = 0x0000003bu,
+        SDLK_LESS                 = 0x0000003cu,
+        SDLK_EQUALS               = 0x0000003du,
+        SDLK_GREATER              = 0x0000003eu,
+        SDLK_QUESTION             = 0x0000003fu,
+        SDLK_AT                   = 0x00000040u,
+        SDLK_LEFTBRACKET          = 0x0000005bu,
+        SDLK_BACKSLASH            = 0x0000005cu,
+        SDLK_RIGHTBRACKET         = 0x0000005du,
+        SDLK_CARET                = 0x0000005eu,
+        SDLK_UNDERSCORE           = 0x0000005fu,
+        SDLK_GRAVE                = 0x00000060u,
+        SDLK_A                    = 0x00000061u,
+        SDLK_B                    = 0x00000062u,
+        SDLK_C                    = 0x00000063u,
+        SDLK_D                    = 0x00000064u,
+        SDLK_E                    = 0x00000065u,
+        SDLK_F                    = 0x00000066u,
+        SDLK_G                    = 0x00000067u,
+        SDLK_H                    = 0x00000068u,
+        SDLK_I                    = 0x00000069u,
+        SDLK_J                    = 0x0000006au,
+        SDLK_K                    = 0x0000006bu,
+        SDLK_L                    = 0x0000006cu,
+        SDLK_M                    = 0x0000006du,
+        SDLK_N                    = 0x0000006eu,
+        SDLK_O                    = 0x0000006fu,
+        SDLK_P                    = 0x00000070u,
+        SDLK_Q                    = 0x00000071u,
+        SDLK_R                    = 0x00000072u,
+        SDLK_S                    = 0x00000073u,
+        SDLK_T                    = 0x00000074u,
+        SDLK_U                    = 0x00000075u,
+        SDLK_V                    = 0x00000076u,
+        SDLK_W                    = 0x00000077u,
+        SDLK_X                    = 0x00000078u,
+        SDLK_Y                    = 0x00000079u,
+        SDLK_Z                    = 0x0000007au,
+        SDLK_LEFTBRACE            = 0x0000007bu,
+        SDLK_PIPE                 = 0x0000007cu,
+        SDLK_RIGHTBRACE           = 0x0000007du,
+        SDLK_TILDE                = 0x0000007eu,
+        SDLK_DELETE               = 0x0000007fu,
+        SDLK_PLUSMINUS            = 0x000000b1u,
+        SDLK_CAPSLOCK             = 0x40000039u,
+        SDLK_F1                   = 0x4000003au,
+        SDLK_F2                   = 0x4000003bu,
+        SDLK_F3                   = 0x4000003cu,
+        SDLK_F4                   = 0x4000003du,
+        SDLK_F5                   = 0x4000003eu,
+        SDLK_F6                   = 0x4000003fu,
+        SDLK_F7                   = 0x40000040u,
+        SDLK_F8                   = 0x40000041u,
+        SDLK_F9                   = 0x40000042u,
+        SDLK_F10                  = 0x40000043u,
+        SDLK_F11                  = 0x40000044u,
+        SDLK_F12                  = 0x40000045u,
+        SDLK_PRINTSCREEN          = 0x40000046u,
+        SDLK_SCROLLLOCK           = 0x40000047u,
+        SDLK_PAUSE                = 0x40000048u,
+        SDLK_INSERT               = 0x40000049u,
+        SDLK_HOME                 = 0x4000004au,
+        SDLK_PAGEUP               = 0x4000004bu,
+        SDLK_END                  = 0x4000004du,
+        SDLK_PAGEDOWN             = 0x4000004eu,
+        SDLK_RIGHT                = 0x4000004fu,
+        SDLK_LEFT                 = 0x40000050u,
+        SDLK_DOWN                 = 0x40000051u,
+        SDLK_UP                   = 0x40000052u,
+        SDLK_NUMLOCKCLEAR         = 0x40000053u,
+        SDLK_KP_DIVIDE            = 0x40000054u,
+        SDLK_KP_MULTIPLY          = 0x40000055u,
+        SDLK_KP_MINUS             = 0x40000056u,
+        SDLK_KP_PLUS              = 0x40000057u,
+        SDLK_KP_ENTER             = 0x40000058u,
+        SDLK_KP_1                 = 0x40000059u,
+        SDLK_KP_2                 = 0x4000005au,
+        SDLK_KP_3                 = 0x4000005bu,
+        SDLK_KP_4                 = 0x4000005cu,
+        SDLK_KP_5                 = 0x4000005du,
+        SDLK_KP_6                 = 0x4000005eu,
+        SDLK_KP_7                 = 0x4000005fu,
+        SDLK_KP_8                 = 0x40000060u,
+        SDLK_KP_9                 = 0x40000061u,
+        SDLK_KP_0                 = 0x40000062u,
+        SDLK_KP_PERIOD            = 0x40000063u,
+        SDLK_APPLICATION          = 0x40000065u,
+        SDLK_POWER                = 0x40000066u,
+        SDLK_KP_EQUALS            = 0x40000067u,
+        SDLK_F13                  = 0x40000068u,
+        SDLK_F14                  = 0x40000069u,
+        SDLK_F15                  = 0x4000006au,
+        SDLK_F16                  = 0x4000006bu,
+        SDLK_F17                  = 0x4000006cu,
+        SDLK_F18                  = 0x4000006du,
+        SDLK_F19                  = 0x4000006eu,
+        SDLK_F20                  = 0x4000006fu,
+        SDLK_F21                  = 0x40000070u,
+        SDLK_F22                  = 0x40000071u,
+        SDLK_F23                  = 0x40000072u,
+        SDLK_F24                  = 0x40000073u,
+        SDLK_EXECUTE              = 0x40000074u,
+        SDLK_HELP                 = 0x40000075u,
+        SDLK_MENU                 = 0x40000076u,
+        SDLK_SELECT               = 0x40000077u,
+        SDLK_STOP                 = 0x40000078u,
+        SDLK_AGAIN                = 0x40000079u,
+        SDLK_UNDO                 = 0x4000007au,
+        SDLK_CUT                  = 0x4000007bu,
+        SDLK_COPY                 = 0x4000007cu,
+        SDLK_PASTE                = 0x4000007du,
+        SDLK_FIND                 = 0x4000007eu,
+        SDLK_MUTE                 = 0x4000007fu,
+        SDLK_VOLUMEUP             = 0x40000080u,
+        SDLK_VOLUMEDOWN           = 0x40000081u,
+        SDLK_KP_COMMA             = 0x40000085u,
+        SDLK_KP_EQUALSAS400       = 0x40000086u,
+        SDLK_ALTERASE             = 0x40000099u,
+        SDLK_SYSREQ               = 0x4000009au,
+        SDLK_CANCEL               = 0x4000009bu,
+        SDLK_CLEAR                = 0x4000009cu,
+        SDLK_PRIOR                = 0x4000009du,
+        SDLK_RETURN2              = 0x4000009eu,
+        SDLK_SEPARATOR            = 0x4000009fu,
+        SDLK_OUT                  = 0x400000a0u,
+        SDLK_OPER                 = 0x400000a1u,
+        SDLK_CLEARAGAIN           = 0x400000a2u,
+        SDLK_CRSEL                = 0x400000a3u,
+        SDLK_EXSEL                = 0x400000a4u,
+        SDLK_KP_00                = 0x400000b0u,
+        SDLK_KP_000               = 0x400000b1u,
+        SDLK_THOUSANDSSEPARATOR   = 0x400000b2u,
+        SDLK_DECIMALSEPARATOR     = 0x400000b3u,
+        SDLK_CURRENCYUNIT         = 0x400000b4u,
+        SDLK_CURRENCYSUBUNIT      = 0x400000b5u,
+        SDLK_KP_LEFTPAREN         = 0x400000b6u,
+        SDLK_KP_RIGHTPAREN        = 0x400000b7u,
+        SDLK_KP_LEFTBRACE         = 0x400000b8u,
+        SDLK_KP_RIGHTBRACE        = 0x400000b9u,
+        SDLK_KP_TAB               = 0x400000bau,
+        SDLK_KP_BACKSPACE         = 0x400000bbu,
+        SDLK_KP_A                 = 0x400000bcu,
+        SDLK_KP_B                 = 0x400000bdu,
+        SDLK_KP_C                 = 0x400000beu,
+        SDLK_KP_D                 = 0x400000bfu,
+        SDLK_KP_E                 = 0x400000c0u,
+        SDLK_KP_F                 = 0x400000c1u,
+        SDLK_KP_XOR               = 0x400000c2u,
+        SDLK_KP_POWER             = 0x400000c3u,
+        SDLK_KP_PERCENT           = 0x400000c4u,
+        SDLK_KP_LESS              = 0x400000c5u,
+        SDLK_KP_GREATER           = 0x400000c6u,
+        SDLK_KP_AMPERSAND         = 0x400000c7u,
+        SDLK_KP_DBLAMPERSAND      = 0x400000c8u,
+        SDLK_KP_VERTICALBAR       = 0x400000c9u,
+        SDLK_KP_DBLVERTICALBAR    = 0x400000cau,
+        SDLK_KP_COLON             = 0x400000cbu,
+        SDLK_KP_HASH              = 0x400000ccu,
+        SDLK_KP_SPACE             = 0x400000cdu,
+        SDLK_KP_AT                = 0x400000ceu,
+        SDLK_KP_EXCLAM            = 0x400000cfu,
+        SDLK_KP_MEMSTORE          = 0x400000d0u,
+        SDLK_KP_MEMRECALL         = 0x400000d1u,
+        SDLK_KP_MEMCLEAR          = 0x400000d2u,
+        SDLK_KP_MEMADD            = 0x400000d3u,
+        SDLK_KP_MEMSUBTRACT       = 0x400000d4u,
+        SDLK_KP_MEMMULTIPLY       = 0x400000d5u,
+        SDLK_KP_MEMDIVIDE         = 0x400000d6u,
+        SDLK_KP_PLUSMINUS         = 0x400000d7u,
+        SDLK_KP_CLEAR             = 0x400000d8u,
+        SDLK_KP_CLEARENTRY        = 0x400000d9u,
+        SDLK_KP_BINARY            = 0x400000dau,
+        SDLK_KP_OCTAL             = 0x400000dbu,
+        SDLK_KP_DECIMAL           = 0x400000dcu,
+        SDLK_KP_HEXADECIMAL       = 0x400000ddu,
+        SDLK_LCTRL                = 0x400000e0u,
+        SDLK_LSHIFT               = 0x400000e1u,
+        SDLK_LALT                 = 0x400000e2u,
+        SDLK_LGUI                 = 0x400000e3u,
+        SDLK_RCTRL                = 0x400000e4u,
+        SDLK_RSHIFT               = 0x400000e5u,
+        SDLK_RALT                 = 0x400000e6u,
+        SDLK_RGUI                 = 0x400000e7u,
+        SDLK_MODE                 = 0x40000101u,
+        SDLK_SLEEP                = 0x40000102u,
+        SDLK_WAKE                 = 0x40000103u,
+        SDLK_CHANNEL_INCREMENT    = 0x40000104u,
+        SDLK_CHANNEL_DECREMENT    = 0x40000105u,
+        SDLK_MEDIA_PLAY           = 0x40000106u,
+        SDLK_MEDIA_PAUSE          = 0x40000107u,
+        SDLK_MEDIA_RECORD         = 0x40000108u,
+        SDLK_MEDIA_FAST_FORWARD   = 0x40000109u,
+        SDLK_MEDIA_REWIND         = 0x4000010au,
+        SDLK_MEDIA_NEXT_TRACK     = 0x4000010bu,
         SDLK_MEDIA_PREVIOUS_TRACK = 0x4000010cu,
-        SDLK_MEDIA_STOP = 0x4000010du,
-        SDLK_MEDIA_EJECT = 0x4000010eu,
-        SDLK_MEDIA_PLAY_PAUSE = 0x4000010fu,
-        SDLK_MEDIA_SELECT = 0x40000110u,
-        SDLK_AC_NEW = 0x40000111u,
-        SDLK_AC_OPEN = 0x40000112u,
-        SDLK_AC_CLOSE = 0x40000113u,
-        SDLK_AC_EXIT = 0x40000114u,
-        SDLK_AC_SAVE = 0x40000115u,
-        SDLK_AC_PRINT = 0x40000116u,
-        SDLK_AC_PROPERTIES = 0x40000117u,
-        SDLK_AC_SEARCH = 0x40000118u,
-        SDLK_AC_HOME = 0x40000119u,
-        SDLK_AC_BACK = 0x4000011au,
-        SDLK_AC_FORWARD = 0x4000011bu,
-        SDLK_AC_STOP = 0x4000011cu,
-        SDLK_AC_REFRESH = 0x4000011du,
-        SDLK_AC_BOOKMARKS = 0x4000011eu,
-        SDLK_SOFTLEFT = 0x4000011fu,
-        SDLK_SOFTRIGHT = 0x40000120u,
-        SDLK_CALL = 0x40000121u,
-        SDLK_ENDCALL = 0x40000122u,
-        SDLK_LEFT_TAB = 0x20000001u,
-        SDLK_LEVEL5_SHIFT = 0x20000002u,
-        SDLK_MULTI_KEY_COMPOSE = 0x20000003u,
-        SDLK_LMETA = 0x20000004u,
-        SDLK_RMETA = 0x20000005u,
-        SDLK_LHYPER = 0x20000006u,
-        SDLK_RHYPER = 0x20000007u,
+        SDLK_MEDIA_STOP           = 0x4000010du,
+        SDLK_MEDIA_EJECT          = 0x4000010eu,
+        SDLK_MEDIA_PLAY_PAUSE     = 0x4000010fu,
+        SDLK_MEDIA_SELECT         = 0x40000110u,
+        SDLK_AC_NEW               = 0x40000111u,
+        SDLK_AC_OPEN              = 0x40000112u,
+        SDLK_AC_CLOSE             = 0x40000113u,
+        SDLK_AC_EXIT              = 0x40000114u,
+        SDLK_AC_SAVE              = 0x40000115u,
+        SDLK_AC_PRINT             = 0x40000116u,
+        SDLK_AC_PROPERTIES        = 0x40000117u,
+        SDLK_AC_SEARCH            = 0x40000118u,
+        SDLK_AC_HOME              = 0x40000119u,
+        SDLK_AC_BACK              = 0x4000011au,
+        SDLK_AC_FORWARD           = 0x4000011bu,
+        SDLK_AC_STOP              = 0x4000011cu,
+        SDLK_AC_REFRESH           = 0x4000011du,
+        SDLK_AC_BOOKMARKS         = 0x4000011eu,
+        SDLK_SOFTLEFT             = 0x4000011fu,
+        SDLK_SOFTRIGHT            = 0x40000120u,
+        SDLK_CALL                 = 0x40000121u,
+        SDLK_ENDCALL              = 0x40000122u,
+        SDLK_LEFT_TAB             = 0x20000001u,
+        SDLK_LEVEL5_SHIFT         = 0x20000002u,
+        SDLK_MULTI_KEY_COMPOSE    = 0x20000003u,
+        SDLK_LMETA                = 0x20000004u,
+        SDLK_RMETA                = 0x20000005u,
+        SDLK_LHYPER               = 0x20000006u,
+        SDLK_RHYPER               = 0x20000007u,
     }
 
     [Flags]
@@ -1552,10 +1202,10 @@ internal static unsafe partial class SDL3
         SDL_KMOD_CAPS   = 0x2000,
         SDL_KMOD_MODE   = 0x4000,
         SDL_KMOD_SCROLL = 0x8000,
-        SDL_KMOD_CTRL   = SDL_KMOD_LCTRL | SDL_KMOD_RCTRL,
+        SDL_KMOD_CTRL   = SDL_KMOD_LCTRL  | SDL_KMOD_RCTRL,
         SDL_KMOD_SHIFT  = SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT,
-        SDL_KMOD_ALT    = SDL_KMOD_RALT | SDL_KMOD_LALT,
-        SDL_KMOD_GUI    = SDL_KMOD_RGUI | SDL_KMOD_LGUI,
+        SDL_KMOD_ALT    = SDL_KMOD_RALT   | SDL_KMOD_LALT,
+        SDL_KMOD_GUI    = SDL_KMOD_RGUI   | SDL_KMOD_LGUI,
     }
 
     // /usr/local/include/SDL3/SDL_keyboard.h
@@ -1757,124 +1407,124 @@ internal static unsafe partial class SDL3
 
     public enum SDL_EventType
     {
-        SDL_EVENT_FIRST = 0,
-        SDL_EVENT_QUIT = 256,
-        SDL_EVENT_TERMINATING = 257,
-        SDL_EVENT_LOW_MEMORY = 258,
-        SDL_EVENT_WILL_ENTER_BACKGROUND = 259,
-        SDL_EVENT_DID_ENTER_BACKGROUND = 260,
-        SDL_EVENT_WILL_ENTER_FOREGROUND = 261,
-        SDL_EVENT_DID_ENTER_FOREGROUND = 262,
-        SDL_EVENT_LOCALE_CHANGED = 263,
-        SDL_EVENT_SYSTEM_THEME_CHANGED = 264,
-        SDL_EVENT_DISPLAY_ORIENTATION = 337,
-        SDL_EVENT_DISPLAY_ADDED = 338,
-        SDL_EVENT_DISPLAY_REMOVED = 339,
-        SDL_EVENT_DISPLAY_MOVED = 340,
-        SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED = 341,
-        SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED = 342,
+        SDL_EVENT_FIRST                         = 0,
+        SDL_EVENT_QUIT                          = 256,
+        SDL_EVENT_TERMINATING                   = 257,
+        SDL_EVENT_LOW_MEMORY                    = 258,
+        SDL_EVENT_WILL_ENTER_BACKGROUND         = 259,
+        SDL_EVENT_DID_ENTER_BACKGROUND          = 260,
+        SDL_EVENT_WILL_ENTER_FOREGROUND         = 261,
+        SDL_EVENT_DID_ENTER_FOREGROUND          = 262,
+        SDL_EVENT_LOCALE_CHANGED                = 263,
+        SDL_EVENT_SYSTEM_THEME_CHANGED          = 264,
+        SDL_EVENT_DISPLAY_ORIENTATION           = 337,
+        SDL_EVENT_DISPLAY_ADDED                 = 338,
+        SDL_EVENT_DISPLAY_REMOVED               = 339,
+        SDL_EVENT_DISPLAY_MOVED                 = 340,
+        SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED  = 341,
+        SDL_EVENT_DISPLAY_CURRENT_MODE_CHANGED  = 342,
         SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED = 343,
-        SDL_EVENT_DISPLAY_FIRST = 337,
-        SDL_EVENT_DISPLAY_LAST = 343,
-        SDL_EVENT_WINDOW_SHOWN = 514,
-        SDL_EVENT_WINDOW_HIDDEN = 515,
-        SDL_EVENT_WINDOW_EXPOSED = 516,
-        SDL_EVENT_WINDOW_MOVED = 517,
-        SDL_EVENT_WINDOW_RESIZED = 518,
-        SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED = 519,
-        SDL_EVENT_WINDOW_METAL_VIEW_RESIZED = 520,
-        SDL_EVENT_WINDOW_MINIMIZED = 521,
-        SDL_EVENT_WINDOW_MAXIMIZED = 522,
-        SDL_EVENT_WINDOW_RESTORED = 523,
-        SDL_EVENT_WINDOW_MOUSE_ENTER = 524,
-        SDL_EVENT_WINDOW_MOUSE_LEAVE = 525,
-        SDL_EVENT_WINDOW_FOCUS_GAINED = 526,
-        SDL_EVENT_WINDOW_FOCUS_LOST = 527,
-        SDL_EVENT_WINDOW_CLOSE_REQUESTED = 528,
-        SDL_EVENT_WINDOW_HIT_TEST = 529,
-        SDL_EVENT_WINDOW_ICCPROF_CHANGED = 530,
-        SDL_EVENT_WINDOW_DISPLAY_CHANGED = 531,
-        SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED = 532,
-        SDL_EVENT_WINDOW_SAFE_AREA_CHANGED = 533,
-        SDL_EVENT_WINDOW_OCCLUDED = 534,
-        SDL_EVENT_WINDOW_ENTER_FULLSCREEN = 535,
-        SDL_EVENT_WINDOW_LEAVE_FULLSCREEN = 536,
-        SDL_EVENT_WINDOW_DESTROYED = 537,
-        SDL_EVENT_WINDOW_HDR_STATE_CHANGED = 538,
-        SDL_EVENT_WINDOW_FIRST = 514,
-        SDL_EVENT_WINDOW_LAST = 538,
-        SDL_EVENT_KEY_DOWN = 768,
-        SDL_EVENT_KEY_UP = 769,
-        SDL_EVENT_TEXT_EDITING = 770,
-        SDL_EVENT_TEXT_INPUT = 771,
-        SDL_EVENT_KEYMAP_CHANGED = 772,
-        SDL_EVENT_KEYBOARD_ADDED = 773,
-        SDL_EVENT_KEYBOARD_REMOVED = 774,
-        SDL_EVENT_TEXT_EDITING_CANDIDATES = 775,
-        SDL_EVENT_MOUSE_MOTION = 1024,
-        SDL_EVENT_MOUSE_BUTTON_DOWN = 1025,
-        SDL_EVENT_MOUSE_BUTTON_UP = 1026,
-        SDL_EVENT_MOUSE_WHEEL = 1027,
-        SDL_EVENT_MOUSE_ADDED = 1028,
-        SDL_EVENT_MOUSE_REMOVED = 1029,
-        SDL_EVENT_JOYSTICK_AXIS_MOTION = 1536,
-        SDL_EVENT_JOYSTICK_BALL_MOTION = 1537,
-        SDL_EVENT_JOYSTICK_HAT_MOTION = 1538,
-        SDL_EVENT_JOYSTICK_BUTTON_DOWN = 1539,
-        SDL_EVENT_JOYSTICK_BUTTON_UP = 1540,
-        SDL_EVENT_JOYSTICK_ADDED = 1541,
-        SDL_EVENT_JOYSTICK_REMOVED = 1542,
-        SDL_EVENT_JOYSTICK_BATTERY_UPDATED = 1543,
-        SDL_EVENT_JOYSTICK_UPDATE_COMPLETE = 1544,
-        SDL_EVENT_GAMEPAD_AXIS_MOTION = 1616,
-        SDL_EVENT_GAMEPAD_BUTTON_DOWN = 1617,
-        SDL_EVENT_GAMEPAD_BUTTON_UP = 1618,
-        SDL_EVENT_GAMEPAD_ADDED = 1619,
-        SDL_EVENT_GAMEPAD_REMOVED = 1620,
-        SDL_EVENT_GAMEPAD_REMAPPED = 1621,
-        SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN = 1622,
-        SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION = 1623,
-        SDL_EVENT_GAMEPAD_TOUCHPAD_UP = 1624,
-        SDL_EVENT_GAMEPAD_SENSOR_UPDATE = 1625,
-        SDL_EVENT_GAMEPAD_UPDATE_COMPLETE = 1626,
-        SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED = 1627,
-        SDL_EVENT_FINGER_DOWN = 1792,
-        SDL_EVENT_FINGER_UP = 1793,
-        SDL_EVENT_FINGER_MOTION = 1794,
-        SDL_EVENT_FINGER_CANCELED = 1795,
-        SDL_EVENT_CLIPBOARD_UPDATE = 2304,
-        SDL_EVENT_DROP_FILE = 4096,
-        SDL_EVENT_DROP_TEXT = 4097,
-        SDL_EVENT_DROP_BEGIN = 4098,
-        SDL_EVENT_DROP_COMPLETE = 4099,
-        SDL_EVENT_DROP_POSITION = 4100,
-        SDL_EVENT_AUDIO_DEVICE_ADDED = 4352,
-        SDL_EVENT_AUDIO_DEVICE_REMOVED = 4353,
-        SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED = 4354,
-        SDL_EVENT_SENSOR_UPDATE = 4608,
-        SDL_EVENT_PEN_PROXIMITY_IN = 4864,
-        SDL_EVENT_PEN_PROXIMITY_OUT = 4865,
-        SDL_EVENT_PEN_DOWN = 4866,
-        SDL_EVENT_PEN_UP = 4867,
-        SDL_EVENT_PEN_BUTTON_DOWN = 4868,
-        SDL_EVENT_PEN_BUTTON_UP = 4869,
-        SDL_EVENT_PEN_MOTION = 4870,
-        SDL_EVENT_PEN_AXIS = 4871,
-        SDL_EVENT_CAMERA_DEVICE_ADDED = 5120,
-        SDL_EVENT_CAMERA_DEVICE_REMOVED = 5121,
-        SDL_EVENT_CAMERA_DEVICE_APPROVED = 5122,
-        SDL_EVENT_CAMERA_DEVICE_DENIED = 5123,
-        SDL_EVENT_RENDER_TARGETS_RESET = 8192,
-        SDL_EVENT_RENDER_DEVICE_RESET = 8193,
-        SDL_EVENT_RENDER_DEVICE_LOST = 8194,
-        SDL_EVENT_PRIVATE0 = 16384,
-        SDL_EVENT_PRIVATE1 = 16385,
-        SDL_EVENT_PRIVATE2 = 16386,
-        SDL_EVENT_PRIVATE3 = 16387,
-        SDL_EVENT_POLL_SENTINEL = 32512,
-        SDL_EVENT_USER = 32768,
-        SDL_EVENT_LAST = 65535,
-        SDL_EVENT_ENUM_PADDING = 2147483647,
+        SDL_EVENT_DISPLAY_FIRST                 = 337,
+        SDL_EVENT_DISPLAY_LAST                  = 343,
+        SDL_EVENT_WINDOW_SHOWN                  = 514,
+        SDL_EVENT_WINDOW_HIDDEN                 = 515,
+        SDL_EVENT_WINDOW_EXPOSED                = 516,
+        SDL_EVENT_WINDOW_MOVED                  = 517,
+        SDL_EVENT_WINDOW_RESIZED                = 518,
+        SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED     = 519,
+        SDL_EVENT_WINDOW_METAL_VIEW_RESIZED     = 520,
+        SDL_EVENT_WINDOW_MINIMIZED              = 521,
+        SDL_EVENT_WINDOW_MAXIMIZED              = 522,
+        SDL_EVENT_WINDOW_RESTORED               = 523,
+        SDL_EVENT_WINDOW_MOUSE_ENTER            = 524,
+        SDL_EVENT_WINDOW_MOUSE_LEAVE            = 525,
+        SDL_EVENT_WINDOW_FOCUS_GAINED           = 526,
+        SDL_EVENT_WINDOW_FOCUS_LOST             = 527,
+        SDL_EVENT_WINDOW_CLOSE_REQUESTED        = 528,
+        SDL_EVENT_WINDOW_HIT_TEST               = 529,
+        SDL_EVENT_WINDOW_ICCPROF_CHANGED        = 530,
+        SDL_EVENT_WINDOW_DISPLAY_CHANGED        = 531,
+        SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED  = 532,
+        SDL_EVENT_WINDOW_SAFE_AREA_CHANGED      = 533,
+        SDL_EVENT_WINDOW_OCCLUDED               = 534,
+        SDL_EVENT_WINDOW_ENTER_FULLSCREEN       = 535,
+        SDL_EVENT_WINDOW_LEAVE_FULLSCREEN       = 536,
+        SDL_EVENT_WINDOW_DESTROYED              = 537,
+        SDL_EVENT_WINDOW_HDR_STATE_CHANGED      = 538,
+        SDL_EVENT_WINDOW_FIRST                  = 514,
+        SDL_EVENT_WINDOW_LAST                   = 538,
+        SDL_EVENT_KEY_DOWN                      = 768,
+        SDL_EVENT_KEY_UP                        = 769,
+        SDL_EVENT_TEXT_EDITING                  = 770,
+        SDL_EVENT_TEXT_INPUT                    = 771,
+        SDL_EVENT_KEYMAP_CHANGED                = 772,
+        SDL_EVENT_KEYBOARD_ADDED                = 773,
+        SDL_EVENT_KEYBOARD_REMOVED              = 774,
+        SDL_EVENT_TEXT_EDITING_CANDIDATES       = 775,
+        SDL_EVENT_MOUSE_MOTION                  = 1024,
+        SDL_EVENT_MOUSE_BUTTON_DOWN             = 1025,
+        SDL_EVENT_MOUSE_BUTTON_UP               = 1026,
+        SDL_EVENT_MOUSE_WHEEL                   = 1027,
+        SDL_EVENT_MOUSE_ADDED                   = 1028,
+        SDL_EVENT_MOUSE_REMOVED                 = 1029,
+        SDL_EVENT_JOYSTICK_AXIS_MOTION          = 1536,
+        SDL_EVENT_JOYSTICK_BALL_MOTION          = 1537,
+        SDL_EVENT_JOYSTICK_HAT_MOTION           = 1538,
+        SDL_EVENT_JOYSTICK_BUTTON_DOWN          = 1539,
+        SDL_EVENT_JOYSTICK_BUTTON_UP            = 1540,
+        SDL_EVENT_JOYSTICK_ADDED                = 1541,
+        SDL_EVENT_JOYSTICK_REMOVED              = 1542,
+        SDL_EVENT_JOYSTICK_BATTERY_UPDATED      = 1543,
+        SDL_EVENT_JOYSTICK_UPDATE_COMPLETE      = 1544,
+        SDL_EVENT_GAMEPAD_AXIS_MOTION           = 1616,
+        SDL_EVENT_GAMEPAD_BUTTON_DOWN           = 1617,
+        SDL_EVENT_GAMEPAD_BUTTON_UP             = 1618,
+        SDL_EVENT_GAMEPAD_ADDED                 = 1619,
+        SDL_EVENT_GAMEPAD_REMOVED               = 1620,
+        SDL_EVENT_GAMEPAD_REMAPPED              = 1621,
+        SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN         = 1622,
+        SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION       = 1623,
+        SDL_EVENT_GAMEPAD_TOUCHPAD_UP           = 1624,
+        SDL_EVENT_GAMEPAD_SENSOR_UPDATE         = 1625,
+        SDL_EVENT_GAMEPAD_UPDATE_COMPLETE       = 1626,
+        SDL_EVENT_GAMEPAD_STEAM_HANDLE_UPDATED  = 1627,
+        SDL_EVENT_FINGER_DOWN                   = 1792,
+        SDL_EVENT_FINGER_UP                     = 1793,
+        SDL_EVENT_FINGER_MOTION                 = 1794,
+        SDL_EVENT_FINGER_CANCELED               = 1795,
+        SDL_EVENT_CLIPBOARD_UPDATE              = 2304,
+        SDL_EVENT_DROP_FILE                     = 4096,
+        SDL_EVENT_DROP_TEXT                     = 4097,
+        SDL_EVENT_DROP_BEGIN                    = 4098,
+        SDL_EVENT_DROP_COMPLETE                 = 4099,
+        SDL_EVENT_DROP_POSITION                 = 4100,
+        SDL_EVENT_AUDIO_DEVICE_ADDED            = 4352,
+        SDL_EVENT_AUDIO_DEVICE_REMOVED          = 4353,
+        SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED   = 4354,
+        SDL_EVENT_SENSOR_UPDATE                 = 4608,
+        SDL_EVENT_PEN_PROXIMITY_IN              = 4864,
+        SDL_EVENT_PEN_PROXIMITY_OUT             = 4865,
+        SDL_EVENT_PEN_DOWN                      = 4866,
+        SDL_EVENT_PEN_UP                        = 4867,
+        SDL_EVENT_PEN_BUTTON_DOWN               = 4868,
+        SDL_EVENT_PEN_BUTTON_UP                 = 4869,
+        SDL_EVENT_PEN_MOTION                    = 4870,
+        SDL_EVENT_PEN_AXIS                      = 4871,
+        SDL_EVENT_CAMERA_DEVICE_ADDED           = 5120,
+        SDL_EVENT_CAMERA_DEVICE_REMOVED         = 5121,
+        SDL_EVENT_CAMERA_DEVICE_APPROVED        = 5122,
+        SDL_EVENT_CAMERA_DEVICE_DENIED          = 5123,
+        SDL_EVENT_RENDER_TARGETS_RESET          = 8192,
+        SDL_EVENT_RENDER_DEVICE_RESET           = 8193,
+        SDL_EVENT_RENDER_DEVICE_LOST            = 8194,
+        SDL_EVENT_PRIVATE0                      = 16384,
+        SDL_EVENT_PRIVATE1                      = 16385,
+        SDL_EVENT_PRIVATE2                      = 16386,
+        SDL_EVENT_PRIVATE3                      = 16387,
+        SDL_EVENT_POLL_SENTINEL                 = 32512,
+        SDL_EVENT_USER                          = 32768,
+        SDL_EVENT_LAST                          = 65535,
+        SDL_EVENT_ENUM_PADDING                  = 2147483647,
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -2003,34 +1653,6 @@ internal static unsafe partial class SDL3
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_JoyBallEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public byte ball;
-        public byte padding1;
-        public byte padding2;
-        public byte padding3;
-        public short xrel;
-        public short yrel;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct SDL_JoyHatEvent
-    {
-        public SDL_EventType type;
-        public uint reserved;
-        public ulong timestamp;
-        public uint which;
-        public byte hat;
-        public SDL_Hat value;
-        public byte padding1;
-        public byte padding2;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
     public struct SDL_JoyButtonEvent
     {
         public SDL_EventType type;
@@ -2142,10 +1764,10 @@ internal static unsafe partial class SDL3
         public SDL_JoyDeviceEvent jdevice;
         [FieldOffset(0)]
         public SDL_JoyAxisEvent jaxis;
-        [FieldOffset(0)]
-        public SDL_JoyBallEvent jball;
-        [FieldOffset(0)]
-        public SDL_JoyHatEvent jhat;
+      //[FieldOffset(0)]
+      //public SDL_JoyBallEvent jball;
+      //[FieldOffset(0)]
+      //public SDL_JoyHatEvent jhat;
         [FieldOffset(0)]
         public SDL_JoyButtonEvent jbutton;
         [FieldOffset(0)]
@@ -2158,12 +1780,12 @@ internal static unsafe partial class SDL3
       //public SDL_GamepadTouchpadEvent gtouchpad;
       //[FieldOffset(0)]
       //public SDL_GamepadSensorEvent gsensor;
-       //FieldOffset(0)]
-       //ublic SDL_AudioDeviceEvent adevice;
-       //FieldOffset(0)]
-       //ublic SDL_CameraDeviceEvent cdevice;
-       //FieldOffset(0)]
-       //public SDL_SensorEvent sensor;
+      //FieldOffset(0)]
+      //public SDL_AudioDeviceEvent adevice;
+      //FieldOffset(0)]
+      //public SDL_CameraDeviceEvent cdevice;
+      //FieldOffset(0)]
+      //public SDL_SensorEvent sensor;
         [FieldOffset(0)]
         public SDL_QuitEvent quit;
         [FieldOffset(0)]

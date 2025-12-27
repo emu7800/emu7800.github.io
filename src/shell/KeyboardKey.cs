@@ -135,5 +135,7 @@ public enum KeyboardKey
     LeftControl = 162,
     RightControl = 163,
     LeftMenu = 164,
-    RightMenu = 165
+    RightMenu = 165,
+    PlusKey = 187,
+    MinusKey = 189,
 }
