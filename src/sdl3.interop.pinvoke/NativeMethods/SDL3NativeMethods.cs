@@ -3,11 +3,12 @@
 namespace EMU7800.SDL3.Interop;
 
 using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
-internal static unsafe partial class SDL3
+public static unsafe partial class SDL3
 {
     // Custom marshaller for SDL-owned strings returned by SDL.
     [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(SDLOwnedStringMarshaller))]
@@ -65,6 +66,28 @@ internal static unsafe partial class SDL3
         SDL3DllimageName = "SDL3_image",
         SDL3DllttfName   = "SDL3_ttf"
         ;
+
+    public static void RegisterDllImportResolver()
+      => NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
+
+    static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+      => NativeLibrary.Load(UpdateLibraryName(libraryName), assembly, searchPath);
+
+    static string UpdateLibraryName(string libraryName)
+    {
+        if (libraryName.StartsWith("SDL3"))
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return libraryName + ".dll";
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return "lib" + libraryName + ".so.0";
+            }
+        }
+        return libraryName;
+    }
 
     // /usr/local/include/SDL3/SDL_stdinc.h
 

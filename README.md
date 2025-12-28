@@ -23,7 +23,7 @@ dotnet msbuild ./Build.proj
 ```
 This will build and drop everything under a newly created subdirectory ```artifacts\```.
 
-## Building and Running Linux ARM (Raspberry Pi) Native Executables
+### Building and Running Linux ARM (Raspberry Pi) Native Executables
 
 For 32-bit Linux ARM executables, run the following on a Raspberry Pi 32-bit OS (e.g., Debian Trixie with Desktop, as it will include the native build tooling):
 
@@ -34,31 +34,12 @@ dotnet msbuild ./Build.proj /t:LinuxArm /p:LinuxArmPublishAot=true
 For 64-bit Linux ARM executables, run the following on a Raspberry Pi 64-bit OS (e.g, Debian Trixie with Desktop, as it will include the native build tooling):
 ```
 dotnet msbuild ./Build.proj /t:LinuxArm64 /p:LinuxArmPublishAot=true
-
 ```
 
 The SDL3 dependencies likely will not be pre-installed, so run the following to install them:
 
 ```
-sudo apt install libsdl3-0 
+sudo apt install libsdl3-0
 sudo apt install libsdl3-image0
-sudp apt install libsdl3-ttf0
+sudo apt install libsdl3-ttf0
 ```
-
-Symbolic links will be needed to connect the expected library names to the installed library names.
-In the same folder as the ```EMU7800``` executable, run the following commands on 32-bit:
-
-```
-ln -s /lib/arm-linux-gnueabihf/libSDL3.so.0 SDL3.so
-ln -s /lib/arm-linux-gnueabihf/libSDL3_image.so.0 SDL3_image.so
-ln -s /lib/arm-linux-gnueabihf/libSDL3_ttf.so.0 SDL3_ttf.so
-```
-
-Or on 64-bit:
-
-```
-ln -s /lib/arm-linux-?/libSDL3.so.0 SDL3.so
-ln -s /lib/arm-linux-?/libSDL3_image.so.0 SDL3_image.so
-ln -s /lib/arm-linux-?/libSDL3_ttf.so.0 SDL3_ttf.so
-```
-
