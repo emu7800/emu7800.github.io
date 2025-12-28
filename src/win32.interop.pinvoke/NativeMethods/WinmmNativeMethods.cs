@@ -207,7 +207,7 @@ internal static unsafe partial class WinmmNativeMethods
 
         SoundQueues[i].hwo = IntPtr.Zero;
 
-        System.Threading.Thread.Sleep(100); // allow time for pending buffers to finish
+        System.Threading.Thread.Sleep(100); // allow time for queuing activity to exit
 
         _ = waveOutReset(hwo);
         _ = waveOutClose(hwo);

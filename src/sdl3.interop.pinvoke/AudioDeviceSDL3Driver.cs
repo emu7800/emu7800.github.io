@@ -14,18 +14,24 @@ public sealed class AudioDeviceSDL3Driver : DisposableResource, IAudioDeviceDriv
 
     public void Close()
     {
-        if (_stream != IntPtr.Zero)
-        {
-            SDL_DestroyAudioStream(_stream);
-            _stream = IntPtr.Zero;
-        }
+        var stream = _stream;
+        if (stream == IntPtr.Zero)
+            return;
+
+        _stream = IntPtr.Zero;
+
+        System.Threading.Thread.Sleep(100); // allow time for queuing activity to exit
+
+        SDL_DestroyAudioStream(stream);
     }
 
     public int GetBuffersQueued()
     {
-        if (_stream == IntPtr.Zero)
+        var stream = _stream;
+        if (stream == IntPtr.Zero)
             return -1;
-        var bytesQueued = SDL_GetAudioStreamQueued(_stream);
+
+        var bytesQueued = SDL_GetAudioStreamQueued(stream);
         var queued = bytesQueued / _soundFrameSize;
         return queued;
     }
@@ -47,9 +53,9 @@ public sealed class AudioDeviceSDL3Driver : DisposableResource, IAudioDeviceDriv
         spec.channels = 1;
         spec.freq = frequency;
 
-        _stream = SDL_OpenAudioDeviceStream(0xFFFFFFFFu /*SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK */, ref spec, IntPtr.Zero, IntPtr.Zero);
+        var stream = SDL_OpenAudioDeviceStream(0xFFFFFFFFu /*SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK */, ref spec, IntPtr.Zero, IntPtr.Zero);
 
-        if (_stream == IntPtr.Zero)
+        if (stream == IntPtr.Zero)
         {
             HR = -1;
             return false;
@@ -57,14 +63,22 @@ public sealed class AudioDeviceSDL3Driver : DisposableResource, IAudioDeviceDriv
 
         HR = 0;
 
-        SDL_SetAudioStreamGain(_stream, 1f);
-        SDL_ResumeAudioStreamDevice(_stream);
+        SDL_SetAudioStreamGain(stream, 1f);
+        SDL_ResumeAudioStreamDevice(stream);
+
+        _stream = stream;
 
         return true;
     }
 
     public void SubmitBuffer(ReadOnlySpan<byte> buffer)
-      => SDL_PutAudioStreamData(_stream, buffer, buffer.Length);
+    {
+        var stream = _stream;
+        if (stream == IntPtr.Zero)
+            return;
+        SDL_PutAudioStreamData(stream, buffer, buffer.Length);
+    }
+
 
     #endregion
 
