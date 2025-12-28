@@ -20,8 +20,8 @@
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3.dll $(TargetDir)" />
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_ttf.dll $(TargetDir)" />
     <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_image.dll $(TargetDir)" />
+    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_ttf.dll $(TargetDir)" />
     <Exec Command="copy /y $(ProjectDir)..\..\lib\OpenSans-VariableFont.ttf $(TargetDir)" />
   </Target>
 </Project>

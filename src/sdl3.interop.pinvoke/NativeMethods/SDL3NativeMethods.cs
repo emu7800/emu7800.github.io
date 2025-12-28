@@ -62,46 +62,62 @@ public static unsafe partial class SDL3
     }
 
     const string
-        SDL3DllName      = "SDL3",
-        SDL3DllimageName = "SDL3_image",
-        SDL3DllttfName   = "SDL3_ttf"
+        SDL3SharedObjectName      = nameof(SDL3SharedObjectName),
+        SDL3ImageSharedObjectName = nameof(SDL3ImageSharedObjectName),
+        SDL3TtfSharedObjectName   = nameof(SDL3TtfSharedObjectName),
+
+        SDL3WindowsSharedObjectName      = "SDL3.dll",
+        SDL3WindowsImageSharedObjectName = "SDL3_image.dll",
+        SDL3WindowsTtfSharedObjectName   = "SDL3_ttf.dll",
+
+        SDL3LinuxSharedObjectName        = "libSDL3.so.0",
+        SDL3LinuxImageSharedObjectName   = "libSDL3_image.so.0",
+        SDL3LinuxTtfSharedObjectName     = "libSDL3_ttf.so.0"
         ;
 
     public static void RegisterDllImportResolver()
-      => NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), DllImportResolver);
-
-    static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
-      => NativeLibrary.Load(UpdateLibraryName(libraryName), assembly, searchPath);
-
-    static string UpdateLibraryName(string libraryName)
     {
-        if (libraryName.StartsWith("SDL3"))
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return libraryName + ".dll";
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                return "lib" + libraryName + ".so.0";
-            }
+            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), WindowsDllImportResolver);
         }
-        return libraryName;
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), LinuxDllImportResolver);
+        }
     }
+
+    static IntPtr WindowsDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+      => NativeLibrary.Load(libraryName switch
+      {
+            SDL3SharedObjectName      => SDL3WindowsSharedObjectName,
+            SDL3ImageSharedObjectName => SDL3WindowsImageSharedObjectName,
+            SDL3TtfSharedObjectName   => SDL3WindowsTtfSharedObjectName,
+            _                         => libraryName
+      }, assembly, searchPath);
+
+    static IntPtr LinuxDllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+      => NativeLibrary.Load(libraryName switch
+      {
+            SDL3SharedObjectName      => SDL3LinuxSharedObjectName,
+            SDL3ImageSharedObjectName => SDL3LinuxImageSharedObjectName,
+            SDL3TtfSharedObjectName   => SDL3LinuxTtfSharedObjectName,
+            _                         => libraryName
+      }, assembly, searchPath);
 
     // /usr/local/include/SDL3/SDL_stdinc.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_malloc(UIntPtr size);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_free(IntPtr mem);
 
     // /usr/local/include/SDL3/SDL_error.h
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetError();
@@ -132,27 +148,27 @@ public static unsafe partial class SDL3
         public int freq;
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetAudioStreamGain(IntPtr stream, float gain);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_PutAudioStreamData(IntPtr stream, ReadOnlySpan<byte> buffer, int len);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetAudioStreamQueued(IntPtr stream);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_ResumeAudioStreamDevice(IntPtr stream);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyAudioStream(IntPtr stream);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_OpenAudioDeviceStream(uint devid, ref SDL_AudioSpec spec, IntPtr callback, IntPtr userdata);
 
@@ -318,11 +334,11 @@ public static unsafe partial class SDL3
         public IntPtr reserved;
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroySurface(IntPtr surface);
 
-    [LibraryImport(SDL3DllimageName)]
+    [LibraryImport(SDL3ImageSharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* IMG_LoadPNG_IO(IntPtr src, SDLBool closeio);
 
@@ -358,35 +374,35 @@ public static unsafe partial class SDL3
         SDL_WINDOW_NOT_FOCUSABLE        = 0x080000000,
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_GetDisplayBounds(uint displayID, out SDL_Rect rect);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetFullscreenDisplayModes(uint displayID, out int count);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetDisplayForWindow(IntPtr window);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial float SDL_GetWindowDisplayScale(IntPtr window);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetWindows(out int count);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetWindowPosition(IntPtr window, int x, int y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetWindowSize(IntPtr window, int w, int h);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyWindow(IntPtr window);
 
@@ -436,65 +452,65 @@ public static unsafe partial class SDL3
         SDL_HAT_LEFTDOWN                 = 8+4,
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_LockJoysticks();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_UnlockJoysticks();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_HasJoystick();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetJoysticks(out int count);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetJoystickNameForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetJoystickPathForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetJoystickPlayerIndexForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_GUID SDL_GetJoystickGUIDForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickVendorForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickProductForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickProductVersionForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_JoystickType SDL_GetJoystickTypeForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_OpenJoystick(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetJoystickFromID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetJoystickFromPlayerIndex(int player_index);
 
@@ -505,85 +521,85 @@ public static unsafe partial class SDL3
         public fixed ushort padding[3];
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetJoystickProperties(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetJoystickName(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetJoystickPlayerIndex(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetJoystickPlayerIndex(IntPtr joystick, int player_index);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_GUID SDL_GetJoystickGUID(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickVendor(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickProduct(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickProductVersion(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ushort SDL_GetJoystickFirmwareVersion(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetJoystickSerial(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_JoystickType SDL_GetJoystickType(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_JoystickConnected(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetJoystickID(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetNumJoystickAxes(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetNumJoystickButtons(IntPtr joystick);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_SetJoystickEventsEnabled(SDLBool enabled);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_JoystickEventsEnabled();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial short SDL_GetJoystickAxis(IntPtr joystick, int axis);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_GetJoystickAxisInitialState(IntPtr joystick, int axis, out short state);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_CloseJoystick(IntPtr joystick);
 
@@ -670,24 +686,24 @@ public static unsafe partial class SDL3
         SDL_GAMEPAD_BINDTYPE_HAT    = 3,
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_GamepadType SDL_GetGamepadTypeForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_OpenGamepad(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetGamepadFromID(uint instance_id);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetGamepadName(IntPtr gamepad);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_CloseGamepad(IntPtr gamepad);
 
@@ -1233,20 +1249,20 @@ public static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_keyboard.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_HasKeyboard();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetKeyboards(out int count);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetKeyboardNameForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetKeyboardFocus();
 
@@ -1256,49 +1272,49 @@ public static unsafe partial class SDL3
         return new Span<SDLBool>((void*) result, numkeys);
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetKeyboardState(out int numkeys);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_ResetKeyboard();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Keymod SDL_GetModState();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_SetModState(SDL_Keymod modstate);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetKeyFromScancode(SDL_Scancode scancode, SDL_Keymod modstate, SDLBool key_event);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Scancode SDL_GetScancodeFromKey(uint key, IntPtr modstate);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetScancodeName(SDL_Scancode scancode, string name);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetScancodeName(SDL_Scancode scancode);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Scancode SDL_GetScancodeFromName(string name);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetKeyName(uint key);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial uint SDL_GetKeyFromName(string name);
 
@@ -1345,84 +1361,84 @@ public static unsafe partial class SDL3
         SDL_BUTTON_X2MASK = 0x10,
     }
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_HasMouse();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetMice(out int count);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetMouseNameForID(uint instance_id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetMouseFocus();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_MouseButtonFlags SDL_GetMouseState(out float x, out float y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_MouseButtonFlags SDL_GetGlobalMouseState(out float x, out float y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_MouseButtonFlags SDL_GetRelativeMouseState(out float x, out float y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetWindowRelativeMouseMode(IntPtr window, SDLBool enabled);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_GetWindowRelativeMouseMode(IntPtr window);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_CaptureMouse(SDLBool enabled);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_CreateCursor(IntPtr data, IntPtr mask, int w, int h, int hot_x, int hot_y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_CreateColorCursor(IntPtr surface, int hot_x, int hot_y);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_CreateSystemCursor(SDL_SystemCursor id);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetCursor(IntPtr cursor);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetCursor();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_GetDefaultCursor();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyCursor(IntPtr cursor);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_ShowCursor();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_HideCursor();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_CursorVisible();
 
@@ -1862,35 +1878,35 @@ public static unsafe partial class SDL3
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void SDL_AppQuit_func(IntPtr appstate, SDL_AppResult result);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_Init(SDL_InitFlags flags);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_Quit();
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetAppMetadata(string appname, string appversion, string appidentifier);
 
     // /usr/local/include/SDL3/SDL_loadso.h
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_LoadObject(string sofile);
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_LoadFunction(IntPtr handle, string name);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_UnloadObject(IntPtr handle);
 
     // /usr/local/include/SDL3/SDL_log.h
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_Log(string fmt);
 
@@ -1921,112 +1937,112 @@ public static unsafe partial class SDL3
         public int refcount;
     }
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_CreateWindowAndRenderer(string title, int width, int height, SDL_WindowFlags window_flags, out IntPtr window, out IntPtr renderer);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Texture* SDL_CreateTexture(IntPtr renderer, SDL_PixelFormat format, SDL_TextureAccess access, int w, int h);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Texture* SDL_CreateTextureFromSurface(IntPtr renderer, IntPtr surface);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetTextureScaleMode(IntPtr texture, SDL_ScaleMode scaleMode);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_UpdateTexture(IntPtr texture, IntPtr rect, ReadOnlySpan<byte> pixels, int pitch);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderLogicalPresentation(IntPtr renderer, int w, int h, SDL_RendererLogicalPresentation mode);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderClipRect(IntPtr renderer, SDL_Rect* rect);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderScale(IntPtr renderer, float scaleX, float scaleY);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_SetRenderDrawColor(IntPtr renderer, byte r, byte g, byte b, byte a);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderClear(IntPtr renderer);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderLine(IntPtr renderer, float x1, float y1, float x2, float y2);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderRect(IntPtr renderer, ref SDL_FRect rect);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderFillRect(IntPtr renderer, ref SDL_FRect rect);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderTexture(IntPtr renderer, IntPtr texture, IntPtr srcrect, ref SDL_FRect dstrect);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_RenderPresent(IntPtr renderer);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyTexture(IntPtr texture);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DestroyRenderer(IntPtr renderer);
 
     // /usr/local/include/SDL3/SDL_version.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_GetVersion();
 
-    [LibraryImport(SDL3DllName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3SharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalUsing(typeof(SDLOwnedStringMarshaller))]
     internal static partial string SDL_GetRevision();
 
     // /usr/local/include/SDL3/SDL_timer.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ulong SDL_GetTicks();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ulong SDL_GetTicksNS();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ulong SDL_GetPerformanceCounter();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial ulong SDL_GetPerformanceFrequency();
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_Delay(uint ms);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DelayNS(ulong ns);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void SDL_DelayPrecise(ulong ns);
 
@@ -2035,43 +2051,43 @@ public static unsafe partial class SDL3
 
     // /usr/local/include/SDL3/SDL_main.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial int SDL_EnterAppMainCallbacks(int argc, IntPtr argv, SDL_AppInit_func appinit, SDL_AppIterate_func appiter, SDL_AppEvent_func appevent, SDL_AppQuit_func appquit);
 
     // /usr/local/include/SDL3/SDL_iostream.h
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr SDL_IOFromConstMem(ReadOnlySpan<byte> mem, nint size);
 
-    [LibraryImport(SDL3DllName)]
+    [LibraryImport(SDL3SharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool SDL_CloseIO(IntPtr context);
 
     // ttf
 
-    [LibraryImport(SDL3DllttfName)]
+    [LibraryImport(SDL3TtfSharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool TTF_Init();
 
-    [LibraryImport(SDL3DllttfName)]
+    [LibraryImport(SDL3TtfSharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDLBool TTF_Quit();
 
-    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3TtfSharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial IntPtr TTF_OpenFont(string file, float ptsize);
 
-    [LibraryImport(SDL3DllttfName)]
+    [LibraryImport(SDL3TtfSharedObjectName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial void TTF_CloseFont(IntPtr font);
 
-    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3TtfSharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* TTF_RenderText_Blended(IntPtr pFont, string text, UIntPtr length, SDL_Color fg);
 
-    [LibraryImport(SDL3DllttfName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(SDL3TtfSharedObjectName, StringMarshalling = StringMarshalling.Utf8)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     internal static partial SDL_Surface* TTF_RenderText_Blended_Wrapped(IntPtr pFont, string text, UIntPtr length, SDL_Color fg, int wrap_width);
 }
