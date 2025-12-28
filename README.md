@@ -18,8 +18,8 @@ To build, the following tools are needed:
 
 To execute a full build, run the following from a command-prompt at the root of the source directory (where this README is found):
 ```
-dotnet msbuild ./Build.proj /t:Clean
-dotnet msbuild ./Build.proj
+dotnet msbuild Build.proj /t:Clean
+dotnet msbuild Build.proj
 ```
 This will build and drop everything under a newly created subdirectory ```artifacts\```.
 
@@ -28,12 +28,12 @@ This will build and drop everything under a newly created subdirectory ```artifa
 For 32-bit Linux ARM executables, run the following on a Raspberry Pi 32-bit OS (e.g., Debian Trixie with Desktop, as it will include the native build tooling):
 
 ```
-dotnet msbuild ./Build.proj /t:LinuxArm /p:LinuxArmPublishAot=true
+dotnet msbuild Build.proj /t:LinuxArm /p:LinuxArmPublishAot=true
 ```
 
 For 64-bit Linux ARM executables, run the following on a Raspberry Pi 64-bit OS (e.g, Debian Trixie with Desktop, as it will include the native build tooling):
 ```
-dotnet msbuild ./Build.proj /t:LinuxArm64 /p:LinuxArmPublishAot=true
+dotnet msbuild Build.proj /t:LinuxArm64 /p:LinuxArmPublishAot=true
 ```
 
 The SDL3 dependencies likely will not be pre-installed, so run the following to install them:
