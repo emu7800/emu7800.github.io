@@ -61,7 +61,7 @@ public enum CartType
 public static class CartTypeUtil
 {
     public static CartType From(string cartTypeStr)
-        => Enum.TryParse<CartType>(cartTypeStr, true, out var ct) ? ct : CartType.Unknown;
+        => Enum.TryParse<CartType>(cartTypeStr, true, out var ct) && !int.TryParse(cartTypeStr, out _) ? ct : CartType.Unknown;
 
     public static string ToCartTypeWordString(CartType cartType)
         => cartType switch

@@ -27,7 +27,7 @@ public enum Controller
 public static class ControllerUtil
 {
     public static Controller From(string controllerStr)
-        => Enum.TryParse<Controller>(controllerStr, true, out var c) ? c : Controller.None;
+        => Enum.TryParse<Controller>(controllerStr, true, out var c) && !int.TryParse(controllerStr, out _) ? c : Controller.None;
 
     public static Controller From(string controllerStr, string machineTypeStr)
     {

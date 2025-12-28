@@ -39,7 +39,7 @@ public sealed class CommandLine
             var window = RunGameProgram(rompathtorun, args);
             if (window is not null)
             {
-                driver.Start(window, false);
+                driver.Start(window, GetFullscreenOption(args));
             }
         }
         else if (TryGetDumpGameInfoOption(args, out var rompathtodump))
@@ -91,8 +91,8 @@ public sealed class CommandLine
                 MD5         : {gpi.MD5}
                 HelpUri     : {gpi.HelpUri}
 
-                Launch by using the following command line:
-                "{Environment.ProcessPath}" -r "{romPath}" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}
+                Launch by using the following command line arguments:
+                -r "{romPath}" {gpi.MachineType} {gpi.CartType} {gpi.LController} {gpi.RController}
             """);
         }
     }
@@ -151,7 +151,7 @@ public sealed class CommandLine
         if (string.IsNullOrWhiteSpace(romPath))
         {
             _logger.Log(1, "Rom path not specified.");
-            Environment.Exit(-8);
+            return null;
         }
 
         var machineType = args.Select(MachineTypeUtil.From).FirstOrDefault(mt => mt != MachineType.Unknown);
@@ -292,18 +292,16 @@ public sealed class CommandLine
       => FindOptionIndex(args, options) >= 0;
 
     static int GetIntFromOptionIndex(string[] args, int i)
-      => i < 0 || i + 1 >= args.Length || !int.TryParse(args[i + 1], out var intval) ? -1 : intval;
+      => int.TryParse(GetStrFromOptionIndex(args, i), out var val) ? val : -1;
 
     static string GetStrFromOptionIndex(string[] args, int i)
-      => i < 0 || i + 1 >= args.Length ? string.Empty : args[i + 1].Trim();
+      => (i < 0              ? string.Empty :
+          args[i].Length > 2 ? args[i][2..] : args[i + 1]).Trim();
 
     static int FindOptionIndex(string[] args, params string[] options)
-      => args.Select((a, i) => new { a, i})
-             .Where(r => options.Any(o => CiEq(r.a, $"-{o}") || CiEq(r.a, $"/{o}")))
+      => args.Select((a, i) => new { a, i })
+             .Where(r => options.Any(o => r.a.StartsWith($"-{o}") || r.a.StartsWith($"/{o}")))
              .Select(r => r.i)
              .DefaultIfEmpty(-1)
              .FirstOrDefault();
-
-    static bool CiEq(string a, string b)
-        => string.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0;
 }

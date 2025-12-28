@@ -134,7 +134,7 @@ public static class MachineTypeUtil
 
     public static MachineType From(string mtStr)
     {
-        if (Enum.TryParse<MachineType>(mtStr, true, out var mt)) return mt;
+        if (Enum.TryParse<MachineType>(mtStr, true, out var mt) && !int.TryParse(mtStr, out _)) return mt;
         var is2600 = mtStr.Contains("2600");
         var is7800 = mtStr.Contains("7800");
         var isNTSC = mtStr.Contains("NTSC", StringComparison.OrdinalIgnoreCase);

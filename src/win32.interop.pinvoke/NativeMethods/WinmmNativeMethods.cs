@@ -205,11 +205,14 @@ internal static unsafe partial class WinmmNativeMethods
         if (i < 0)
             return;
 
+        SoundQueues[i].hwo = IntPtr.Zero;
+
+        System.Threading.Thread.Sleep(100); // allow time for pending buffers to finish
+
         _ = waveOutReset(hwo);
         _ = waveOutClose(hwo);
 
         Marshal.FreeHGlobal(SoundQueues[i].storage);
-        SoundQueues[i].hwo = IntPtr.Zero;
         SoundQueues[i].storage = IntPtr.Zero;
         SoundQueues[i].storageSize = 0;
         SoundQueues[i].soundFrameSize = 0;

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using EMU7800.Core;
 using EMU7800.Services;
 using EMU7800.Services.Dto;
@@ -657,6 +656,7 @@ public sealed class GamePage : PageBase
     {
         _labelInfoText.Text = text;
         _infoTextVisibilityTimer = 2.0f;
+        Logger.Log(3, text);
     }
 
     string BuildControllersTextForHud()
