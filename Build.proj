@@ -4,23 +4,34 @@
     <PublishAot>false</PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
+    <SourceArtifacts Include="**/*" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/.git/**;**/$(ArtifactsPath)/**;lib/roms/**;src/tools/Installer/bin/**;src/tools/Installer/net10.0/**" />
   </ItemGroup>
   <Target Name="Clean">
-    <RemoveDir Directories="$(ArtifactsPath)" />
+    <RemoveDir Directories="$(ArtifactsPath);src/tools/Installer/bin;src/tools/Installer/net10.0" />
   </Target>
   <Target Name="PublishWin32">
-    <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
-    <Exec Command="dotnet publish src/win32/EMU7800.Win32.csproj -c Release /p:PublishAot=$(PublishAot)"/>
+    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Restore" />
+    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
   </Target>
   <Target Name="PublishWinSDL3">
-    <Exec Command="dotnet publish src/winsdl3/EMU7800.WinSDL3.csproj -c Release /p:PublishAot=$(PublishAot)"/>
+    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Restore" />
+    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
   </Target>
   <Target Name="PublishLinuxArm">
-    <Exec Command="dotnet publish src/linuxarm/EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(PublishAot)"/>
+    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Restore" />
+    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
   </Target>
   <Target Name="PublishLinuxArm64">
-    <Exec Command="dotnet publish src/linuxarm64/EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(PublishAot)"/>
+    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+  </Target>
+  <Target Name="PublishOsX64">
+    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+  </Target>
+  <Target Name="PublishOsXArm64">
+    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
@@ -122,6 +133,36 @@
           SkipUnchangedFiles="true"
           />
   </Target>
+  <Target Name="CopyBinOsX64" DependsOnTargets="PublishOsX64;ZipRoms">
+    <ItemGroup>
+      <BinOsX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsX64\release_osx-x64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.osx64bin"/>
+    <Copy SourceFiles="@(BinOsX64Artifacts)"
+          DestinationFiles="@(BinOsX64Artifacts->'$(ArtifactsPath)\EMU7800.osx64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osx64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="CopyBinOsXArm64" DependsOnTargets="PublishOsXArm64;ZipRoms">
+    <ItemGroup>
+      <BinOsXArm64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsXArm64\release_osx-arm64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.osxarm64bin" />
+    <Copy SourceFiles="@(BinOsXArm64Artifacts)"
+          DestinationFiles="@(BinOsXArm64Artifacts->'$(ArtifactsPath)\EMU7800.osxarm64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osxarm64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
   <Target Name="ZipBinWin32" DependsOnTargets="CopyBinWin32">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win32bin"
                   DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion).zip"
@@ -146,9 +187,24 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32">
-    <Exec Command="pwsh.exe .\src\tools\Installer\Build.ps1" />
+  <Target Name="ZipBinOsX64" DependsOnTargets="CopyBinOsX64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx64bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
   </Target>
+  <Target Name="ZipBinOsXArm64" DependsOnTargets="CopyBinOsXArm64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osxarm64bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
+  </Target>
+  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32">
+    <Exec Command="dotnet clean src/Tools/Installer/Build.cs" />
+    <Exec Command="dotnet run Build.cs" WorkingDirectory="src/Tools/Installer" />
+  </Target>
+  <Target Name="OsX64" DependsOnTargets="ZipBinOsX64" />
+  <Target Name="OsXArm64" DependsOnTargets="ZipBinOsXArm64" />
   <Target Name="LinuxArm" DependsOnTargets="ZipBinLinuxArm" />
   <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
   <Target Name="Win32" DependsOnTargets="ZipBinWin32" />

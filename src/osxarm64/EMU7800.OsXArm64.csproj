@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AssemblyName>EMU7800</AssemblyName>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
+    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
     <PublishAot>true</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
@@ -15,15 +14,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
-    <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <ItemGroup>
-      <LibFiles Include="$(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll" />
-    </ItemGroup>
-    <Copy SourceFiles="@(LibFiles)"
-          DestinationFolder="$(TargetDir)"
-          SkipUnchangedFiles="true" />
-  </Target>
 </Project>

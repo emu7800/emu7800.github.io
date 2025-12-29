@@ -160,3 +160,5 @@ $RECYCLE.BIN/
 
 artifacts/
 .idea/
+src/tools/Installer/bin/
+src/tools/Installer/net10.0/

@@ -13,6 +13,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <StackTraceSupport>false</StackTraceSupport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj"/>

@@ -11,6 +11,7 @@
     <OptimizationPreference>Speed</OptimizationPreference>
     <InvariantGlobalization>true</InvariantGlobalization>
     <StackTraceSupport>false</StackTraceSupport>
+    <PublishReadyToRun>true</PublishReadyToRun>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
