@@ -18,6 +18,11 @@
     <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll $(TargetDir)" />
+    <ItemGroup>
+      <LibFiles Include="$(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(LibFiles)"
+          DestinationFolder="$(TargetDir)"
+          SkipUnchangedFiles="true" />
   </Target>
 </Project>

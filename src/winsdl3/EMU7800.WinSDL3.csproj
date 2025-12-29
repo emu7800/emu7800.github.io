@@ -19,9 +19,14 @@
     <ProjectReference Include="..\sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj"/>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3.dll $(TargetDir)" />
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_image.dll $(TargetDir)" />
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\SDL3_ttf.dll $(TargetDir)" />
-    <Exec Command="copy /y $(ProjectDir)..\..\lib\OpenSans-VariableFont.ttf $(TargetDir)" />
+    <ItemGroup>
+      <LibFiles Include="$(ProjectDir)..\..\lib\SDL3.dll" />
+      <LibFiles Include="$(ProjectDir)..\..\lib\SDL3_image.dll" />
+      <LibFiles Include="$(ProjectDir)..\..\lib\SDL3_ttf.dll" />
+      <LibFiles Include="$(ProjectDir)..\..\lib\OpenSans-VariableFont.ttf" />
+    </ItemGroup>
+    <Copy SourceFiles="@(LibFiles)"
+      DestinationFolder="$(TargetDir)"
+      SkipUnchangedFiles="true" />
   </Target>
 </Project>

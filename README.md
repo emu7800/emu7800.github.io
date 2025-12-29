@@ -10,18 +10,26 @@ Enjoy!
 
 ## Building from Source
 
-To build, the following tools are needed:
+The following tools are needed for a default build:
 
 - [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
-- [Inno Setup Compiler 6.5.4](https://www.innosetup.com/)
-
-To execute a full build, run the following from a command-prompt at the root of the source directory (where this README is found):
+Run the following from a command-prompt at the root of the source directory (where this README is found):
 ```
 dotnet msbuild Build.proj /t:Clean
 dotnet msbuild Build.proj
 ```
 This will build and drop everything under a newly created subdirectory ```artifacts\```.
+
+To build the Win32 Installer, the following additional tool is needed:
+
+- [Inno Setup Compiler 6.5.4](https://www.innosetup.com/)
+
+Run the following from a command-prompt at the root of the source directory on a Windows system:
+
+```
+dotnet msbuild Build.proj /t:BuildWin32Installer
+```
 
 ### Building and Running Linux ARM (Raspberry Pi) Native Executables
 
