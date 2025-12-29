@@ -2,6 +2,7 @@
   <Import Project="Directory.Build.props" />
   <PropertyGroup>
     <PublishAot>false</PublishAot>
+    <AotNode Condition="'$(PublishAot)'=='true'">.aot</AotNode>
   </PropertyGroup>
   <ItemGroup>
     <SourceArtifacts Include="**/*" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/.git/**;**/$(ArtifactsPath)/**;lib/roms/**;src/tools/Installer/bin/**;src/tools/Installer/net10.0/**" />
@@ -165,37 +166,37 @@
   </Target>
   <Target Name="ZipBinWin32" DependsOnTargets="CopyBinWin32">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win32bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinWinSDL3" DependsOnTargets="CopyBinWinSDL3">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.winsdl3bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm" DependsOnTargets="CopyBinLinuxArm">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarmbin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm64" DependsOnTargets="CopyBinLinuxArm64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinOsX64" DependsOnTargets="CopyBinOsX64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinOsXArm64" DependsOnTargets="CopyBinOsXArm64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion)$(AotNode).zip"
                   Overwrite="true"
                   />
   </Target>
