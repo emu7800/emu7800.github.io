@@ -232,6 +232,9 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
         }
 
         ScaleFactor = SDL_GetWindowDisplayScale(hWnd);
+
+        _logger.Log(3, $"SDL window display scale: {ScaleFactor}");
+
         _displayId = SDL_GetDisplayForWindow(hWnd);
         SDL_GetDisplayBounds(_displayId, out var desktopRect);
 

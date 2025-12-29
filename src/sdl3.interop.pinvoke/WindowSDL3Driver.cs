@@ -39,12 +39,25 @@ public sealed class WindowSDL3Driver : IWindowDriver
         window.OnControllersChanged(devices.GameControllers);
         window.OnResized(devices.GraphicsDevice, (int)devices.SDL3GraphicsDevice.WindowSize.Width, (int)devices.SDL3GraphicsDevice.WindowSize.Height);
 
-        devices.SDL3GameControllers.Initialize();
-
         IntPtr id = Interlocked.Increment(ref _nextId);
 
         PendingIds.Enqueue(id);
         RegisteredWindows.TryAdd(id, devices);
+
+        SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
+
+        _logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
+
+        // Windows:
+        // Version  Revision
+        // 3002026  release-3.2.26-0-gbadbf8da4 (libsdl.org)
+
+        // LinuxArm:
+        // 3002010  release-3.2.10-0-g877399b2b (Raspbian 3.2.10+ds-1)
+
+        // LinuxArm64:
+        // Version  Revision
+        // 3002010  release-3.2.10-0-g877399b2b (Debian 3.2.10+ds-1)
 
         SDL_EnterAppMainCallbacks(0, IntPtr.Zero, AppInit, AppIterate, AppEvent, AppQuit);
     }
@@ -68,18 +81,6 @@ public sealed class WindowSDL3Driver : IWindowDriver
         }
 
         *(void**)ppAppState = (void*)id;
-
-        SDL_SetAppMetadata(VersionInfo.EMU7800, VersionInfo.AssemblyVersion, "https//emu7800.net");
-
-        wd.Logger.Log(3, $"Using SDL3: Version: {SDL_GetVersion()} Revision: {SDL_GetRevision()}");
-
-        // Windows:
-        // Version  Revision
-        // 3002026  release-3.2.26-0-gbadbf8da4 (libsdl.org)
-
-        // LinuxArm64:
-        // Version  Revision
-        // 3002010  release-3.2.10-0-g877399b2b (Debian 3.2.10+ds-1)
 
         wd.SDL3GameControllers.Initialize();
 
