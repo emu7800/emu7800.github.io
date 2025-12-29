@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="All">
   <Import Project="Directory.Build.props" />
   <PropertyGroup>
-    <LinuxArmPublishAot>false</LinuxArmPublishAot>
+    <PublishAot>false</PublishAot>
   </PropertyGroup>
   <ItemGroup>
     <SourceArtifacts Include=".\**\*" Exclude="**\bin\**;**\obj\**;**\.vs\**;**\.git\**;**\$(ArtifactsPath)\**" />
@@ -11,16 +11,16 @@
   </Target>
   <Target Name="PublishWin32">
     <!--<MSBuild Projects="@(ProjectToBuild)" Targets="Publish" Properties="Configuration=Release" />-->
-    <Exec Command="dotnet publish src/win32/EMU7800.Win32.csproj -c Release"/>
+    <Exec Command="dotnet publish src/win32/EMU7800.Win32.csproj -c Release /p:PublishAot=$(PublishAot)"/>
   </Target>
   <Target Name="PublishWinSDL3">
-    <Exec Command="dotnet publish src/winsdl3/EMU7800.WinSDL3.csproj -c Release"/>
+    <Exec Command="dotnet publish src/winsdl3/EMU7800.WinSDL3.csproj -c Release /p:PublishAot=$(PublishAot)"/>
   </Target>
   <Target Name="PublishLinuxArm">
-    <Exec Command="dotnet publish src/linuxarm/EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
+    <Exec Command="dotnet publish src/linuxarm/EMU7800.LinuxArm.csproj -c Release /p:PublishAot=$(PublishAot)"/>
   </Target>
   <Target Name="PublishLinuxArm64">
-    <Exec Command="dotnet publish src/linuxarm64/EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(LinuxArmPublishAot)"/>
+    <Exec Command="dotnet publish src/linuxarm64/EMU7800.LinuxArm64.csproj -c Release /p:PublishAot=$(PublishAot)"/>
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />

@@ -31,20 +31,33 @@ Run the following from a command-prompt at the root of the source directory on a
 dotnet msbuild Build.proj /t:BuildWin32Installer
 ```
 
-### Building and Running Linux ARM (Raspberry Pi) Native Executables
+### Building Platform-Optimized Native Executables
 
-For 32-bit Linux ARM executables, run the following on a Raspberry Pi 32-bit OS (e.g., Debian Trixie with Desktop, as it will include the native build tooling):
+To build platform-optimized native executables, simply add ```/p:PublishAot=true``` to the msbuild command line.
+Cross-compilation is not supported by the dotnet tooling, so this must be run on the target platform.
+
+Examples:
+
+Build a windows installer containing the native executable (run on Windows):
 
 ```
-dotnet msbuild Build.proj /t:LinuxArm /p:LinuxArmPublishAot=true
+dotnet msbuild Build.proj /t:BuildWin32Installer /p:PublishAot=true
 ```
 
-For 64-bit Linux ARM executables, run the following on a Raspberry Pi 64-bit OS (e.g, Debian Trixie with Desktop, as it will include the native build tooling):
+For 32-bit Linux ARM executables, run the following on a Raspberry Pi 32-bit OS
+(e.g., Debian Trixie with Desktop, as it will include the needed tooling):
+
 ```
-dotnet msbuild Build.proj /t:LinuxArm64 /p:LinuxArmPublishAot=true
+dotnet msbuild Build.proj /t:LinuxArm /p:PublishAot=true
 ```
 
-The SDL3 dependencies likely will not be pre-installed, so run the following to install them:
+For 64-bit Linux ARM executables, run the following on a Raspberry Pi 64-bit OS
+(e.g., Debian Trixie with Desktop, as it will include the needed tooling):
+```
+dotnet msbuild Build.proj /t:LinuxArm64 /p:PublishAot=true
+```
+
+The SDL3 dependencies likely will not be pre-installed on your Linux system, so run the following to install them:
 
 ```
 sudo apt install libsdl3-0
