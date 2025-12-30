@@ -12,8 +12,8 @@ namespace EMU7800.Win32.Interop;
 internal unsafe partial class DirectInputNativeMethods
 {
     public const int
-        AXISRANGE = 1000,
-        DEADZONE  = 500
+        AXISRANGE = 1 << 15,
+        DEADZONE  = AXISRANGE - 8
         ;
 
     [StructLayout(LayoutKind.Sequential)]
@@ -61,7 +61,7 @@ internal unsafe partial class DirectInputNativeMethods
             => (controllerno == 0 ? lX : lY) switch
             {
                 < -DEADZONE => 3, // up
-                > DEADZONE  => 1, // down
+                >  DEADZONE => 1, // down
                 _ => 0            // center
             };
 
@@ -71,10 +71,10 @@ internal unsafe partial class DirectInputNativeMethods
         public readonly Daptor2Mode InterpretDaptor2Mode()
             => lZ switch
             {
-                -1000 => Daptor2Mode.A2600,
-                 -875 => Daptor2Mode.A7800,
-                 -750 => Daptor2Mode.Keypad,
-                _     => Daptor2Mode.Unknown
+                -32768 /* 8000 */ => Daptor2Mode.A2600,
+                -28672 /* 9000 */ => Daptor2Mode.A7800,
+                -24576 /* A000 */ => Daptor2Mode.Keypad,
+                _                 => Daptor2Mode.Unknown,
             };
     }
 

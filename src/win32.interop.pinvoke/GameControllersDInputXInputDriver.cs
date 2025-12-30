@@ -37,6 +37,7 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
                 c.ProductName = joystickName;
                 c.JoystickType = GameController.JoystickTypeFrom(joystickName);
                 c.InternalDeviceNumber = i;
+                Info($"Joystick added: P{i + 1}: Name={c.ProductName} Type={c.JoystickType}");
             }
             else
             {
@@ -118,36 +119,35 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             var currButtonDown = currState.InterpretJoyButtonDown(i);
             if (prevButtonDown != currButtonDown)
             {
-                switch (c.Daptor2Mode)
+                if (c.Daptor2Mode == Daptor2Mode.A7800)
                 {
-                    case Daptor2Mode.A7800:
-                        switch (i)
-                        {
-                            case 2:
-                                c.ButtonChanged(i, MachineInput.Fire, currButtonDown);
-                                break;
-                            case 3:
-                                c.ButtonChanged(i, MachineInput.Fire2, currButtonDown);
-                                break;
-                        }
-                        break;
-                    case Daptor2Mode.Keypad:
-                        c.ButtonChanged(c.ControllerNo, GameController.Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
-                        break;
-                    case Daptor2Mode.A2600:
-                    default:
-                        switch (i)
-                        {
-                            case 0:
-                                c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
-                                c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
-                                break;
-                            case 1:
-                                c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
-                                c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
-                                break;
-                        }
-                        break;
+                    switch (i)
+                    {
+                        case 2:
+                            c.ButtonChanged(i, MachineInput.Fire, currButtonDown);
+                            break;
+                        case 3:
+                            c.ButtonChanged(i, MachineInput.Fire2, currButtonDown);
+                            break;
+                    }
+                }
+                else if (c.Daptor2Mode == Daptor2Mode.Keypad)
+                {
+                    c.ButtonChanged(c.ControllerNo, GameController.Daptor2KeypadToMachineInputMapping[i & 0xf], currButtonDown);
+                }
+                else if (c.Daptor2Mode == Daptor2Mode.A2600 || c.IsStelladaptor)
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire, currButtonDown);
+                            c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
+                            break;
+                        case 1:
+                            c.ButtonChanged(c.ControllerNo, MachineInput.Fire2, currButtonDown);
+                            c.PaddleButtonChanged(c.ControllerNo, i, currButtonDown);
+                            break;
+                    }
                 }
             }
         }
@@ -180,39 +180,32 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             c.ButtonChanged(c.ControllerNo, MachineInput.Down, currDown);
         }
 
-        switch (c.Daptor2Mode)
+        if (c.Daptor2Mode == Daptor2Mode.A2600 || c.IsStelladaptor)
         {
+            var paddleno = c.ControllerNo << 1;
+            var prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
+            var currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
+            if (prevPos != currPos)
+            {
+                var paddleohms = (1 << 20) - ((currPos + DirectInputNativeMethods.AXISRANGE) << 4);
+                c.PaddlePositionChanged(c.ControllerNo, paddleno, paddleohms);
+            }
 
-            case Daptor2Mode.A7800:
-            case Daptor2Mode.Keypad:
-                break;
-            case Daptor2Mode.A2600:
-            default:
-                {
-                    var paddleno = c.ControllerNo << 1;
-                    var prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
-                    var currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
-                    if (prevPos != currPos)
-                    {
-                        c.PaddlePositionChanged(c.ControllerNo, paddleno, currPos);
-                    }
+            paddleno++;
+            prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
+            currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
+            if (prevPos != currPos)
+            {
+                var paddleohms = (1 << 20) - ((currPos + DirectInputNativeMethods.AXISRANGE) << 4);
+                c.PaddlePositionChanged(c.ControllerNo, paddleno, paddleohms);
+            }
 
-                    paddleno++;
-                    prevPos = prevState.InterpretStelladaptorPaddlePosition(paddleno);
-                    currPos = currState.InterpretStelladaptorPaddlePosition(paddleno);
-                    if (prevPos != currPos)
-                    {
-                        c.PaddlePositionChanged(c.ControllerNo, paddleno, currPos);
-                    }
-
-                    prevPos = prevState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
-                    currPos = currState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
-                    if (prevPos != currPos)
-                    {
-                        c.DrivingPositionChanged(c.ControllerNo, GameController.StelladaptorDrivingMachineInputMapping[currPos]);
-                    }
-                    break;
-                }
+            prevPos = prevState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
+            currPos = currState.InterpretStelladaptorDrivingPosition(c.ControllerNo);
+            if (prevPos != currPos)
+            {
+                c.DrivingPositionChanged(c.ControllerNo, GameController.StelladaptorDrivingMachineInputMapping[currPos]);
+            }
         }
     }
 

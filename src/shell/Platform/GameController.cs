@@ -6,7 +6,7 @@ using System;
 namespace EMU7800.Shell;
 
 public enum JoystickType { None, XInput, Usb, Stelladaptor, Daptor, Daptor2 }
-public enum Daptor2Mode { Unknown = -1, A2600 = 0, A7800 = 1, Keypad = 2 } // Last three values are significant
+public enum Daptor2Mode { Unknown, A2600, A7800, Keypad }
 
 public sealed class GameController
 {
@@ -43,6 +43,8 @@ public sealed class GameController
     public string Info => ProductName + (IsDaptor ? $" ({Daptor2ModeStr} mode)" : string.Empty);
     public bool IsAtariAdaptor
       => JoystickType is JoystickType.Stelladaptor or JoystickType.Daptor or JoystickType.Daptor2;
+    public bool IsStelladaptor
+      => JoystickType is JoystickType.Stelladaptor or JoystickType.Daptor;
     public bool IsDaptor
       => JoystickType is JoystickType.Daptor or JoystickType.Daptor2;
 
@@ -66,7 +68,7 @@ public sealed class GameController
             "Controller (XBOX 360 For Windows)" or
             "Controller (Xbox 360 Wireless Receiver for Windows)"
                 => JoystickType.XInput,
-            _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase)
+            _ => name.Contains("XBOX", StringComparison.OrdinalIgnoreCase) || name.Contains("XINPUT compatible", StringComparison.OrdinalIgnoreCase)
                     ? JoystickType.XInput
                     : name.Length > 0 ? JoystickType.Usb : JoystickType.XInput
         };

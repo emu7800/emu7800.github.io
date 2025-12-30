@@ -9,6 +9,11 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
 {
     #region Fields
 
+    const int
+        AXISRANGE = 1 << 15,
+        DEADZONE  = AXISRANGE - 8
+        ;
+
     readonly Window _window;
     readonly ILogger _logger;
     readonly uint[] _instanceIds = [0, 0];
@@ -126,36 +131,35 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
 
         var c = Controllers[controllerno];
 
-        switch (c.Daptor2Mode)
+        if (c.Daptor2Mode == Daptor2Mode.A7800)
         {
-            case Daptor2Mode.A7800:
-                switch (button)
-                {
-                    case 2:
-                        c.ButtonChanged(controllerno, MachineInput.Fire, down);
-                        break;
-                    case 3:
-                        c.ButtonChanged(controllerno, MachineInput.Fire2, down);
-                        break;
-                }
-                break;
-            case Daptor2Mode.Keypad:
-                c.ButtonChanged(controllerno, GameController.Daptor2KeypadToMachineInputMapping[button & 0xf], down);
-                break;
-            case Daptor2Mode.A2600:
-            default:
-                switch (button)
-                {
-                    case 0:
-                        c.ButtonChanged(controllerno, MachineInput.Fire, down);
-                        c.PaddleButtonChanged(controllerno, button, down);
-                        break;
-                    case 1:
-                        c.ButtonChanged(controllerno, MachineInput.Fire2, down);
-                        c.PaddleButtonChanged(controllerno, button, down);
-                        break;
-                }
-                break;
+            switch (button)
+            {
+                case 2:
+                    c.ButtonChanged(controllerno, MachineInput.Fire, down);
+                    break;
+                case 3:
+                    c.ButtonChanged(controllerno, MachineInput.Fire2, down);
+                    break;
+            }
+        }
+        else if (c.Daptor2Mode == Daptor2Mode.Keypad)
+        {
+            c.ButtonChanged(controllerno, GameController.Daptor2KeypadToMachineInputMapping[button & 0xf], down);
+        }
+        else if (c.Daptor2Mode == Daptor2Mode.A2600 || c.IsStelladaptor)
+        {
+            switch (button)
+            {
+                case 0:
+                    c.ButtonChanged(controllerno, MachineInput.Fire, down);
+                    c.PaddleButtonChanged(controllerno, 0, down);
+                    break;
+                case 1:
+                    c.ButtonChanged(controllerno, MachineInput.Fire2, down);
+                    c.PaddleButtonChanged(controllerno, 1, down);
+                    break;
+            }
         }
     }
 
@@ -172,131 +176,124 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
 
         if (axis == 2)
         {
-            var newDaptor2Mode = value switch
+            if (c.JoystickType == JoystickType.Daptor2)
             {
-                -32768 /* 8000 */ => Daptor2Mode.A2600,
-                -28672 /* 9000 */ => Daptor2Mode.A7800,
-                -24576 /* A000 */ => Daptor2Mode.Keypad,
-                _ => Daptor2Mode.Unknown,
-            };
-            if (c.Daptor2Mode != newDaptor2Mode && newDaptor2Mode != Daptor2Mode.Unknown)
-            {
-                c.Daptor2Mode = newDaptor2Mode;
-                Info($"Daptor2 mode changed: P{controllerno + 1}: {newDaptor2Mode}");
+                var newDaptor2Mode = value switch
+                {
+                    -32768 /* 8000 */ => Daptor2Mode.A2600,
+                    -28672 /* 9000 */ => Daptor2Mode.A7800,
+                    -24576 /* A000 */ => Daptor2Mode.Keypad,
+                    _ => Daptor2Mode.Unknown,
+                };
+                if (c.Daptor2Mode != newDaptor2Mode && newDaptor2Mode != Daptor2Mode.Unknown)
+                {
+                    c.Daptor2Mode = newDaptor2Mode;
+                    Info($"Daptor2 mode changed: P{controllerno + 1}: {newDaptor2Mode}");
+                }
             }
             return;
         }
 
-        const int
-            DEADZONE = 32760
-            ;
-
-        switch (c.Daptor2Mode)
+        if (c.Daptor2Mode == Daptor2Mode.A2600 || c.IsStelladaptor)
         {
-            case Daptor2Mode.A7800:
-            case Daptor2Mode.Keypad:
-                break;
-            case Daptor2Mode.A2600:
-            default:
-                var paddlepos = (1 << 20) - ((value + 32768) << 4);
-                switch (axis)
-                {
-                    case 0:
-                        if (value < -DEADZONE)
-                        {
-                            switch (_lastHAxisChange[controllerno])
-                            {
-                                case MachineInput.Left:
-                                    break;
-                                case MachineInput.Right:
-                                    c.ButtonChanged(controllerno, MachineInput.Right, false);
-                                    c.ButtonChanged(controllerno, MachineInput.Left, true);
-                                    _lastHAxisChange[controllerno] = MachineInput.Left;
-                                    break;
-                                case MachineInput.End:
-                                    c.ButtonChanged(controllerno, MachineInput.Left, true);
-                                    _lastHAxisChange[controllerno] = MachineInput.Left;
-                                    break;
-                            }
-                        }
-                        else if (value > DEADZONE)
-                        {
-                            switch (_lastHAxisChange[controllerno])
-                            {
-                                case MachineInput.Right:
-                                    break;
-                                case MachineInput.Left:
-                                    c.ButtonChanged(controllerno, MachineInput.Left, false);
-                                    c.ButtonChanged(controllerno, MachineInput.Right, true);
-                                    _lastHAxisChange[controllerno] = MachineInput.Right;
-                                    break;
-                                case MachineInput.End:
-                                    c.ButtonChanged(controllerno, MachineInput.Right, true);
-                                    _lastHAxisChange[controllerno] = MachineInput.Right;
-                                    break;
-                            }
-                        }
-                        else if (_lastHAxisChange[controllerno] != MachineInput.End)
-                        {
-                            c.ButtonChanged(controllerno, _lastHAxisChange[controllerno], false);
-                            _lastHAxisChange[controllerno] = MachineInput.End;
-                        }
-                        c.PaddlePositionChanged(controllerno, controllerno << 1, paddlepos);
-                        break;
-                    case 1:
-                        if (value < -DEADZONE)
-                        {
-                            switch (_lastVAxisChange[controllerno])
-                            {
-                                case MachineInput.Up:
-                                    break;
-                                case MachineInput.Down:
-                                    c.ButtonChanged(controllerno, MachineInput.Down, false);
-                                    c.ButtonChanged(controllerno, MachineInput.Up, true);
-                                    _lastVAxisChange[controllerno] = MachineInput.Up;
-                                    break;
-                                case MachineInput.End:
-                                    c.ButtonChanged(controllerno, MachineInput.Up, true);
-                                    _lastVAxisChange[controllerno] = MachineInput.Up;
-                                    break;
-                            }
-                        }
-                        else if (value > DEADZONE)
-                        {
-                            switch (_lastVAxisChange[controllerno])
-                            {
-                                case MachineInput.Down:
-                                    break;
-                                case MachineInput.Up:
-                                    c.ButtonChanged(controllerno, MachineInput.Up, false);
-                                    c.ButtonChanged(controllerno, MachineInput.Down, true);
-                                    _lastVAxisChange[controllerno] = MachineInput.Down;
-                                    break;
-                                case MachineInput.End:
-                                    c.ButtonChanged(controllerno, MachineInput.Down, true);
-                                    _lastVAxisChange[controllerno] = MachineInput.Down;
-                                    break;
-                            }
-                        }
-                        else if (_lastVAxisChange[controllerno] != MachineInput.End)
-                        {
-                            c.ButtonChanged(controllerno, _lastVAxisChange[controllerno], false);
-                            _lastVAxisChange[controllerno] = MachineInput.End;
-                        }
-                        c.PaddlePositionChanged(controllerno, (controllerno << 1) + 1, paddlepos);
-                        break;
-                }
-                if (controllerno == axis)
-                {
-                    var pos = value switch
+            var paddleohms = (1 << 20) - ((value + AXISRANGE) << 4);
+            switch (axis)
+            {
+                case 0:
+                    if (value < -DEADZONE)
                     {
-                        < -DEADZONE => 3, // up
-                        > DEADZONE  => 1, // down
-                        _           => 0  // center
-                    };
-                    c.DrivingPositionChanged(c.ControllerNo, GameController.StelladaptorDrivingMachineInputMapping[pos]);
-                }
-                break;
+                        switch (_lastHAxisChange[controllerno])
+                        {
+                            case MachineInput.Left:
+                                break;
+                            case MachineInput.Right:
+                                c.ButtonChanged(controllerno, MachineInput.Right, false);
+                                c.ButtonChanged(controllerno, MachineInput.Left, true);
+                                _lastHAxisChange[controllerno] = MachineInput.Left;
+                                break;
+                            case MachineInput.End:
+                                c.ButtonChanged(controllerno, MachineInput.Left, true);
+                                _lastHAxisChange[controllerno] = MachineInput.Left;
+                                break;
+                        }
+                    }
+                    else if (value > DEADZONE)
+                    {
+                        switch (_lastHAxisChange[controllerno])
+                        {
+                            case MachineInput.Right:
+                                break;
+                            case MachineInput.Left:
+                                c.ButtonChanged(controllerno, MachineInput.Left, false);
+                                c.ButtonChanged(controllerno, MachineInput.Right, true);
+                                _lastHAxisChange[controllerno] = MachineInput.Right;
+                                break;
+                            case MachineInput.End:
+                                c.ButtonChanged(controllerno, MachineInput.Right, true);
+                                _lastHAxisChange[controllerno] = MachineInput.Right;
+                                break;
+                        }
+                    }
+                    else if (_lastHAxisChange[controllerno] != MachineInput.End)
+                    {
+                        c.ButtonChanged(controllerno, _lastHAxisChange[controllerno], false);
+                        _lastHAxisChange[controllerno] = MachineInput.End;
+                    }
+                    c.PaddlePositionChanged(controllerno, controllerno << 1, paddleohms);
+                    break;
+                case 1:
+                    if (value < -DEADZONE)
+                    {
+                        switch (_lastVAxisChange[controllerno])
+                        {
+                            case MachineInput.Up:
+                                break;
+                            case MachineInput.Down:
+                                c.ButtonChanged(controllerno, MachineInput.Down, false);
+                                c.ButtonChanged(controllerno, MachineInput.Up, true);
+                                _lastVAxisChange[controllerno] = MachineInput.Up;
+                                break;
+                            case MachineInput.End:
+                                c.ButtonChanged(controllerno, MachineInput.Up, true);
+                                _lastVAxisChange[controllerno] = MachineInput.Up;
+                                break;
+                        }
+                    }
+                    else if (value > DEADZONE)
+                    {
+                        switch (_lastVAxisChange[controllerno])
+                        {
+                            case MachineInput.Down:
+                                break;
+                            case MachineInput.Up:
+                                c.ButtonChanged(controllerno, MachineInput.Up, false);
+                                c.ButtonChanged(controllerno, MachineInput.Down, true);
+                                _lastVAxisChange[controllerno] = MachineInput.Down;
+                                break;
+                            case MachineInput.End:
+                                c.ButtonChanged(controllerno, MachineInput.Down, true);
+                                _lastVAxisChange[controllerno] = MachineInput.Down;
+                                break;
+                        }
+                    }
+                    else if (_lastVAxisChange[controllerno] != MachineInput.End)
+                    {
+                        c.ButtonChanged(controllerno, _lastVAxisChange[controllerno], false);
+                        _lastVAxisChange[controllerno] = MachineInput.End;
+                    }
+                    c.PaddlePositionChanged(controllerno, (controllerno << 1) + 1, paddleohms);
+                    break;
+            }
+            if (controllerno == axis)
+            {
+                var pos = value switch
+                {
+                    < -DEADZONE => 3, // up
+                    >  DEADZONE => 1, // down
+                    _           => 0  // center
+                };
+                c.DrivingPositionChanged(c.ControllerNo, GameController.StelladaptorDrivingMachineInputMapping[pos]);
+            }
         }
     }
 
@@ -338,7 +335,7 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
         c.JoystickType = GameController.JoystickTypeFrom(gamepadName);
         c.ProductName = gamepadName;
         var gamepadType = SDL_GetGamepadTypeForID(instanceId);
-        Info($"Gamepad added: P{i + 1}: {instanceId} {c.ProductName} {c.JoystickType} {gamepadType}");
+        Info($"Gamepad added: P{i + 1}: {instanceId} Name={c.ProductName} Type={c.JoystickType} SDLType={gamepadType}");
     }
 
     void AddJoystick(int i, uint instanceId)
@@ -351,7 +348,7 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
         c.JoystickType= GameController.JoystickTypeFrom(joystickName);
         c.ProductName= joystickName;
         var joystickType = SDL_GetJoystickTypeForID(instanceId);
-        Info($"Joystick added: P{i + 1}: {instanceId} {c.ProductName} {c.JoystickType} {joystickType}");
+        Info($"Joystick added: P{i + 1}: {instanceId} Name={c.ProductName} Type={c.JoystickType} SDLType={joystickType}");
     }
 
     int GetControllerNo(uint instanceId)
