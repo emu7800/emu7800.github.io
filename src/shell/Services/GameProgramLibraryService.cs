@@ -11,6 +11,24 @@ namespace EMU7800.Services;
 
 public sealed class GameProgramLibraryService
 {
+    static readonly string[] ManufacturerWhiteList = [
+        "20th Century Fox",
+        "Absolute",
+        "Activision",
+        "Atari",
+        "CBS Electronics",
+        "Coleco",
+        "Epyx",
+        "Imagic",
+        "Mattel",
+        "Milton Bradley",
+        "Parker Bros",
+        "Sears",
+        "Sega",
+        "Tynesoft",
+        "US Games"
+    ];
+
     readonly DatastoreService _datastoreSvc;
 
     public static List<GameProgramInfoViewItemCollection> GetGameProgramInfoViewItemCollections(IEnumerable<ImportedGameProgramInfo> importedGamePrograms)
@@ -22,15 +40,22 @@ public sealed class GameProgramLibraryService
             .. ToGameProgramInfoViewItemCollections(
                 ToDict(importedGamePrograms, igpi => MachineTypeUtil.To2600or7800WordString(igpi.GameProgramInfo.MachineType)),
                 igpi => igpi.GameProgramInfo.Title,
-                ToMachineTypeSubTitle)
-,
+                ToMachineTypeSubTitle),
+
             .. ToGameProgramInfoViewItemCollections(
-                ToDict(importedGamePrograms, igpi => igpi.GameProgramInfo.Manufacturer),
+                ToDict(importedGamePrograms.Where(IsManufacturerWhiteListed).Where(IsPaddleGame), igpi => nameof(Controller.Paddles)),
                 igpi => igpi.GameProgramInfo.Title,
-                ToManufacturerSubTitle)
-,
+                ToManufacturerSubTitle),
+
             .. ToGameProgramInfoViewItemCollections(
-                ToDict(importedGamePrograms, igpi => igpi.GameProgramInfo.Author),
+                ToDict(importedGamePrograms.Where(IsManufacturerWhiteListed),
+                    igpi => string.IsNullOrWhiteSpace(igpi.GameProgramInfo.Manufacturer) || igpi.GameProgramInfo.Qualifier == "Homebrew"
+                        ? "Homebrews" : igpi.GameProgramInfo.Manufacturer),
+                igpi => igpi.GameProgramInfo.Title,
+                ToManufacturerSubTitle),
+
+            .. ToGameProgramInfoViewItemCollections(
+                ToDict(importedGamePrograms.Where(IsManufacturerWhiteListed), igpi => igpi.GameProgramInfo.Author),
                 igpi => igpi.GameProgramInfo.Year,
                 ToAuthorSubTitle)
          ];
@@ -56,6 +81,11 @@ public sealed class GameProgramLibraryService
 
     #region Helpers
 
+    static bool IsManufacturerWhiteListed(ImportedGameProgramInfo igpi)
+      => ManufacturerWhiteList.Contains(igpi.GameProgramInfo.Manufacturer) || igpi.GameProgramInfo.Qualifier == "Homebrew";
+    static bool IsPaddleGame(ImportedGameProgramInfo igpi)
+      => igpi.GameProgramInfo.LController == Controller.Paddles || igpi.GameProgramInfo.RController == Controller.Paddles;
+
     static IEnumerable<GameProgramInfoViewItemCollection> ToGameProgramInfoViewItemCollections(
         Dictionary<string, List<ImportedGameProgramInfo>> dict,
         Func<ImportedGameProgramInfo, string> orderByFunc,
@@ -76,7 +106,8 @@ public sealed class GameProgramLibraryService
         => new(igpi, subTitleFunc(igpi));
 
     static Dictionary<string, List<ImportedGameProgramInfo>> ToDict(IEnumerable<ImportedGameProgramInfo> importedGameProgramInfoSet, Func<ImportedGameProgramInfo, string> keySelector)
-        => importedGameProgramInfoSet.GroupBy(keySelector)
+        => importedGameProgramInfoSet
+            .GroupBy(keySelector)
             .Where(g => !string.IsNullOrWhiteSpace(g.Key))
             .ToDictionary(g => g.Key, g => g.ToList());
 
