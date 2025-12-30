@@ -773,9 +773,9 @@ public sealed class TIA : IDevice
     {
         RegW[CTRLPF] = data;
 
-        if (data == 0 && ScanLine is 49 or 259)
+        if (ScanLine == 49 && PokeOpHSync == 111 && data == 0 || ScanLine == 260 && PokeOpHSync == 42 && data == 0)
         {
-            // Emulation cheat for Warlords
+            // Emulation cheat for Warlords, seems PF always needs to be in reflected state
         }
         else
         {
