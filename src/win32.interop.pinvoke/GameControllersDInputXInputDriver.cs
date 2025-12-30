@@ -102,11 +102,14 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
     {
         DirectInputNativeMethods.Poll(c.InternalDeviceNumber, out var currState, out var prevState);
 
-        var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
-        if (maybeNewDaptorMode != c.Daptor2Mode && maybeNewDaptorMode != Daptor2Mode.Unknown)
+        if (c.JoystickType == JoystickType.Daptor2)
         {
-            c.Daptor2Mode = maybeNewDaptorMode;
-            Info($"Daptor2 mode changed: P{c.ControllerNo + 1}: {maybeNewDaptorMode}");
+            var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
+            if (maybeNewDaptorMode != c.Daptor2Mode && maybeNewDaptorMode != Daptor2Mode.Unknown)
+            {
+                c.Daptor2Mode = maybeNewDaptorMode;
+                Info($"Daptor2 mode changed: P{c.ControllerNo + 1}: {maybeNewDaptorMode}");
+            }
         }
 
         for (var i = 0; i < 0xf; i++)

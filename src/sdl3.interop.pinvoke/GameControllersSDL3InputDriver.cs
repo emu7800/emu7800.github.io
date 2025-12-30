@@ -55,6 +55,15 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
 
     public void Poll()
     {
+        for (var i = 0; i < Controllers.Length; i++)
+        {
+            var c = Controllers[i];
+            if (c.JoystickType != JoystickType.Daptor2 || c.Daptor2Mode != Daptor2Mode.Unknown)
+                continue;
+            var joystick = SDL_GetJoystickFromID(_instanceIds[i]);
+            var value = SDL_GetJoystickAxis(joystick, 2);
+            AxisChanged(_instanceIds[i], 2, value);
+        }
     }
 
     public void RemoveGamepad(uint instanceId)
