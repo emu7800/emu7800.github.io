@@ -30,7 +30,7 @@ public sealed partial class WindowWin32Driver : IWindowDriver
             window,
             new GraphicsDeviceD2DDriver(_hWnd),
             new AudioDeviceWinmmDriver(),
-            new GameControllersDInputXInputDriver(_hWnd, window));
+            new GameControllersDInputXInputDriver(_hWnd, window, _logger));
 
         window.OnAudioChanged(devices.AudioDevice);
         window.OnControllersChanged(devices.GameControllers);

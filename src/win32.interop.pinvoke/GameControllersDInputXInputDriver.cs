@@ -12,6 +12,7 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
 
     readonly IntPtr _hWnd;
     readonly Window _window;
+    readonly ILogger _logger;
 
     #endregion
 
@@ -90,21 +91,22 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
 
     #region Constructors
 
-    public GameControllersDInputXInputDriver(IntPtr hWnd, Window window)
-      => (_hWnd, _window) = (hWnd, window);
+    public GameControllersDInputXInputDriver(IntPtr hWnd, Window window, ILogger logger)
+      => (_hWnd, _window, _logger) = (hWnd, window, logger);
 
     #endregion
 
     #region Helpers
 
-    static void RaiseEventsFromDirectInput(GameController c)
+    void RaiseEventsFromDirectInput(GameController c)
     {
         DirectInputNativeMethods.Poll(c.InternalDeviceNumber, out var currState, out var prevState);
 
         var maybeNewDaptorMode = currState.InterpretDaptor2Mode();
-        if (maybeNewDaptorMode != c.Daptor2Mode)
+        if (maybeNewDaptorMode != c.Daptor2Mode && maybeNewDaptorMode != Daptor2Mode.Unknown)
         {
             c.Daptor2Mode = maybeNewDaptorMode;
+            Info($"Daptor2 mode changed: P{c.ControllerNo + 1}: {maybeNewDaptorMode}");
         }
 
         for (var i = 0; i < 0xf; i++)
@@ -289,6 +291,9 @@ public sealed class GameControllersDInputXInputDriver : IGameControllersDriver
             c.ButtonChanged(c.ControllerNo, MachineInput.Reset, currReset);
         }
     }
+
+    void Info(string message)
+      => _logger.Log(3, message);
 
     #endregion
 }

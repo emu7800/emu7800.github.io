@@ -28,7 +28,7 @@ public sealed class GameController
     readonly Window _window;
 
     public int ControllerNo { get; init; }
-    public Daptor2Mode Daptor2Mode { get; set; } = Daptor2Mode.Unknown;
+    public Daptor2Mode Daptor2Mode { get; set; } = Daptor2Mode.A2600;
     public string Daptor2ModeStr => Daptor2Mode switch
     {
         Daptor2Mode.A2600  => "2600",

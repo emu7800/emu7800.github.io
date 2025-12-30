@@ -165,18 +165,15 @@ public sealed class GameControllersSDL3InputDriver : IGameControllersDriver
         {
             var newDaptor2Mode = value switch
             {
-                -1000 => Daptor2Mode.A2600,
-                -875  => Daptor2Mode.A7800,
-                -750  => Daptor2Mode.Keypad,
-                _     => Daptor2Mode.Unknown,
+                -32768 /* 8000 */ => Daptor2Mode.A2600,
+                -28672 /* 9000 */ => Daptor2Mode.A7800,
+                -24576 /* A000 */ => Daptor2Mode.Keypad,
+                _ => Daptor2Mode.Unknown,
             };
-            if (c.Daptor2Mode != newDaptor2Mode)
+            if (c.Daptor2Mode != newDaptor2Mode && newDaptor2Mode != Daptor2Mode.Unknown)
             {
                 c.Daptor2Mode = newDaptor2Mode;
-                if (newDaptor2Mode != Daptor2Mode.Unknown)
-                {
-                    Info($"Daptor2 mode changed: P{controllerno + 1}: {newDaptor2Mode}");
-                }
+                Info($"Daptor2 mode changed: P{controllerno + 1}: {newDaptor2Mode}");
             }
             return;
         }
