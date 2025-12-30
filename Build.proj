@@ -1,8 +1,21 @@
 ﻿<Project DefaultTargets="Default">
   <Import Project="Directory.Build.props" />
   <PropertyGroup>
-    <PublishAot>false</PublishAot>
-    <AotNode Condition="'$(PublishAot)'=='true'">.aot</AotNode>
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IsWindowsX64  Condition="$([MSBuild]::IsOsPlatform('Windows')) and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsWindowsX64>
+    <IsLinuxArm    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm">true</IsLinuxArm>
+    <IsLinuxArmX64 Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsLinuxArmX64>
+    <IsOsX64       Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsOsX64>
+    <IsOsXArm64    Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsOsXArm64>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Win32PublishAot      Condition="'$(PublishAot)'=='true'">$(IsWindowsX64)</Win32PublishAot>
+    <LinuxArmPublishAot   Condition="'$(PublishAot)'=='true'">$(IsLinuxArm)</LinuxArmPublishAot>
+    <LinuxArm64PublishAot Condition="'$(PublishAot)'=='true'">$(IsLinuxArm64)</LinuxArm64PublishAot>
+    <OsX64PublishAot      Condition="'$(PublishAot)'=='true'">$(IsOsX64)</OsX64PublishAot>
+    <OsXArm64PublishAot   Condition="'$(PublishAot)'=='true'">$(IsOsXArm64)</OsXArm64PublishAot>
   </PropertyGroup>
   <ItemGroup>
     <SourceArtifacts Include="**/*" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/.git/**;**/$(ArtifactsPath)/**;lib/roms/**;src/tools/Installer/bin/**;src/tools/Installer/net10.0/**" />
@@ -10,29 +23,29 @@
   <Target Name="Clean">
     <RemoveDir Directories="$(ArtifactsPath);src/tools/Installer/bin;src/tools/Installer/net10.0" />
   </Target>
-  <Target Name="PublishWin32">
+  <Target Name="PublishWin32" Condition="'$(IsWindowsX64)'=='true'">
     <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Restore" />
-    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(Win32PublishAot)" />
   </Target>
-  <Target Name="PublishWinSDL3">
+  <Target Name="PublishWinSDL3" Condition="'$(IsWindowsX64)'=='true'">
     <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Restore" />
-    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(Win32PublishAot)" />
   </Target>
-  <Target Name="PublishLinuxArm">
+  <Target Name="PublishLinuxArm" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm)'=='true'">
     <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Restore" />
-    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArmPublishAot)" />
   </Target>
-  <Target Name="PublishLinuxArm64">
+  <Target Name="PublishLinuxArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm64)'=='true'">
     <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArm64PublishAot)" />
   </Target>
-  <Target Name="PublishOsX64">
+  <Target Name="PublishOsX64" Condition="'$(IsWindowsX64)'=='true' or '$(IsOsX64)'=='true'">
     <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsX64PublishAot)" />
   </Target>
-  <Target Name="PublishOsXArm64">
+  <Target Name="PublishOsXArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsOsXArm64)'=='true'">
     <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(PublishAot)" />
+    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsXArm64PublishAot)" />
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
@@ -166,49 +179,50 @@
   </Target>
   <Target Name="ZipBinWin32" DependsOnTargets="CopyBinWin32">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win32bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinWinSDL3" DependsOnTargets="CopyBinWinSDL3">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.winsdl3bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm" DependsOnTargets="CopyBinLinuxArm">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarmbin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm64" DependsOnTargets="CopyBinLinuxArm64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinOsX64" DependsOnTargets="CopyBinOsX64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinOsXArm64" DependsOnTargets="CopyBinOsXArm64">
     <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion)$(AotNode).zip"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32">
+  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32" Condition="'$(IsWindowsX64)'=='true'">
     <Exec Command="dotnet clean Build.cs" WorkingDirectory="src/Tools/Installer" />
-    <Exec Command="dotnet run Build.cs" WorkingDirectory="src/Tools/Installer" />
+    <Exec Command="dotnet run Build.cs"   WorkingDirectory="src/Tools/Installer" />
   </Target>
-  <Target Name="OsX64" DependsOnTargets="ZipBinOsX64" />
-  <Target Name="OsXArm64" DependsOnTargets="ZipBinOsXArm64" />
-  <Target Name="LinuxArm" DependsOnTargets="ZipBinLinuxArm" />
-  <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
-  <Target Name="Win32" DependsOnTargets="ZipBinWin32" />
-  <Target Name="WinSDL3" DependsOnTargets="ZipBinWinSDL3" />
-  <Target Name="Default" DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
+  <Target Name="OsX64"      DependsOnTargets="ZipBinOsX64"      Condition="'$(IsWindowsX64)'=='true' or '$(IsOsX64)'=='true'" />
+  <Target Name="OsXArm64"   DependsOnTargets="ZipBinOsXArm64"   Condition="'$(IsWindowsX64)'=='true' or '$(IsOsXArm64)'=='true'" />
+  <Target Name="LinuxArm"   DependsOnTargets="ZipBinLinuxArm"   Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm)'=='true'" />
+  <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm64)'=='true'" />
+  <Target Name="Win32"      DependsOnTargets="ZipBinWin32"      Condition="'$(IsWindowsX64)'=='true'" />
+  <Target Name="WinSDL3"    DependsOnTargets="ZipBinWinSDL3"    Condition="'$(IsWindowsX64)'=='true'" />
+  <Target Name="Default"    DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
+  <Target Name="DefaultExp" DependsOnTargets="Default;OsX64;OsXArm64" />
 </Project>

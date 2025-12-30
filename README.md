@@ -10,7 +10,7 @@ Enjoy!
 
 ## Building from Source
 
-The following tools are needed for a default build:
+The following tools are needed for a Default build:
 
 - [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
@@ -19,7 +19,18 @@ Run the following from a command-prompt at the root of the source directory (whe
 dotnet msbuild Build.proj /t:Clean
 dotnet msbuild Build.proj
 ```
-This will build and drop everything under a newly created subdirectory ```artifacts\```.
+The Default target will build and drop everything under a newly created ```artifacts\``` sub-folder.
+All targets are self-contained deployments.
+
+If this is run on Windows, platform-optimized native executables (i.e., an AOT build) will be produced for Windows targets.
+Non-Windows targets will be built as ReadyToRun, single-file managed executables.
+
+If this is run on the other platforms (Linux Arm, Linux Arm64), platform-optimized native executables will be produced
+only for that specific platform.
+
+OSX 64 and OSX ARM64 targets are experimental and have not been tested. Use the ```/t:DefaultExp``` to build those targets.
+
+To turn off AOT builds, specify ```/p:PublishAot=false``` on the msbuild command-line.
 
 To build the Win32 Installer, the following additional tool is needed:
 
@@ -31,31 +42,9 @@ Run the following from a command-prompt at the root of the source directory on a
 dotnet msbuild Build.proj /t:BuildWin32Installer
 ```
 
-### Building Platform-Optimized Native Executables
+This will drop an installer executable ```EMU7800-Setup-x.y.z.exe``` into the ```artifacts\``` folder.
 
-To build platform-optimized native executables, simply add ```/p:PublishAot=true``` to the msbuild command line.
-Cross-compilation is not supported by the dotnet tooling, so this must be run on the target platform.
-
-Examples:
-
-Build a windows installer containing the native executable (run on Windows):
-
-```
-dotnet msbuild Build.proj /t:BuildWin32Installer /p:PublishAot=true
-```
-
-For 32-bit Linux ARM executables, run the following on a Raspberry Pi 32-bit OS
-(e.g., Debian Trixie with Desktop, as it will include the needed tooling):
-
-```
-dotnet msbuild Build.proj /t:LinuxArm /p:PublishAot=true
-```
-
-For 64-bit Linux ARM executables, run the following on a Raspberry Pi 64-bit OS
-(e.g., Debian Trixie with Desktop, as it will include the needed tooling):
-```
-dotnet msbuild Build.proj /t:LinuxArm64 /p:PublishAot=true
-```
+## Running on Linux
 
 The SDL3 dependencies likely will not be pre-installed on your Linux system, so run the following to install them:
 
