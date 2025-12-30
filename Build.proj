@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="All">
+﻿<Project DefaultTargets="Default">
   <Import Project="Directory.Build.props" />
   <PropertyGroup>
     <PublishAot>false</PublishAot>
@@ -201,7 +201,7 @@
                   />
   </Target>
   <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32">
-    <Exec Command="dotnet clean src/Tools/Installer/Build.cs" />
+    <Exec Command="dotnet clean Build.cs" WorkingDirectory="src/Tools/Installer" />
     <Exec Command="dotnet run Build.cs" WorkingDirectory="src/Tools/Installer" />
   </Target>
   <Target Name="OsX64" DependsOnTargets="ZipBinOsX64" />
@@ -210,5 +210,5 @@
   <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" />
   <Target Name="Win32" DependsOnTargets="ZipBinWin32" />
   <Target Name="WinSDL3" DependsOnTargets="ZipBinWinSDL3" />
-  <Target Name="All" DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
+  <Target Name="Default" DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
 </Project>
