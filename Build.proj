@@ -6,7 +6,7 @@
   <PropertyGroup>
     <IsWindowsX64  Condition="$([MSBuild]::IsOsPlatform('Windows')) and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsWindowsX64>
     <IsLinuxArm    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm">true</IsLinuxArm>
-    <IsLinuxArmX64 Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsLinuxArmX64>
+    <IsLinuxArm64  Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsLinuxArm64>
     <IsOsX64       Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsOsX64>
     <IsOsXArm64    Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsOsXArm64>
   </PropertyGroup>
