@@ -8,41 +8,42 @@ Enjoy!
 
 [Open in VSCode](https://vscode.dev/emu7800/emu7800.github.io)
 
-## Building from Source
+## Quick Start: Building from Source
 
-The following tools are needed for a Default build:
+The [.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) and [Git](https://git-scm.com/install/windows) are required to build EMU7800 from source.
 
-- [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+Obtain the source by cloning the GitHub repository:
+```
+git clone https://github.com/emu7800/emu7800.github.io.git
+```
 
-Run the following from a command-prompt at the root of the source directory (where this README is found):
+Run the following from a command-prompt at the root of the source folder:
 ```
 dotnet msbuild Build.proj /t:Clean
 dotnet msbuild Build.proj
 ```
 The Default target will build and drop everything under a newly created ```artifacts\``` sub-folder.
-All targets are self-contained deployments.
+All deployments are .NET self-contained deployments.
 
 If this is run on Windows, platform-optimized native executables (i.e., an AOT build) will be produced for Windows targets.
 Non-Windows targets will be built as ReadyToRun, single-file managed executables.
 
-If this is run on the other platforms (Linux Arm, Linux Arm64), platform-optimized native executables will be produced
+If this is run on the other platforms (e.g., Linux ARM, Linux ARM64), platform-optimized native executables will be produced
 only for that specific platform.
 
 OSX 64 and OSX ARM64 targets are experimental and have not been tested. Use the ```/t:DefaultExp``` to build those targets.
 
 To turn off AOT builds, specify ```/p:PublishAot=false``` on the msbuild command-line.
 
-To build the Win32 Installer, the following additional tool is needed:
+To build the Win32 Installer, the [Inno Setup Compiler 6.5.4](https://www.innosetup.com/) is required.
 
-- [Inno Setup Compiler 6.5.4](https://www.innosetup.com/)
-
-Run the following from a command-prompt at the root of the source directory on a Windows system:
+Run the following from a command-prompt at the root of the source folder on a Windows system:
 
 ```
 dotnet msbuild Build.proj /t:BuildWin32Installer
 ```
 
-This will drop an installer executable ```EMU7800-Setup-x.y.z.exe``` into the ```artifacts\``` folder.
+This will drop an installer executable ```EMU7800Setup-x64-x.y.z.exe``` into the ```artifacts\``` folder.
 
 ## Running on Linux
 
@@ -53,3 +54,5 @@ sudo apt install libsdl3-0
 sudo apt install libsdl3-image0
 sudo apt install libsdl3-ttf0
 ```
+
+Deploy by unzipping the built .zip archive from the ```artifacts\``` folder to the designated deployment location on your Linux system.
