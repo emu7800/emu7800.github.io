@@ -1,0 +1,33 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Profile" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitattributes" />
+    <File Path="../.gitignore" />
+    <File Path="../Build.proj" />
+    <File Path="../Directory.Build.props" />
+    <File Path="../global.json" />
+    <File Path="../index.html" />
+    <File Path="../LICENSE.TXT" />
+    <File Path="../NuGet.config" />
+    <File Path="../README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/installer/">
+    <File Path="tools/Installer/Build.ps1" />
+    <File Path="tools/Installer/msiwrapper.xml" />
+    <File Path="tools/Installer/setup.iss" />
+  </Folder>
+  <Project Path="assets\EMU7800.Assets.csproj" />
+  <Project Path="core\EMU7800.Core.csproj" />
+  <Project Path="linuxarm64\EMU7800.LinuxArm64.csproj" />
+  <Project Path="linuxarm\EMU7800.LinuxArm.csproj" />
+  <Project Path="sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
+  <Project Path="shell\EMU7800.Shell.csproj" />
+  <Project Path="win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
+  <Project Path="win32\EMU7800.Win32.csproj" />
+  <Project Path="winsdl3\EMU7800.WinSDL3.csproj" />
+</Solution>

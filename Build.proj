@@ -2,13 +2,14 @@
   <Import Project="Directory.Build.props" />
   <PropertyGroup>
     <PublishAot>true</PublishAot>
+    <OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArchitecture>
   </PropertyGroup>
   <PropertyGroup>
-    <IsWindowsX64  Condition="$([MSBuild]::IsOsPlatform('Windows')) and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsWindowsX64>
-    <IsLinuxArm    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm">true</IsLinuxArm>
-    <IsLinuxArm64  Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsLinuxArm64>
-    <IsOsX64       Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == X64">true</IsOsX64>
-    <IsOsXArm64    Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == Arm64">true</IsOsXArm64>
+    <IsWindowsX64  Condition="$([MSBuild]::IsOsPlatform('Windows')) and $(OSArchitecture) == X64">true</IsWindowsX64>
+    <IsLinuxArm    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $(OSArchitecture) == Arm">true</IsLinuxArm>
+    <IsLinuxArm64  Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $(OSArchitecture) == Arm64">true</IsLinuxArm64>
+    <IsOsX64       Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $(OSArchitecture) == X64">true</IsOsX64>
+    <IsOsXArm64    Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $(OSArchitecture) == Arm64">true</IsOsXArm64>
   </PropertyGroup>
   <PropertyGroup>
     <Win32PublishAot      Condition="'$(PublishAot)'=='true'">$(IsWindowsX64)</Win32PublishAot>
