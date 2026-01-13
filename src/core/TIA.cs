@@ -773,7 +773,7 @@ public sealed class TIA : IDevice
     {
         RegW[CTRLPF] = data;
 
-        if (data == 0 && (ScanLine == 49 && PokeOpHSync == 111 || (ScanLine is 259 or 260) && PokeOpHSync == 42))
+        if (data == 0 && (ScanLine == 49 && (PokeOpHSync is 111 or 117 or 123 or 129) || (ScanLine is 259 or 260) && PokeOpHSync == 42))
         {
             // Emulation cheat for Warlords: ignore clearing reflection state in this specific situation
         }
