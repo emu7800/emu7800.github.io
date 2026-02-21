@@ -48,11 +48,11 @@ public sealed class GraphicsDeviceSDL3Driver : DisposableResource, IGraphicsDevi
     {
         if (!_cachedFonts.TryGetValue(fontSize, out var hFont))
         {
-            const string FontFileName = "OpenSans-VariableFont.ttf";
-            hFont = TTF_OpenFont(FontFileName, fontSize);
+            var fontPath = System.IO.Path.Combine(AppContext.BaseDirectory, "OpenSans-VariableFont.ttf");
+            hFont = TTF_OpenFont(fontPath, fontSize);
             if (hFont == IntPtr.Zero)
             {
-                _logger.Log(1, $"CreateTextLayout: Unable to locate font: {FontFileName}");
+                _logger.Log(1, $"CreateTextLayout: Unable to locate font at expected location: {fontPath}");
             }
             _cachedFonts.Add(fontSize, hFont);
         }
