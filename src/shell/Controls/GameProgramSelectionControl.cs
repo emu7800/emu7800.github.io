@@ -65,6 +65,12 @@ public sealed class GameProgramSelectionControl : ControlBase
 
     public event EventHandler<GameProgramSelectedEventArgs> Selected = DefaultEventHandler;
 
+    public void ClearFocus()
+    {
+        ReleaseFocus();
+        _itemDown = false;
+    }
+
     #region ControlBase Overrides
 
     public override void MouseButtonChanged(int pointerId, int x, int y, bool down)
@@ -105,10 +111,9 @@ public sealed class GameProgramSelectionControl : ControlBase
         var ay = 7 * dy;
         AddVerticalPotentialEnergyToMouseHoveredCollection(ay, x, y);
 
-        if (ax > 8 || ay > 8)
+        if (ax is < -8 or > 8 || ay is < -8 or > 8)
         {
-            ReleaseFocus();
-            _itemDown = false;
+            ClearFocus();
         }
     }
 

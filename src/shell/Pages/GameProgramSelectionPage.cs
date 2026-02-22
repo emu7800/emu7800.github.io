@@ -39,6 +39,7 @@ public sealed class GameProgramSelectionPage : PageBase
         Controls.Add(_buttonBack, labelSelectGameProgram, _gameProgramSelectionControl);
 
         _buttonBack.Clicked += ButtonBack_Clicked;
+        _buttonBack.MouseOvered += ButtonBack_MouseOvered;
         _gameProgramSelectionControl.Selected += GameProgramSelectionControl_Selected;
     }
 
@@ -81,6 +82,11 @@ public sealed class GameProgramSelectionPage : PageBase
     void ButtonBack_Clicked(object? sender, EventArgs eventArgs)
     {
         PopPage();
+    }
+
+    void ButtonBack_MouseOvered(object? sender, EventArgs eventArgs)
+    {
+        _gameProgramSelectionControl.ClearFocus();
     }
 
     #endregion

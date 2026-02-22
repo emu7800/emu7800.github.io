@@ -15,9 +15,10 @@ public abstract class ButtonBase : ControlBase
 
     #endregion
 
-    public event EventHandler<EventArgs> Pressed = DefaultEventHandler;
-    public event EventHandler<EventArgs> Released = DefaultEventHandler;
-    public event EventHandler<EventArgs> Clicked = DefaultEventHandler;
+    public event EventHandler<EventArgs> Pressed     = DefaultEventHandler;
+    public event EventHandler<EventArgs> Released    = DefaultEventHandler;
+    public event EventHandler<EventArgs> Clicked     = DefaultEventHandler;
+    public event EventHandler<EventArgs> MouseOvered = DefaultEventHandler;
 
     public bool IsPressed => IsPressedByPointerId >= 0;
 
@@ -42,6 +43,7 @@ public abstract class ButtonBase : ControlBase
             if (!IsMouseOver)
             {
                 IsMouseOverPointerId = pointerId;
+                OnMouseOvered();
             }
         }
         else
@@ -108,14 +110,17 @@ public abstract class ButtonBase : ControlBase
 
     #region Helpers
 
-    protected void OnClicked()
-      => Clicked(this, DefaultEventArgs);
-
     protected void OnPressed()
       => Pressed(this, DefaultEventArgs);
 
     protected void OnReleased()
       => Released(this, DefaultEventArgs);
+
+    protected void OnClicked()
+      => Clicked(this, DefaultEventArgs);
+
+    protected void OnMouseOvered()
+      => MouseOvered(this, DefaultEventArgs);
 
     #endregion
 }
