@@ -11,7 +11,7 @@ Enjoy!
 #### WHAT'S NEW
 
 Finished eliminating dependencies on Windows to facilitate ports to other platforms.
- 
+
   - Added Linux ARM, Linux ARM64 targets using [SDL3](https://www.libsdl.org/)
   - Included a WinSDL3 target for convenient dev/testing [SDL3](https://www.libsdl.org/) builds on Windows
   - Added experimental OSX X64, OSX ARM64 targets using [SDL3](https://www.libsdl.org/)
@@ -63,8 +63,23 @@ sudo apt install libsdl3-image0
 sudo apt install libsdl3-ttf0
 ```
 
-Deploy EMU7800 by unzipping the built .zip archive from the ```artifacts\``` folder to the designated deployment location on your Linux system:
+Deploy EMU7800 by unzipping the built .zip archive from the ```artifacts/``` folder to the designated deployment location on your Linux system:
 
 ```
-unzip <path-to-emu7800-zip-file> -d <path-to-deployment-folder>
+unzip ./EMU7800.<linuxtarget>bin.x.y.z.zip -d <path-to-deployment-folder>
 ```
+
+Alternately, the executable can be built and run from source.
+In your ```~/.bashrc``` file (or equivalent), add the ```artifacts/``` folder to your
+path in the typical unixy way:
+```
+# This is the location of the EMU7800 source repo, could be different than this:
+export EMU7800_ROOT=/srv/git/emu7800.github.io
+
+# For <linuxtarget>, choose linuxarm or linuxarm64 to match your system:
+export PATH=$PATH:$EMU7800_ROOT/artifacts/EMU7800.<linuxtarget>bin
+```
+
+## Miscellaneous
+
+For fans of the Palm/HP webOS platform, Alan Morford has made a port available on the webOS Archive available [here](https://appcatalog.webosarchive.org/showMuseumDetails.php?category=Revisionist+History&count=52&app=1005823). The Github source repo is [here](https://github.com/alan-morford/emu7800forwebos).
