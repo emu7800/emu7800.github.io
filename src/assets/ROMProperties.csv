@@ -648,7 +648,7 @@ Frog Pond,Atari,,Prototype,,CX2665,,,A2600NTSC,,,5f73e7175474c1c22fb8030c3158e9b
 Frogger,Parker Bros,Ed English,,1983,PB5300,Common,,A2600NTSC,,,081e2c114c9c20b61acf25fc95c71bf4,https://www.atariage.com/manual_html_page.php?SoftwareID=1033
 Frogger,Parker Bros,Ed English,,1983,PB5300,Common,,A2600PAL,,,02ced7ea2b7cb509748db6bfa227ebec,https://www.atariage.com/manual_html_page.php?SoftwareID=1033
 Frogger Demo,,"Matthias Luedtke, Manuel Polik",Homebrew Hack,2005,,,,A7800NTSC,,,45136d1d9eddf0bebad32995647b3298,
-Froggie,,Matthias Luedtke,Homebrew,2018,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,6053233cb59c0b4ca633623fd76c4576
+Froggie,,Matthias Luedtke,Homebrew,2018,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,6053233cb59c0b4ca633623fd76c4576,
 Frogger II - Threeedeep!,Parker Bros,Mark Lesser,,1983,PB5590,Extremely Rare,PB8K,A2600NTSC,,,27c6a2ca16ad7d814626ceea62fa8fb4,
 Frogs and Flies,Mattel,,,1982,MT5664,Uncommon,,A2600NTSC,,,dcc2956c7a39fdbf1e861fc5c595da0d,
 Frogs and Flies,Mattel,,,1982,MT5664,Uncommon,,A2600PAL,,,1b8c3c0bfb815b2a1010bba95998b66e,
@@ -1195,7 +1195,7 @@ Pac-Man Collection 40th Anniversary,,Bob DeCrescenzo,Homebrew,2023,,,A78SG,A7800
 Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2022,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,2b60de20a55056a11e6412a22445296f,
 Pac-Man Collection 40th Anniversary Short Mazes,,Bob DeCrescenzo,Homebrew,2023,,,A78SG,A7800NTSCxm,ProLineJoystick,ProLineJoystick,2686f20449c339f7d31671f1cdec7249,
 Pac-Man 320,,Bob DeCrescenzo,Homebrew,2011,,,A7832P,A7800NTSC,,,80ffad3edb50f0970e780a727a4524dd,
-Pac-Man Energy Drink Edition,,Bob DeCrescenzo,Homebrew,2022,,,A7848,A7800NTSC,,,2b51ebf2f371d0790a5629e27727ebba
+Pac-Man Energy Drink Edition,,Bob DeCrescenzo,Homebrew,2022,,,A7848,A7800NTSC,,,2b51ebf2f371d0790a5629e27727ebba,
 Pac-Space,,,,,,,,A2600NTSC,,,c569e57dca93d3bee115a49923057fd7,
 Panda Chase,Home Vision,,,,,Extremely Rare,,A2600NTSC,,,f8582bc6ca7046adb8e18164e8cecdbc,
 Parachute,Home Vision,Thomas Jentzsch,Hack,,,,,A2600NTSC,,,245f07c8603077a0caf5f83ee6cf8b43,
@@ -2048,8 +2048,8 @@ Zoo Fun,Home Vision,,,,,Extremely Rare,,A2600PAL,,,fb833ed50c865a9a505a125fc9d79
 Z-Tack,Bomb,Robert Esken Jr.,,,CA283,Extremely Rare,,A2600NTSC,,,c469151655e333793472777052013f4f,
 Z-Tack 2,,Steve Engelhardt,Hack,,,,,A2600NTSC,,,97d0151beb84acbe82aa6db18cd91b98,
 Galaxian,,Bob DeCrescenzo,Homebrew,2021,,,A7832,A7800NTSC,ProLineJoystick,ProLineJoystick,2f4ae1015a345652b36004a8c62a4ac6,
-Gorf,,,Homebrew,2009,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,3d12489c553cb1a90c8ebd6534383fa1
-Ghosts'n Goblins,,Matt Smith,Homebrew,2021,,,A78SGR,A7800NTSC,ProLineJoystick,None,ffc704d30566a2c24d6e9d845e4c9f11
+Gorf,,,Homebrew,2009,,,A7832P,A7800NTSC,ProLineJoystick,ProLineJoystick,3d12489c553cb1a90c8ebd6534383fa1,
+Ghosts'n Goblins,,Matt Smith,Homebrew,2021,,,A78SGR,A7800NTSC,ProLineJoystick,None,ffc704d30566a2c24d6e9d845e4c9f11,
 Popeye (RC35Demo),,Darryl Guenther,Homebrew,2021,,,A78S9PL,A7800NTSChsc,ProLineJoystick,ProLineJoystick,bf38e9f6bfccba51f46bf9443bd1892e,https://atariage.com/store/index.php?l=product_detail&p=1287
 PETSCII Robots - Shareware,,The 8-Bit Guy,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,ProLineJoystick,ProLineJoystick,a1a0f95e7cf484db26df3cbd8a5415c4,https://atariage.com/store/index.php?l=product_detail&p=1282
 Bankset 2x32K,,8BitDev.org,Homebrew,2023,,,A78BB32K,A7800NTSC,,,76172b03a17af0dc88498042877656fd,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
@@ -2067,5 +2067,5 @@ Bankset 2x52Kb Pokey@4000,,8BitDev.org,Homebrew,2023,,,A78BB52KP,A7800NTSC,,,f56
 Bankset 2x128K,,8BitDev.org,Homebrew,2023,,,A78BB128K,A7800NTSC,,,2a7bb2b113c828344632fb27c522bacd,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Bankset 2x128K RAM@4000,,8BitDev.org,Homebrew,2023,,,A78BB128KR,A7800NTSC,,,94d57e3f44b9288b53b586c0f8b664fa,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
 Bankset 2x128K RAM@4000 Pokey@800,,8BitDev.org,Homebrew,2023,,,A78BB128KRPL,A7800NTSC,,,85f986155bfe6677a85a2bb1329f193f,http://7800.8bitdev.org/index.php/Bankset_Bankswitching
-Lunar Patrol,,OldStyle,Homebrew,2022,,,A78S9,A7800NTSC,ProLineJoystick,ProLineJoystick,79cd8bc8e4d4327d81808e7cf5a89f68
+Lunar Patrol,,OldStyle,Homebrew,2022,,,A78S9,A7800NTSC,ProLineJoystick,ProLineJoystick,79cd8bc8e4d4327d81808e7cf5a89f68,
 Pac-Man 8K,,Dennis Debro,Homebrew,2007,,,,A2600NTSC,,,3ddee021a7daa2fbeb620cca5d662b9d,
