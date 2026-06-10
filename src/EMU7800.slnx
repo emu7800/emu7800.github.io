@@ -17,7 +17,7 @@
     <File Path="../README.md" />
   </Folder>
   <Folder Name="/Solution Items/installer/">
-    <File Path="tools/Installer/Build.ps1" />
+    <File Path="tools/Installer/Build.cs" />
     <File Path="tools/Installer/msiwrapper.xml" />
     <File Path="tools/Installer/setup.iss" />
   </Folder>
