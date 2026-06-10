@@ -43,9 +43,13 @@ OSX 64 and OSX ARM64 targets are experimental and have not been tested. Use the 
 
 To turn off AOT builds, specify ```/p:PublishAot=false``` on the msbuild command-line.
 
-To build the Win32 Installer, the [Inno Setup Compiler 6.5.4](https://www.innosetup.com/) is required.
+To build the Win32 Installer, the [Inno Setup Compiler 6](https://www.innosetup.com/) is required.
+To install interactively using `winget`, use the following command:
+```
+winget install --id JRSoftware.InnoSetup -e -s winget -i
+```
 
-Run the following from a command-prompt at the root of the source folder on a Windows system:
+Run the following from a command-prompt at the root of the source folder on a Windows system to build the Win32 Installer:
 
 ```
 dotnet msbuild /t:BuildWin32Installer
