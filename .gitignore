@@ -161,5 +161,5 @@ $RECYCLE.BIN/
 artifacts/
 .idea/
 src/tools/Installer/bin/
-src/tools/Installer/net10.0/
+src/tools/Installer/net11.0/
 *.lscache

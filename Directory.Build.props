@@ -3,10 +3,11 @@
   <PropertyGroup>
     <UseArtifactsOutput>true</UseArtifactsOutput>
     <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
-    <LangVersion>14.0</LangVersion>
+    <LangVersion>15.0</LangVersion>
     <Nullable>enable</Nullable>
-    <TargetFramework>net10.0</TargetFramework>
-    <RuntimeIdentifiers>win-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
+    <TargetFramework>net11.0</TargetFramework>
+    <Features>runtime-async=on</Features>
+    <RuntimeIdentifiers>win-x64;linux-x64;linux-arm;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>embedded</DebugType>
     <NoWarn>IDE0290</NoWarn>

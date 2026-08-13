@@ -11,7 +11,7 @@ using System;
 
 namespace EMU7800.Core;
 
-public abstract class Cart : IDevice
+public closed class Cart : IDevice
 {
     public static readonly Cart Default = new UnknownCart();
 
@@ -39,7 +39,7 @@ public abstract class Cart : IDevice
     public virtual void EndFrame() {}
 
     protected internal virtual bool RequestSnooping
-        => false;
+      => false;
 
     /// <summary>
     /// Creates an instance of the specified cart.

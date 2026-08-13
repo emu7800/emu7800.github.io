@@ -1,6 +1,6 @@
 #:sdk Microsoft.NET.Sdk
-#:property TargetFramework=net10.0
-#:property LangVersion=14.0
+#:property TargetFramework=net11.0
+#:property LangVersion=preview
 #:property Nullable=enable
 #:property UseArtifactsOutput=false
 

@@ -10,7 +10,7 @@ namespace EMU7800.Core;
 /// The Bankset scheme was created by Fred Quimby, in collaboration with Mike Saarna.
 /// For more details, see http://7800.8bitdev.org/index.php/Bankset_Bankswitching.
 /// </summary>
-public abstract class Cart78BB : Cart
+public closed class Cart78BB : Cart
 {
     protected byte[] RAM { get; private set; } = [];
 

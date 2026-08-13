@@ -21,10 +21,10 @@
     <OsXArm64PublishAot   Condition="'$(PublishAot)'=='true'">$(IsOsXArm64)</OsXArm64PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <SourceArtifacts Include="**/*" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/.git/**;**/$(ArtifactsPath)/**;lib/roms/**;src/tools/Installer/bin/**;src/tools/Installer/net10.0/**" />
+    <SourceArtifacts Include="**/*" Exclude="**/bin/**;**/obj/**;**/.vs/**;**/.git/**;**/$(ArtifactsPath)/**;lib/roms/**;src/tools/Installer/bin/**;src/tools/Installer/net11.0/**" />
   </ItemGroup>
   <Target Name="Clean">
-    <RemoveDir Directories="$(ArtifactsPath);src/tools/Installer/bin;src/tools/Installer/net10.0" />
+    <RemoveDir Directories="$(ArtifactsPath);src/tools/Installer/bin;src/tools/Installer/net11.0" />
   </Target>
   <Target Name="PublishWinX64" Condition="'$(IsWinX64)'=='true'">
     <MSBuild Projects="src/win-x64/EMU7800.Win32.csproj" Targets="Restore" />

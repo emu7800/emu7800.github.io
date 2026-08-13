@@ -13,7 +13,7 @@ using EMU7800.Core.Extensions;
 
 namespace EMU7800.Core;
 
-public abstract class MachineBase
+public closed class MachineBase
 {
     public static readonly MachineBase Default = new MachineUnknown();
 
@@ -100,7 +100,7 @@ public abstract class MachineBase
     public ILogger Logger
     {
         get => field ?? NullLogger.Default;
-        set => field = value;
+        set;
     }
 
     #endregion

@@ -18,7 +18,7 @@ Finished eliminating dependencies on Windows to facilitate ports to other platfo
 
 ## Building from Source
 
-The [.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) and [Git](https://git-scm.com/install/windows) are required to build EMU7800 from source.
+The [.NET 11.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) and [Git](https://git-scm.com/install/windows) are required to build EMU7800 from source.
 
 Obtain the source by cloning the GitHub repository:
 ```
