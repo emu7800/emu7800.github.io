@@ -52,7 +52,7 @@ winget install --id JRSoftware.InnoSetup -e -s winget -i
 Run the following from a command-prompt at the root of the source folder on a Windows system to build the Win32 Installer:
 
 ```
-dotnet msbuild /t:BuildWin32Installer
+dotnet msbuild /t:Win32Installer
 ```
 
 This will drop an installer executable ```EMU7800Setup-x64-x.y.z.exe``` into the ```artifacts\``` folder.

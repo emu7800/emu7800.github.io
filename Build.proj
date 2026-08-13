@@ -90,7 +90,7 @@
   </Target>
   <Target Name="CopyBinWin32" DependsOnTargets="PublishWin32;ZipRoms">
     <ItemGroup>
-      <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*;lib\EMU7800.Win32.Interop.dll" />
+      <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin" />
@@ -214,7 +214,7 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="BuildWin32Installer" DependsOnTargets="CopyBinWin32" Condition="'$(IsWindowsX64)'=='true'">
+  <Target Name="Win32Installer" DependsOnTargets="CopyBinWin32" Condition="'$(IsWindowsX64)'=='true'">
     <Exec Command="dotnet clean Build.cs" WorkingDirectory="src/Tools/Installer" />
     <Exec Command="dotnet run Build.cs"   WorkingDirectory="src/Tools/Installer" />
   </Target>

@@ -5,7 +5,6 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ApplicationIcon>EMUIcon.ico</ApplicationIcon>
     <PublishAot>true</PublishAot>
-    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -18,7 +17,7 @@
     <ProjectReference Include="..\shell\EMU7800.Shell.csproj" />
     <ProjectReference Include="..\win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Debug'">
     <ItemGroup>
       <LibFiles Include="$(ProjectDir)..\..\lib\EMU7800.Win32.Interop.dll" />
     </ItemGroup>
@@ -26,4 +25,8 @@
           DestinationFolder="$(TargetDir)"
           SkipUnchangedFiles="true" />
   </Target>
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win-')) And '$(Configuration)' != 'Debug'">
+    <DirectPInvoke Include="EMU7800.Win32.Interop.dll" />
+    <NativeLibrary Include="$(ProjectDir)..\..\lib\EMU7800.Win32.Interop.lib" />
+  </ItemGroup>
 </Project>
