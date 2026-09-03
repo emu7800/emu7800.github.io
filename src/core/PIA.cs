@@ -192,9 +192,14 @@ public sealed class PIA(MachineBase m) : IDevice
             case Controller.Paddles:
                 porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? 0 : 1 << 7;
                 porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? 0 : 1 << 6;
+                porta |= 1 << 5;
+                porta |= 1 << 4;
                 break;
             case Controller.Lightgun:
                 porta |= mi.SampleCapturedControllerActionState(0, ControllerAction.Trigger) ? 1 << 4 : 0;
+                porta |= 1 << 5;
+                porta |= 1 << 6;
+                porta |= 1 << 7;
                 break;
         }
 
@@ -214,9 +219,14 @@ public sealed class PIA(MachineBase m) : IDevice
             case Controller.Paddles:
                 porta |= mi.SampleCapturedControllerActionState(2, ControllerAction.Trigger) ? 0 : 1 << 3;
                 porta |= mi.SampleCapturedControllerActionState(3, ControllerAction.Trigger) ? 0 : 1 << 2;
+                porta |= 1 << 1;
+                porta |= 1 << 0;
                 break;
             case Controller.Lightgun:
                 porta |= mi.SampleCapturedControllerActionState(1, ControllerAction.Trigger) ? 1 << 0 : 0;
+                porta |= 1 << 1;
+                porta |= 1 << 2;
+                porta |= 1 << 3;
                 break;
         }
 
@@ -237,9 +247,9 @@ public sealed class PIA(MachineBase m) : IDevice
     //
     // D0 Game Reset  0=on
     // D1 Game Select 0=on
-    // D2 (unused on 7800)
+    // D2 (unused)
     // D3 Console Color 1=Color, 0=B/W on 2600, Pause on 7800
-    // D4 (unused on 7800)
+    // D4 (unused)
     // D5 (unused)
     // D6 Left  Difficulty A 1=A (pro), 0=B (novice)
     // D7 Right Difficulty A 1=A (pro), 0=B (novice)
@@ -251,7 +261,10 @@ public sealed class PIA(MachineBase m) : IDevice
 
         portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameReset)        ? 0 : 1 << 0;
         portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameSelect)       ? 0 : 1 << 1;
+        portb |= 1 << 2;
         portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.GameBW)           ? 0 : 1 << 3;
+        portb |= 1 << 4;
+        portb |= 1 << 5;
         portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.LeftDifficultyA)  ? 1 << 6 : 0;
         portb |= mi.SampleCapturedConsoleSwitchState(ConsoleSwitch.RightDifficultyA) ? 1 << 7 : 0;
 
