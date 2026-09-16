@@ -57,7 +57,7 @@ public sealed class GameControl : ControlBase
 
     public bool IsPaused
     {
-        get => field;
+        get;
         set
         {
             if (field == value)
@@ -70,7 +70,7 @@ public sealed class GameControl : ControlBase
 
     public bool IsSoundOn
     {
-        get => field;
+        get;
         set
         {
             field = value;

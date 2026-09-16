@@ -38,7 +38,7 @@ public sealed class LabelControl : ControlBase
 
     public int TextFontSize
     {
-        get => field;
+        get;
         set
         {
             if (field == value)
@@ -50,7 +50,7 @@ public sealed class LabelControl : ControlBase
 
     public WriteTextAlignment TextAlignment
     {
-        get => field;
+        get;
         set
         {
             if (field == value)
@@ -62,7 +62,7 @@ public sealed class LabelControl : ControlBase
 
     public WriteParaAlignment ParagraphAlignment
     {
-        get => field;
+        get;
         set
         {
             if (field == value)

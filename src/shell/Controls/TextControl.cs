@@ -40,7 +40,7 @@ public sealed class TextControl : ControlBase
 
     public int TextFontSize
     {
-        get => field;
+        get;
         set
         {
             if (field == value)

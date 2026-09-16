@@ -138,7 +138,7 @@ public sealed class TIA : IDevice
     // other movable object counters can be reset out-of-phase with HSync, hence %228 and not %57
     int HSync
     {
-        get => field;
+        get;
         set => field = value % 228;
     }
 
@@ -160,7 +160,7 @@ public sealed class TIA : IDevice
     // indicates where in the HMOVE operation it is
     int HMoveCounter
     {
-        get => field;
+        get;
         set => field = value < 0 ? -1 : value & 0xf;
     }
 
@@ -187,7 +187,7 @@ public sealed class TIA : IDevice
     // can be reset out-of-phase with HSync, hence %160 and not %40
     int P0
     {
-        get => field;
+        get;
         set => field = value % 160;
     }
 
@@ -210,7 +210,7 @@ public sealed class TIA : IDevice
     // Player 1 Horizontal Position Counter (identical to P0)
     int P1
     {
-        get => field;
+        get;
         set => field = value % 160;
     }
 
@@ -234,7 +234,7 @@ public sealed class TIA : IDevice
     // similar to player position counters
     int M0
     {
-        get => field;
+        get;
         set => field = value % 160;
     }
 
@@ -252,7 +252,7 @@ public sealed class TIA : IDevice
     // Missile 1 Horizontal Position Counter (identical to M0)
     int M1
     {
-        get => field;
+        get;
         set => field = value % 160;
     }
 
@@ -271,7 +271,7 @@ public sealed class TIA : IDevice
     // similar to player position counters
     int BL
     {
-        get => field;
+        get;
         set => field = value % 160;
     }
 
