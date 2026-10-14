@@ -5,17 +5,19 @@
     <OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArchitecture>
   </PropertyGroup>
   <PropertyGroup>
-    <IsWindowsX64  Condition="$([MSBuild]::IsOsPlatform('Windows')) and $(OSArchitecture) == X64">true</IsWindowsX64>
+    <IsWinX64      Condition="$([MSBuild]::IsOsPlatform('Windows')) and $(OSArchitecture) == X64">true</IsWinX64>
+    <IsLinuxX64    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $(OSArchitecture) == X64">true</IsLinuxX64>
     <IsLinuxArm    Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $(OSArchitecture) == Arm">true</IsLinuxArm>
     <IsLinuxArm64  Condition="$([MSBuild]::IsOsPlatform('Linux'))   and $(OSArchitecture) == Arm64">true</IsLinuxArm64>
-    <IsOsX64       Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $(OSArchitecture) == X64">true</IsOsX64>
+    <IsOsXX64      Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $(OSArchitecture) == X64">true</IsOsXX64>
     <IsOsXArm64    Condition="$([MSBuild]::IsOsPlatform('OSX'))     and $(OSArchitecture) == Arm64">true</IsOsXArm64>
   </PropertyGroup>
   <PropertyGroup>
-    <Win32PublishAot      Condition="'$(PublishAot)'=='true'">$(IsWindowsX64)</Win32PublishAot>
+    <WinX64PublishAot     Condition="'$(PublishAot)'=='true'">$(IsWinX64)</WinX64PublishAot>
+    <LinuxX64PublishAot   Condition="'$(PublishAot)'=='true'">$(IsLinuxX64)</LinuxX64PublishAot>
     <LinuxArmPublishAot   Condition="'$(PublishAot)'=='true'">$(IsLinuxArm)</LinuxArmPublishAot>
     <LinuxArm64PublishAot Condition="'$(PublishAot)'=='true'">$(IsLinuxArm64)</LinuxArm64PublishAot>
-    <OsX64PublishAot      Condition="'$(PublishAot)'=='true'">$(IsOsX64)</OsX64PublishAot>
+    <OsXX64PublishAot     Condition="'$(PublishAot)'=='true'">$(IsOsXX64)</OsXX64PublishAot>
     <OsXArm64PublishAot   Condition="'$(PublishAot)'=='true'">$(IsOsXArm64)</OsXArm64PublishAot>
   </PropertyGroup>
   <ItemGroup>
@@ -24,29 +26,33 @@
   <Target Name="Clean">
     <RemoveDir Directories="$(ArtifactsPath);src/tools/Installer/bin;src/tools/Installer/net10.0" />
   </Target>
-  <Target Name="PublishWin32" Condition="'$(IsWindowsX64)'=='true'">
-    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Restore" />
-    <MSBuild Projects="src/win32/EMU7800.Win32.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(Win32PublishAot)" />
+  <Target Name="PublishWinX64" Condition="'$(IsWinX64)'=='true'">
+    <MSBuild Projects="src/win-x64/EMU7800.Win32.csproj" Targets="Restore" />
+    <MSBuild Projects="src/win-x64/EMU7800.Win32.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(WinX64PublishAot)" />
   </Target>
-  <Target Name="PublishWinSDL3" Condition="'$(IsWindowsX64)'=='true'">
-    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Restore" />
-    <MSBuild Projects="src/winsdl3/EMU7800.WinSDL3.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(Win32PublishAot)" />
+  <Target Name="PublishWinX64Sdl3" Condition="'$(IsWinX64)'=='true'">
+    <MSBuild Projects="src/win-x64-sdl3/EMU7800.WinSDL3.csproj" Targets="Restore" />
+    <MSBuild Projects="src/win-x64-sdl3/EMU7800.WinSDL3.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(WinX64PublishAot)" />
   </Target>
-  <Target Name="PublishLinuxArm" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm)'=='true'">
-    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Restore" />
-    <MSBuild Projects="src/linuxarm/EMU7800.LinuxArm.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArmPublishAot)" />
+  <Target Name="PublishLinuxX64" Condition="'$(IsWinX64)'=='true' or '$(IsLinuxX64)'=='true'">
+    <MSBuild Projects="src/linux-x64/EMU7800.LinuxX64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/linux-x64/EMU7800.LinuxX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxX64PublishAot)" />
   </Target>
-  <Target Name="PublishLinuxArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm64)'=='true'">
-    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/linuxarm64/EMU7800.LinuxArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArm64PublishAot)" />
+  <Target Name="PublishLinuxArm" Condition="'$(IsWinX64)'=='true' or '$(IsLinuxArm)'=='true'">
+    <MSBuild Projects="src/linux-arm/EMU7800.LinuxArm.csproj" Targets="Restore" />
+    <MSBuild Projects="src/linux-arm/EMU7800.LinuxArm.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArmPublishAot)" />
   </Target>
-  <Target Name="PublishOsX64" Condition="'$(IsWindowsX64)'=='true' or '$(IsOsX64)'=='true'">
-    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/osx64/EMU7800.OsX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsX64PublishAot)" />
+  <Target Name="PublishLinuxArm64" Condition="'$(IsWinX64)'=='true' or '$(IsLinuxArm64)'=='true'">
+    <MSBuild Projects="src/linux-arm64/EMU7800.LinuxArm64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/linux-arm64/EMU7800.LinuxArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(LinuxArm64PublishAot)" />
   </Target>
-  <Target Name="PublishOsXArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsOsXArm64)'=='true'">
-    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Restore" />
-    <MSBuild Projects="src/osxarm64/EMU7800.OsXArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsXArm64PublishAot)" />
+  <Target Name="PublishOsXX64" Condition="'$(IsWinX64)'=='true' or '$(IsOsXX64)'=='true'">
+    <MSBuild Projects="src/osx-x64/EMU7800.OsXX64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/osx-x64/EMU7800.OsXX64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsXX64PublishAot)" />
+  </Target>
+  <Target Name="PublishOsXArm64" Condition="'$(IsWinX64)'=='true' or '$(IsOsXArm64)'=='true'">
+    <MSBuild Projects="src/osx-arm64/EMU7800.OsXArm64.csproj" Targets="Restore" />
+    <MSBuild Projects="src/osx-arm64/EMU7800.OsXArm64.csproj" Targets="Publish" Properties="Configuration=Release;PublishAot=$(OsXArm64PublishAot)" />
   </Target>
   <Target Name="CopySource">
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.src" />
@@ -88,33 +94,48 @@
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="CopyBinWin32" DependsOnTargets="PublishWin32;ZipRoms">
+  <Target Name="CopyBinWinX64" DependsOnTargets="PublishWinX64;ZipRoms">
     <ItemGroup>
       <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win32bin" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win-x64.bin" />
     <Copy SourceFiles="@(BinWin32Artifacts)"
-          DestinationFiles="@(BinWin32Artifacts->'$(ArtifactsPath)\EMU7800.win32bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinWin32Artifacts->'$(ArtifactsPath)\EMU7800.win-x64.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win32bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win-x64.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
-  <Target Name="CopyBinWinSDL3" DependsOnTargets="PublishWinSDL3;ZipRoms">
+  <Target Name="CopyBinWinX64Sdl3" DependsOnTargets="PublishWinX64Sdl3;ZipRoms">
     <ItemGroup>
       <BinWinSDL3Artifacts Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.winsdl3bin" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin" />
     <Copy SourceFiles="@(BinWinSDL3Artifacts)"
-          DestinationFiles="@(BinWinSDL3Artifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinWinSDL3Artifacts->'$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.winsdl3bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+  </Target>
+  <Target Name="CopyBinLinuxX64" DependsOnTargets="PublishLinuxX64;ZipRoms">
+    <ItemGroup>
+      <BinLinuxX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxX64\release_linux-x64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-x64.bin"/>
+    <Copy SourceFiles="@(BinLinuxX64Artifacts)"
+          DestinationFiles="@(BinLinuxX64Artifacts->'$(ArtifactsPath)\EMU7800.linux-x64.bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          />
+    <Copy SourceFiles="@(RomArtifacts)"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linux-x64.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
@@ -123,13 +144,13 @@
       <BinLinuxArmArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linuxarmbin"/>
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-arm.bin"/>
     <Copy SourceFiles="@(BinLinuxArmArtifacts)"
-          DestinationFiles="@(BinLinuxArmArtifacts->'$(ArtifactsPath)\EMU7800.linuxarmbin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinLinuxArmArtifacts->'$(ArtifactsPath)\EMU7800.linux-arm.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linuxarmbin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linux-arm.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
@@ -138,28 +159,28 @@
       <BinLinuxArm64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linuxarm64bin" />
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-arm64.bin" />
     <Copy SourceFiles="@(BinLinuxArm64Artifacts)"
-          DestinationFiles="@(BinLinuxArm64Artifacts->'$(ArtifactsPath)\EMU7800.linuxarm64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinLinuxArm64Artifacts->'$(ArtifactsPath)\EMU7800.linux-arm64.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linuxarm64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.linux-arm64.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
-  <Target Name="CopyBinOsX64" DependsOnTargets="PublishOsX64;ZipRoms">
+  <Target Name="CopyBinOsXX64" DependsOnTargets="PublishOsXX64;ZipRoms">
     <ItemGroup>
-      <BinOsX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsX64\release_osx-x64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinOsXX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsXX64\release_osx-x64\**\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
-    <MakeDir Directories="$(ArtifactsPath)\EMU7800.osx64bin"/>
-    <Copy SourceFiles="@(BinOsX64Artifacts)"
-          DestinationFiles="@(BinOsX64Artifacts->'$(ArtifactsPath)\EMU7800.osx64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+    <MakeDir Directories="$(ArtifactsPath)\EMU7800.osx-x64.bin"/>
+    <Copy SourceFiles="@(BinOsXX64Artifacts)"
+          DestinationFiles="@(BinOsXX64Artifacts->'$(ArtifactsPath)\EMU7800.osx-x64.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osx64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osx-x64.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
@@ -170,60 +191,67 @@
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.osxarm64bin" />
     <Copy SourceFiles="@(BinOsXArm64Artifacts)"
-          DestinationFiles="@(BinOsXArm64Artifacts->'$(ArtifactsPath)\EMU7800.osxarm64bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(BinOsXArm64Artifacts->'$(ArtifactsPath)\EMU7800.osx-arm64.bin\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
     <Copy SourceFiles="@(RomArtifacts)"
-          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osxarm64bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
+          DestinationFiles="@(RomArtifacts->'$(ArtifactsPath)\EMU7800.osx-arm64.bin\ROMS\%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true"
           />
   </Target>
-  <Target Name="ZipBinWin32" DependsOnTargets="CopyBinWin32">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win32bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.win32bin.$(AssemblyVersion).zip"
+  <Target Name="ZipBinWinX64" DependsOnTargets="CopyBinWinX64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win-x64.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.win-x64.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="ZipBinWinSDL3" DependsOnTargets="CopyBinWinSDL3">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.winsdl3bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.winsdl3bin.$(AssemblyVersion).zip"
+  <Target Name="ZipBinWinX64Sdl" DependsOnTargets="CopyBinWinX64Sdl3">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin.$(AssemblyVersion).zip"
+                  Overwrite="true"
+                  />
+  </Target>
+  <Target Name="ZipBinLinuxX64" DependsOnTargets="CopyBinLinuxX64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linux-x64.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linux-x64.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm" DependsOnTargets="CopyBinLinuxArm">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarmbin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarmbin.$(AssemblyVersion).zip"
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linux-arm.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linux-arm.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinLinuxArm64" DependsOnTargets="CopyBinLinuxArm64">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linuxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.linuxarm64bin.$(AssemblyVersion).zip"
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.linux-arm64.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.linux-arm64.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="ZipBinOsX64" DependsOnTargets="CopyBinOsX64">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osx64bin.$(AssemblyVersion).zip"
+  <Target Name="ZipBinOsXX64" DependsOnTargets="CopyBinOsXX64">
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx-x64.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osx-x64.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
   <Target Name="ZipBinOsXArm64" DependsOnTargets="CopyBinOsXArm64">
-    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osxarm64bin"
-                  DestinationFile="$(ArtifactsPath)\EMU7800.osxarm64bin.$(AssemblyVersion).zip"
+    <ZipDirectory SourceDirectory="$(ArtifactsPath)\EMU7800.osx-arm64.bin"
+                  DestinationFile="$(ArtifactsPath)\EMU7800.osx-arm64.bin.$(AssemblyVersion).zip"
                   Overwrite="true"
                   />
   </Target>
-  <Target Name="Win32Installer" DependsOnTargets="CopyBinWin32" Condition="'$(IsWindowsX64)'=='true'">
+  <Target Name="WinInstaller" DependsOnTargets="CopyBinWinX64" Condition="'$(IsWinX64)'=='true'">
     <Exec Command="dotnet clean Build.cs" WorkingDirectory="src/Tools/Installer" />
     <Exec Command="dotnet run Build.cs"   WorkingDirectory="src/Tools/Installer" />
   </Target>
-  <Target Name="OsX64"      DependsOnTargets="ZipBinOsX64"      Condition="'$(IsWindowsX64)'=='true' or '$(IsOsX64)'=='true'" />
-  <Target Name="OsXArm64"   DependsOnTargets="ZipBinOsXArm64"   Condition="'$(IsWindowsX64)'=='true' or '$(IsOsXArm64)'=='true'" />
-  <Target Name="LinuxArm"   DependsOnTargets="ZipBinLinuxArm"   Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm)'=='true'" />
-  <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" Condition="'$(IsWindowsX64)'=='true' or '$(IsLinuxArm64)'=='true'" />
-  <Target Name="Win32"      DependsOnTargets="ZipBinWin32"      Condition="'$(IsWindowsX64)'=='true'" />
-  <Target Name="WinSDL3"    DependsOnTargets="ZipBinWinSDL3"    Condition="'$(IsWindowsX64)'=='true'" />
-  <Target Name="Default"    DependsOnTargets="Win32;WinSDL3;LinuxArm;LinuxArm64;ZipSrc" />
-  <Target Name="DefaultExp" DependsOnTargets="Default;OsX64;OsXArm64" />
+  <Target Name="OsXX64"     DependsOnTargets="ZipBinOsXX64"     Condition="'$(IsWinX64)'=='true' or '$(IsOsXX64)'=='true'" />
+  <Target Name="OsXArm64"   DependsOnTargets="ZipBinOsXArm64"   Condition="'$(IsWinX64)'=='true' or '$(IsOsXArm64)'=='true'" />
+  <Target Name="LinuxX64"   DependsOnTargets="ZipBinLinuxX64"   Condition="'$(IsWinX64)'=='true' or '$(IsLinuxX64)'=='true'" />
+  <Target Name="LinuxArm"   DependsOnTargets="ZipBinLinuxArm"   Condition="'$(IsWinX64)'=='true' or '$(IsLinuxArm)'=='true'" />
+  <Target Name="LinuxArm64" DependsOnTargets="ZipBinLinuxArm64" Condition="'$(IsWinX64)'=='true' or '$(IsLinuxArm64)'=='true'" />
+  <Target Name="WinX64"     DependsOnTargets="ZipBinWinX64"     Condition="'$(IsWinX64)'=='true'" />
+  <Target Name="WinX64Sdl3" DependsOnTargets="ZipBinWinX64Sdl"  Condition="'$(IsWinX64)'=='true'" />
+  <Target Name="Default"    DependsOnTargets="WinX64;WinX64Sdl3;LinuxArm;LinuxArm64;ZipSrc" />
+  <Target Name="DefaultExp" DependsOnTargets="Default;OsXX64;OsXArm64;LinuxX64" />
 </Project>

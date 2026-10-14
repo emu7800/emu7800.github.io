@@ -33,26 +33,24 @@ dotnet msbuild
 The Default target will build and drop everything under a newly created ```artifacts\``` sub-folder.
 All deployments are .NET self-contained deployments.
 
-If this is run on Windows, platform-optimized native executables (i.e., an AOT build) will be produced for Windows targets.
+If this is run on Windows, a platform-optimized native executable will be produced for Windows targets.
 Non-Windows targets will be built as ReadyToRun, single-file managed executables.
+If this is run on a non-Windows platform, only a platform-optimized native executable will be produced for that specific platform.
 
-If this is run on the other platforms (e.g., Linux ARM, Linux ARM64), platform-optimized native executables will be produced
-only for that specific platform.
-
-OSX 64 and OSX ARM64 targets are experimental and have not been tested. Use the ```/t:DefaultExp``` to build those targets.
+OSX X64, OSX ARM64, Linux X64 targets are experimental and have not been tested. Use the ```/t:DefaultExp``` to build those targets.
 
 To turn off AOT builds, specify ```/p:PublishAot=false``` on the msbuild command-line.
 
-To build the Win32 Installer, the [Inno Setup Compiler 6](https://www.innosetup.com/) is required.
+To build the Windows Installer, the [Inno Setup Compiler 6](https://www.innosetup.com/) is required.
 To install interactively using `winget`, use the following command:
 ```
 winget install --id JRSoftware.InnoSetup -e -s winget -i
 ```
 
-Run the following from a command-prompt at the root of the source folder on a Windows system to build the Win32 Installer:
+Run the following from a command-prompt at the root of the source folder on a Windows system to build the Windows Installer:
 
 ```
-dotnet msbuild /t:Win32Installer
+dotnet msbuild /t:WinInstaller
 ```
 
 This will drop an installer executable ```EMU7800Setup-x64-x.y.z.exe``` into the ```artifacts\``` folder.
