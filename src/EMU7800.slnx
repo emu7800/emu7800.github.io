@@ -23,11 +23,14 @@
   </Folder>
   <Project Path="assets\EMU7800.Assets.csproj" />
   <Project Path="core\EMU7800.Core.csproj" />
-  <Project Path="linuxarm64\EMU7800.LinuxArm64.csproj" />
-  <Project Path="linuxarm\EMU7800.LinuxArm.csproj" />
-  <Project Path="sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
   <Project Path="shell\EMU7800.Shell.csproj" />
   <Project Path="win32.interop.pinvoke\EMU7800.Win32.Interop.PInvoke.csproj" />
-  <Project Path="win32\EMU7800.Win32.csproj" />
-  <Project Path="winsdl3\EMU7800.WinSDL3.csproj" />
+  <Project Path="sdl3.interop.pinvoke\EMU7800.SDL3.Interop.PInvoke.csproj" />
+  <Project Path="win-x64\EMU7800.Win32.csproj" />
+  <Project Path="win-x64-sdl3\EMU7800.WinSDL3.csproj" />
+  <Project Path="linux-arm\EMU7800.LinuxArm.csproj" />
+  <Project Path="linux-arm64\EMU7800.LinuxArm64.csproj" />
+  <Project Path="linux-x64\EMU7800.LinuxX64.csproj" />
+  <Project Path="osx-arm64\EMU7800.OsXArm64.csproj" />
+  <Project Path="osx-x64\EMU7800.OsXX64.csproj" />
 </Solution>
