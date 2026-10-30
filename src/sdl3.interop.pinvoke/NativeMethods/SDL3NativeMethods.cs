@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
+#pragma warning disable CA1069 // The enum member 'x' has the same constant value 'y' as member 'z'
+
 public static unsafe partial class SDL3
 {
     // Custom marshaller for SDL-owned strings returned by SDL.

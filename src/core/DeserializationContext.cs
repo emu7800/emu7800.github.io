@@ -67,7 +67,7 @@ public class DeserializationContext
 
     public ushort[] ReadUnsignedShorts(params int[] expectedSizes)
     {
-        var bytes = ReadExpectedBytes(expectedSizes.Select(t => t << 1).ToArray());
+        var bytes = ReadExpectedBytes([.. expectedSizes.Select(t => t << 1)]);
         var ushorts = new ushort[bytes.Length >> 1];
         Buffer.BlockCopy(bytes, 0, ushorts, 0, bytes.Length);
         return ushorts;
@@ -75,7 +75,7 @@ public class DeserializationContext
 
     public int[] ReadIntegers(params int[] expectedSizes)
     {
-        var bytes = ReadExpectedBytes(expectedSizes.Select(t => t << 2).ToArray());
+        var bytes = ReadExpectedBytes([.. expectedSizes.Select(t => t << 2)]);
         var integers = new int[bytes.Length >> 2];
         Buffer.BlockCopy(bytes, 0, integers, 0, bytes.Length);
         return integers;
@@ -83,7 +83,7 @@ public class DeserializationContext
 
     public uint[] ReadUnsignedIntegers(params int[] expectedSizes)
     {
-        var bytes = ReadExpectedBytes(expectedSizes.Select(t => t << 2).ToArray());
+        var bytes = ReadExpectedBytes([.. expectedSizes.Select(t => t << 2)]);
         var uints = new uint[bytes.Length >> 2];
         Buffer.BlockCopy(bytes, 0, uints, 0, bytes.Length);
         return uints;

@@ -12,7 +12,7 @@ public sealed class RomImportService
 {
     readonly DatastoreService _datastoreSvc;
 
-    public async Task<ImportedRoms> ImportAsync(IEnumerable<string>? paths = null)
+    public async Task<ImportedRoms> ImportAsync()
     {
         await Task.Yield();
         return Import();

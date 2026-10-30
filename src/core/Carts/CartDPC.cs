@@ -58,7 +58,7 @@ public sealed class CartDPC : Cart
 
             return field;
         }
-        set => field = value;
+        set;
     }
 
     #region IDevice Members
