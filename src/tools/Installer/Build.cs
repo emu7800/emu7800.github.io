@@ -1,9 +1,3 @@
-#:sdk Microsoft.NET.Sdk
-#:property TargetFramework=net11.0
-#:property LangVersion=preview
-#:property Nullable=enable
-#:property UseArtifactsOutput=false
-
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
