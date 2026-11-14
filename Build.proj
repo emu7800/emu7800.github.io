@@ -126,7 +126,7 @@
   </Target>
   <Target Name="CopyBinLinuxX64" DependsOnTargets="PublishLinuxX64;ZipRoms">
     <ItemGroup>
-      <BinLinuxX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxX64\release_linux-x64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinLinuxX64Artifacts Include="$(ArtifactsPath)\bin\EMU7800.LinuxX64\release_linux-x64\native\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-x64.bin"/>
@@ -141,7 +141,7 @@
   </Target>
   <Target Name="CopyBinLinuxArm" DependsOnTargets="PublishLinuxArm;ZipRoms">
     <ItemGroup>
-      <BinLinuxArmArtifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm\release_linux-arm\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinLinuxArmArtifacts Include="$(ArtifactsPath)\bin\EMU7800.LinuxArm\release_linux-arm\native\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-arm.bin"/>
@@ -156,7 +156,7 @@
   </Target>
   <Target Name="CopyBinLinuxArm64" DependsOnTargets="PublishLinuxArm64;ZipRoms">
     <ItemGroup>
-      <BinLinuxArm64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.LinuxArm64\release_linux-arm64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinLinuxArm64Artifacts Include="$(ArtifactsPath)\bin\EMU7800.LinuxArm64\release_linux-arm64\native\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.linux-arm64.bin" />
