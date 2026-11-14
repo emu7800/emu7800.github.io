@@ -96,7 +96,7 @@
   </Target>
   <Target Name="CopyBinWinX64" DependsOnTargets="PublishWinX64;ZipRoms">
     <ItemGroup>
-      <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\**\*" />
+      <BinWin32Artifacts Include="$(ArtifactsPath)\publish\EMU7800.Win32\release_win-x64\*" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.win-x64.bin" />
@@ -111,7 +111,7 @@
   </Target>
   <Target Name="CopyBinWinX64Sdl3" DependsOnTargets="PublishWinX64Sdl3;ZipRoms">
     <ItemGroup>
-      <BinWinSDL3Artifacts Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\**\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\OpenSans-VariableFont.ttf" />
+      <BinWinSDL3Artifacts Include="$(ArtifactsPath)\publish\EMU7800.WinSDL3\release_win-x64\*;lib\SDL3.dll;lib\SDL3_ttf.dll;lib\SDL3_image.dll;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.win-x64-sdl3.bin" />
@@ -171,7 +171,7 @@
   </Target>
   <Target Name="CopyBinOsXX64" DependsOnTargets="PublishOsXX64;ZipRoms">
     <ItemGroup>
-      <BinOsXX64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsXX64\release_osx-x64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinOsXX64Artifacts Include="$(ArtifactsPath)\bin\EMU7800.OsXX64\release_osx-x64\native\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.osx-x64.bin"/>
@@ -186,7 +186,7 @@
   </Target>
   <Target Name="CopyBinOsXArm64" DependsOnTargets="PublishOsXArm64;ZipRoms">
     <ItemGroup>
-      <BinOsXArm64Artifacts Include="$(ArtifactsPath)\publish\EMU7800.OsXArm64\release_osx-arm64\**\*;lib\OpenSans-VariableFont.ttf" />
+      <BinOsXArm64Artifacts Include="$(ArtifactsPath)\bin\EMU7800.OsXArm64\release_osx-arm64\native\*;lib\OpenSans-VariableFont.ttf" />
       <RomArtifacts Include="$(ArtifactsPath)\ROMS\**\*" />
     </ItemGroup>
     <MakeDir Directories="$(ArtifactsPath)\EMU7800.osxarm64bin" />
