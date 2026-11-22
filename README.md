@@ -14,7 +14,7 @@ Finished eliminating dependencies on Windows to facilitate ports to other platfo
 
   - Added Linux ARM, Linux ARM64 targets using [SDL3](https://www.libsdl.org/)
   - Included a WinSDL3 target for convenient dev/testing [SDL3](https://www.libsdl.org/) builds on Windows
-  - Added experimental OSX X64, OSX ARM64 targets using [SDL3](https://www.libsdl.org/)
+  - Added experimental Linux X64, OSX X64, OSX ARM64 targets using [SDL3](https://www.libsdl.org/)
 
 ## Building from Source
 
