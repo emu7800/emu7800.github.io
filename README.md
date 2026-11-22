@@ -1,5 +1,5 @@
 ﻿# EMU7800
-> Mike Murphy (mike@emu7800.net) - 12/31/2025
+> Mike Murphy (mike@emu7800.net)
 
 EMU7800 offers classic video game nostalgia on demand! It emulates the Atari 7800 ProSystem video game console (c. 1987) that was also backward compatible with the older and more popular Atari 2600 Video Computer System.
 EMU7800 was originally completed in 2003 as a .NET programming exercise.
